@@ -1,0 +1,4 @@
+var base = 8000;
+var x = args.x -0;
+var y = args.y-0;
+return base + x+y;

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="clientRemoteService"
+		class="com.lezo.iscript.client.service.impl.ClientRemoteServiceImpl">
+	</bean>
+	
+	<bean id="clientHttpExporter"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service">
+			<ref bean="clientRemoteService" />
+		</property>
+		<property name="serviceInterface"
+			value="com.lezo.iscript.service.ClientRemoteService" />
+	</bean>
+
+	<bean id="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/client">clientHttpExporter</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

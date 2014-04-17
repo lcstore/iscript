@@ -1,0 +1,9 @@
+id=1
+x=100
+y=200
+yeam.resulter.host=http://localhost:8080/resulter/resultservlet/service
+
+id=2
+x=300
+y=400
+yeam.resulter.host=http://localhost:8080/resulter/resultservlet/service

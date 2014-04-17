@@ -1,0 +1,562 @@
+<?xml version="1.0"?>
+<CrawlingConfig ConfigID="JD-002">
+	<Property>
+		<Name>淘宝API抓取</Name>
+		<OpponentID>001</OpponentID>
+		<Description>通过淘宝API，更新商品信息</Description>
+	</Property>
+	<Link>
+	</Link>
+	<Custom>
+      <![CDATA[
+        var rs = {
+			rs : [],
+			log : []
+		};
+		for(var i in args){
+		  debug.log('args['+i+']='+args[i]);
+		}
+		var sUrl = 'http://taobao.api';
+		var same = args.url==sUrl;
+		debug.log('sUrl=args.url:'+same);
+        var appConfig = getAppConfig();
+        var appkey = args.appkey;
+        debug.log('appkey:'+appkey);
+        var oConfig = appConfig[appkey];
+        var type = 'taobao.items.list.get';
+        debug.log('args.pcodes:'+args.pcodes);
+        //var codes='10000000507,10000001294,10171008512,10171009041';
+        var oPinfo = getCodeObj(args.pcodes);
+        var codes = getCodes(oPinfo);
+        debug.log('oPinfo:'+JSON.stringify(oPinfo));
+        debug.log('codes:'+codes);
+		var secret = oConfig.secret;
+		var sessionKey = oConfig.sessionKey;
+		var baseUrl = "http://gw.api.taobao.com/router/rest";
+		var allFields = "num_iid,title,nick,price,props_name,sku,detail_url,cid,pic_url,num,list_time,delist_time,location,approve_status";
+		var fields = "num_iid,title,nick,price,props_name,detail_url,pic_url,list_time,approve_status";
+		var callArgs = {};
+		callArgs.appkey = appkey;
+		callArgs.secret = secret;
+		callArgs.sessionKey = sessionKey;
+		callArgs.baseUrl = baseUrl;
+		callArgs.codes = codes;
+		callArgs.fields = fields;
+		var content = tbclient.execute(type, JSON.stringify(callArgs));
+		debug.log('content:'+content);
+		var oItemsRespone = eval('('+content+')');
+		if(oItemsRespone.error_response){
+		  throw 'appkey:'+appkey+',error respone:' + JSON.stringify(oItemsRespone.error_response);
+		}
+		var oItemList =  oItemsRespone.items_list_get_response.items;
+		var oCodeArray = callArgs.codes.split(',');
+		debug.log('code args:'+JSON.stringify(args));
+		debug.log('code size:'+oCodeArray.length);
+		var oFindeSet = new java.util.HashSet();
+		if(oItemList){
+		   var oItemArray = oItemList.item;
+			var size = oItemArray.length;
+			for(var i=0;i<size;i++){
+			  var oItem = oItemArray[i];
+			  var oPItem = getProductObj(oItem);
+			  var cid = oPinfo[oItem.num_iid];
+			  oPItem.args = {};
+			  oPItem.args.categoryId= (null != cid)?cid:0;
+			  oPItem.args.url = oItem.detail_url;
+			  oPItem.args.tid = args.tid;
+			  oPItem.args.level = args.level;
+			  oFindeSet.add('' +oItem.num_iid);
+			  rs.rs.push(oPItem);
+			}
+		}
+		debug.log('oFindeSet size:'+oFindeSet.size());
+		debug.log('oFindeSet size:'+oFindeSet);
+		for(var i=0;i<oCodeArray.length;i++){
+		   var code = oCodeArray[i];
+		   if(oFindeSet.contains(code)){
+		     continue;
+		   }
+		  debug.log('add sell out:'+code);
+		  var oSellItem  = {
+				rs : [],
+				log : []
+		  };
+		  add(oSellItem, 'product_code', code);
+		  add(oSellItem, 'sell_out', '1');
+		  var cid = oPinfo[oItem.num_iid];
+		  oSellItem.args = {};
+		  oSellItem.args.categoryId= (null != cid)?cid:0;
+		  oSellItem.args.url = 'http://detail.tmall.com/item.htm?id='+code;
+		  oSellItem.args.tid = args.tid;
+		  oSellItem.args.level = args.level;
+		  rs.rs.push(oSellItem);
+		}
+		debug.log('rs.length:'+rs.rs.length);
+		return rs;
+		function getCodeObj(pinfo){
+		   var codesArray = pinfo.split(',') ;
+		   var oCodes = {};
+		   for(var p in codesArray){
+		      var sParts = codesArray[p];
+		      var oPartArray = sParts.split('-');
+		      var cid = oPartArray[0];
+		      for(var i=1;i<oPartArray.length;i++){
+		        oCodes[oPartArray[i]]=cid;
+		      }
+		   }
+		   return oCodes;
+		}
+		function getCodes(oCodes){
+		   var codeArray = [] ;
+		   for(var code in oCodes){
+		      codeArray.push(code);
+		   }
+		   return codeArray.join(',');
+		}
+		function getProductObj(oItem){
+			var rs = {
+				rs : [],
+				log : []
+			};
+			add(rs, 'img_path', oItem.pic_url);
+			add(rs, 'product_code', oItem.num_iid);
+			add(rs, 'product_name', oItem.title);
+			add(rs, 'price', oItem.price? oItem.price : 0);
+			add(rs, 'on_sale_time', oItem.list_time);
+			add(rs, 'merchant', oItem.nick);
+			addStock(rs,oItem);
+			addProvider(rs,oItem);
+			return rs;
+		}
+		function add(rs, key, value) {
+			var ct = {
+				ic : {}
+			};
+			ct['name'] = '';
+			ct.ic[key] = value;
+			rs.rs.push(ct);
+			return rs;
+		}
+		function clone(myObj){
+		  if(typeof(myObj) != 'object') return myObj;
+		  if(myObj == null) return myObj;
+		  
+		  var myNewObj = new Object();
+		  
+		  for(var i in myObj)
+		    myNewObj[i] = clone(myObj[i]);
+		  
+		  return myNewObj;
+		}
+		function addStock(rs, oItem) {
+			var stock = -1;
+			if(null !=oItem.approve_status){
+				if(oItem.approve_status.equals('onsale')){
+				   stock='0';
+				}else if(oItem.approve_status.equals('instock')){
+			    	stock='-1';
+				}else {
+			    	stock='-2';
+				}
+			}
+			add(rs, 'stock_status', stock);
+		}
+		function addProvider(rs, oItem) {
+			var sBrand = oItem.props_name;
+			var oReg = new RegExp('(品牌:)(.*?)(;)','gm');
+			var oMatch = oReg.exec(sBrand);
+			add(rs, 'provider', (RegExp.$2 != null)?RegExp.$2:"");
+		}
+		
+				function getAppConfig(){
+		  var appConfig = [];
+		  var oConfig = {};
+          oConfig = {};
+oConfig.secret = "bbcec1be44bc593b15bd1c0704a5adaa";
+oConfig.sessionKey = "6101a200e5c3e49dc8f5e52271ac1fce668d2e0528c081a1817804237";
+appConfig[21623306]=oConfig;
+oConfig = {};
+oConfig.secret = "41820e54c51d79d85bee72e38fdde097";
+oConfig.sessionKey = "6100810e48155f6eaf1138df30a8dbda47f0a4160f242191817804237";
+appConfig[21674967]=oConfig;
+oConfig = {};
+oConfig.secret = "0fd5b7095fc8518400dc2c4ea8793e11";
+oConfig.sessionKey = "61021018610a21f07200e9251a11d6ce6328e9bdfb7530d1817804237";
+appConfig[21674972]=oConfig;
+oConfig = {};
+oConfig.secret = "bed572d10af5c1480883eb0b26ebee38";
+oConfig.sessionKey = "6101315eb24365f9e9e48cf1d82392fac42d0e68cbd394a1817804237";
+appConfig[21674974]=oConfig;
+oConfig = {};
+oConfig.secret = "28b630e0cb83457d41f1f9ee37297740";
+oConfig.sessionKey = "6100606833f90d11bbbd886bfd5003b56ac146e418f6fc61817804237";
+appConfig[21674975]=oConfig;
+oConfig = {};
+oConfig.secret = "4e7fd863c40f9ca129f36d82b55ce0cd";
+oConfig.sessionKey = "6100d11daa5802f12a21e1130de63a9ef76e0ecb080f3371817804237";
+appConfig[21674936]=oConfig;
+oConfig = {};
+oConfig.secret = "ec96d158e8b29b7b5379b5c1e05fa2a9";
+oConfig.sessionKey = "6100e0051cec1706da64c146feb78980b5127bc3a4bd57a1817804237";
+appConfig[21674935]=oConfig;
+oConfig = {};
+oConfig.secret = "4dacef13bf914170425024e97c30e45e";
+oConfig.sessionKey = "6102204f8b201a42bb9753428aba153af0c05b750ea1b551817804237";
+appConfig[21676790]=oConfig;
+oConfig = {};
+oConfig.secret = "38dc6d7ad7c21086a751d1a83bad07e5";
+oConfig.sessionKey = "610280935513098481b5c5a097f9d2386f1a8715dfb11061817804237";
+appConfig[21674934]=oConfig;
+oConfig = {};
+oConfig.secret = "2d9a8d0b9940866764cc7a2e7410ee6b";
+oConfig.sessionKey = "6101e205f2b2d7347025162a8f8e10adb6ef1806affacc91817804237";
+appConfig[21659288]=oConfig;
+oConfig = {};
+oConfig.secret = "0b181384192688431dbac916bfb8a58b";
+oConfig.sessionKey = "6101911f6a28873bab01ecbb39a01dbfa8ffa0727c4e3501817804237";
+appConfig[21676796]=oConfig;
+oConfig = {};
+oConfig.secret = "6b9291e18c4ccb46ca2a9c3ec1d02bc6";
+oConfig.sessionKey = "610102364b9cfb8d4cd5d31f9f8db8619295d5f366902391817804237";
+appConfig[21676795]=oConfig;
+oConfig = {};
+oConfig.secret = "3a90455ca8295efb2a72626aa6fff03b";
+oConfig.sessionKey = "61001112acc37667a08124e7d206dabc7ca971e0f02194c1817804237";
+appConfig[21676794]=oConfig;
+oConfig = {};
+oConfig.secret = "70c7b6e264ed97994d76f96677ca8194";
+oConfig.sessionKey = "6101f151235b4eb689a2ce21784c84f487776d7688570f61817804237";
+appConfig[21676793]=oConfig;
+oConfig = {};
+oConfig.secret = "3c68410bb9164478af647154647b7bad";
+oConfig.sessionKey = "610110252218ed4876f82b0c9227de2155b1f0806dfb5391817804237";
+appConfig[21676787]=oConfig;
+oConfig = {};
+oConfig.secret = "05c286ba4f9c773a5b5014c1eda04f21";
+oConfig.sessionKey = "610241352b473080bc4d41f09e7975d409b31ca5a6e00361817804237";
+appConfig[21678816]=oConfig;
+oConfig = {};
+oConfig.secret = "d6663e21920517051a46040bd52527d7";
+oConfig.sessionKey = "6101b05222dd8179390fc06d8acdf25bdc61889f7d0ca791817804237";
+appConfig[21678842]=oConfig;
+oConfig = {};
+oConfig.secret = "ca75234bef3a48fce93859bcfb3370c8";
+oConfig.sessionKey = "6101d27e9cd9c0cecbdb46285e48b8763ff1eba654111ab1817804237";
+appConfig[21678844]=oConfig;
+oConfig = {};
+oConfig.secret = "36b685c3d35d42601725233fc3bead43";
+oConfig.sessionKey = "610210751d0739a14a9fcbf909b294bf3a704028144488f1817804237";
+appConfig[21678846]=oConfig;
+oConfig = {};
+oConfig.secret = "66d7fb4b479f67f96db522c1a278c927";
+oConfig.sessionKey = "6102a262bae359ce14d766c83b02c591861d5cd8a2b4e731817804237";
+appConfig[21678847]=oConfig;
+oConfig = {};
+oConfig.secret = "09e87bf91dc693284467ceda84c88d2f";
+oConfig.sessionKey = "6100c10584851794a1126e1d1ffa8b03bdc6c78a6db912b1817804237";
+appConfig[21680445]=oConfig;
+oConfig = {};
+oConfig.secret = "683b23174c78c7582f8aa30f7489f909";
+oConfig.sessionKey = "6100303313316e281049b01a0b6bf620c4b7abf97a9068f1817804237";
+appConfig[21680443]=oConfig;
+oConfig = {};
+oConfig.secret = "0785ac32822ab8f59b03dd9ecd94cfdc";
+oConfig.sessionKey = "6102b0001a0b7945a7b9efb7372fee6e2b3e71c8b3f86c81817804237";
+appConfig[21680439]=oConfig;
+oConfig = {};
+oConfig.secret = "bc05da402a6c9519db687278413b751b";
+oConfig.sessionKey = "610180508f01a16e4fb7fbb3118f57014f9c919f79e53ac1817804237";
+appConfig[21680435]=oConfig;
+oConfig = {};
+oConfig.secret = "dc7b890a3bcb25525adcb18b4a8c9f13";
+oConfig.sessionKey = "610072100bfd20853716f68a24b271657a5897f1d13a2171817804237";
+appConfig[21680428]=oConfig;
+oConfig = {};
+oConfig.secret = "26d75659ece0a125df42bee794f4dde8";
+oConfig.sessionKey = "6101b23357ec891d68a453f367928b712ed13bf60764a281817804237";
+appConfig[21575991]=oConfig;
+oConfig = {};
+oConfig.secret = "7586a8178a951454d4b69287908c11aa";
+oConfig.sessionKey = "61016022861817f697ec285e4e53df95ac69f74bc32d4281817804237";
+appConfig[21633897]=oConfig;
+oConfig = {};
+oConfig.secret = "5e04b7d883d99c7c49ebc7376153ae5e";
+oConfig.sessionKey = "6100e04899181806d1ec1018aa97b1f16f3e3555bbaa4311817804237";
+appConfig[21676481]=oConfig;
+oConfig = {};
+oConfig.secret = "e9bece3de45667ca074bf18ec706653d";
+oConfig.sessionKey = "61022230aceff4a8e82398b338c0e12181c07d1ab2693901817804237";
+appConfig[21676492]=oConfig;
+oConfig = {};
+oConfig.secret = "94ba3fdf40d16d6c95ffeee88b5083a6";
+oConfig.sessionKey = "6101d0585611015297031cd4f807e1b884046e22662dd7a1817804237";
+appConfig[21676496]=oConfig;
+oConfig = {};
+oConfig.secret = "a9a99f68e1a1afb726422b94e3243e3c";
+oConfig.sessionKey = "6100d233748f55fe03b4581dffd0b4312dbf29d884cbd211817804237";
+appConfig[21622253]=oConfig;
+oConfig = {};
+oConfig.secret = "ec0ba0998d9a3df3b30587f337773e5b";
+oConfig.sessionKey = "6100f062f4aa2210f88c5c62d9b0390fff656f90285ba001817804237";
+appConfig[21679725]=oConfig;
+oConfig = {};
+oConfig.secret = "ded2471659a7791398c2cf34955c1fe1";
+oConfig.sessionKey = "6101e2213b77ff53b8981525c91a4a1de033ac28f13dad51817804237";
+appConfig[21679734]=oConfig;
+oConfig = {};
+oConfig.secret = "361cd39e9dc3e7f3c5d521a7c406e0f0";
+oConfig.sessionKey = "610191693dff2780ed708b0818d3f423001346cba91bcec1817804237";
+appConfig[21679743]=oConfig;
+oConfig = {};
+oConfig.secret = "3562d0f3bffac15698b925a89543169e";
+oConfig.sessionKey = "6101d1080d39d2f3431f64418523b534a1d9ac9c0834f881817804237";
+appConfig[21679745]=oConfig;
+oConfig = {};
+oConfig.secret = "6c56b3e8d853a35685ddec8eab31cc8e";
+oConfig.sessionKey = "6100523fc1ff00c4d8fef0d526b10fa16a88219906e13031817804237";
+appConfig[21622130]=oConfig;
+oConfig = {};
+oConfig.secret = "af557bf2fad94e9a285f8810c34760f8";
+oConfig.sessionKey = "6101212533d8d4a116661673bda392b54dca6f2ae0b04041817804237";
+appConfig[21674915]=oConfig;
+oConfig = {};
+oConfig.secret = "f56f9294ecc4b94cac8e67616edcaaa7";
+oConfig.sessionKey = "6101c00a1bc859845a95c5cbc933a80dd244797bbe517221817804237";
+appConfig[21674919]=oConfig;
+oConfig = {};
+oConfig.secret = "e545db2cc1160899d99cf956ac9184fb";
+oConfig.sessionKey = "6102613c690ae90d4e19519c57d124fbfad3aaea10691271817804237";
+appConfig[21674923]=oConfig;
+oConfig = {};
+oConfig.secret = "726a4352f59a1e728ebece41b334c1cf";
+oConfig.sessionKey = "610020424d581e647f294adf585fd59c1b65fe35975c9831817804237";
+appConfig[21674926]=oConfig;
+oConfig = {};
+oConfig.secret = "f5500eec2a8c0301fe0d2de93b67e255";
+oConfig.sessionKey = "610162150bd60cc744cafe33394ef18fedf79908af9bf9a1817804237";
+appConfig[21678740]=oConfig;
+oConfig = {};
+oConfig.secret = "e972d45b74dc4299ea25bfe13b46a41d";
+oConfig.sessionKey = "6102b0336011f62c0a0969c20cb17a1d95761fbe89e39a81817804237";
+appConfig[21678748]=oConfig;
+oConfig = {};
+oConfig.secret = "7355055319749e3841507e8ad8534074";
+oConfig.sessionKey = "61006225ba37807774c27c387c39af16f513878f6f6e87a1817804237";
+appConfig[21678750]=oConfig;
+oConfig = {};
+oConfig.secret = "a20f6dd6c17def22a1a213e37beff98e";
+oConfig.sessionKey = "6101f1292234d0c7c999169c128987bca83500224851db41817804237";
+appConfig[21678752]=oConfig;
+oConfig = {};
+oConfig.secret = "7388432f9a56810d8449b023bd263d9f";
+oConfig.sessionKey = "61017174d943a2fec903e083b136bced9e47ad7adc88cbd1817804237";
+appConfig[21678754]=oConfig;
+oConfig = {};
+oConfig.secret = "50d036facd39311a48f6df83974d2190";
+oConfig.sessionKey = "6101c079909cf261d1df64cd64ca18621adee3c95b7d6381817804237";
+appConfig[21621427]=oConfig;
+oConfig = {};
+oConfig.secret = "9ce15c8a2792abc4a15d0592e37b07e1";
+oConfig.sessionKey = "610290318221f976c3a05fd37e717f456305669fefd409f1829067902";
+appConfig[21674945]=oConfig;
+oConfig = {};
+oConfig.secret = "c1d550c5fb4605d8cb937642a3619528";
+oConfig.sessionKey = "61022179d73dad2edee4328f01dc455dc2e1909feaaf96c1829067902";
+appConfig[21674948]=oConfig;
+oConfig = {};
+oConfig.secret = "27e1c01251e5b43936923a6990fb5c6c";
+oConfig.sessionKey = "61010045a20d12e0f278204fdd7f7fb526fea7a3543df1c1829067902";
+appConfig[21674950]=oConfig;
+oConfig = {};
+oConfig.secret = "c25488b5801557f461397ec05ae8c655";
+oConfig.sessionKey = "6102b057f33fc1a9b4d46e699fc758d895480f1391bb0401829067902";
+appConfig[21674955]=oConfig;
+oConfig = {};
+oConfig.secret = "a123874db204403b5c270b213d0e1465";
+oConfig.sessionKey = "6100324626ca173df1b994d1907263cb18b3803fa38028b1829067902";
+appConfig[21679774]=oConfig;
+oConfig = {};
+oConfig.secret = "cc5574e8db2c866ffe61c8f207011b1a";
+oConfig.sessionKey = "6101f10b024a2bf34d1232ce9c851f727a9c8f423834da01829067902";
+appConfig[21679781]=oConfig;
+oConfig = {};
+oConfig.secret = "7b58dc3ff69336ee990b31a375d2f419";
+oConfig.sessionKey = "6101f177273a9dc2a9eb63b4c1d45500147b461928d7fcf1829067902";
+appConfig[21679783]=oConfig;
+oConfig = {};
+oConfig.secret = "5858eee8864a3ff405edce30a8a1ac52";
+oConfig.sessionKey = "6100a169e280e7e91c189f5f1f18f92d01288594362195f1829067902";
+appConfig[21679784]=oConfig;
+oConfig = {};
+oConfig.secret = "c7fe8edbaa7b84b343c784b22d68a263";
+oConfig.sessionKey = "6101602c6310ec9dfcbe75c08c1377aa9ec01f6cb91f63f1829067902";
+appConfig[21679786]=oConfig;
+oConfig = {};
+oConfig.secret = "da62c41a9ac1aae37864d3c41507c496";
+oConfig.sessionKey = "610240863c59d906153beb6160ebb4f534f98303ce8455a1829067902";
+appConfig[21622138]=oConfig;
+oConfig = {};
+oConfig.secret = "14ccf3a511be799ffe71a51e4e049a2b";
+oConfig.sessionKey = "6100d202c77754c9d5b6a603e15f1a1e3b6674fde2148a01829067902";
+appConfig[21674969]=oConfig;
+oConfig = {};
+oConfig.secret = "2186c16401388d262b015e43fa50dec0";
+oConfig.sessionKey = "61027093639713d0a11f9e00f2deeed2a5fa805201ed1441829067902";
+appConfig[21674968]=oConfig;
+oConfig = {};
+oConfig.secret = "ff10538e16f140da2288ba74cf59433d";
+oConfig.sessionKey = "6100424058a5877bd82a4a09d472349b13cfd9abd4d11a61829067902";
+appConfig[21674966]=oConfig;
+oConfig = {};
+oConfig.secret = "c1053950a2034e335b82dce14d72dc72";
+oConfig.sessionKey = "6101b0641d90cc150e6c48c1a72dc99ab6e504a448dc7b81829067902";
+appConfig[21674965]=oConfig;
+oConfig = {};
+oConfig.secret = "87e437d5cca2e72d58e24d7edccf0ef5";
+oConfig.sessionKey = "6101617cbf9fd7ca59ec6d7e115bb5c9fe086e395a2ead31829067902";
+appConfig[21623387]=oConfig;
+oConfig = {};
+oConfig.secret = "32ec83b27f0f89fbda128a97a7cb2c17";
+oConfig.sessionKey = "6101811c41f1e0505161cd26f8d32de63c5eea300d5e31b1829067902";
+appConfig[21679449]=oConfig;
+oConfig = {};
+oConfig.secret = "adcdc5526ff485f167f542cba0078d5c";
+oConfig.sessionKey = "610170840f8f4f1a137fa1822cecebef747d6817aab296f1829067902";
+appConfig[21679453]=oConfig;
+oConfig = {};
+oConfig.secret = "a60e83cac06945479d632060e4bb1424";
+oConfig.sessionKey = "6101400e1cdb87f81522e27f62d9931532a1b64519960701829067902";
+appConfig[21679456]=oConfig;
+oConfig = {};
+oConfig.secret = "63ef6fdd2475ab01d1e585855511d1d9";
+oConfig.sessionKey = "6100d18c8602f7ae2adcb68f7f12bfa7427f17f763e84a31829067902";
+appConfig[21679459]=oConfig;
+oConfig = {};
+oConfig.secret = "d44665a3c003220b9a45ee6ae47cc238";
+oConfig.sessionKey = "6102410ff7afcc9f911165619c84f9b118977b87cfcfa251829067902";
+appConfig[21673681]=oConfig;
+oConfig = {};
+oConfig.secret = "76382af786ead2d008e25d5d0f156e90";
+oConfig.sessionKey = "6101f27503a02b358767265a0c181fe352211a7040ece151829067902";
+appConfig[21674911]=oConfig;
+oConfig = {};
+oConfig.secret = "a2515adcb4acc586ce227d126f229c13";
+oConfig.sessionKey = "61023085101398b71331795c1f1f45e454758abcfe7c8e31829067902";
+appConfig[21674916]=oConfig;
+oConfig = {};
+oConfig.secret = "4769d98f7c022d33f3e2e4e1c786d688";
+oConfig.sessionKey = "6102308b7a712cbd1b8932bf2315de51f9f7daf3c5f46a01829067902";
+appConfig[21674917]=oConfig;
+oConfig = {};
+oConfig.secret = "62a536746d8c36c451b1df2d376a9a2e";
+oConfig.sessionKey = "6101007b823a46b10453f2d3cd0173d5e394d70e0bd53411829067902";
+appConfig[21674921]=oConfig;
+oConfig = {};
+oConfig.secret = "69a3ce48176af292d12a758376b84739";
+oConfig.sessionKey = "61007027d21adb8b91b3b42162a10fcdb332ae1782261d31829067902";
+appConfig[21678791]=oConfig;
+oConfig = {};
+oConfig.secret = "ceb3fee6e988c292d0009089c43cecb6";
+oConfig.sessionKey = "610122854961cff0ba429451cfa3e2c8674a1bf93c9956b1829067902";
+appConfig[21678796]=oConfig;
+oConfig = {};
+oConfig.secret = "8aa7441e767327ec14d08f4726eeebee";
+oConfig.sessionKey = "6101a25ce8ce465c7b5d2772ca715e31f1c5401b8ead9ce1829067902";
+appConfig[21678797]=oConfig;
+oConfig = {};
+oConfig.secret = "9ff4dd0433fc163b6fb718ca4d8ad9b4";
+oConfig.sessionKey = "6102916f177f5142356708ce1beff006bce7b948cc880791829067902";
+appConfig[21678800]=oConfig;
+oConfig = {};
+oConfig.secret = "80b60d3733cee0df17ffed3ab31dbb3e";
+oConfig.sessionKey = "6100412d5759956a26b71815a6d4861287d01aba31f9c001829067902";
+appConfig[21678801]=oConfig;
+oConfig = {};
+oConfig.secret = "67b1b875a9216352ebe9cdb45ee412ce";
+oConfig.sessionKey = "610270604ba0b91efb0f191521d66953fca1105b27e202d1829067902";
+appConfig[21680188]=oConfig;
+oConfig = {};
+oConfig.secret = "b65de391aefac360719a8fd4cd977da1";
+oConfig.sessionKey = "6102424c6dae0436255301f5fcd82aa6137aa9b77b8c2721829067902";
+appConfig[21680187]=oConfig;
+oConfig = {};
+oConfig.secret = "574d212b31ccd367feda16fcd1367b46";
+oConfig.sessionKey = "6102217604d801bd4b54998421ddd44c5af0e98c53743f81829067902";
+appConfig[21680185]=oConfig;
+oConfig = {};
+oConfig.secret = "f0c659799419a7eda2d05f2fb0e39934";
+oConfig.sessionKey = "61015233455bc21d2533db8696a6cb21914aa25eb765b061829067902";
+appConfig[21680181]=oConfig;
+oConfig = {};
+oConfig.secret = "2d9169a7d5a62b49c5975486cddc42de";
+oConfig.sessionKey = "61021229e44cf69cc41e126e5583eb126202b762445b7031829067902";
+appConfig[21680178]=oConfig;
+oConfig = {};
+oConfig.secret = "52d77e7c11b73cbf2da30689d1ad7a2d";
+oConfig.sessionKey = "6102629da636d18b4f568acae3d431cc2ef7e13d846ab001829067902";
+appConfig[21665844]=oConfig;
+oConfig = {};
+oConfig.secret = "ff5109faa67380e68df482b1c5708842 ";
+oConfig.sessionKey = "6101122745280ee514e67e2d1b28631d12a3d717e1769bf1829067902";
+appConfig[21674952]=oConfig;
+oConfig = {};
+oConfig.secret = "c6e86c99bfe1168f4be6256005a3792f";
+oConfig.sessionKey = "6100d115c4ae7b7c0e018463bb311ef5573cf4b3a1072911829067902";
+appConfig[21674964]=oConfig;
+oConfig = {};
+oConfig.secret = "f567b01ea19445c5c49df173b134cd1b";
+oConfig.sessionKey = "6101b023ac13b7ed3fdb0c856667e904ec6529272b047a81829067902";
+appConfig[21674971]=oConfig;
+oConfig = {};
+oConfig.secret = "5477304f81395597d4f75917a8a2e161";
+oConfig.sessionKey = "6100f024be19703c7b2b9e4de450eb76e89d9158d2ba9101829067902";
+appConfig[21674973]=oConfig;
+oConfig = {};
+oConfig.secret = "c4db6ed7dde4206fad85689433deb12f";
+oConfig.sessionKey = "6101e22b2f8304d894f17d3f0e4d8a1e89fd37692939a701829067902";
+appConfig[21620378]=oConfig;
+oConfig = {};
+oConfig.secret = "873a1df7d6fd99b0eeba76bfcacd97aa";
+oConfig.sessionKey = "61007149b0d3101a23d9fa136acc8022a2eb7d05cd23b9e1829067902";
+appConfig[21620381]=oConfig;
+oConfig = {};
+oConfig.secret = "e703eb5a003560cb157c8ac5f2b8d137";
+oConfig.sessionKey = "61009042d65015b9920274a55fe2313b0455d140ec2b0031829067902";
+appConfig[21682566]=oConfig;
+oConfig = {};
+oConfig.secret = "7219f2efd12bee7269321d6303923ed2";
+oConfig.sessionKey = "6102929d9daabcf08c35e97279423d58cd25a1e3aaf61151829067902";
+appConfig[21682589]=oConfig;
+oConfig = {};
+oConfig.secret = "ef3967f89a8b2c1ed267ac1ecf71fdf1";
+oConfig.sessionKey = "6101e2725186ab479765bb2a4d2c0b84cb81a38278b64db1829067902";
+appConfig[21682600]=oConfig;
+oConfig = {};
+oConfig.secret = "4961a8e7ab487f3cf06c24240f45dc42";
+oConfig.sessionKey = "6101023e87bfd88587b7843680307b117c59e03ee5a3c2f1829067902";
+appConfig[21682602]=oConfig;
+oConfig = {};
+oConfig.secret = "9f2f3935c5da90663eb531ddc619bf9a";
+oConfig.sessionKey = "610180772cf91ad1f294f3c15b411d17322543a2de806b71829067902";
+appConfig[21682606]=oConfig;
+
+		  return appConfig;
+		};
+	
+       ]]>
+	</Custom>
+	<Advanced>
+		<Cookies>
+		</Cookies>
+		<UserAgents>
+			<UserAgent />
+		</UserAgents>
+		<IsUseProxy>false</IsUseProxy>
+		<IsUseGZIP>true</IsUseGZIP>
+		<CrawlingType>
+			<Type>normal</Type>
+			<AJAXType />
+			<TimeOut />
+		</CrawlingType>
+	</Advanced>
+</CrawlingConfig>

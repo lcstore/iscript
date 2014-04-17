@@ -1,0 +1,7 @@
+  `ID` bigint(20) NOT NULL auto_increment,
+  `TYPE` varchar(100) NOT NULL COMMENT '配置类型',
+  `CONFIG` mediumint(9) NOT NULL COMMENT '配置内容',
+  `MODE` tinyint(4) NOT NULL default '0' COMMENT '配置类型,0-js，1-java',
+  `STATUS` tinyint(4) default '1' COMMENT '状态，1-可用，0-停用',
+  `CREATE_TIME` timestamp NULL default NULL COMMENT '创建时间',
+  `UPDATE_TIME` timestamp NOT NULL default '0000-00-00 00:00:00' on update CURRENT_TIMESTAMP COMMENT '更新时间',

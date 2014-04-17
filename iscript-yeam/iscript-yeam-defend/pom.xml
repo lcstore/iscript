@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.lezo.iscript</groupId>
+		<artifactId>iscript-yeam</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>iscript-yeam-defend</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>iscript-yeam-defend</name>
+	<packaging>war</packaging>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-yeam-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-common-spring</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-common-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+	<finalName>defend</finalName>
+		<!-- <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<finalName>defend</finalName>
+					<archive>
+						<manifest>
+							<mainClass>com.lezo.iscript.yeam.defend.DefendClient</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<useUniqueVersions>false</useUniqueVersions>
+						</manifest>
+					</archive>
+					<includes> <include>src/main/java/com/yihaodian/pis/javascriptcrawler/resources/*</include> 
+						</includes>
+				</configuration>
+
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>install</phase>install,package
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<excludeArtifactIds>junit</excludeArtifactIds>
+							<useUniqueVersions>false</useUniqueVersions>
+							<outputDirectory>${project.build.directory}/libs</outputDirectory>
+							<excludeTransitive>false</excludeTransitive>
+							<stripVersion>false</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make agent package zip</id>
+						<phase>install</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>defend</finalName>
+							<descriptors>
+								<descriptor>assembly.xml</descriptor>
+							</descriptors>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins> -->
+	</build>
+</project>

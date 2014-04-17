@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.lezo.iscript</groupId>
+    <artifactId>iscript</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>iscript-yeam</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>iscript-yeam</name>
+  <packaging>pom</packaging>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies/>
+  <modules>
+    <module>iscript-yeam-api</module>
+    <module>iscript-yeam-client</module>
+    <module>iscript-yeam-crawler</module>
+    <module>iscript-yeam-defend</module>
+    <module>iscript-yeam-tasker</module>
+    <module>iscript-yeam-resulter</module>
+  </modules>
+</project>

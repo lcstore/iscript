@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+
+	<bean id="resulterService"
+		class="com.lezo.iscript.yeam.service.impl.ResulterServiceImpl">
+	</bean>	
+	<bean id="resulterExporter"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service">
+			<ref bean="resulterService" />
+		</property>
+		<property name="serviceInterface"
+			value="com.lezo.iscript.yeam.service.ResulterService" />
+	</bean>	
+	
+	
+
+	<!-- Most controllers will use the ControllerClassNameHandlerMapping above, 
+		but for the index controller we are using ParameterizableViewController, 
+		so we must define an explicit mapping for it. -->
+	<bean id="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/service">resulterExporter</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,28 @@
+<assembly>
+	<id>yeam.client</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>target/libs</directory>
+			<outputDirectory>./client/lib</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+	<files>
+		<file>
+			<source>target/client.jar</source>
+			<outputDirectory>./client</outputDirectory>
+		</file>
+		<file>
+			<source>src/main/resources/assembly/resources/client.properties
+			</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+	</files>
+
+
+</assembly>

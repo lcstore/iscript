@@ -1,0 +1,25 @@
+<assembly>
+	<id>yeam.defend</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>target/libs</directory>
+			<outputDirectory>/defend/lib</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+	<files>
+		<file>
+			<source>target/defend.jar</source>
+			<outputDirectory>/defend</outputDirectory>
+		</file>
+		<file>
+			<source>src/main/resources/assembly/resources/startup.sh</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+	</files>
+</assembly>

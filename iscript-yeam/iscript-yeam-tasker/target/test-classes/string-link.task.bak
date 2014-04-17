@@ -1,0 +1,9 @@
+id=1
+x='i am lezo,'
+y='what's your name?'
+yeam.resulter.host=http://localhost:8080/resulter/resultservlet/service
+
+id=2
+x=300+
+y=400
+yeam.resulter.host=http://localhost:8080/resulter/resultservlet/service

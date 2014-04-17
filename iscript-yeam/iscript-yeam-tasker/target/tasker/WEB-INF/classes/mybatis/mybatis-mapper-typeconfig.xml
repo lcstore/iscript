@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.yeam.tasker.dao.TypeConfigDao">
+	<resultMap type="TypeConfigDto" id="RM_TypeConfigDto">
+		<result column="ID" property="id" />
+		<result column="TYPE" property="type" />
+		<result column="TASKER" property="tasker" />
+		<result column="MIN_SIZE" property="minSize" />
+		<result column="MAX_SIZE" property="maxSize" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<sql id="TypeConfigDto-coloumn-list">
+		TYPE ,TASKER ,MIN_SIZE ,MAX_SIZE ,STATUS ,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="TypeConfigDto">
+		INSERT INTO T_TYPE_CONFIG(
+		<include refid="TypeConfigDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.type},#{item.tasker},#{item.minSize},#{item.maxSize},#{item.status},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="update-one-TypeConfigDto" parameterType="TypeConfigDto">
+		UPDATE
+		T_TYPE_CONFIG SET
+		TASKER=#{tasker}, MIN_SIZE=#{minSize},
+		MAX_SIZE=#{maxSize}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+		WHERE
+		ID=#{id}
+	</update>
+	<update id="batchStatusUpdate" parameterType="map">
+		UPDATE T_TYPE_CONFIG SET
+		STATUS=#{status}
+		<foreach collection="idList" item="id" separator=","
+			open="WHERE ID IN(" close=")">
+			#{id}
+		</foreach>
+	</update>
+	<select id="getTypeConfigDtos" parameterType="map" resultMap="RM_TypeConfigDto">
+		SELECT * FROM T_TYPE_CONFIG
+		WHERE TASKER=#{tasker} AND STATUS=#{status}
+	</select>
+</mapper>

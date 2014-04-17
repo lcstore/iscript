@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<CrawlingConfig ConfigID="JD-002">
+	<Property>
+		<Name>淘宝API抓取</Name>
+		<OpponentID>001</OpponentID>
+		<Description>通过淘宝API，更新商品信息</Description>
+	</Property>
+	<Link>
+	</Link>
+	<Custom>
+      <![CDATA[
+        var rs = {
+			rs : [],
+			log : []
+		};
+		for(var i in args){
+		  debug.log('args['+i+']='+args[i]);
+		}
+		var sUrl = 'http://taobao.api';
+		var same = args.url==sUrl;
+		debug.log('sUrl=args.url:'+same);
+        var appConfig = getAppConfig();
+        var appkey = args.appkey;
+        debug.log('appkey:'+appkey);
+        var oConfig = appConfig[appkey];
+        var type = 'taobao.items.list.get';
+        debug.log('args.pcodes:'+args.pcodes);
+        //var codes='10000000507,10000001294,10171008512,10171009041';
+        var oPinfo = getCodeObj(args.pcodes);
+        var codes = getCodes(oPinfo);
+        debug.log('oPinfo:'+JSON.stringify(oPinfo));
+        debug.log('codes:'+codes);
+		var secret = oConfig.secret;
+		var sessionKey = oConfig.sessionKey;
+		var baseUrl = "http://gw.api.taobao.com/router/rest";
+		var allFields = "num_iid,title,nick,price,props_name,sku,detail_url,cid,pic_url,num,list_time,delist_time,location,approve_status";
+		var fields = "num_iid,title,nick,price,props_name,detail_url,pic_url,list_time,approve_status";
+		var callArgs = {};
+		callArgs.appkey = appkey;
+		callArgs.secret = secret;
+		callArgs.sessionKey = sessionKey;
+		callArgs.baseUrl = baseUrl;
+		callArgs.codes = codes;
+		callArgs.fields = fields;
+		var content = tbclient.execute(type, JSON.stringify(callArgs));
+		debug.log('content:'+content);
+		var oItemsRespone = eval('('+content+')');
+		if(oItemsRespone.error_response){
+		  throw 'appkey:'+appkey+',error respone:' + JSON.stringify(oItemsRespone.error_response);
+		}
+		var oItemList =  oItemsRespone.items_list_get_response.items;
+		var oCodeArray = callArgs.codes.split(',');
+		debug.log('code args:'+JSON.stringify(args));
+		debug.log('code size:'+oCodeArray.length);
+		var oFindeSet = new java.util.HashSet();
+		if(oItemList){
+		   var oItemArray = oItemList.item;
+			var size = oItemArray.length;
+			for(var i=0;i<size;i++){
+			  var oItem = oItemArray[i];
+			  var oPItem = getProductObj(oItem);
+			  var cid = oPinfo[oItem.num_iid];
+			  oPItem.args = {};
+			  oPItem.args.categoryId= (null != cid)?cid:0;
+			  oPItem.args.url = oItem.detail_url;
+			  oPItem.args.tid = args.tid;
+			  oPItem.args.level = args.level;
+			  oFindeSet.add('' +oItem.num_iid);
+			  rs.rs.push(oPItem);
+			}
+		}
+		debug.log('oFindeSet size:'+oFindeSet.size());
+		debug.log('oFindeSet size:'+oFindeSet);
+		for(var i=0;i<oCodeArray.length;i++){
+		   var code = oCodeArray[i];
+		   if(oFindeSet.contains(code)){
+		     continue;
+		   }
+		  debug.log('add sell out:'+code);
+		  var oSellItem  = {
+				rs : [],
+				log : []
+		  };
+		  add(oSellItem, 'product_code', code);
+		  add(oSellItem, 'sell_out', '1');
+		  var cid = oPinfo[oItem.num_iid];
+		  oSellItem.args = {};
+		  oSellItem.args.categoryId= (null != cid)?cid:0;
+		  oSellItem.args.url = 'http://detail.tmall.com/item.htm?id='+code;
+		  oSellItem.args.tid = args.tid;
+		  oSellItem.args.level = args.level;
+		  rs.rs.push(oSellItem);
+		}
+		debug.log('rs.length:'+rs.rs.length);
+		return rs;
+		function getCodeObj(pinfo){
+		   var codesArray = pinfo.split(',') ;
+		   var oCodes = {};
+		   for(var p in codesArray){
+		      var sParts = codesArray[p];
+		      var oPartArray = sParts.split('-');
+		      var cid = oPartArray[0];
+		      for(var i=1;i<oPartArray.length;i++){
+		        oCodes[oPartArray[i]]=cid;
+		      }
+		   }
+		   return oCodes;
+		}
+		function getCodes(oCodes){
+		   var codeArray = [] ;
+		   for(var code in oCodes){
+		      codeArray.push(code);
+		   }
+		   return codeArray.join(',');
+		}
+		function getProductObj(oItem){
+			var rs = {
+				rs : [],
+				log : []
+			};
+			add(rs, 'img_path', oItem.pic_url);
+			add(rs, 'product_code', oItem.num_iid);
+			add(rs, 'product_name', oItem.title);
+			add(rs, 'price', oItem.price? oItem.price : 0);
+			add(rs, 'on_sale_time', oItem.list_time);
+			add(rs, 'merchant', oItem.nick);
+			addStock(rs,oItem);
+			addProvider(rs,oItem);
+			return rs;
+		}
+		function add(rs, key, value) {
+			var ct = {
+				ic : {}
+			};
+			ct['name'] = '';
+			ct.ic[key] = value;
+			rs.rs.push(ct);
+			return rs;
+		}
+		function clone(myObj){
+		  if(typeof(myObj) != 'object') return myObj;
+		  if(myObj == null) return myObj;
+		  
+		  var myNewObj = new Object();
+		  
+		  for(var i in myObj)
+		    myNewObj[i] = clone(myObj[i]);
+		  
+		  return myNewObj;
+		}
+		function addStock(rs, oItem) {
+			var stock = -1;
+			if(null !=oItem.approve_status){
+				if(oItem.approve_status.equals('onsale')){
+				   stock='0';
+				}else if(oItem.approve_status.equals('instock')){
+			    	stock='-1';
+				}else {
+			    	stock='-2';
+				}
+			}
+			add(rs, 'stock_status', stock);
+		}
+		function addProvider(rs, oItem) {
+			var sBrand = oItem.props_name;
+			var oReg = new RegExp('(品牌:)(.*?)(;)','gm');
+			var oMatch = oReg.exec(sBrand);
+			add(rs, 'provider', (RegExp.$2 != null)?RegExp.$2:"");
+		}
+		
+				function getAppConfig(){
+		  var appConfig = [];
+		  var oConfig = {};
+          {taobao.app.configs}
+		  return appConfig;
+		};
+	
+       ]]>
+	</Custom>
+	<Advanced>
+		<Cookies>
+		</Cookies>
+		<UserAgents>
+			<UserAgent />
+		</UserAgents>
+		<IsUseProxy>false</IsUseProxy>
+		<IsUseGZIP>true</IsUseGZIP>
+		<CrawlingType>
+			<Type>normal</Type>
+			<AJAXType />
+			<TimeOut />
+		</CrawlingType>
+	</Advanced>
+</CrawlingConfig>
