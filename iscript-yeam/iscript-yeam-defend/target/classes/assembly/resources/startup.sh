@@ -1,1 +1,0 @@
-java -Dyeam.client.path=/home/lezo/yeam -Dyeam.defend.tasker=http://lezp.wicp.net:30256/tasker/taskservlet/service -jar ./defend/defend.jar

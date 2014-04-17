@@ -26,8 +26,8 @@
 /*.idea
 /.externalToolBuilders
 /test-output
-/MANIFEST.MF
-
+MANIFEST.MF
+target/
 **/gen-java
 
 deploy.sh
