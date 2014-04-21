@@ -11,4 +11,8 @@ public interface TaskConfigService {
 	void updateOne(TaskConfigDto configDto);
 
 	List<TaskConfigDto> getTaskConfigDtos(Date afterStamp, int status);
+
+	TaskConfigDto getTaskConfig(String configType);
+
+	void deleteConfig(String type);
 }

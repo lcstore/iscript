@@ -40,5 +40,17 @@
 			]]>
 		</if>
 		AND STATUS=#{status}
+		ORDER BY UPDATE_TIME DESC
 	</select>
+	<select id="getTaskConfig" parameterType="map" resultMap="RM_TaskConfigDto">
+		SELECT
+		* FROM
+		T_TASK_CONFIG
+		WHERE TYPE = #{type}
+	</select>
+	<delete id="deleteConfig" parameterType="map">
+		DELETE
+		FROM T_TASK_CONFIG
+		WHERE TYPE = #{type}
+	</delete>
 </mapper>

@@ -14,4 +14,8 @@ public interface TaskConfigDao {
 
 	List<TaskConfigDto> getTaskConfigDtos(@Param(value = "afterStamp") Date afterStamp,
 			@Param(value = "status") int status);
+
+	TaskConfigDto getTaskConfig(String type);
+
+	void deleteConfig(String type);
 }

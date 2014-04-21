@@ -507,8 +507,12 @@ History.prototype.go = function(arg) {
  */
 function Location() {
 };
-//Location.prototype = new Object();
-//Location.prototype.constructor = Location;
+Location.prototype = {
+	hash : "hash",
+	host : "host",
+}
+// Location.prototype = new Object();
+// Location.prototype.constructor = Location;
 // Location.prototype.location = new Location();
 /**
  * Property hash
@@ -516,14 +520,14 @@ function Location() {
  * @type String
  * @memberOf Location
  */
-Location.prototype.hash = "hash";
+// Location.prototype.hash = "hash";
 /**
  * Property host
  * 
  * @type String
  * @memberOf Location
  */
-Location.prototype.host = "";
+// Location.prototype.host = "";
 /**
  * Property hostname
  * 
@@ -6458,12 +6462,32 @@ CSS2Properties.prototype = new Object();
 
 window = new Window();
 window.document = $document;
-window.location.hash = 'opp';
 
 window.object = new Object();
 window.eval = function(source) {
 	return eval(source);
 }
-location = window.location;
-// navigator = window.navigator;
+// location = new Location();
+window.location = new Location();
+navigator = new Navigator();
+window.navigator = navigator;
+java.lang.System.out.println("=" + window.location.hash);
 java.lang.System.out.println("=" + window.location.protocol);
+
+var ua = "";
+var UA_Opt = new Object();
+UA_Opt.LogVal = "ua";
+UA_Opt.MaxMCLog = 3;
+UA_Opt.MaxMPLog = 3;
+UA_Opt.MaxKSLog = 3;
+UA_Opt.Token = new Date().getTime() + ":" + Math.random();
+UA_Opt.SendMethod = 8;
+UA_Opt.Flag = 14222;
+UA_Opt.ydv = new Array("400");
+UA_Opt.oCustom = [ 400, 399 ];
+function log(args) {
+	if (!args) {
+		return;
+	}
+	java.lang.System.out.println(args);
+}

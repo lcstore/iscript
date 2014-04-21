@@ -3,6 +3,8 @@ package com.lezo.iscript.yeam.tasker.dto;
 import java.util.Date;
 
 public class TaskConfigDto {
+	public static final int STATUS_ENABLE = 1;
+	public static final int STATUS_DISABLE = 0;
 	private String id;
 	private String type;
 	private String config;

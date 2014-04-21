@@ -53,13 +53,6 @@ public class ShuTaobaoTest {
 		String payUrl = elements.first().attr("src");
 		payUrl = payUrl.replace("clear.png", "um.json");
 		String umto = umEles.first().attr("value");
-		System.out.println(elements.first());
-		String name = "umdata_";
-		Cookie umCookie = getCookie(client, name);
-		if (umCookie == null) {
-			String value = "C591019A2462E2B30239C727D8610B7B52B66752FC89B358491BB353D3CDD62868AACFC6A863906E872F19DC39FFF75A104A1FCD31D502F8254AEF2F16F9A6287CF7E55BE2F6B1AC";
-			umCookie = new BasicClientCookie(name, value);
-		}
 		List<NameValuePair> nvPairs = new ArrayList<NameValuePair>();
 		nvPairs.add(new BasicNameValuePair("x0", "0^^1^^1^^1^^1^^1^^1^^1^^5^^1^^color^^-^^1366^^768"));
 		nvPairs.add(new BasicNameValuePair("x1", "1^^1^^1^^1^^0^^0^^1^^0^^0^^zh-CN^^-^^0^^Windows 7^^Win32"));
@@ -68,14 +61,11 @@ public class ShuTaobaoTest {
 				"Mozilla^^0^^Microsoft Internet Explorer^^621438846a17ede65911d27e4c2f13f3^^zh-cn^^x86^^f3912a63ef38b456e08dbc9c941ccd0b^^Adobe Windows^^ActiveX^^zh-cn^^b265c0a903b90675ad9f327f8cd65593^^zh-cn^^WIN 12,0,0,77"));
 		nvPairs.add(new BasicNameValuePair(
 				"x3",
-				// "768^^1304^^672^^1283^^768^^-^^https%3A%2F%2Flogin.taobao.com%2Fmember%2Flogin.jhtml%3Ffrom%3Dtaobaoindex%26sub%3Dtrue%26redirect_url%3Dhttp%253A%252F%252Fshu.taobao.com%252Flogin%252Fcallback^^-^^79^^-^^1396105469786^^480^^1366"
 				"768^^1304^^500^^342^^768^^-^^https%3A%2F%2Flogin.taobao.com%2Fmember%2Flogin.jhtml%3Fstyle%3Dminiall%26full_redirect%3Dtrue%26css_style%3Detao%26default_long_login%3D1%26from%3Detao%26enup%3Dtrue%26tpl_redirect_url%3Dhttp%253A%252F%252Flogin.etao.com%252Floginmid.html%253Fredirect_url%253Dhttp%25253A%25252F%25252Fjf.etao.com%25252F%25253F^^-^^222^^759^^1396164588299^^480^^1366"));
 		nvPairs.add(new BasicNameValuePair("xv", "0.8.1"));
 		nvPairs.add(new BasicNameValuePair("_callback", "_3562_" + System.currentTimeMillis()));
-		nvPairs.add(new BasicNameValuePair(
-				"xh",
-				"ENCODE_3_000000000000000000000000000000_D7BF1E1166C60219B9DBD17A36FFF9EFDCE0EBBEF920EE794EB99BDDA608EA14DC3AB6D3E6E3E04DA762B23B17242CEFCE69122D834D452A4D1C9F0EBCF2FC5FB0A1A43525C66AE503E41BFD830F4557B75DF2DFC8B15E79FB75E25918E0DB4624C4B37240F0ABCC8512504DE74FCE943DF7C7733B50C098F19AC2A3D88C6ECB27BE8BA60FBE5B34C7B6F78B564FEE9F0E2406666BFBDF6FBE23BE37C082F85C8B16DE86EDAD3D6635B67BAABE3DC7EDB58C0DB3BAF031B150855B54EA632669C26188D47A9A0F1DC40DD8A14A2066182D766DC7CB372BDF994EDFBC274A8090"));
-		nvPairs.add(new BasicNameValuePair("xs", umCookie.getValue()));
+		nvPairs.add(new BasicNameValuePair("xh", ""));
+		nvPairs.add(new BasicNameValuePair("xs", ""));
 		nvPairs.add(new BasicNameValuePair("xt", umto));
 		String ynufUrl = payUrl + URLEncodedUtils.format(nvPairs, "UTF-8");
 		System.out.println(ynufUrl);
@@ -85,8 +75,6 @@ public class ShuTaobaoTest {
 		BasicClientCookie cnaCookie = new BasicClientCookie("cna", "tJ++C3w5lFICAXBAPEt/TDwf");
 		cnaCookie.setDomain(".taobao.com");
 		client.getCookieStore().addCookie(cnaCookie);
-		umCookie = new BasicClientCookie("_umdata", umCookie.getValue());
-		client.getCookieStore().addCookie(umCookie);
 		checkCode(client);
 		for (Cookie ck : client.getCookieStore().getCookies()) {
 			System.out.println(ck);
@@ -130,7 +118,7 @@ public class ShuTaobaoTest {
 				break;
 			}
 		}
-		//TODO:dynamic add url
+		// TODO:dynamic add url
 		nvPairs = new ArrayList<NameValuePair>();
 		nvPairs.add(new BasicNameValuePair("callback", "jsonp234"));
 		nvPairs.add(new BasicNameValuePair("st", st));

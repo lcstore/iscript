@@ -44,4 +44,14 @@ public class TaskConfigServiceImpl implements TaskConfigService {
 		return taskConfigDao.getTaskConfigDtos(afterStamp, status);
 	}
 
+	@Override
+	public TaskConfigDto getTaskConfig(String configType) {
+		return taskConfigDao.getTaskConfig(configType);
+	}
+
+	@Override
+	public void deleteConfig(String type) {
+		taskConfigDao.deleteConfig(type);
+	}
+
 }

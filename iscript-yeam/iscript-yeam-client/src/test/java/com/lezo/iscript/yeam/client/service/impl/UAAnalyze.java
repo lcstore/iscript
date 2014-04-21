@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 public class UAAnalyze {
 	@Test
 	public void testRun() throws IOException, Exception {
-		String source = "src/test/resources/js/uacode.js";
+		String source = "src/test/resources/js/ua.js";
 		Context cx = Context.enter();
 		ScriptableObject scope = cx.initStandardObjects();
 
@@ -43,10 +43,10 @@ public class UAAnalyze {
 		source = "var op = [];op.push(20);var osub=[];osub.push('to');var otime=[];otime.push(955993);otime.push(1397642042902);otime.push('20');osub.push(otime);op.push(osub);var cl5m = q3t(op)";
 		source = "UA_Opt.Token=new Date().getTime()+':'+Math.random();UA_Opt.reload()";
 		cx.evaluateString(scope, source, "cmd", 0, null);
-//		TimeUnit.SECONDS.sleep(10);
-//		cx.evaluateString(scope, source, "cmd", 0, null);
-		// Object rs = ScriptableObject.getProperty(scope, "cl5m");
-		// System.out.println(Context.toString(rs));
+		// TimeUnit.SECONDS.sleep(10);
+		// cx.evaluateString(scope, source, "cmd", 0, null);
+		Object rs = ScriptableObject.getProperty(scope, "ua");
+		System.out.println(Context.toString(rs));
 		IOUtils.closeQuietly(hostReader);
 		IOUtils.closeQuietly(in);
 	}
