@@ -1,7 +1,8 @@
 package com.lezo.iscript.yeam.loader;
 
+import java.security.SecureClassLoader;
 
-public class OverrideClassLoader extends ClassLoader {
+public class OverrideClassLoader extends SecureClassLoader {
 	private ClassLoader parent;
 	private ResourceCacheable resourceCacheable;
 

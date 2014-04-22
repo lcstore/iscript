@@ -3,7 +3,7 @@ package com.lezo.iscript.yeam.config;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class StringLinker implements ConfigParser {
+ public class StringLinker implements ConfigParser {
 
 	@Override
 	public String getName() {

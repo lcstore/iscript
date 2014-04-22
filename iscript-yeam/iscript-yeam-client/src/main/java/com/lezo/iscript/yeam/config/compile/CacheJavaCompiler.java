@@ -1,7 +1,5 @@
 package com.lezo.iscript.yeam.config.compile;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,16 +11,12 @@ import java.util.List;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
-import javax.tools.JavaFileManager.Location;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.apache.commons.io.FileUtils;
-
-import com.lezo.iscript.yeam.DynamicClassLoader;
 import com.lezo.iscript.yeam.loader.OverrideClassLoader;
 import com.lezo.iscript.yeam.loader.ResourceCacheable;
 import com.lezo.iscript.yeam.loader.ResourceManager;

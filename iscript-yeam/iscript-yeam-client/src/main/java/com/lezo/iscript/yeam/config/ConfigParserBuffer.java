@@ -10,7 +10,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.loader.ClassReloader;
+import com.lezo.iscript.yeam.config.compile.CacheJavaCompiler;
+import com.lezo.iscript.yeam.loader.ClassUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
@@ -58,9 +59,12 @@ public class ConfigParserBuffer {
 
 	private void addClass(ConfigWritable configWritable) {
 		byte[] bytes = configWritable.getContent();
-		ClassReloader reloader = new ClassReloader();
+		CacheJavaCompiler compiler = CacheJavaCompiler.getInstance();
+
 		try {
-			Class<?> newClass = reloader.loadClass(configWritable.getName(), bytes);
+			String codeSource = new String(bytes, "UTF-8");
+			String className = ClassUtils.getClassNameFromJava(codeSource);
+			Class<?> newClass = compiler.doCompile(className, codeSource);
 			ConfigParser parser = (ConfigParser) newClass.newInstance();
 			String name = parser.getName();
 			if (name == null) {

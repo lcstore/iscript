@@ -18,5 +18,8 @@ public class ConfigCompileTest {
 		Class<?> newClass = compiler.doCompile(className, codeSource);
 		ConfigParser parser = (ConfigParser) newClass.newInstance();
 		System.out.println(parser.getName());
+		compiler.doCompile(className, codeSource);
+		parser = (ConfigParser) newClass.newInstance();
+		System.out.println(parser.getName());
 	}
 }
