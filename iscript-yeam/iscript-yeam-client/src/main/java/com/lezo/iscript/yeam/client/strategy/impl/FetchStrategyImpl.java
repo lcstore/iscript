@@ -33,13 +33,17 @@ public class FetchStrategyImpl implements Strategyable {
 			if (!isLackTasks()) {
 				sleep(timeout);
 			} else {
-				ClientWritable client = (ClientWritable) ObjectBuilder.findObject(ClientWritable.class.getName());
-				TaskerService taskerService = ClientRemoteUtils.getTaskerService();
+				ClientWritable client = (ClientWritable) ObjectBuilder
+						.findObject(ClientWritable.class.getName());
+				TaskerService taskerService = ClientRemoteUtils
+						.getTaskerService();
 				RemoteWritable<?> taskWrapper = taskerService.getMore(client);
 				handleWritables(taskWrapper);
 				type = taskWrapper.getStatus() == ClientConstant.GET_CONFIG ? "Config"
-						: taskWrapper.getStatus() == ClientConstant.GET_TASK ? "Task" : "Unknow";
-				size = taskWrapper.getStorageList() == null ? 0 : taskWrapper.getStorageList().size();
+						: taskWrapper.getStatus() == ClientConstant.GET_TASK ? "Task"
+								: "Unknow";
+				size = taskWrapper.getStorageList() == null ? 0 : taskWrapper
+						.getStorageList().size();
 			}
 		} catch (Exception ex) {
 			log.warn("getMore cause:", ex);
@@ -47,7 +51,8 @@ public class FetchStrategyImpl implements Strategyable {
 		} finally {
 			int wait = TasksHolder.getInstance().getTaskQueue().size();
 			int work = TasksCaller.getInstance().getCaller().getQueue().size();
-			log.info("fetch.add[" + type + ":" + size + "],task[last:" + last + ",wait:" + wait + ",work:" + work + "]");
+			log.info("fetch.add[" + type + ":" + size + "],task[last:" + last
+					+ ",wait:" + wait + ",work:" + work + "]");
 		}
 
 	}
@@ -100,20 +105,30 @@ public class FetchStrategyImpl implements Strategyable {
 				continue;
 			}
 			ConfigWritable configWritable = (ConfigWritable) rwObject;
-			configBuffer.addConfig(configWritable.getName(), configWritable);
+			if (configBuffer
+					.addConfig(configWritable.getName(), configWritable)) {
+				log.info("update.config[" + configWritable.getName()
+						+ "].stamp:" + configWritable.getStamp());
+			} else {
+				log.warn("fail load config[" + configWritable.getName()
+						+ "].stamp:" + configWritable.getStamp());
+			}
 		}
-		ClientWritable client = (ClientWritable) ObjectBuilder.findObject(ClientWritable.class.getName());
+		ClientWritable client = (ClientWritable) ObjectBuilder
+				.findObject(ClientWritable.class.getName());
 		if (client.getParam() == null) {
 			client.setParam(new HashMap<String, Object>());
 		}
-		client.getParam().put(ClientConstant.CLIENT_CONFIG_STAMP, configBuffer.getStamp());
+		client.getParam().put(ClientConstant.CLIENT_CONFIG_STAMP,
+				configBuffer.getStamp());
 	}
 
 	private void addTasks(RemoteWritable<?> remoteWritable) {
 		if (null == remoteWritable.getStorageList()) {
 			return;
 		}
-		BlockingQueue<TaskWritable> taskQueue = TasksHolder.getInstance().getTaskQueue();
+		BlockingQueue<TaskWritable> taskQueue = TasksHolder.getInstance()
+				.getTaskQueue();
 		for (Object rwObject : remoteWritable.getStorageList()) {
 			if (!(rwObject instanceof TaskWritable)) {
 				continue;

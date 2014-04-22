@@ -33,7 +33,8 @@ public class ConfigmgrAction {
 	@RequestMapping("listConfigs.action")
 	public String listConfigs(Model model) throws Exception {
 		Date afterStamp = new Date(0);
-		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(afterStamp, TaskConfigDto.STATUS_ENABLE);
+		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(
+				afterStamp, TaskConfigDto.STATUS_ENABLE);
 		model.addAttribute("siteCount", 1);
 		int configSize = configList.size();
 		model.addAttribute("configList", configList);
@@ -49,9 +50,12 @@ public class ConfigmgrAction {
 	}
 
 	@RequestMapping("addConfig.action")
-	public ModelAndView addConfig(@RequestParam("configType") String configType,
-			@RequestParam("configFile") MultipartFile file, Model model) throws Exception {
-		ModelAndView mav = new ModelAndView("redirect:/configmgr/listConfigs.action");
+	public ModelAndView addConfig(
+			@RequestParam("configType") String configType,
+			@RequestParam("configFile") MultipartFile file, Model model)
+			throws Exception {
+		ModelAndView mav = new ModelAndView(
+				"redirect:/configmgr/listConfigs.action");
 		Integer siteId = 1;
 		if (!isValidate(siteId, configType, file)) {
 			return mav;
@@ -100,9 +104,9 @@ public class ConfigmgrAction {
 		String name = file.getOriginalFilename();
 		String lowCaseName = name.toLowerCase();
 		if (lowCaseName.endsWith(".xml")) {
-			return ConfigWritable.CONFIG_TYPE_JAVA;
-		}else if(lowCaseName.endsWith(".java")){
 			return ConfigWritable.CONFIG_TYPE_SCRIPT;
+		} else if (lowCaseName.endsWith(".java")) {
+			return ConfigWritable.CONFIG_TYPE_JAVA;
 		}
 		return ConfigWritable.CONFIG_TYPE_UNKNOWN;
 	}

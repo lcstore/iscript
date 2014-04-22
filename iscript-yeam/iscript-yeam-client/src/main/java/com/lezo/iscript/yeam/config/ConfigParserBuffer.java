@@ -31,49 +31,62 @@ public class ConfigParserBuffer {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public void addConfig(String name, ConfigWritable configWritable) {
+	public boolean addConfig(String name, ConfigWritable configWritable) {
+		ConfigParser parser = createParser(configWritable);
+		if (parser == null) {
+			return false;
+		}
+		configMap.put(configWritable.getName(), parser);
+		stamp = configWritable.getStamp();
+		return true;
+	}
+
+	private ConfigParser createParser(ConfigWritable configWritable) {
+		ConfigParser parser = null;
 		switch (configWritable.getType()) {
 		case ConfigWritable.CONFIG_TYPE_SCRIPT: {
-			addScript(configWritable);
+			parser = newScriptParser(configWritable);
 			break;
 		}
 		case ConfigWritable.CONFIG_TYPE_JAVA: {
-			addClass(configWritable);
+			parser = newClassParser(configWritable);
 			break;
 		}
 		default:
 			break;
 		}
-		stamp = configWritable.getStamp();
+		return parser;
 	}
 
-	private void addScript(ConfigWritable configWritable) {
+	private ConfigParser newScriptParser(ConfigWritable configWritable) {
 		try {
-			String config = new String(configWritable.getContent(), ClientConstant.CLIENT_CHARSET);
+			String config = new String(configWritable.getContent(),
+					ClientConstant.CLIENT_CHARSET);
 			ConfigParser parser = new ScriptConfigParser(config);
-			configMap.put(configWritable.getName(), parser);
+			return parser;
 		} catch (UnsupportedEncodingException e) {
-			log.error("fail to buffer config[" + configWritable.getName() + "]", e);
+			log.error(
+					"fail to buffer config[" + configWritable.getName() + "]",
+					e);
 		}
+		return null;
 	}
 
-	private void addClass(ConfigWritable configWritable) {
+	private ConfigParser newClassParser(ConfigWritable configWritable) {
 		byte[] bytes = configWritable.getContent();
 		CacheJavaCompiler compiler = CacheJavaCompiler.getInstance();
-
 		try {
 			String codeSource = new String(bytes, "UTF-8");
 			String className = ClassUtils.getClassNameFromJava(codeSource);
 			Class<?> newClass = compiler.doCompile(className, codeSource);
 			ConfigParser parser = (ConfigParser) newClass.newInstance();
-			String name = parser.getName();
-			if (name == null) {
-				name = configWritable.getName();
-			}
-			configMap.put(name, parser);
+			return parser;
 		} catch (Exception ex) {
-			log.error("fail to buffer config[" + configWritable.getName() + "]", ex);
+			log.error(
+					"fail to buffer config[" + configWritable.getName() + "]",
+					ex);
 		}
+		return null;
 	}
 
 	public ConfigParser getParser(String name) {
@@ -85,8 +98,8 @@ public class ConfigParserBuffer {
 	}
 
 	public Iterator<Entry<String, ConfigParser>> unmodifyIterator() {
-		Collection<Entry<String, ConfigParser>> unmodifyList = CollectionUtils.unmodifiableCollection(configMap
-				.entrySet());
+		Collection<Entry<String, ConfigParser>> unmodifyList = CollectionUtils
+				.unmodifiableCollection(configMap.entrySet());
 		return unmodifyList.iterator();
 	}
 }

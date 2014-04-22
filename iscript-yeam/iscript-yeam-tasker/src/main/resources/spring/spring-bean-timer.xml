@@ -19,6 +19,8 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="assembleTaskTimer" method="run"
 			fixed-delay="30000" />
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
