@@ -1,6 +1,7 @@
 package com.lezo.iscript.yeam;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -8,9 +9,16 @@ import java.util.List;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
+import javax.tools.FileObject;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
+import javax.tools.JavaFileObject.Kind;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
+
+import com.lezo.iscript.yeam.config.compile.CacheJavaFileManager;
+import com.lezo.iscript.yeam.config.compile.InputJavaFileObject;
+import com.lezo.iscript.yeam.config.compile.OutputJavaFileObject;
 
 public class DynamicEngine {
 	private static DynamicEngine ourInstance = new DynamicEngine();
@@ -23,8 +31,7 @@ public class DynamicEngine {
 	private String classpath;
 
 	private DynamicEngine() {
-		this.parentClassLoader = (URLClassLoader) this.getClass()
-				.getClassLoader();
+		this.parentClassLoader = (URLClassLoader) this.getClass().getClassLoader();
 		this.buildClassPath();
 	}
 
@@ -38,17 +45,16 @@ public class DynamicEngine {
 		this.classpath = sb.toString();
 	}
 
-	public Object javaCodeToObject(String fullClassName, String javaCode)
-			throws IllegalAccessException, InstantiationException {
+	public Object javaCodeToObject(String fullClassName, String javaCode) throws IllegalAccessException,
+			InstantiationException {
 		long start = System.currentTimeMillis();
 		Object instance = null;
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-		ClassFileManager fileManager = new ClassFileManager(
-				compiler.getStandardFileManager(diagnostics, null, null));
+		CacheJavaFileManager fileManager = new CacheJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
 
 		List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
-		jfiles.add(new CharSequenceJavaFileObject(fullClassName, javaCode));
+		jfiles.add(new InputJavaFileObject(fullClassName, javaCode));
 
 		List<String> options = new ArrayList<String>();
 		options.add("-encoding");
@@ -56,14 +62,28 @@ public class DynamicEngine {
 		options.add("-classpath");
 		options.add(this.classpath);
 
-		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
-				diagnostics, options, null, jfiles);
+		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, jfiles);
 		boolean success = task.call();
 
 		if (success) {
-			JavaClassObject jco = fileManager.getJavaClassObject();
-			DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(
-					this.parentClassLoader);
+			OutputJavaFileObject jco = null;
+//			jco = fileManager.getJavaClassObject();
+			String className = fullClassName;
+			FileObject sibling = null;
+			String packageName = "com.lezo.iscript.yeam.config";
+			String relativeName = "StringLinker";
+			try {
+				// sibling =
+				// fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT,
+				// packageName, relativeName,
+				// sibling);
+				jco = (OutputJavaFileObject) fileManager.getJavaFileForOutput(StandardLocation.CLASS_OUTPUT, className,
+						Kind.CLASS, sibling);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(this.parentClassLoader);
 			Class clazz = dynamicClassLoader.loadClass(fullClassName, jco);
 			instance = clazz.newInstance();
 		} else {

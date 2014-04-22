@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ClassByteUtils {
+public class ByteClassUtils {
 	private static final Pattern SRC_REG = Pattern.compile("SourceFile.*?(([A-Z]{1}[0-9a-zA-Z]+))\\.java");
 	private static List<Pattern> namePatterns = new ArrayList<Pattern>();
 	static {

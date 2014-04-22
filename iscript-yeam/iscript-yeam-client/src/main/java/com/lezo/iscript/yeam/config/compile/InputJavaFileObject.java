@@ -1,14 +1,14 @@
-package com.lezo.iscript.yeam;
+package com.lezo.iscript.yeam.config.compile;
 
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import java.net.URI;
 
-public class CharSequenceJavaFileObject extends SimpleJavaFileObject {
+public class InputJavaFileObject extends SimpleJavaFileObject {
 
 	private CharSequence content;
 
-	public CharSequenceJavaFileObject(String className, CharSequence content) {
+	public InputJavaFileObject(String className, CharSequence content) {
 		super(URI.create("string:///" + className.replace('.', '/')
 				+ JavaFileObject.Kind.SOURCE.extension),
 				JavaFileObject.Kind.SOURCE);
