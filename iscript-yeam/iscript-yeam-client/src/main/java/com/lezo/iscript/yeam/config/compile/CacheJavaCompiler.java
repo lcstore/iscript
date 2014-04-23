@@ -7,7 +7,14 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Set;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -74,13 +81,36 @@ public class CacheJavaCompiler {
 		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, jfiles);
 		boolean success = task.call();
 		if (success) {
-			OutputJavaFileObject ojfObject = (OutputJavaFileObject) fileManager.getJavaFileForOutput(
-					StandardLocation.CLASS_OUTPUT, className, Kind.CLASS, null);
-			addResource(className, ojfObject);
-			Class<?> clazz = overrideClassLoader.loadClass(className);
-			return clazz;
+
+			Set<Kind> kindSet = new HashSet<JavaFileObject.Kind>();
+			kindSet.add(Kind.CLASS);
+			Map<String, JavaFileObject> objMap = fileManager.getFileObjectMap();
+			for (Entry<String, JavaFileObject> entry : objMap.entrySet()) {
+				OutputJavaFileObject ojfObject = (OutputJavaFileObject) entry.getValue();
+				String currentClasName = getClassName(ojfObject);
+				addResource(currentClasName, ojfObject);
+			}
+			Class<?> newClass = overrideClassLoader.loadClass(className);
+			// OutputJavaFileObject ojfObject = (OutputJavaFileObject)
+			// fileManager.getJavaFileForOutput(
+			// StandardLocation.CLASS_OUTPUT, className, Kind.CLASS, null);
+			// addResource(className, ojfObject);
+			// Class<?> clazz = overrideClassLoader.loadClass(className);
+			return newClass;
 		}
 		return null;
+	}
+
+	private String getClassName(OutputJavaFileObject ojfObject) {
+		String className = ojfObject.getName();
+		Pattern oReg = Pattern.compile("([a-zA-Z]+[0-9a-zA-Z/\\$]*).class");
+		Matcher matcher = oReg.matcher(className);
+		if (matcher.find() && matcher.find(1)) {
+			className = matcher.group(1);
+			// /com/lezo/iscript/yeam/compile/InClass$1.class
+			className = className.replace("/", ".");
+		}
+		return className;
 	}
 
 	private void addResource(String className, OutputJavaFileObject ojfObject) throws IOException {

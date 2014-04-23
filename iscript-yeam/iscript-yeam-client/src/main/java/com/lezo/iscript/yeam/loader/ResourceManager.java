@@ -8,11 +8,16 @@ public class ResourceManager implements ResourceCacheable {
 
 	@Override
 	public byte[] findResource(String name) {
+		// com.lezo.iscript.yeam.compile.InClass$1
 		ByteBuffer buffer = resMap.get(name);
 		if (buffer == null) {
-			return null;
+			int index = name.indexOf("$");
+			if (index > 0) {
+				String sName = name.substring(0, index);
+				buffer = resMap.get(sName);
+			}
 		}
-		return buffer.array();
+		return buffer == null ? null : buffer.array();
 	}
 
 	@Override
