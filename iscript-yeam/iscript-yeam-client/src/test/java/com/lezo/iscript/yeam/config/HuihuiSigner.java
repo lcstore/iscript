@@ -9,6 +9,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -74,6 +76,11 @@ public class HuihuiSigner implements ConfigParser {
 	}
 
 	private String getLocationUrl(String sHtml) {
+		Pattern oReg = Pattern.compile("window.location.replace[\\s]*\\(.*crossdomain.jsp.*?\\);");
+		Matcher matcher = oReg.matcher(sHtml);
+		if (matcher.find()) {
+			 return matcher.group();
+		}
 		String sLocationUrl = "var locationUrl;";
 		String sObj = "var window={};window.location={};";
 		String sFun = "window.location.replace=function(sUrl){locationUrl =sUrl;};";
@@ -114,9 +121,15 @@ public class HuihuiSigner implements ConfigParser {
 		post.setEntity(postEntity);
 		HttpResponse res = client.execute(post);
 		String html = EntityUtils.toString(res.getEntity(), "UTF-8");
+		post.abort();
 		Document dom = Jsoup.parse(html, postUrl);
 		String getUrl = getLocationUrl(dom);
-		post.abort();
+		if (getUrl == null) {
+			Elements oInfoAs = dom.select("#eHint.info");
+			if (!oInfoAs.isEmpty()) {
+				return oInfoAs.text();
+			}
+		}
 		HttpGet get = new HttpGet(getUrl);
 		res = client.execute(get);
 		html = EntityUtils.toString(res.getEntity(), "UTF-8");

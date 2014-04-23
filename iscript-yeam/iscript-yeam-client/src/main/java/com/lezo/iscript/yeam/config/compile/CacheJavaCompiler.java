@@ -8,20 +8,18 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Set;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
-import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 import com.lezo.iscript.yeam.loader.OverrideClassLoader;
@@ -85,17 +83,13 @@ public class CacheJavaCompiler {
 			Set<Kind> kindSet = new HashSet<JavaFileObject.Kind>();
 			kindSet.add(Kind.CLASS);
 			Map<String, JavaFileObject> objMap = fileManager.getFileObjectMap();
+			// add current class and inner class to resouceManager
 			for (Entry<String, JavaFileObject> entry : objMap.entrySet()) {
 				OutputJavaFileObject ojfObject = (OutputJavaFileObject) entry.getValue();
 				String currentClasName = getClassName(ojfObject);
 				addResource(currentClasName, ojfObject);
 			}
 			Class<?> newClass = overrideClassLoader.loadClass(className);
-			// OutputJavaFileObject ojfObject = (OutputJavaFileObject)
-			// fileManager.getJavaFileForOutput(
-			// StandardLocation.CLASS_OUTPUT, className, Kind.CLASS, null);
-			// addResource(className, ojfObject);
-			// Class<?> clazz = overrideClassLoader.loadClass(className);
 			return newClass;
 		}
 		return null;

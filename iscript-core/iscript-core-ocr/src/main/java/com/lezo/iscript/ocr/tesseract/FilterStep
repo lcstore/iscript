@@ -1,0 +1,26 @@
+r42l.jpg :  
+changeGrey.jpg : R42 '
+grayFilter.jpg :  
+lineGrey.jpg : 3242:.‘
+median.jpg : 
+changeGrey-changeGrey.jpg : R42 '
+changeGrey-grayFilter.jpg : R4n?L'
+changeGrey-lineGrey.jpg : ‘R42L‘
+changeGrey-median.jpg : 5?42L.
+grayFilter-grayFilter.jpg :  
+grayFilter-changeGrey.jpg : R42L'
+grayFilter-lineGrey.jpg : R42L'
+grayFilter-median.jpg : R-(EL
+lineGrey-lineGrey.jpg : iu;eL‘
+lineGrey-changeGrey.jpg : RIZZLI
+lineGrey-grayFilter.jpg : REL‘
+lineGrey-median.jpg : R-£2L
+median-median.jpg : 
+median-changeGrey.jpg : 5?42L.
+median-grayFilter.jpg :  
+median-lineGrey.jpg : R-£2L
+grayFilter-changeGrey-median.jpg : R42L'
+grayFilter-median-changeGrey.jpg :  
+toGray.jpg : RlZL'
+toBinary.jpg :  
+noiseFilter.jpg : R12

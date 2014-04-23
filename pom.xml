@@ -12,8 +12,8 @@
 
 	<modules>
 		<module>iscript-common</module>
-		<!--<module>iscript-core</module>
-		<module>iscript-produce</module>
+		<module>iscript-core</module>
+		<!--<module>iscript-produce</module>
         <module>iscript-service</module>
 		-->
     <module>iscript-yeam</module>
