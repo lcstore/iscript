@@ -14,20 +14,9 @@
 **/test-output
 !/crawler-agent/crawler-agent-updater/src/main/install/bin
 *.iml
-/target
-/build
-/.svn
-/bin/
-/.classpath
-/.project
-/.settings
-/.springBean
-/*.iml
-/*.idea
+/target/*
 /.externalToolBuilders
-/test-output
 MANIFEST.MF
-target/
 **/gen-java
 
 deploy.sh

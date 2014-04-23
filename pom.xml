@@ -57,7 +57,7 @@
 		<maven-war-plugin.version>2.1</maven-war-plugin.version>
 		<junit.version>4.4</junit.version>
 		<spring.version>4.0.2.RELEASE</spring.version>
-		<log4j.version>1.2.9</log4j.version>
+		<log4j.version>1.2.17</log4j.version>
 		<json.version>20090211</json.version>
 		<commons-lang3.version>3.1</commons-lang3.version>
 		<commons-collections.version>4.0</commons-collections.version>
@@ -79,7 +79,7 @@
 		<javax.servlet.version>3.1.0</javax.servlet.version>
 		<quartz.version>2.2.1</quartz.version>
 		<maven-war-plugin.version>2.2.1</maven-war-plugin.version>
-		
+		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
 
 </project>

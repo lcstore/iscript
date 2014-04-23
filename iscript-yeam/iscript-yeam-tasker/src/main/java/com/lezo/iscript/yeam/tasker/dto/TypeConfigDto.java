@@ -4,7 +4,8 @@ import java.util.Date;
 
 public class TypeConfigDto {
 	public static final String TASKER_COMMON = "common";
-	public static final int TYPE_ENABLE = 0;
+	public static final int TYPE_ENABLE = 1;
+	public static final int TYPE_DISABLE = 0;
 	private Long id;
 	private String type;
 	private String tasker;

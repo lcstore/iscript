@@ -40,7 +40,7 @@ public class TaskConfigServiceImpl implements TaskConfigService {
 	}
 
 	@Override
-	public List<TaskConfigDto> getTaskConfigDtos(Date afterStamp, int status) {
+	public List<TaskConfigDto> getTaskConfigDtos(Date afterStamp, Integer status) {
 		return taskConfigDao.getTaskConfigDtos(afterStamp, status);
 	}
 

@@ -7,13 +7,13 @@
 		<result column="ID" property="id" />
 		<result column="TYPE" property="type" />
 		<result column="CONFIG" property="config" />
-		<result column="MODE" property="mode" />
+		<result column="SOURCE" property="source" />
 		<result column="STATUS" property="status" />
 		<result column="CREATE_TIME" property="createTime" />
 		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="TaskConfigDto-coloumn-list">
-		TYPE ,CONFIG ,MODE ,STATUS ,CREATE_TIME ,UPDATE_TIME
+		TYPE ,CONFIG ,SOURCE ,STATUS ,CREATE_TIME ,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="TaskConfigDto">
 		INSERT INTO T_TASK_CONFIG(
@@ -22,12 +22,12 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.config},#{item.mode},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.type},#{item.config},#{item.source},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="TaskConfigDto">
 		UPDATE T_TASK_CONFIG SET
-		CONFIG=#{config}, MODE=#{mode}, STATUS=#{status},
+		CONFIG=#{config}, SOURCE=#{source}, STATUS=#{status},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
@@ -39,7 +39,9 @@
 			AND UPDATE_TIME >#{afterStamp}
 			]]>
 		</if>
-		AND STATUS=#{status}
+		<if test="status != null">
+		   AND STATUS=#{status}
+		</if>
 		ORDER BY UPDATE_TIME DESC
 	</select>
 	<select id="getTaskConfig" parameterType="map" resultMap="RM_TaskConfigDto">

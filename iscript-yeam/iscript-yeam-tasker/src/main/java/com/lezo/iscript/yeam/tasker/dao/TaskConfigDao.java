@@ -13,7 +13,7 @@ public interface TaskConfigDao {
 	void updateOne(TaskConfigDto configDto);
 
 	List<TaskConfigDto> getTaskConfigDtos(@Param(value = "afterStamp") Date afterStamp,
-			@Param(value = "status") int status);
+			@Param(value = "status") Integer status);
 
 	TaskConfigDto getTaskConfig(String type);
 

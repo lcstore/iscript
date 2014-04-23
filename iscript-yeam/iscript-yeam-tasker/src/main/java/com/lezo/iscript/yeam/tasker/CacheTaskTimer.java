@@ -92,8 +92,9 @@ public class CacheTaskTimer {
 			}
 		}
 		addSize = addSize - remain;
+		String typeMsg = empty ? "no more tasks." : "";
 		log.info("tasker[" + tasker + "],type[" + typeConfigDto.getType() + ":" + level + "].add:" + addSize
-				+ ",queue:" + queue.size() + ",db.clear:" + empty);
+				+ ",queue:" + queue.size() + typeMsg);
 	}
 
 	private TaskWritable getTaskWritable(TaskPriorityDto dto) {

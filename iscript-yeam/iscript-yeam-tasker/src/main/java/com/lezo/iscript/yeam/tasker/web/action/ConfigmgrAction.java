@@ -21,10 +21,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.lezo.iscript.yeam.tasker.dto.TaskConfigDto;
 import com.lezo.iscript.yeam.tasker.service.TaskConfigService;
-import com.lezo.iscript.yeam.writable.ConfigWritable;
 
 @Controller
-@RequestMapping("configmgr/")
+@RequestMapping("configmgr")
 public class ConfigmgrAction {
 	private Logger log = LoggerFactory.getLogger(ConfigmgrAction.class);
 	@Autowired
@@ -33,13 +32,12 @@ public class ConfigmgrAction {
 	@RequestMapping("listConfigs.action")
 	public String listConfigs(Model model) throws Exception {
 		Date afterStamp = new Date(0);
-		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(
-				afterStamp, TaskConfigDto.STATUS_ENABLE);
+		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(afterStamp, null);
 		model.addAttribute("siteCount", 1);
 		int configSize = configList.size();
 		model.addAttribute("configList", configList);
 		model.addAttribute("configSize", configSize);
-		return "/configmgr";
+		return "/listConfigs";
 	}
 
 	@RequestMapping("deleteConfig.action")
@@ -50,12 +48,9 @@ public class ConfigmgrAction {
 	}
 
 	@RequestMapping("addConfig.action")
-	public ModelAndView addConfig(
-			@RequestParam("configType") String configType,
-			@RequestParam("configFile") MultipartFile file, Model model)
-			throws Exception {
-		ModelAndView mav = new ModelAndView(
-				"redirect:/configmgr/listConfigs.action");
+	public ModelAndView addConfig(@RequestParam("configType") String configType,
+			@RequestParam("configFile") MultipartFile file, Model model) throws Exception {
+		ModelAndView mav = new ModelAndView("redirect:/configmgr/listConfigs.action");
 		Integer siteId = 1;
 		if (!isValidate(siteId, configType, file)) {
 			return mav;
@@ -79,9 +74,8 @@ public class ConfigmgrAction {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(bReader);
 		}
-		int configModel = getConfigModel(file);
 		TaskConfigDto confDto = new TaskConfigDto();
-		confDto.setMode(configModel);
+		confDto.setSource(file.getOriginalFilename());
 		confDto.setConfig(content);
 		confDto.setType(configType);
 		confDto.setCreateTime(new Date());
@@ -100,17 +94,6 @@ public class ConfigmgrAction {
 		return mav;
 	}
 
-	private int getConfigModel(MultipartFile file) {
-		String name = file.getOriginalFilename();
-		String lowCaseName = name.toLowerCase();
-		if (lowCaseName.endsWith(".xml")) {
-			return ConfigWritable.CONFIG_TYPE_SCRIPT;
-		} else if (lowCaseName.endsWith(".java")) {
-			return ConfigWritable.CONFIG_TYPE_JAVA;
-		}
-		return ConfigWritable.CONFIG_TYPE_UNKNOWN;
-	}
-
 	private boolean isValidate(Integer siteId, String type, MultipartFile file) {
 		if (siteId == null) {
 			log.warn("Can not found siteId for type:" + type);
@@ -119,7 +102,7 @@ public class ConfigmgrAction {
 		if (file == null || file.getName() == null) {
 			return false;
 		}
-		return file.getOriginalFilename().startsWith(type);
+		return true;
 	}
 
 }

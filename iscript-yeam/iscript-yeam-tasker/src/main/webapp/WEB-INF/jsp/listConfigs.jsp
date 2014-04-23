@@ -110,7 +110,9 @@ img.updateLoad {
 			<thead>
 				<tr>
 					<th scope="col" class="header">编号</th>
-					<th scope="col" class="rounded">配置名称</th>
+					<th scope="col" class="rounded">配置类型</th>
+					<th scope="col" class="rounded">配置来源</th>
+					<th scope="col" class="rounded">状态</th>
 					<th scope="col" class="rounded">更新时间</th>
 					<th scope="col" class="rounded">更新配置</th>
 					<th scope="col" class="tail">删除配置</th>
@@ -132,6 +134,12 @@ img.updateLoad {
 						<td>(<c:out value="${ status.index + 1}"></c:out>)
 						</td>
 						<td><c:out value="${configDto.type}"></c:out></td>
+						<td>${configDto.source}</td>
+						<td><c:if test="${configDto.status==1}">
+							可用
+						</c:if> <c:if test="${configDto.status==0}">
+							禁用
+						</c:if></td>
 						<td><fmt:formatDate value="${configDto.updateTime}"
 								pattern="yyyy-MM-dd HH:mm:ss" /></td>
 						<td><a href="javascript:void(0)"
@@ -139,8 +147,7 @@ img.updateLoad {
 								src="${contextPath}/resources/images/user_edit.png" alt="更新"
 								title="更新" border="0"></a></td>
 						<td><a href="javascript:void(0)"
-							onclick="deleteConfig(this,'${configDto.type}')"
-							class="ask"><img
+							onclick="deleteConfig(this,'${configDto.type}')" class="ask"><img
 								src="${contextPath}/resources/images/trash.png" alt="删除"
 								title="删除" border="0"></a></td>
 					</tr>

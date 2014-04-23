@@ -8,7 +8,7 @@ public class TaskConfigDto {
 	private String id;
 	private String type;
 	private String config;
-	private int mode;
+	private String source;
 	private int status;
 	private Date createTime;
 	private Date updateTime;
@@ -37,14 +37,6 @@ public class TaskConfigDto {
 		this.config = config;
 	}
 
-	public int getMode() {
-		return mode;
-	}
-
-	public void setMode(int mode) {
-		this.mode = mode;
-	}
-
 	public int getStatus() {
 		return status;
 	}
@@ -67,5 +59,13 @@ public class TaskConfigDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 }

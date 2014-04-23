@@ -67,8 +67,9 @@ public class AssembleTaskTimer {
 		if (packOne(taskWritables, taskBuffer)) {
 			remain--;
 		}
+		String cacheMsg = remain > 0 ? "cache empty." : "";
 		log.info("tasker[" + tasker + "],pack task.add:" + (addSize - remain) + ",queue:"
-				+ taskBuffer.getPackQueue().size() + ",cache.empty:" + (remain > 0));
+				+ taskBuffer.getPackQueue().size() + cacheMsg);
 	}
 
 	private List<TaskWritable> packList(List<TypeConfigDto> typeConfigList, List<TaskWritable> taskWritables, int remain) {
@@ -123,9 +124,10 @@ public class AssembleTaskTimer {
 	}
 
 	private ConfigWritable getConfigWritable(TaskConfigDto dto) {
+		int mode = getConfityMode(dto);
 		ConfigWritable configWritable = new ConfigWritable();
 		configWritable.setName(dto.getType());
-		configWritable.setType(dto.getMode());
+		configWritable.setType(mode);
 		configWritable.setStamp(dto.getUpdateTime().getTime());
 		String sContent = dto.getConfig();
 		if (StringUtils.isEmpty(sContent)) {
@@ -133,6 +135,21 @@ public class AssembleTaskTimer {
 		}
 		configWritable.setContent(sContent.getBytes());
 		return configWritable;
+	}
+
+	private int getConfityMode(TaskConfigDto dto) {
+		int mode = ConfigWritable.CONFIG_TYPE_SCRIPT;
+		String name = dto.getSource();
+		if (name == null) {
+			return mode;
+		}
+		String lowCaseName = name.toLowerCase();
+		if (lowCaseName.endsWith(".xml")) {
+			mode = ConfigWritable.CONFIG_TYPE_SCRIPT;
+		} else if (lowCaseName.endsWith(".java")) {
+			mode = ConfigWritable.CONFIG_TYPE_JAVA;
+		}
+		return mode;
 	}
 
 	public void setTasker(String tasker) {

@@ -10,7 +10,7 @@ public interface TaskConfigService {
 
 	void updateOne(TaskConfigDto configDto);
 
-	List<TaskConfigDto> getTaskConfigDtos(Date afterStamp, int status);
+	List<TaskConfigDto> getTaskConfigDtos(Date afterStamp, Integer status);
 
 	TaskConfigDto getTaskConfig(String configType);
 
