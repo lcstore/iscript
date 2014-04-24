@@ -1,36 +1,37 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.lezo.iscript</groupId>
-    <artifactId>iscript-yeam</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <groupId>com.lezo.iscript</groupId>
-  <artifactId>iscript-yeam-resulter</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>war</packaging>
-  <name>iscript-yeam-resulter Maven Webapp</name>
-  <url>http://maven.apache.org</url>
- <dependencies>
-<dependency>
-	<groupId>${project.groupId}</groupId>
-		<artifactId>iscript-yeam-api</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>iscript-common-spring</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>iscript-common-utils</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-	
-	<dependency>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.lezo.iscript</groupId>
+		<artifactId>iscript-yeam</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<groupId>com.lezo.iscript</groupId>
+	<artifactId>iscript-yeam-resulter</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>iscript-yeam-resulter Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-yeam-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-common-spring</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-common-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
 			<version>${mybatis.version}</version>
@@ -60,8 +61,23 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-  </dependencies>
-  <build>
-    <finalName>resulter</finalName>
-  </build>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-core-rest</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>resulter</finalName>
+	</build>
 </project>

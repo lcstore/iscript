@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.yeam.tasker.dao.TaskConfigDao">
+	<resultMap type="TaskConfigDto" id="RM_TaskConfigDto">
+		<result column="ID" property="id" />
+		<result column="TYPE" property="type" />
+		<result column="CONFIG" property="config" />
+		<result column="SOURCE" property="source" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<sql id="TaskConfigDto-coloumn-list">
+		TYPE ,CONFIG ,SOURCE ,STATUS ,CREATE_TIME ,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="TaskConfigDto">
+		INSERT INTO T_TASK_CONFIG(
+		<include refid="TaskConfigDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.type},#{item.config},#{item.source},#{item.status},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="TaskConfigDto">
+		UPDATE T_TASK_CONFIG SET
+		CONFIG=#{config}, SOURCE=#{source}, STATUS=#{status},
+		UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	<select id="getTaskConfigDtos" parameterType="map" resultMap="RM_TaskConfigDto">
+		SELECT * FROM T_TASK_CONFIG
+		WHERE 1=1
+		<if test="afterStamp != null">
+		    <![CDATA[
+			AND UPDATE_TIME >#{afterStamp}
+			]]>
+		</if>
+		<if test="status != null">
+		   AND STATUS=#{status}
+		</if>
+		ORDER BY UPDATE_TIME DESC
+	</select>
+	<select id="getTaskConfig" parameterType="map" resultMap="RM_TaskConfigDto">
+		SELECT
+		* FROM
+		T_TASK_CONFIG
+		WHERE TYPE = #{type}
+	</select>
+	<delete id="deleteConfig" parameterType="map">
+		DELETE
+		FROM T_TASK_CONFIG
+		WHERE TYPE = #{type}
+	</delete>
+</mapper>

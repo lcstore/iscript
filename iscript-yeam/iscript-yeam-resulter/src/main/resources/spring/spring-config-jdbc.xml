@@ -7,39 +7,32 @@
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<property name="driverClassName" value="${jdbc.driverClassName}" />
-
-		<property name="url" value="${jdbc.url}" />
-
-		<property name="username" value="${jdbc.username}" />
-
-		<property name="password" value="${jdbc.password}" />
-
-		<!-- 指定连接数据库连接池的最大连接数 -->
-
-		<!-- <property name="maxPoolSize" value="20"/> -->
-
-		<!-- 指定连接数据库连接池的最小连接数 -->
-
-		<!-- <property name="minPoolSize" value="1"/> -->
-
-		<!-- 指定连接数据库连接池的初始化连接数 -->
-
-		<!-- <property name="initialPoolSize" value="1"/> -->
-
-		<!-- 指定连接数据库连接池的连接的最大空闲时间 -->
-
-		<!-- <property name="maxIdleTime" value="20"/> -->
+		<property name="driverClassName" value="${jdbc_driverClassName}" />
+		<property name="url"
+			value="jdbc:mysql://${jdbc_host}:${jdbc_port}/${jdbc_db_name}?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull" />
+		<property name="username" value="${jdbc_db_user}" />
+		<property name="password" value="${jdbc_db_pwd}" />
+		<property name="maxActive" value="${maxActive}" />
+		<property name="maxIdle" value="${maxIdle}" />
+		<property name="maxWait" value="${maxWait}" />
+		<property name="defaultAutoCommit" value="${defaultAutoCommit}" />
+		<property name="removeAbandoned" value="${removeAbandoned}" />
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}" />
+		<property name="testOnBorrow" value="${testOnBorrow}"></property>
+		<property name="testOnReturn" value="${testOnReturn}"></property>
+		<property name="testWhileIdle" value="${testWhileIdle}"></property>
+		<property name="validationQuery" value="${validationQuery}"></property>
+		<property name="validationQueryTimeout" value="${validationQueryTimeout}"></property>
 	</bean>
 
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="configLocation" value="classpath:mybatis-config-resulter.xml" />
+		<property name="typeAliasesPackage" value="com.lezo.iscript.yeam.tasker.dto" />
+		<property name="configLocation" value="classpath:mybatis-config-tasker.xml" />
 	</bean>
 
-	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg index="0" ref="sqlSessionFactory" />
-		<constructor-arg index="1" value="BATCH" />
 	</bean>
 
 	<bean id="txManager"
@@ -47,4 +40,7 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
+	<!-- Mapper接口所在包名，Spring会自动查找其下的Mapper -->
+	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> <property 
+		name="basePackage" value="com.lezo.iscript.yeam.tasker.dao" /> </bean> -->
 </beans>  

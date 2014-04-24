@@ -1,22 +1,20 @@
 package com.lezo.iscript.yeam.writable;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ResultWritable implements Serializable {
 	private static final long serialVersionUID = 3628691351919899205L;
-	private TaskWritable task;
+	private Long taskId;
+	private Long batchId;
 	private int status;
 	private String result;
-	private Map<String, Object> args = new HashMap<String, Object>();
 
-	public TaskWritable getTask() {
-		return task;
+	public Long getTaskId() {
+		return taskId;
 	}
 
-	public void setTask(TaskWritable task) {
-		this.task = task;
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
 	}
 
 	public int getStatus() {
@@ -35,12 +33,12 @@ public class ResultWritable implements Serializable {
 		this.result = result;
 	}
 
-	public Map<String, Object> getArgs() {
-		return args;
+	public Long getBatchId() {
+		return batchId;
 	}
 
-	public Object addArgs(String key, Object value) {
-		return this.args.put(key, value);
+	public void setBatchId(Long batchId) {
+		this.batchId = batchId;
 	}
 
 }
