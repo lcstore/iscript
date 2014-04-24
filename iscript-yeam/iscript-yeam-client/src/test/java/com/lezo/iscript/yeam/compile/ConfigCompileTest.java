@@ -47,15 +47,7 @@ public class ConfigCompileTest {
 		// System.out.println(src);
 		CacheJavaCompiler compiler = CacheJavaCompiler.getInstance();
 		Class<?> newClass = compiler.doCompile(className, codeSource);
-//		ConfigParser parser = (ConfigParser) newClass.newInstance();
-		ConfigParser parser = new HuihuiSigner();
+		ConfigParser parser = (ConfigParser) newClass.newInstance();
 		System.out.println(parser.getName());
-		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore@126.com");
-		task.put("pwd", "126@9Lezo");
-		task.put("user", "ajane2009@163.com");
-		task.put("pwd", "AJ3251273aj");
-		String rs = parser.doParse(task);
-		System.out.println(rs);
 	}
 }

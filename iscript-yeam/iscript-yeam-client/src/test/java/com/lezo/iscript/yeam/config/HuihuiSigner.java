@@ -4,6 +4,7 @@ import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -11,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,12 +54,11 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
 
 import com.lezo.iscript.crawler.http.GzipHttpRequestInterceptor;
 import com.lezo.iscript.crawler.http.GzipHttpResponseInterceptor;
 import com.lezo.iscript.crawler.http.HttpParamsConstant;
+import com.lezo.iscript.crawler.http.SimpleHttpRequestRetryHandler;
 import com.lezo.iscript.crawler.http.UserAgentManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -63,32 +67,29 @@ public class HuihuiSigner implements ConfigParser {
 
 	private String getLocationUrl(Document dom) {
 		Elements elements = dom.select("script[language=JavaScript]");
-		String sMark = "window.location.replace";
-		String getUrl = null;
+
 		for (int i = 0; i < elements.size(); i++) {
 			String sHtml = elements.get(i).html();
-			if (sHtml.indexOf(sMark) > -1) {
-				getUrl = getLocationUrl(sHtml);
-				break;
+			String getUrl = getLocationUrl(sHtml);
+			if (getUrl != null) {
+				return getUrl;
 			}
 		}
-		return getUrl;
+		return null;
 	}
 
 	private String getLocationUrl(String sHtml) {
-		Pattern oReg = Pattern.compile("window.location.replace[\\s]*\\(.*crossdomain.jsp.*?\\);");
+		Pattern oReg = Pattern.compile("http://reg.huihui.cn/crossdomain.jsp.*?loginCookie.*?login");
 		Matcher matcher = oReg.matcher(sHtml);
 		if (matcher.find()) {
-			 return matcher.group();
+			return matcher.group();
 		}
-		String sLocationUrl = "var locationUrl;";
-		String sObj = "var window={};window.location={};";
-		String sFun = "window.location.replace=function(sUrl){locationUrl =sUrl;};";
-		Context cx = Context.enter();
-		String source = sLocationUrl + sObj + sFun + sHtml;
-		Scriptable scope = cx.initStandardObjects();
-		cx.evaluateString(scope, source, "cmd", 0, null);
-		return Context.toString(scope.get("locationUrl", scope));
+		oReg = Pattern.compile("http://www.huihui.cn/activate.*?username.*?login");
+		matcher = oReg.matcher(sHtml);
+		if (matcher.find()) {
+			return matcher.group();
+		}
+		return null;
 	}
 
 	private HttpEntity getPostEntity(String username, String password) throws Exception {
@@ -115,8 +116,10 @@ public class HuihuiSigner implements ConfigParser {
 		String password = (String) task.get("pwd");
 		String postUrl = "https://reg.163.com/logins.jsp";
 		DefaultHttpClient client = createHttpClient();
+
 		HttpPost post = new HttpPost();
 		post.setURI(new URI(postUrl));
+		post.addHeader("Referer", "http://www.huihui.cn/login");
 		HttpEntity postEntity = getPostEntity(username, password);
 		post.setEntity(postEntity);
 		HttpResponse res = client.execute(post);
@@ -155,8 +158,7 @@ public class HuihuiSigner implements ConfigParser {
 		ClientConnectionManager conman = createClientConnManager();
 		HttpParams params = createHttpParams();
 		DefaultHttpClient client = new DefaultHttpClient(conman, params);
-		// client.setHttpRequestRetryHandler(new
-		// SimpleHttpRequestRetryHandler());
+		client.setHttpRequestRetryHandler(new SimpleHttpRequestRetryHandler());
 		CookieSpecFactory csf = getCustomCookieSpecFactory();
 		client.getCookieSpecs().register("easy", csf);
 		client.getParams().setParameter(ClientPNames.COOKIE_POLICY, "easy");
@@ -184,17 +186,59 @@ public class HuihuiSigner implements ConfigParser {
 		SchemeRegistry supportedSchemes = new SchemeRegistry();
 		supportedSchemes.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 		supportedSchemes.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
-		// supportedSchemes.register(new Scheme("https", 443,
-		// PlainSocketFactory.getSocketFactory()));
+		addHttpsTrustStrategy(supportedSchemes);
+//		addHttpsTrustManager(supportedSchemes);
+		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		return tsconnectionManager;
+	}
 
+	private static void addHttpsTrustManager(SchemeRegistry supportedSchemes) {
 		try {
-			SSLSocketFactory sf = new SSLSocketFactory(new TrustStrategy() {
+			SSLContext sslcontext = SSLContext.getInstance("TLS");
+			// SSLContext sslcontext = SSLContext.getInstance("SSL");
+			TrustManager[] tm = new TrustManager[] { new X509TrustManager() {
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+				}
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return null;
+					// return new X509Certificate[] {};
+				}
+			} };
+			SecureRandom random = new java.security.SecureRandom();
+			sslcontext.init(null, tm, random);
+			SSLSocketFactory sf = new SSLSocketFactory(sslcontext, SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+			supportedSchemes.register(new Scheme("https", 443, sf));
+			// supportedSchemes.register(new Scheme("https", 8443, sf));
+		} catch (KeyManagementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private static void addHttpsTrustStrategy(SchemeRegistry supportedSchemes) {
+		try {
+			TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
 				@Override
 				public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 					return true;
 				}
-			});
+			};
+			SSLSocketFactory sf = new SSLSocketFactory(acceptingTrustStrategy,
+					SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			supportedSchemes.register(new Scheme("https", 443, sf));
+			// supportedSchemes.register(new Scheme("https", 8443, sf));
 		} catch (KeyManagementException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -209,9 +253,6 @@ public class HuihuiSigner implements ConfigParser {
 			e.printStackTrace();
 		}
 
-		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
-		return tsconnectionManager;
 	}
 
 	public static HttpParams createHttpParams() {
