@@ -33,6 +33,7 @@ public class JssClientApiTest {
 		StorageHttpClient client = new StorageHttpClient(config, credential);
 
 		Builder builder = null;
+		
 		builder = buildGetBurketRequestBuilder();
 		builder = buildPutBurketRequestBuilder();
 		 builder = buildDelBurketRequestBuilder();
