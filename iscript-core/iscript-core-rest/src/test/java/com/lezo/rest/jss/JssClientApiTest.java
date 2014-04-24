@@ -34,7 +34,7 @@ public class JssClientApiTest {
 
 		Builder builder = null;
 		
-		builder = buildGetBurketRequestBuilder();
+//		builder = buildGetBurketRequestBuilder();
 		builder = buildPutBurketRequestBuilder();
 		 builder = buildDelBurketRequestBuilder();
 //		builder = buildAddBurketRequestBuilder();
