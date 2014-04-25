@@ -1,13 +1,16 @@
 package com.lezo.iscript.yeam.client.result;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ResultsHolder {
-	private final BlockingQueue<Future<ResultWritable>> resultQueue = new LinkedBlockingQueue<Future<ResultWritable>>();
+	private final ConcurrentHashMap<String, List<ResultWritable>> resultListMap = new ConcurrentHashMap<String, List<ResultWritable>>();
 
 	private static class InstanceHolder {
 		private static final ResultsHolder instance = new ResultsHolder();
@@ -17,8 +20,26 @@ public class ResultsHolder {
 		return InstanceHolder.instance;
 	}
 
-	public BlockingQueue<Future<ResultWritable>> getResultQueue() {
-		return resultQueue;
+	public void addResult(String resulter, ResultWritable resultWritable) {
+		List<ResultWritable> rsList = resultListMap.get(resulter);
+		if (rsList == null) {
+			rsList = new ArrayList<ResultWritable>();
+			resultListMap.putIfAbsent(resulter, rsList);
+		}
+		rsList.add(resultWritable);
+	}
+
+	public Iterator<Entry<String, List<ResultWritable>>> iterator() {
+		List<Entry<String, List<ResultWritable>>> entries = new ArrayList<Map.Entry<String, List<ResultWritable>>>(
+				resultListMap.size());
+		for (Entry<String, List<ResultWritable>> entry : resultListMap.entrySet()) {
+			entries.add(entry);
+		}
+		return entries.iterator();
+	}
+
+	public void clear() {
+		resultListMap.clear();
 	}
 
 }

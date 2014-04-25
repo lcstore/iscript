@@ -43,4 +43,7 @@ public class SpringBeanUtils implements ApplicationContextAware {
 		return applicationContext.getBean(name);
 	}
 
+	public static <T> T getBean(Class<T> newClass) throws BeansException {
+		return applicationContext.getBean(newClass);
+	}
 }

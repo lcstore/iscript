@@ -1,7 +1,6 @@
 package com.lezo.iscript.yeam.client.strategy.impl;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -9,12 +8,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.client.result.ResultsHolder;
-import com.lezo.iscript.yeam.client.task.TaskCallable;
+import com.lezo.iscript.yeam.client.event.CallEvent;
+import com.lezo.iscript.yeam.client.event.EventManager;
 import com.lezo.iscript.yeam.client.task.TasksCaller;
 import com.lezo.iscript.yeam.client.task.TasksHolder;
 import com.lezo.iscript.yeam.strategy.Strategyable;
-import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ExecuteStrategyImpl implements Strategyable {
@@ -24,20 +22,17 @@ public class ExecuteStrategyImpl implements Strategyable {
 	public void doStrategy() throws Exception {
 		ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
 		BlockingQueue<TaskWritable> taskQueue = TasksHolder.getInstance().getTaskQueue();
-		BlockingQueue<Future<ResultWritable>> resultQueue = ResultsHolder.getInstance().getResultQueue();
 		int index = 0;
-		boolean bWait = false;
+		EventManager eventManager = EventManager.getInstance();
 		while (!taskQueue.isEmpty()) {
-			TaskWritable task = taskQueue.peek();
 			try {
-				Future<ResultWritable> future = caller.submit(new TaskCallable(task));
-				if (resultQueue.offer(future)) {
-					taskQueue.poll();
-					index++;
-				}
+				TaskWritable task = taskQueue.poll();
+				eventManager.notifyEvent(new CallEvent(task, CallEvent.SUBMIT_TASK_EVENT));
+				index++;
 			} catch (RejectedExecutionException e) {
-				bWait = true;
-				break;
+				long waitTime = ClientConstant.EXECUTE_INTERVAL_TIME / 3;
+				log.warn("wait for " + waitTime + "ms.cause:", e);
+				sleep(waitTime);
 			}
 		}
 		log.info("execute.thread[active:" + caller.getActiveCount() + ",largest:" + caller.getLargestPoolSize()

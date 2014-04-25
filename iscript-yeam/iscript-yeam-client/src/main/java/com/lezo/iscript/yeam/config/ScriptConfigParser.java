@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.script.ScriptConfigCaller;
@@ -26,7 +27,20 @@ public class ScriptConfigParser implements ConfigParser {
 		ScriptContext scx = new ScriptContext(new ContextFactory(), CommonContext.getCommonScriptable());
 		Object[] argsObjects = toObjects(task.getArgs());
 		Object rs = scx.execute(scCaller, scx.getScope(), argsObjects);
-		return Context.toString(rs);
+		return toString(scx, rs);
+	}
+
+	private String toString(ScriptContext scx, Object rs) throws Exception {
+		Object result = null;
+		try {
+			result = ScriptableObject.callMethod(scx.getFactory().enterContext(), scx.getScope(), "__$$stringify",
+					new Object[] { rs });
+		} catch (Exception ex) {
+			throw ex;
+		} finally {
+			Context.exit();
+		}
+		return Context.toString(result);
 	}
 
 	private Object[] toObjects(Map<String, Object> args) {

@@ -51,6 +51,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -151,7 +152,11 @@ public class HuihuiSigner implements ConfigParser {
 		res = client.execute(post);
 		html = EntityUtils.toString(res.getEntity(), "UTF-8");
 		post.abort();
-		return html;
+		JSONObject rsObject = new JSONObject();
+		rsObject.put("rs", html);
+		task.getArgs().remove("pwd");
+		rsObject.put("args", new JSONObject(task.getArgs()));
+		return rsObject.toString();
 	}
 
 	public static DefaultHttpClient createHttpClient() {
@@ -187,7 +192,7 @@ public class HuihuiSigner implements ConfigParser {
 		supportedSchemes.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 		supportedSchemes.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		addHttpsTrustStrategy(supportedSchemes);
-//		addHttpsTrustManager(supportedSchemes);
+		// addHttpsTrustManager(supportedSchemes);
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
 		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
 		return tsconnectionManager;

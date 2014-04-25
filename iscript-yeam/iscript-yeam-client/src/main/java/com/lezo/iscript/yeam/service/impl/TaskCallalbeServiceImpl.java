@@ -1,9 +1,9 @@
 package com.lezo.iscript.yeam.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ResultConstant;
 import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -17,38 +17,22 @@ public class TaskCallalbeServiceImpl implements TaskCallalbeService {
 	@Override
 	public ResultWritable doCall(TaskWritable task) {
 		ResultWritable rsWritable = new ResultWritable();
-		rsWritable.setTaskId(task.getId());
-		Object oBatchId = task.get("batch_id");
-		if (oBatchId != null) {
-			Long batchId = Long.valueOf(oBatchId.toString());
-			rsWritable.setBatchId(batchId);
-		}
-		String type = task.get("type").toString();
-		ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 		JSONObject rsObject = new JSONObject();
 		try {
+			rsWritable.setTaskId(task.getId());
+			String type = task.get("type").toString();
+			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			String rs = parser.doParse(task);
-			if (StringUtils.isEmpty(rs)) {
-				String argsString = getJsonArgs(rs);
-			}
-			rsWritable.setResult(rs);
+			rsObject.put("rs", rs);
 			rsWritable.setStatus(ResultConstant.RESULT_SUCCESS);
 		} catch (Exception e) {
-			log.warn("", e);
 			rsWritable.setStatus(ResultConstant.RESULT_FAIL);
+			JSONUtils.put(rsObject, "ex", e);
+			log.warn("", e);
+		} finally {
+			rsWritable.setResult(rsObject.toString());
 		}
 		return rsWritable;
-	}
-
-	private String getJsonArgs(String rs) {
-		rs = rs.trim();
-		if (!rs.startsWith("{")) {
-			rs = "{" + rs;
-		}
-		if (!rs.endsWith("}")) {
-			rs = rs + "}";
-		}
-		return rs;
 	}
 
 }

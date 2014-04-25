@@ -25,10 +25,10 @@ public class JosCategoryFetcher {
 	 */
 	public static void main(String[] args) throws Exception {
 		String access_token = "3.a1333cd5eebc4a402e706e06b060b60a.2592000.1389019338.4026763474-1552221";
+		access_token = "21.87c338a28b227958686b65685ac24808.2592000.1401016644.4026763474-1319196";
 		String path = "/apps/emao_doc/jditems/category/";
 		BaiduPCSClient pcsClient = new BaiduPCSClient(access_token);
-
-		String accessToken = "";
+		String accessToken = "21.92410d2604cceab404ebd9e5b6bb6777.2592000.1401016455.4026763474-1319196";
 		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
 		String appSecret = "1503e8459a4b4592a281334c311e6ced";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);

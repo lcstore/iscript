@@ -64,7 +64,7 @@ public class LoginAnalyer {
 		DefaultHttpClient client = createHttpClient();
 		addProxy(client);
 		HttpContext cx = createHttpContext();
-		HttpGet newGet = new HttpGet("http://cn-proxy.com/");
+		HttpGet newGet = new HttpGet("http://cn-proxy.com/44");
 		HttpResponse response = client.execute(newGet, cx);
 		System.out.println(EntityUtils.toString(response.getEntity(), "utf-8"));
 	}

@@ -9,8 +9,8 @@ public class LoggerResultHandler implements ResultHandle {
 
 	@Override
 	public void handle(ResultWritable resultWritable) {
-		log.info("task args:" + resultWritable.getTask().getArgs() + ",rs:" + resultWritable.getResult()
-				+ ",result args:" + resultWritable.getArgs());
+		log.info("taskId:" + resultWritable.getTaskId() + ",status:" + resultWritable.getStatus() + ",rs:"
+				+ resultWritable.getResult());
 
 	}
 

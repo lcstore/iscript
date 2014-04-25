@@ -67,7 +67,7 @@ public class AssembleTaskTimer {
 		if (packOne(taskWritables, taskBuffer)) {
 			remain--;
 		}
-		String cacheMsg = remain > 0 ? "cache empty." : "";
+		String cacheMsg = remain > 0 ? ".cache empty." : "";
 		log.info("tasker[" + tasker + "],pack task.add:" + (addSize - remain) + ",queue:"
 				+ taskBuffer.getPackQueue().size() + cacheMsg);
 	}

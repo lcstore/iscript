@@ -8,8 +8,8 @@
 		<constructor-arg index="0" name="accessToken" value="${baidu.pcs.token}">
 		</constructor-arg>
 	</bean>
-	<bean id="pcsResultHandler" class="com.lezo.iscript.yeam.resulter.handle.PcsResultHandler"
-		scope="prototype">
-		<property name=""></property>
+	<bean id="pcsResultHandler" class="com.lezo.iscript.yeam.resulter.handle.PcsResultHandler">
+		<property name="pcsClient" ref="pcsClient"></property>
+		<property name="pcsPath" value="${baidu.pcs.path}"></property>
 	</bean>
 </beans>

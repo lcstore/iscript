@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class ResultWritable implements Serializable {
 	private static final long serialVersionUID = 3628691351919899205L;
 	private Long taskId;
-	private Long batchId;
 	private int status;
 	private String result;
 
@@ -31,14 +30,6 @@ public class ResultWritable implements Serializable {
 
 	public void setResult(String result) {
 		this.result = result;
-	}
-
-	public Long getBatchId() {
-		return batchId;
-	}
-
-	public void setBatchId(Long batchId) {
-		this.batchId = batchId;
 	}
 
 }

@@ -92,7 +92,7 @@ public class CacheTaskTimer {
 			}
 		}
 		addSize = addSize - remain;
-		String typeMsg = empty ? "no more tasks." : "";
+		String typeMsg = empty ? ".no more tasks." : "";
 		log.info("tasker[" + tasker + "],type[" + typeConfigDto.getType() + ":" + level + "].add:" + addSize
 				+ ",queue:" + queue.size() + typeMsg);
 	}

@@ -1,9 +1,11 @@
 package com.lezo.iscript.yeam.config;
 
+import org.json.JSONObject;
+
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
- public class StringLinker implements ConfigParser {
+public class StringLinker implements ConfigParser {
 
 	@Override
 	public String getName() {
@@ -12,7 +14,11 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		return "linker:" + task.get("x") + task.get("y");
+		JSONObject rsObject = new JSONObject();
+		String rs = "linker:" + task.get("x") + task.get("y");
+		rsObject.put("rs", rs);
+		rsObject.put("args", new JSONObject(task.getArgs()));
+		return rsObject.toString();
 	}
 
 }
