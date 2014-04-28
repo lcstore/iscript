@@ -58,4 +58,8 @@ public class PcsResultHandler implements ResultHandle {
 		this.pcsPath = pcsPath;
 	}
 
+	public void setTempDir(String tempDir) {
+		this.tempDir = tempDir;
+	}
+
 }

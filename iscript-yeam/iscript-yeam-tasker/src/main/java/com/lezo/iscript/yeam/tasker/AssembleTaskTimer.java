@@ -103,10 +103,7 @@ public class AssembleTaskTimer {
 
 	private void updateConfig() {
 		ConfigBuffer configBuffer = ConfigBuffer.getInstance();
-		Date afterStamp = null;
-		if (configBuffer.getStamp() > 0) {
-			afterStamp = new Date(configBuffer.getStamp());
-		}
+		Date afterStamp = new Date(configBuffer.getStamp());
 		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(afterStamp, 1);
 		if (configList.isEmpty()) {
 			return;

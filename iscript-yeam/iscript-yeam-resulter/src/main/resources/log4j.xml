@@ -22,26 +22,10 @@
 	<!-- org.apache.log4j.WriterAppender(将日志信息以流格式发送到任意指定的地方) -->
 	<!-- ========================================================================== -->
 	<!-- 输出到日志文件 -->
-	<appender name="filelog_appender" class="org.apache.log4j.RollingFileAppender">
+	<appender name="rollAppender" class="org.apache.log4j.DailyRollingFileAppender">
 		<!-- 设置File参数：日志输出文件名 -->
-		<param name="File" value="log4All.log" />
-		<!-- 设置是否在重新启动服务时，在原有日志的基础添加新日志 -->
-		<param name="Append" value="true" />
-		<!-- 设置文件大小 -->
-		<param name="MaxFileSize" value="20MB" />
-		<!-- 设置文件备份 -->
-		<param name="MaxBackupIndex" value="10000" />
-		<!-- 设置输出文件项目和格式 -->
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern"
-				value="%d{yyyy-MM-dd HH:mm:ss} %c[%t,%L] %-5p (%c:%L)- %m%n" />
-		</layout>
-	</appender>
-
-	<!-- 输出到日志文件 每天一个日志 -->
-	<appender name="dailyAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="logs/daily.log" />
-		<param name="DatePattern" value="'daily.'yyyy-MM-dd'.log'" />
+		<param name="File" value="/var/vcap/store/fss_backend1/801da7db-6c64-4234-8a2e-949870988377/resulter.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
 				value="[%d{yyyy-MM-dd HH:mm:ss\} [%c] %-5p] %c[%t] (%c:%L) - %m%n" />
@@ -59,30 +43,30 @@
 			<param name="LevelMin" value="INFO" />
 		</filter>
 	</appender>
-	<appender name="handleAppender" class="org.apache.log4j.RollingFileAppender">
-		<!-- 设置File参数：日志输出文件名 -->
+<!-- 	<appender name="handleAppender" class="org.apache.log4j.RollingFileAppender">
+		设置File参数：日志输出文件名
 		<param name="File" value="logs/handler.log" />
-		<!-- 设置是否在重新启动服务时，在原有日志的基础添加新日志 -->
+		设置是否在重新启动服务时，在原有日志的基础添加新日志
 		<param name="Append" value="true" />
-		<!-- 设置文件大小 -->
+		设置文件大小
 		<param name="MaxFileSize" value="20MB" />
-		<!-- 设置文件备份 -->
+		设置文件备份
 		<param name="MaxBackupIndex" value="10000" />
-		<!-- 设置输出文件项目和格式 -->
+		设置输出文件项目和格式
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%m%n" />
 		</layout>
 	</appender>
-	<!-- 设置包限制输出的通道 -->
+	设置包限制输出的通道
 	<category name="com.lezo.iscript.yeam.resulter.handle" additivity="false">
-		<!-- 日志输出级别，起码可以有5个级别，可以扩展自己的级别，邮件发送必须是ERROR级别不好用，所以最后自己扩展一个邮件发送级别 -->
+		日志输出级别，起码可以有5个级别，可以扩展自己的级别，邮件发送必须是ERROR级别不好用，所以最后自己扩展一个邮件发送级别
 		<level value="INFO，WARN,ERROR" />
 		<appender-ref ref="handleAppender" />
 		<appender-ref ref="console" />
-	</category>
+	</category> -->
 	<root>
 		<priority value="info" />
 		<appender-ref ref="console" />
-		<appender-ref ref="handleAppender" />
+		<appender-ref ref="rollAppender" />
 	</root>
 </log4j:configuration> 

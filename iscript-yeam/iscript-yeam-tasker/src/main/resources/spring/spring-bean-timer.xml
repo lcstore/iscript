@@ -10,9 +10,11 @@
 	<bean id="assembleTaskTimer" class="com.lezo.iscript.yeam.tasker.AssembleTaskTimer">
 		<property name="tasker" value="tasker" />
 	</bean>
+	<bean id="signTaskTimer" class="com.lezo.iscript.yeam.tasker.SignTaskTimer">
+	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
-	<task:executor id="executor" pool-size="2" />
+	<task:executor id="executor" pool-size="3" />
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
@@ -20,8 +22,14 @@
 		<task:scheduled ref="assembleTaskTimer" method="run"
 			fixed-delay="30000" />
 	</task:scheduled-tasks>
+	
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
 			fixed-delay="60000" />
+	</task:scheduled-tasks>
+	
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="signTaskTimer" method="run"
+			cron="0 15 9 * * ?"/>
 	</task:scheduled-tasks>
 </beans>

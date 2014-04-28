@@ -22,11 +22,10 @@
 	<!-- org.apache.log4j.WriterAppender(将日志信息以流格式发送到任意指定的地方) -->
 	<!-- ========================================================================== -->
 	<!-- 输出到日志文件 -->
-
-	<!-- 输出到日志文件 每天一个日志 -->
-	<appender name="filelog_daily" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="logs/daily.log" />
-		<param name="DatePattern" value="'daily.'yyyy-MM-dd'.log'" />
+	<appender name="rollAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<!-- 设置File参数：日志输出文件名 -->
+		<param name="File" value="/var/vcap/store/fss_backend1/3f4821b3-e317-4e59-9fe3-dc82f1115f8e/tasker.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
 				value="[%d{yyyy-MM-dd HH:mm:ss\} [%c] %-5p] %c[%t] (%c:%L) - %m%n" />
@@ -47,6 +46,6 @@
 	<root>
 		<priority value="info" />
 		<appender-ref ref="console" />
-		<appender-ref ref="filelog_daily" />
+		<appender-ref ref="rollAppender" />
 	</root>
 </log4j:configuration> 

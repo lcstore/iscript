@@ -35,6 +35,7 @@ public class JosRestTest {
 		String method = "jingdong.union.promotionshop.update";
 		method = "jingdong.ware.product.catelogy.list.get";
 		method = "jingdong.ware.promotion.search.catelogy.list";
+		method = "jingdong.ware.baseproduct.get";
 		Map<String, Object> inMap = getRestParam(method);
 		SignBuildable builder = new JosSignBuilder();
 		String sign = builder.getSign(inMap);
@@ -83,19 +84,18 @@ public class JosRestTest {
 
 		JSONObject paramObject = new JSONObject(clientMap);
 		inMap.put("360buy_param_json", paramObject.toString());
-		// try {
-		// inMap.put("360buy_param_json", getParamJson());
-		// } catch (JSONException e) {
-		// e.printStackTrace();
-		// }
+		 try {
+		 inMap.put("360buy_param_json", getParamJson());
+		 } catch (JSONException e) {
+		 e.printStackTrace();
+		 }
 		return inMap;
 	}
 
 	private static String getParamJson() throws JSONException {
 		JSONObject jObj = new JSONObject();
 		JSONArray idArray = new JSONArray();
-		idArray.put("1011457975");
-		idArray.put("897738");
+		idArray.put("317652");
 		jObj.put("ids", idArray);
 		JSONArray baseArray = new JSONArray();
 		baseArray.put("brandName");

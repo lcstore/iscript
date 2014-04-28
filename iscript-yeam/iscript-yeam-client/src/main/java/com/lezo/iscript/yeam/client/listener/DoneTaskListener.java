@@ -7,7 +7,7 @@ import com.lezo.iscript.yeam.client.result.TaskResult;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class DoneTaskListener extends AbstractCallEventListener {
-
+   
 	@Override
 	protected void doCallEvent(CallEvent event) {
 		TaskResult taskResult = (TaskResult) event.getSource();

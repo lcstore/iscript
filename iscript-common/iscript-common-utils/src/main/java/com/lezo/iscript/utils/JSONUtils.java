@@ -45,15 +45,20 @@ public class JSONUtils {
 		}
 	}
 
-	public static Object get(JSONObject jObj, String key) {
-		if (jObj.has(key)) {
+	@SuppressWarnings("unchecked")
+	public static <T> T get(JSONObject jObj, String key, Class<T> destClass) {
+		if (!jObj.isNull(key)) {
 			try {
-				return jObj.get(key);
+				return (T) jObj.get(key);
 			} catch (JSONException e) {
 				log.warn("Fail to get " + key, e);
 			}
 		}
 		return null;
+	}
+
+	public static Object get(JSONObject jObj, String key) {
+		return get(jObj, key, Object.class);
 	}
 
 	public static Object get(JSONArray jObj, int index) {

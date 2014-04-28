@@ -3,8 +3,12 @@
 
 <beans>
 
+	<bean id="resultManager"
+		class="com.lezo.iscript.yeam.resulter.ResultManager">
+	</bean>	
 	<bean id="resulterService"
 		class="com.lezo.iscript.yeam.service.impl.ResulterServiceImpl">
+		<property name="resultable" ref="resultManager"></property>
 	</bean>	
 	<bean id="resulterExporter"
 		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">

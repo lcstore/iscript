@@ -1,4 +1,7 @@
-
+function log(args){
+  args = !args?'NULL':args;
+  java.lang.System.out.println(args);
+}
 var base = 8000;
 var x = args.x -0;
 var y = args.y-0;
@@ -6,4 +9,5 @@ var rs = {};
 rs.rs =base + x+y;
 delete args.yeam_resulter_host;
 rs.args = args;
+log(JSON.stringify(args));
 return rs;

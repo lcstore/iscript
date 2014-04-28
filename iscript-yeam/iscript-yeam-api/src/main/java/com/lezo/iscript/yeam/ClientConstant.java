@@ -28,15 +28,15 @@ public class ClientConstant {
 	public static final String CMD_CHARSET = "GBK";
 
 	public static final String CLIENT_ENV_HEAD = "yeam_";
-	public static final String CLIENT_TASKER_HOST = CLIENT_ENV_HEAD+"tasker_host";
-	public static final String CLIENT_RESULTER_HOST = CLIENT_ENV_HEAD+"resulter_host";
-	public static final String CLIENT_DEFEND_TASKER = CLIENT_ENV_HEAD+"defend_tasker";
+	public static final String CLIENT_TASKER_HOST = CLIENT_ENV_HEAD + "thost";
+	public static final String CLIENT_RESULTER_HOST = CLIENT_ENV_HEAD + "rhost";
+	public static final String CLIENT_DEFEND_TASKER = CLIENT_ENV_HEAD + "chost";
 
-	public static final String CLIENT_CONFIG_STAMP = CLIENT_ENV_HEAD+"cofing_stamp";
+	public static final String CLIENT_CONFIG_STAMP = CLIENT_ENV_HEAD + "cofing_stamp";
 
-	public static final String CLIENT_PATH = CLIENT_ENV_HEAD+"client_path";
+	public static final String CLIENT_PATH = CLIENT_ENV_HEAD + "client_path";
 	public static final String CLIENT_UPDATE_SPACE = "updatespace";
 	public static final String CLIENT_WORK_SPACE = "workspace";
-	public static final String CLIENT_NAME = CLIENT_ENV_HEAD+"name";
-	public static final String CLIENT_VERSION = CLIENT_ENV_HEAD+"version";
+	public static final String CLIENT_NAME = CLIENT_ENV_HEAD + "name";
+	public static final String CLIENT_VERSION = CLIENT_ENV_HEAD + "version";
 }

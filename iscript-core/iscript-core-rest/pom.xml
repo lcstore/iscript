@@ -1,24 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
+	<parent>
 		<groupId>com.lezo.iscript</groupId>
 		<artifactId>iscript-core</artifactId>
 		<version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>iscript-core-rest</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	</parent>
+	<artifactId>iscript-core-rest</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-  <name>iscript-core-rest</name>
-  <url>http://maven.apache.org</url>
+	<name>iscript-core-rest</name>
+	<url>http://maven.apache.org</url>
 
-  <properties>
+	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jsoup.version>1.5.2</jsoup.version>
 		<httpclient.version>4.2.1</httpclient.version>
-		<pcs.version>andriod-L2-2.1.0</pcs.version>
+		<pcs.version>android-L2-2.1.0</pcs.version>
 		<httpmime.version>4.2</httpmime.version>
 		<jss.version>1.1.1-SNAPSHOT</jss.version>
 		<guava.version>14.0</guava.version>
@@ -27,7 +27,7 @@
 	</properties>
 
 	<dependencies>
-        <dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>iscript-common-utils</artifactId>
 			<version>${project.version}</version>
@@ -37,22 +37,22 @@
 			<artifactId>jsoup</artifactId>
 			<version>${jsoup.version}</version>
 		</dependency>
-		  <dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
-	  		<artifactId>httpclient</artifactId>
-	  		<version>${httpclient.version}</version>
-  		</dependency>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
+		</dependency>
 		<dependency>
-		      <groupId>org.apache.httpcomponents</groupId>
-			  <artifactId>httpmime</artifactId>
-			  <version>${httpmime.version}</version>
-  		</dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>${httpmime.version}</version>
+		</dependency>
 		<dependency>
-		     <groupId>com.baidu</groupId>
-			  <artifactId>pcs</artifactId>
-			  <version>${pcs.version}</version>
-  		</dependency>
-  		<dependency>
+			<groupId>com.baidu</groupId>
+			<artifactId>pcs</artifactId>
+			<version>${pcs.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jcloud</groupId>
 			<artifactId>jss-sdk-java</artifactId>
 			<version>${jss.version}</version>
@@ -72,5 +72,11 @@
 			<artifactId>joda-time</artifactId>
 			<version>${joda-time.version}</version>
 		</dependency>
-		</dependencies>
+		<dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>sdk</artifactId>
+			<version>6.1.0</version>
+		</dependency>
+
+	</dependencies>
 </project>
