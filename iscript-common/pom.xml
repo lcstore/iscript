@@ -18,5 +18,6 @@
 	<modules>
 		<module>iscript-common-spring</module>
 		<module>iscript-common-utils</module>
+		<module>iscript-common-rest</module>
 	</modules>
 </project>

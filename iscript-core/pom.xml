@@ -7,15 +7,20 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>iscript-core</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <name>iscript-core</name>
   <packaging>pom</packaging>
   <url>http://maven.apache.org</url>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  <dependencies>
-  </dependencies>
+  <dependencies/>
   <modules>
-	<!--<module>iscript-core-ocr</module>-->
-	<module>iscript-core-rest</module>
+    <module>iscript-core-api</module>
+    <module>iscript-core-client</module>
+    <module>iscript-core-crawler</module>
+    <module>iscript-core-defend</module>
+    <module>iscript-core-tasker</module>
+    <module>iscript-core-resulter</module>
   </modules>
 </project>
