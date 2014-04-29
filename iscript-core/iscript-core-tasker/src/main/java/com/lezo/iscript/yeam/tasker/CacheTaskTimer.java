@@ -14,12 +14,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
+import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
+import com.lezo.iscript.service.crawler.service.TaskPriorityService;
+import com.lezo.iscript.service.crawler.service.TypeConfigService;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
-import com.lezo.iscript.yeam.tasker.dto.TaskPriorityDto;
-import com.lezo.iscript.yeam.tasker.dto.TypeConfigDto;
-import com.lezo.iscript.yeam.tasker.service.TaskPriorityService;
-import com.lezo.iscript.yeam.tasker.service.TypeConfigService;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class CacheTaskTimer {

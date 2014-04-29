@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.dto;
+package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 

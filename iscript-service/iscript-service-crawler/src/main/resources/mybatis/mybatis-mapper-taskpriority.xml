@@ -2,7 +2,7 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.yeam.tasker.dao.TaskPriorityDao">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.TaskPriorityDao">
 	<resultMap type="TaskPriorityDto" id="RM_TaskPriorityDto">
 		<result column="TASK_ID" property="taskId" />
 		<result column="BATCH_ID" property="batchId" />

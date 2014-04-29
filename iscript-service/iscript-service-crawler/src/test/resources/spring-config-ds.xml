@@ -12,12 +12,11 @@
 
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="searchSystemEnvironment" value="true" />
-		<property name="systemPropertiesMode" value="2" />
+		<property name="searchSystemEnvironment" value="true"/>
+		<property name="systemPropertiesMode" value="2"/>
 		<property name="locations">
 			<list>
 				<value>classpath:jdbc.properties</value>
-				<value>classpath:tasker.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -27,7 +26,5 @@
 	<import resource="classpath:spring/spring-context-init.xml" />
 
 	<import resource="classpath:spring/spring-config-mvc.xml" />
-	<import resource="classpath:spring/spring-bean-tasker.xml" />
-	<import resource="classpath:spring/spring-bean-timer.xml" />
 	<import resource="classpath:spring/spring-bean-crawler.xml" />
 </beans>  

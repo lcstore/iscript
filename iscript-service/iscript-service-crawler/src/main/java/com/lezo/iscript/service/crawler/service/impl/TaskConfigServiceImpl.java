@@ -1,6 +1,5 @@
-package com.lezo.iscript.yeam.tasker.service.impl;
+package com.lezo.iscript.service.crawler.service.impl;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -8,9 +7,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lezo.iscript.yeam.tasker.dao.TaskConfigDao;
-import com.lezo.iscript.yeam.tasker.dto.TaskConfigDto;
-import com.lezo.iscript.yeam.tasker.service.TaskConfigService;
+import com.lezo.iscript.service.crawler.dao.TaskConfigDao;
+import com.lezo.iscript.service.crawler.dto.TaskConfigDto;
+import com.lezo.iscript.service.crawler.service.TaskConfigService;
 
 @Service
 public class TaskConfigServiceImpl implements TaskConfigService {

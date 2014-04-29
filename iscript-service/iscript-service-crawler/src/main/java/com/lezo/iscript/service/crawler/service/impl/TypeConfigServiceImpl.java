@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.service.impl;
+package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,9 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lezo.iscript.yeam.tasker.dao.TypeConfigDao;
-import com.lezo.iscript.yeam.tasker.dto.TypeConfigDto;
-import com.lezo.iscript.yeam.tasker.service.TypeConfigService;
+import com.lezo.iscript.service.crawler.dao.TypeConfigDao;
+import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
+import com.lezo.iscript.service.crawler.service.TypeConfigService;
 
 @Service
 public class TypeConfigServiceImpl implements TypeConfigService {

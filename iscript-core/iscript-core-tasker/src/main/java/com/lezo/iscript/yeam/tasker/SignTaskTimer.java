@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.yeam.task.TaskConstant;
-import com.lezo.iscript.yeam.tasker.service.TaskPriorityService;
 
 public class SignTaskTimer {
 	private static Logger log = Logger.getLogger(SignTaskTimer.class);

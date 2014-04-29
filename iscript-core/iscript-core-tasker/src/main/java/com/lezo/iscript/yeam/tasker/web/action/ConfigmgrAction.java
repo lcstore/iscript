@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.lezo.iscript.yeam.tasker.dto.TaskConfigDto;
-import com.lezo.iscript.yeam.tasker.service.TaskConfigService;
+import com.lezo.iscript.service.crawler.dto.TaskConfigDto;
+import com.lezo.iscript.service.crawler.service.TaskConfigService;
 
 @Controller
 @RequestMapping("configmgr")

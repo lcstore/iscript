@@ -1,10 +1,10 @@
-package com.lezo.iscript.yeam.tasker.service;
+package com.lezo.iscript.service.crawler.dao;
 
 import java.util.List;
 
-import com.lezo.iscript.yeam.tasker.dto.TaskPriorityDto;
+import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 
-public interface TaskPriorityService {
+public interface TaskPriorityDao {
 	void batchInsert(List<TaskPriorityDto> dtoList);
 
 	int batchUpdate(List<Long> taskIds, int status);

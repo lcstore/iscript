@@ -10,13 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.service.crawler.dto.TaskConfigDto;
+import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
+import com.lezo.iscript.service.crawler.service.TaskConfigService;
+import com.lezo.iscript.service.crawler.service.TypeConfigService;
 import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
 import com.lezo.iscript.yeam.tasker.buffer.TaskBuffer;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
-import com.lezo.iscript.yeam.tasker.dto.TaskConfigDto;
-import com.lezo.iscript.yeam.tasker.dto.TypeConfigDto;
-import com.lezo.iscript.yeam.tasker.service.TaskConfigService;
-import com.lezo.iscript.yeam.tasker.service.TypeConfigService;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 

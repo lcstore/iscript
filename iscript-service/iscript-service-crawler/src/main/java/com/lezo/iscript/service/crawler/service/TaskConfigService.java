@@ -1,9 +1,9 @@
-package com.lezo.iscript.yeam.tasker.service;
+package com.lezo.iscript.service.crawler.service;
 
 import java.util.Date;
 import java.util.List;
 
-import com.lezo.iscript.yeam.tasker.dto.TaskConfigDto;
+import com.lezo.iscript.service.crawler.dto.TaskConfigDto;
 
 public interface TaskConfigService {
 	void batchInsert(List<TaskConfigDto> dtoList);

@@ -1,10 +1,10 @@
-package com.lezo.iscript.yeam.tasker.dao;
+package com.lezo.iscript.service.crawler.dao;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.lezo.iscript.yeam.tasker.dto.TypeConfigDto;
+import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
 
 public interface TypeConfigDao {
 	void batchInsert(List<TypeConfigDto> dtoList);

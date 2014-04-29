@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.service.impl;
+package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lezo.iscript.yeam.tasker.dao.TaskPriorityDao;
-import com.lezo.iscript.yeam.tasker.dto.TaskPriorityDto;
-import com.lezo.iscript.yeam.tasker.service.TaskPriorityService;
+import com.lezo.iscript.service.crawler.dao.TaskPriorityDao;
+import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
+import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 
 @Service
 public class TaskPriorityServiceImpl implements TaskPriorityService {

@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.dao.impl;
+package com.lezo.iscript.service.crawler.dao.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 
-import com.lezo.iscript.yeam.tasker.dao.TaskPriorityDao;
-import com.lezo.iscript.yeam.tasker.dto.TaskPriorityDto;
+import com.lezo.iscript.service.crawler.dao.TaskPriorityDao;
+import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 
 public class TaskPriorityDaoImpl implements TaskPriorityDao {
 	private SqlSession sqlSessionTemplate;
