@@ -8,18 +8,19 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
+import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class TaskContainer {
 	private static Logger log = LoggerFactory.getLogger(TaskContainer.class);
 	private static final int ONE_PACK_SIZE = 200;
 	private static final int capacity = 10000;
 	private static final long CONSUME_TIMEOUT = 60000;
-	private List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(ONE_PACK_SIZE);
-	private Queue<List<TaskPriorityDto>> consumeQueue = new ArrayBlockingQueue<List<TaskPriorityDto>>(capacity);
+	private List<TaskWritable> taskList = new ArrayList<TaskWritable>(ONE_PACK_SIZE);
+	private Queue<List<TaskWritable>> consumeQueue = new ArrayBlockingQueue<List<TaskWritable>>(capacity);
 	private AtomicLong lastStamp = new AtomicLong(System.currentTimeMillis());
 	private static TaskContainer instance = new TaskContainer();
 
@@ -30,26 +31,42 @@ public class TaskContainer {
 		return instance;
 	}
 
-	public void add(TaskPriorityDto taskDto) {
+	public void add(List<TaskWritable> taskList) {
+		if (CollectionUtils.isEmpty(taskList)) {
+			return;
+		}
+		synchronized (taskList) {
+			for (TaskWritable taskDto : taskList) {
+				taskList.add(taskDto);
+				if (isTime2Consume()) {
+					List<TaskWritable> copyList = toConsume();
+					consumeQueue.offer(copyList);
+				}
+			}
+		}
+		lastStamp.set(System.currentTimeMillis());
+	}
+
+	public void add(TaskWritable taskDto) {
 		if (taskDto == null) {
 			return;
 		}
 		synchronized (taskList) {
 			taskList.add(taskDto);
 			if (isTime2Consume()) {
-				List<TaskPriorityDto> copyList = toConsume();
+				List<TaskWritable> copyList = toConsume();
 				consumeQueue.offer(copyList);
 			}
 		}
 		lastStamp.set(System.currentTimeMillis());
 	}
 
-	public List<TaskPriorityDto> poll() {
-		List<TaskPriorityDto> consumeDtos = consumeQueue.poll();
+	public List<TaskWritable> poll() {
+		List<TaskWritable> consumeDtos = consumeQueue.poll();
 		if (consumeDtos == null && isTime2Consume()) {
 			consumeDtos = toConsume();
 		}
-		return consumeDtos == null ? new ArrayList<TaskPriorityDto>() : consumeDtos;
+		return consumeDtos == null ? new ArrayList<TaskWritable>() : consumeDtos;
 	}
 
 	private boolean isTime2Consume() {
@@ -63,14 +80,14 @@ public class TaskContainer {
 		return isTimeOut;
 	}
 
-	private List<TaskPriorityDto> toConsume() {
-		List<TaskPriorityDto> copyList = Collections.emptyList();
+	private List<TaskWritable> toConsume() {
+		List<TaskWritable> copyList = Collections.emptyList();
 		if (taskList.isEmpty()) {
 			return copyList;
 		}
 		synchronized (taskList) {
 			if (!taskList.isEmpty()) {
-				copyList = Arrays.asList(new TaskPriorityDto[taskList.size()]);
+				copyList = Arrays.asList(new TaskWritable[taskList.size()]);
 				Collections.copy(copyList, taskList);
 				taskList.clear();
 			}

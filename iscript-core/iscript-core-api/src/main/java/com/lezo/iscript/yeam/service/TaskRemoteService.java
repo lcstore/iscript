@@ -8,5 +8,5 @@ public interface TaskRemoteService {
 
 	void addTasks(List<TaskWritable> taskList) throws IllegalArgumentException;
 
-	int updateTasks(List<Long> taskIds, int status) throws IllegalArgumentException;
+	int updateTasks(List<Long> taskIds, int status,String handler) throws IllegalArgumentException;
 }
