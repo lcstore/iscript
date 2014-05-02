@@ -3,7 +3,6 @@ package com.lezo.iscript.utils;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -57,28 +56,16 @@ public class JSONUtils {
 		return null;
 	}
 
-	public static Object get(JSONObject jObj, String key) {
+	public static Object getObject(JSONObject jObj, String key) {
 		return get(jObj, key, Object.class);
 	}
 
-	public static Object get(JSONArray jObj, int index) {
-		if (jObj != null && index < jObj.length()) {
-			try {
-				return jObj.get(index);
-			} catch (JSONException e) {
-				log.warn("Fail to get " + index, e);
-			}
-		}
-		return null;
+	public static String getString(JSONObject jObj, String key) {
+		return get(jObj, key, String.class);
 	}
 
-	public static void put(JSONArray jObj, int index, Object value) {
-		if (jObj != null) {
-			try {
-				jObj.put(index, value);
-			} catch (JSONException e) {
-				log.warn("Fail to get " + index, e);
-			}
-		}
+	public static Integer getInteger(JSONObject jObj, String key) {
+		return get(jObj, key, Integer.class);
 	}
+
 }

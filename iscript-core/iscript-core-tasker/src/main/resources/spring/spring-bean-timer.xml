@@ -12,6 +12,8 @@
 	</bean>
 	<bean id="signTaskTimer" class="com.lezo.iscript.yeam.tasker.SignTaskTimer">
 	</bean>
+	<bean id="flushTaskTimer" class="com.lezo.iscript.yeam.tasker.FlushTaskTimer">
+	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="3" />
@@ -25,6 +27,10 @@
 	
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
+			fixed-delay="60000" />
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="flushTaskTimer" method="run"
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
 	

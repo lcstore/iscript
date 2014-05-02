@@ -8,8 +8,8 @@ public class TaskPriorityDto {
 	private String type;
 	private String url;
 	private String params;
-	private int level;
-	private int status;
+	private Integer level;
+	private Integer status;
 	private String source;
 	private Date creatTime;
 	private Date updateTime;
@@ -54,19 +54,19 @@ public class TaskPriorityDto {
 		this.params = params;
 	}
 
-	public int getLevel() {
+	public Integer getLevel() {
 		return level;
 	}
 
-	public void setLevel(int level) {
+	public void setLevel(Integer level) {
 		this.level = level;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

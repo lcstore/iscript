@@ -8,4 +8,6 @@
 		init-method="initHandler">
 		<property name="clientPath" value="${tasker_client_path}" />
 	</bean>
+	<bean id="taskRemoteService" class="com.lezo.iscript.yeam.service.impl.TaskRemoteServiceImpl">
+	</bean>
 </beans>

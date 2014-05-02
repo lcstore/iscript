@@ -19,7 +19,7 @@
 		BATCH_ID ,TYPE ,URL ,PARAMS ,LEVEL ,STATUS ,SOURCE
 		,CREAT_TIME ,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="TaskPriorityDto">
+	<insert id="batchInsert-TaskPriorityDto" parameterType="TaskPriorityDto">
 		INSERT INTO T_TASK_PRIORITY(
 		<include refid="TaskPriorityDto-coloumn-list" />
 		)

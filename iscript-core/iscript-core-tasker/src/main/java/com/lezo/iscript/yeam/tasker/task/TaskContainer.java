@@ -47,20 +47,6 @@ public class TaskContainer {
 		lastStamp.set(System.currentTimeMillis());
 	}
 
-	public void add(TaskWritable taskDto) {
-		if (taskDto == null) {
-			return;
-		}
-		synchronized (taskList) {
-			taskList.add(taskDto);
-			if (isTime2Consume()) {
-				List<TaskWritable> copyList = toConsume();
-				consumeQueue.offer(copyList);
-			}
-		}
-		lastStamp.set(System.currentTimeMillis());
-	}
-
 	public List<TaskWritable> poll() {
 		List<TaskWritable> consumeDtos = consumeQueue.poll();
 		if (consumeDtos == null && isTime2Consume()) {

@@ -23,7 +23,7 @@ public class TaskPriorityDaoImpl implements TaskPriorityDao {
 		if (CollectionUtils.isEmpty(dtoList)) {
 			return;
 		}
-		sqlSessionTemplate.insert("batchInsert", dtoList);
+		sqlSessionTemplate.insert("batchInsert-TaskPriorityDto", dtoList);
 	}
 
 	@Override

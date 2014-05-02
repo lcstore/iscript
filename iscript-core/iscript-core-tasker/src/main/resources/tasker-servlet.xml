@@ -11,6 +11,14 @@
 		<property name="serviceInterface"
 			value="com.lezo.iscript.yeam.service.TaskerService" />
 	</bean>	
+	<bean id="taskRemoteServiceExporter"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service">
+			<ref bean="taskRemoteService" />
+		</property>
+		<property name="serviceInterface"
+			value="com.lezo.iscript.yeam.service.TaskRemoteService" />
+	</bean>	
 	
 	
 
@@ -22,6 +30,7 @@
 		<property name="mappings">
 			<props>
 				<prop key="/service">taskerExporter</prop>
+				<prop key="/taskRemoteService">taskRemoteServiceExporter</prop>
 			</props>
 		</property>
 	</bean>

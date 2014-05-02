@@ -33,13 +33,13 @@ public class PcsResultHandler implements ResultHandle {
 
 	private String getFileName(ResultWritable resultWritable) {
 		JSONObject rsObject = JSONUtils.getJSONObject(resultWritable.getResult());
-		JSONObject argsObject = (JSONObject) JSONUtils.get(rsObject, "args");
-		String type = (String) JSONUtils.get(argsObject, "type");
+		JSONObject argsObject = (JSONObject) JSONUtils.getObject(rsObject, "args");
+		String type = (String) JSONUtils.getObject(argsObject, "type");
 		StringBuilder sb = new StringBuilder();
 		if (argsObject != null) {
 			sb.append(type);
 			sb.append(".");
-			sb.append(JSONUtils.get(argsObject, "bid"));
+			sb.append(JSONUtils.getObject(argsObject, "bid"));
 		}
 		sb.append(".");
 		sb.append(System.currentTimeMillis());

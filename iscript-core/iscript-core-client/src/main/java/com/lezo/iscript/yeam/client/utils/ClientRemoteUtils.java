@@ -11,7 +11,6 @@ import com.lezo.iscript.yeam.ObjectBuilder;
 import com.lezo.iscript.yeam.service.ResulterService;
 import com.lezo.iscript.yeam.service.TaskerService;
 
-
 public class ClientRemoteUtils {
 	public static TaskerService getTaskerService() throws IOException {
 		String taskerHost = (String) ObjectBuilder.findObject(ClientConstant.CLIENT_TASKER_HOST);
@@ -23,11 +22,8 @@ public class ClientRemoteUtils {
 		if (StringUtils.isEmpty(serviceUrl)) {
 			throw new IOException("Can not inovker bean by empty url.");
 		}
-		String servlet = "taskservlet/service";
+		String servlet = "/taskservlet/service";
 		if (!serviceUrl.endsWith(servlet)) {
-			if (!serviceUrl.endsWith("/")) {
-				serviceUrl += "/";
-			}
 			serviceUrl += servlet;
 		}
 		TaskerService taskerService = null;
@@ -42,11 +38,8 @@ public class ClientRemoteUtils {
 		if (StringUtils.isEmpty(serviceUrl)) {
 			throw new IOException("Can not inovker bean by empty url.");
 		}
-		String servlet = "resultservlet/service";
+		String servlet = "/resultservlet/service";
 		if (!serviceUrl.endsWith(servlet)) {
-			if (!serviceUrl.endsWith("/")) {
-				serviceUrl += "/";
-			}
 			serviceUrl += servlet;
 		}
 		ResulterService resulterService = null;

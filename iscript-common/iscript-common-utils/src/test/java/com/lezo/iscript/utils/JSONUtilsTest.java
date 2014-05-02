@@ -18,8 +18,8 @@ public class JSONUtilsTest {
 		Iterator it = jObject.keys();
 		while (it.hasNext()) {
 			String key = it.next().toString();
-			System.out.println(key + "=" + JSONUtils.get(jObject, key));
+			System.out.println(key + "=" + JSONUtils.getObject(jObject, key));
 		}
-		System.out.println("nokey=" + JSONUtils.get(jObject, "nokey"));
+		System.out.println("nokey=" + JSONUtils.getObject(jObject, "nokey"));
 	}
 }
