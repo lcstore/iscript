@@ -4,16 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ResultConstant;
+import com.lezo.iscript.yeam.service.TaskRemoteService;
 import com.lezo.iscript.yeam.writable.ResultWritable;
+import com.lezo.iscript.yeam.writable.TaskWritable;
 import com.qiniu.api.auth.digest.Mac;
 import com.qiniu.api.io.IoApi;
 import com.qiniu.api.io.PutExtra;
@@ -50,6 +56,40 @@ public class QiniuResultHandler implements ResultHandle {
 		}
 		log.info("temp source:" + source + ",dest qiniu bucket[" + bucketName + "].key:" + key);
 		log.info("send to qiniu.status:" + ret.ok() + ",respone:" + ret.response + ",exception:" + ret.exception);
+		nextTask(resultWritable);
+	}
+
+	private void nextTask(ResultWritable resultWritable) {
+		JSONObject rsObject = JSONUtils.getJSONObject(resultWritable.getResult());
+		rsObject = JSONUtils.getJSONObject(JSONUtils.getString(rsObject, "rs"));
+		if (rsObject == null) {
+			return;
+		}
+		JSONObject nextObject = JSONUtils.get(rsObject, "next", JSONObject.class);
+		if (nextObject == null) {
+			return;
+		}
+		JSONObject argsObject = JSONUtils.get(rsObject, "args", JSONObject.class);
+		TaskWritable taskWritable = new TaskWritable();
+		addArgs(taskWritable, argsObject);
+		addArgs(taskWritable, nextObject);
+		TaskRemoteService taskRemoteService = (TaskRemoteService) SpringBeanUtils.getBean("taskRemoteService");
+		List<TaskWritable> taskList = new ArrayList<TaskWritable>();
+		taskList.add(taskWritable);
+		taskRemoteService.addTasks(taskList);
+		log.info("next:" + new JSONObject(taskWritable.getArgs()));
+	}
+
+	private void addArgs(TaskWritable taskWritable, JSONObject argsObject) {
+		if (argsObject == null) {
+			return;
+		}
+		Iterator<?> it = argsObject.keys();
+		while (it.hasNext()) {
+			String key = it.next().toString();
+			Object value = JSONUtils.getObject(argsObject, key);
+			taskWritable.put(key, value);
+		}
 	}
 
 	private String toQiniuKey(String key) {
