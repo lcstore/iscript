@@ -24,16 +24,17 @@ public class DaoConfigUtilsTest {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_TASK_CONFIG";
-		String qualifyName = "com.lezo.iscript.yeam.tasker.dto.TaskConfigDto";
-		int index = qualifyName.lastIndexOf('.');
-		String clsPackage = qualifyName.substring(0, index);
-		String clsName = qualifyName.substring(index + 1);
+		String tableName = "T_CRAWLER_STRATEGY_CONFIG";
+		String daoQualifyName = "com.vipshop.crawler.task.dao.CrawlerStrategyConfigDao";
+		int index = daoQualifyName.lastIndexOf('.');
+		String daoClassPackage = daoQualifyName.substring(0, index);
+		String daoClassName = daoQualifyName.substring(index + 1);
+		String dtoClassName = daoClassName.replace("Dao", "Dto");
 		System.out.println("tableName:" + tableName);
-		System.out.println(qualifyName);
-		System.out.println(clsPackage);
-		System.out.println(clsName);
+		System.out.println(daoQualifyName);
+		System.out.println(daoClassPackage);
+		System.out.println(dtoClassName);
 		List<String> columnList = DBFieldUtils.sql2Field(sqlLines);
-		DaoConfigUtils.createDBConfig(path, tableName, clsPackage, clsName, columnList);
+		DaoConfigUtils.createDBConfig(path, tableName, daoClassPackage, dtoClassName, columnList);
 	}
 }

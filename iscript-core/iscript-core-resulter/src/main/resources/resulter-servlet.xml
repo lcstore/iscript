@@ -33,13 +33,4 @@
 		</property>
 	</bean>
 	
-	<bean id="taskRemoteService"
-	class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-		<property name="serviceUrl">
-			<value>${yeam_thost}/taskservlet/taskRemoteService</value>
-		</property>
-		<property name="serviceInterface">
-			<value>com.lezo.iscript.yeam.service.TaskRemoteService</value>
-		</property>
-	</bean>
 </beans>

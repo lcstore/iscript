@@ -47,10 +47,10 @@ public class FlushTaskTimer {
 				taskPriorityService.batchInsert(taskDtos);
 				total += size;
 				long oneCost = System.currentTimeMillis() - start;
-				log.info("<task.insert>.size:" + size + ",total:" + total + ",cost:" + oneCost+"ms");
+				log.info("<task.insert>.size:" + size + ",total:" + total + ",cost:" + oneCost + "ms");
 			}
 			long cost = System.currentTimeMillis() - startFlush;
-			log.info("<task.insert>.total:" + total + ",cost:" + cost+"ms");
+			log.info("<task.insert>.total:" + total + ",cost:" + cost + "ms");
 		} finally {
 			running = false;
 		}
@@ -82,7 +82,7 @@ public class FlushTaskTimer {
 		Date createTime = JSONUtils.get(argsObject, "ctime", Date.class);
 		createTime = createTime == null ? new Date() : createTime;
 		taskPriorityDto.setCreatTime(createTime);
-		taskPriorityDto.setStatus(TaskConstant.TASK_ASSIGN);
+		taskPriorityDto.setStatus(TaskConstant.TASK_NEW);
 		argsObject.remove("bid");
 		argsObject.remove("type");
 		argsObject.remove("url");

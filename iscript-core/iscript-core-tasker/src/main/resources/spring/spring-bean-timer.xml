@@ -36,6 +36,6 @@
 	
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="signTaskTimer" method="run"
-			cron="0 15 9 * * ?"/>
+			cron="0 20 9 * * ?"/>
 	</task:scheduled-tasks>
 </beans>

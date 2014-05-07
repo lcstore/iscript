@@ -33,6 +33,7 @@ public class QiniuResultHandler implements ResultHandle {
 	private String encoding = "UTF-8";
 	private String tempDir;
 	private Mac mac;
+	private TaskRemoteService taskRemoteService;
 
 	@Override
 	public void handle(ResultWritable resultWritable) {
@@ -73,7 +74,6 @@ public class QiniuResultHandler implements ResultHandle {
 		TaskWritable taskWritable = new TaskWritable();
 		addArgs(taskWritable, argsObject);
 		addArgs(taskWritable, nextObject);
-		TaskRemoteService taskRemoteService = (TaskRemoteService) SpringBeanUtils.getBean("taskRemoteService");
 		List<TaskWritable> taskList = new ArrayList<TaskWritable>();
 		taskList.add(taskWritable);
 		taskRemoteService.addTasks(taskList);
@@ -155,6 +155,10 @@ public class QiniuResultHandler implements ResultHandle {
 
 	public void setMac(Mac mac) {
 		this.mac = mac;
+	}
+
+	public void setTaskRemoteService(TaskRemoteService taskRemoteService) {
+		this.taskRemoteService = taskRemoteService;
 	}
 
 }

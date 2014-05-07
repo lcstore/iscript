@@ -19,8 +19,20 @@
 		<constructor-arg index="1" name="secretKey" value="${qiniu_secretKey}">
 		</constructor-arg>
 	</bean>
-	<bean id="qiniuResultHandler" class="com.lezo.iscript.yeam.resulter.handle.QiniuResultHandler">
+	<bean id="qiniuResultHandler"
+		class="com.lezo.iscript.yeam.resulter.handle.QiniuResultHandler">
 		<property name="mac" ref="mac"></property>
 		<property name="tempDir" value="${temp_mopaas_dir}"></property>
+		<property name="taskRemoteService" ref="taskRemoteService"></property>
+	</bean>
+
+	<bean id="taskRemoteService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceUrl">
+			<value>${yeam_thost}/taskservlet/taskRemoteService</value>
+		</property>
+		<property name="serviceInterface">
+			<value>com.lezo.iscript.yeam.service.TaskRemoteService</value>
+		</property>
 	</bean>
 </beans>

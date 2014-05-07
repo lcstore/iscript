@@ -28,16 +28,17 @@ public class DaoConfigUtils {
 		return sb.toString();
 	}
 
-	public static void createDBConfig(String path, String tableName, String clsPackage, String clsName,
+	public static void createDBConfig(String path, String tableName, String daoClassPackage, String dtoClassName,
 			List<String> fileds) throws IOException {
 		List<String> paramList = DBFieldUtils.field2Param(fileds);
 		BufferedWriter bw = null;
 		String templatConfig = FileUtils.readFileToString(new File(TEMPLATE_FILE_PATH), encoding);
+		String daoClassName = dtoClassName.replace("Dto", "Dao");
 		try {
 			Writer out = new FileWriter(path);
 			bw = new BufferedWriter(out);
-			templatConfig = templatConfig.replace("${dtoSimpleName}", clsName);
-			templatConfig = templatConfig.replace("${dtoPackageName}", clsPackage + "." + clsName);
+			templatConfig = templatConfig.replace("${dtoSimpleName}", dtoClassName);
+			templatConfig = templatConfig.replace("${daoPackageName}", daoClassPackage + "." + daoClassName);
 			templatConfig = templatConfig.replace("${tableName}", tableName);
 
 			String rmConfig = getResultMapConfig(fileds, paramList);

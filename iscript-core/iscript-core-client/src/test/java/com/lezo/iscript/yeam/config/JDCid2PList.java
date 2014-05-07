@@ -28,8 +28,8 @@ public class JDCid2PList implements ConfigParser {
 		argsObject.put("catelogyId", sCid);
 		argsObject.put("pageSize", pageSize);
 		argsObject.put("client", "m");
-		Integer pageArgs = JSONUtils.getInteger(argsObject, "page");
-		int page = pageArgs == null ? 1 : pageArgs;
+		Integer pageArgs = getInteger(task.getArgs(), "page");
+		int page = pageArgs == null || pageArgs < 1 ? 1 : pageArgs;
 		JSONObject oPListObject = getPList(argsObject, page);
 		JSONObject scListResObject = JSONUtils.get(oPListObject,
 				"jingdong_ware_promotion_search_catelogy_list_responce", JSONObject.class);

@@ -2,40 +2,37 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.yeam.tasker.dto.TaskConfigDto">
-	<resultMap type="TaskConfigDto" id="RM_TaskConfigDto">
+<mapper namespace="com.vipshop.crawler.task.dao.CrawlerStrategyConfigDao">
+	<resultMap type="CrawlerStrategyConfigDto" id="RM_CrawlerStrategyConfigDto">
 		<result column="ID" property="id"/>
-		<result column="TYPE" property="type"/>
-		<result column="CONFIG" property="config"/>
-		<result column="MODE" property="mode"/>
-		<result column="STATUS" property="status"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="STRATEGY_NAME" property="strategyName"/>
+		<result column="STRATEGY_CONTENT" property="strategyContent"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="TaskConfigDto-coloumn-list">
-		TYPE
-		,CONFIG
-		,MODE
-		,STATUS
+	<sql id="CrawlerStrategyConfigDto-coloumn-list">
+		SITE_ID
+		,STRATEGY_NAME
+		,STRATEGY_CONTENT
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="insert-list-TaskConfigDto" parameterType="TaskConfigDto">
-		INSERT INTO T_TASK_CONFIG(
-		<include refid="TaskConfigDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="CrawlerStrategyConfigDto">
+		INSERT INTO T_CRAWLER_STRATEGY_CONFIG(
+		<include refid="CrawlerStrategyConfigDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.config},#{item.mode},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.strategyName},#{item.strategyContent},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="update-one-TaskConfigDto" parameterType="TaskConfigDto">
-		UPDATE T_TASK_CONFIG SET
-		TYPE=#{type},
-		CONFIG=#{config},
-		MODE=#{mode},
-		STATUS=#{status},
+	<update id="updateOne" parameterType="CrawlerStrategyConfigDto">
+		UPDATE T_CRAWLER_STRATEGY_CONFIG SET
+		SITE_ID=#{siteId},
+		STRATEGY_NAME=#{strategyName},
+		STRATEGY_CONTENT=#{strategyContent},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
