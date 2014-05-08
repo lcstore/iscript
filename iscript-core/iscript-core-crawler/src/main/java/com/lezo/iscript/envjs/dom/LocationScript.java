@@ -3,16 +3,12 @@ package com.lezo.iscript.envjs.dom;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.Document;
 
-public class LocationScriptObject extends NativeJavaObject {
-	private static final long serialVersionUID = -7096284504871231194L;
-	private static final Logger logger = Logger.getLogger(LocationScriptObject.class.getName());
+public class LocationScript {
+	private static final Logger logger = Logger.getLogger(LocationScript.class.getName());
 
-	public LocationScriptObject(Scriptable scope, Object object) {
-		super(scope, object, object.getClass());
+	public LocationScript() {
 	}
 
 	private URL getURL() {

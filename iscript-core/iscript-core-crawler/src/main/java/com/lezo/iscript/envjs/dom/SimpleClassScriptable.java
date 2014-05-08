@@ -2,30 +2,22 @@ package com.lezo.iscript.envjs.dom;
 
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class NodeScriptable extends NativeJavaObject {
+public class SimpleClassScriptable extends NativeJavaObject {
 	private static final long serialVersionUID = 709148757230893792L;
-	private Node node;
+	private SimpleClass simpleClass;
 
-	public NodeScriptable(Scriptable scope, Object javaObject, Class<?> staticType) {
-		super(scope, javaObject, staticType,true);
-		this.node = (Node) javaObject;
+	public SimpleClassScriptable(Scriptable scope, Object javaObject, Class<?> staticType) {
+		super(scope, javaObject, staticType);
+		this.simpleClass = (SimpleClass) javaObject;
 	}
 
 	@Override
 	public Object get(String name, Scriptable start) {
-		Object result = super.get(name, start);
-		if (result == null && node.hasAttributes()) {
-			NamedNodeMap attrMap = node.getAttributes();
-			Node attrNode = attrMap.getNamedItem(name);
-			if (attrNode != null) {
-				result = attrNode.getNodeValue();
-			}
-		}
-		return result;
+		// TODO Auto-generated method stub
+		return super.get(name, start);
 	}
 
 	@Override
@@ -36,8 +28,7 @@ public class NodeScriptable extends NativeJavaObject {
 
 	@Override
 	public void put(String name, Scriptable start, Object value) {
-		Element e = (Element) node;
-		e.setAttribute(name, value == null ? null : value.toString());
+		simpleClass.valueMap.put(name, value);
 		super.put(name, start, value);
 	}
 

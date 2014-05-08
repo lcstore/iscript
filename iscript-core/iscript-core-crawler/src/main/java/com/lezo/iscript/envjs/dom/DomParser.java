@@ -51,18 +51,23 @@ public class DomParser {
 			public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
 				if (javaObject instanceof ArrayList<?>) {
 					return new ArrayListScriptable(scope, javaObject, staticType);
-				} else if (javaObject instanceof NodeList) {
-					return new NodeListScriptable(scope, javaObject, staticType);
-				} else if (javaObject instanceof Node) {
-					return new NodeScriptable(scope, javaObject, staticType);
+				} else if (javaObject instanceof Document) {
+					return new DocumentScriptable(scope, javaObject, staticType);
+				} else if (javaObject instanceof Node || javaObject instanceof NodeList
+						|| javaObject instanceof Element) {
+					return new ElementScriptable(scope, javaObject, staticType);
+				} else if (javaObject instanceof SimpleClass) {
+					return new SimpleClassScriptable(scope, javaObject, staticType);
 				}
 				return super.wrapAsJavaObject(cx, scope, javaObject, staticType);
 			}
 		});
-		LocationScriptObject location = new LocationScriptObject(scope, new Object());
-		ScriptableObject.putProperty(scope, "document", Context.toObject(document, scope));
-		ScriptableObject.putProperty(scope, "location", Context.toObject(location, scope));
-		ScriptableObject.putProperty(scope, "SimpleClass", Context.toObject(new SimpleClass(), scope));
+		LocationScript location = new LocationScript();
+		DocumentScript documentScript = new DocumentScript(document, location);
+		ScriptableObject.putProperty(scope, "document", document);
+		ScriptableObject.putProperty(scope, "location", location);
+		SimpleClass simpleClass = new SimpleClass();
+		ScriptableObject.putProperty(scope, "SimpleClass", Context.toObject(simpleClass, scope));
 		List<String> argsList = new ArrayList<String>();
 		for (int i = 0; i < 5; i++) {
 			argsList.add("args:" + i);
