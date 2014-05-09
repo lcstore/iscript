@@ -3,10 +3,10 @@ package com.lezo.iscript.envjs.dom;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 
-public class DocumentScriptable extends NativeJavaObject {
+public class DocumentJavaObject extends NativeJavaObject {
 	private static final long serialVersionUID = -3084942115819596740L;
 
-	public DocumentScriptable(Scriptable scope, Object javaObject, Class<?> staticType) {
+	public DocumentJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 	}
 

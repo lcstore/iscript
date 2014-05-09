@@ -6,10 +6,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ElementScriptable extends NativeJavaObject {
+public class ElementJavaObject extends NativeJavaObject {
 	private static final long serialVersionUID = 709148757230893792L;
 
-	public ElementScriptable(Scriptable scope, Object javaObject, Class<?> staticType) {
+	public ElementJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 	}
 
@@ -27,10 +27,6 @@ public class ElementScriptable extends NativeJavaObject {
 
 	@Override
 	public void put(int index, Scriptable start, Object value) {
-		// if (javaObject instanceof NodeList) {
-		// NodeList nodeList = (NodeList) javaObject;
-		// nodeList.item(index)
-		// }
 		super.put(index, start, value);
 	}
 

@@ -1,24 +1,16 @@
-package com.lezo.iscript.envjs.dom;
+package com.lezo.iscript.envjs.window;
 
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 
-import org.w3c.dom.Document;
+public class LocationAdapt {
+	private URL url;
+	private String target;
 
-public class LocationScript {
-	private static final Logger logger = Logger.getLogger(LocationScript.class.getName());
-
-	public LocationScript() {
+	public LocationAdapt() {
 	}
 
 	private URL getURL() {
-		URL url;
-		try {
-			Document document = null;
-			url = document == null ? null : new URL(document.getDocumentURI());
-		} catch (java.net.MalformedURLException mfu) {
-			url = null;
-		}
 		return url;
 	}
 
@@ -72,8 +64,6 @@ public class LocationScript {
 		return query == null ? "" : "?" + query;
 	}
 
-	private String target;
-
 	public String getTarget() {
 		return this.target;
 	}
@@ -83,11 +73,15 @@ public class LocationScript {
 	}
 
 	public String getHref() {
-		Document document = null;
-		return document == null ? null : document.getDocumentURI();
+		return url.toString();
 	}
 
 	public void setHref(String uri) {
+		try {
+			url = new URL(uri);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void reload() {
