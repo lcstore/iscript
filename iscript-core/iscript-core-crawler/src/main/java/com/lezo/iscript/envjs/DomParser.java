@@ -85,6 +85,7 @@ public class DomParser {
 		Object rs = ScriptableObject.getProperty(scope, "sua");
 		String ua = Context.toString(rs);
 		System.out.println("ua:" + ua);
+		
 	}
 
 	public Scriptable getGlobalScope() {

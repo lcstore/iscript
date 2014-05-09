@@ -616,9 +616,11 @@ UA_Opt.Flag = 14222;
             };
             log("scan--------10,sm.ua:"+sm.ua);
             nrbw = function(i7v, lscx) {
+            	log("scan--------nrbw:"+i7v+",q7:"+q7);
                 if (!q7) {
                     for (var hu = ((0x3e8 | 01726) % 73); hu < ((0x3f3 | 0162) % 63); hu++) {
                         if (hu == (0x3e8 % 0306 & 65)) {
+                        	log("scan--------hu："+hu);
                             var kwgz = bp("" + arguments["callee"]);
                         } else if (hu == ((0x3fe | 0754) % 85)) {
                             q7 = true;
@@ -630,13 +632,19 @@ UA_Opt.Flag = 14222;
                         if (gb == ((0x3e8 | 01267) % 85)) {
                             mtk = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
                         }
+                        log("scan--------for");
                     }
                 }
+                log("scan--------ug1");
                 var ug1 = bp("" + arguments["callee"]["caller"]);
+                log("scan--------i7v[0]:"+i7v[0]);
+                log("scan--------lscx:"+(i7v[0] != (ug1 + y5b(i7v[1]))));
                 if (lscx == u3g9 || typeof lscx == "undefined" || i7v[0] != (ug1 + y5b(i7v[1]))) {
+                	 log("scan--------toi："+ug1);
                     toi(ug1, "r");
                     return;
                 }
+                log("scan--------0x3f3");
                 if (!((0x3f3 | 01017) % 93)) {
                     var rc = (0x3e8 * 0252 & 79);
                 } else {
@@ -645,6 +653,7 @@ UA_Opt.Flag = 14222;
                 if (!rc) {
                     var ac = (0x3fe * 0367 & 67);
                 }
+                log("scan--------ac"+ac);
                 if (ac) {
                     zvu["push"](ug1);
                 } else {
@@ -652,7 +661,9 @@ UA_Opt.Flag = 14222;
                 }
             };
             toi = function(quz, i1y) {
+            	log("toi---------drgh");
                 drgh(["ic", quz, i1y]);
+                log("toi---------cy");
                 cy();
             };
             lw = hf2(m6);
@@ -681,6 +692,7 @@ UA_Opt.Flag = 14222;
             drgh = function(d) {
                 for (var hxd = (0x3e8 % 0144 & 91); hxd < ((0x3e8 | 01546) % 59); hxd++) {
                     if (hxd == (0x3e8 % 0171 & 81)) {
+                    	log('drgh:'+arguments["callee"]);
                         nrbw(bk(bp("" + arguments["callee"])), "" + arguments["callee"]);
                     } else if (hxd == ((0x3e8 | 01276) % 85)) {
                         q1([em, d]);
@@ -2007,20 +2019,24 @@ UA_Opt.Flag = 14222;
                 bqk = q1;
                 log('vv2l:-----go');
                 go();
+                log('go:-----nrbw');
                 nrbw(bk(bp("" + arguments[ib('mlallceeI', 4, 1)])), "" + arguments[xm('dJallceep', 4, 1)]);
                 if ((ybh[q2('hJendSQethMdoD', 4, 1)] & ((0x3fe | 0466) % 85)) > 0) {
                     var mb = (0x3e8 * 0200 & 63);
                     while (!mb) {
                         if (mb + (0x3f3 * 0673 & 81)) {
+                        	log('go:-----setInterval:'+mb);
                             setInterval(ahr0, ybh[ib('KvenSjTidRerme', 3, 1)]);
                             mb = mb + ((0x3e8 | 01152) % 77);
                             continue;
                         }
+                        log('charAt:-----setInterval:'+mb);
                         b4s.charAt((t & 0x00fc0000) >> 3);
                     }
                 }
+                log('go:-----ulp4');
                 ulp4();
-                log('vv2l:-----vz5l');
+                log('ulp4:-----vz5l');
                 vz5l(b8do, ovyw);
                 log('vv2l:-----ulp4');
                 ulp4(q2('Alo2ei0R', 1, 2));
@@ -2135,6 +2151,7 @@ UA_Opt.Flag = 14222;
                 }, ready = function() {
                     k5 = true;
                     for (var t24 = 0; t24 < b48v[ib('QJenglhtv', 4, 1)]; t24++) {
+                    	log('ready------'+t24);
                         r65(b48v[t24][q2('AwUfpFnU', 1, 2)], b48v[t24][q2('Nsrralslgh', 2, 2)] || []);
                     }
                     b48v = [];
