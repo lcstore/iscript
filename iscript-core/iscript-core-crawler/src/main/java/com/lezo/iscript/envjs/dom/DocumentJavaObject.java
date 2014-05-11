@@ -1,11 +1,17 @@
 package com.lezo.iscript.envjs.dom;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 
 public class DocumentJavaObject extends NativeJavaObject {
 	private static final long serialVersionUID = -3084942115819596740L;
-
+	private static Map<String, String> adaptMap = new HashMap<String, String>();
+	static{
+		adaptMap.put("attachEvent", "dispatchEvent");
+	}
 	public DocumentJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 	}
@@ -37,6 +43,11 @@ public class DocumentJavaObject extends NativeJavaObject {
 		}
 		return doReturn(result);
 	}
+
+//	private String toAdaptName(String name) {
+//		String adaptName = adaptMap.get(name);
+//		return adaptName==null?name:adaptName;
+//	}
 
 	private Object doReturn(Object result) {
 		return result;

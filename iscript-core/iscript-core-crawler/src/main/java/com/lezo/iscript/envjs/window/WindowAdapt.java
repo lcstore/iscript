@@ -25,16 +25,19 @@ package com.lezo.iscript.envjs.window;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventException;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
 
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 
-public class WindowAdapt {
+public class WindowAdapt implements EventTarget{
 	private static final Logger logger = Logger.getLogger(WindowAdapt.class.getName());
 	private static final String GLOABLE_SCOPE_KEY = "g_scope_key";
 	private volatile DocumentAdapt document;
@@ -461,5 +464,20 @@ public class WindowAdapt {
 
 	public void setSessionStorage(Object sessionStorage) {
 		this.sessionStorage = sessionStorage;
+	}
+
+	@Override
+	public void addEventListener(String type, EventListener listener, boolean useCapture) {
+		document.addEventListener(type, listener, useCapture);
+	}
+
+	@Override
+	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
+		document.removeEventListener(type, listener, useCapture);
+	}
+
+	@Override
+	public boolean dispatchEvent(Event event) throws EventException {
+		return document.dispatchEvent(event);
 	}
 }
