@@ -14,11 +14,17 @@ var setTimeout = function( expr,millis){
 	window.setTimeout(expr,millis);
 };
 var log = function(msg){
-	if(msg){
-		java.lang.System.out.println(msg);
-	}else {
+	if(!msg){
 		java.lang.System.err.println("null");
+		return;
 	}
+	 if(typeof(msg) == "string"){
+		 java.lang.System.out.println(msg);
+	 }else {
+		 for(var index in msg){
+			 java.lang.System.out.println(index+"="+msg[index]);
+		 }
+	 }
 }
 
 var sm = {};
@@ -32,7 +38,6 @@ UA_Opt.Token = new Date().getTime() + ":" + Math.random();
 UA_Opt.SendMethod = 8;
 UA_Opt.Flag = 14222;
 (function() {
-	
     try {
         (function() {
             var g38;
@@ -40,7 +45,6 @@ UA_Opt.Flag = 14222;
             var c4o;
             var z83z;
             var r5d7 = (0x3e8 * 0225 & 97);
-            log("scan--------");
             for (var md = (0x3e8 % 0171 & 71); md <= (0x435 * 0673 & 79); r5d7 = ++md + md++ + md) {
                 if (md == r5d7) {
                     var go;
@@ -76,7 +80,6 @@ UA_Opt.Flag = 14222;
                     var nkof;
                 }
             }
-            log("scan--------");
             var z1x = (0x3e8 % 0306 & 69);
             for (var yv = (0x3e8 % 0367 & 67); yv <= (0x409 % 0441 & 95); z1x = ++yv + yv++ + yv) {
                 if (yv == z1x) {
@@ -357,7 +360,6 @@ UA_Opt.Flag = 14222;
             ahr0 = function() {
                 p();
             };
-            log("scan--------");
             p = function(k17) {
                 if (!c4o) {
                     return;
@@ -404,7 +406,6 @@ UA_Opt.Flag = 14222;
                     i3o(c4o, cl5m);
                 }
             };
-            log("scan--------");
             n4h = function(rwz) {
                 var dsx1 = 34;
                 for (dsx1 = dsx1 + 31; dsx1 <= ((0x46c | 0153) % 95); ++dsx1) {
@@ -426,7 +427,6 @@ UA_Opt.Flag = 14222;
             nd69 = function() {
                 p(((0x3e8 | 0342) % 91));
             };
-            log("scan--------");
             h2 = function() {
                 if (su0["length"] >= nkof) {
                     var z4 = (0x3e8 * 0200 & 59);
@@ -466,7 +466,6 @@ UA_Opt.Flag = 14222;
                 }
                 this.UAOpt = e3;
             }
-            log("scan--------");
             e8l = function(gqj) {
                 try {
                     if (gqj[xm('zloncEolsen', 3, 1)] && (gqj[ib('WzoncIolseE', 3, 1)][m1('TUirflbuegI', 3, 1)] || gqj[m1('MPoncNolsen', 3, 1)][xm('WHxceopteTonis', 3, 1)])) {
@@ -484,7 +483,6 @@ UA_Opt.Flag = 14222;
                     return (0x3e8 * 0243 & 65);
                 }
             };
-            log("scan--------7");
             ovyw = bp(u3g9 + arguments[ib('llallceeC', 4, 1)]);
             ulp4 = function(cn) {
                 var g31o = (0x456 % 01053);
@@ -522,7 +520,6 @@ UA_Opt.Flag = 14222;
                 }
                 return true;
             };
-            log("scan--------8,sm.ua:"+sm.ua);
             y5b = function(hb, wy16) {
                 var fr = 4, k8cn = u3g9;
                 var wkvg = u3g9 + hb;
@@ -571,7 +568,6 @@ UA_Opt.Flag = 14222;
                 var tlp = new mpz["Date"]()["getTime"]();
                 return [rwz + tlp, w5(tlp)];
             };
-            log("scan--------9,sm.ua:"+sm.ua);
             us = function(i7v, w9) {
                 for (var i = (0x3e8 % 0432 & 97), xaz = zvu["length"]; i < xaz; i++) {
                     if (i7v == zvu[i]) {
@@ -614,13 +610,10 @@ UA_Opt.Flag = 14222;
                 var cy = hw3;
                 return cy(q1, dsx1);
             };
-            log("scan--------10,sm.ua:"+sm.ua);
             nrbw = function(i7v, lscx) {
-            	log("scan--------nrbw:"+i7v+",q7:"+q7);
                 if (!q7) {
                     for (var hu = ((0x3e8 | 01726) % 73); hu < ((0x3f3 | 0162) % 63); hu++) {
                         if (hu == (0x3e8 % 0306 & 65)) {
-                        	log("scan--------hu："+hu);
                             var kwgz = bp("" + arguments["callee"]);
                         } else if (hu == ((0x3fe | 0754) % 85)) {
                             q7 = true;
@@ -632,19 +625,13 @@ UA_Opt.Flag = 14222;
                         if (gb == ((0x3e8 | 01267) % 85)) {
                             mtk = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
                         }
-                        log("scan--------for");
                     }
                 }
-                log("scan--------ug1");
                 var ug1 = bp("" + arguments["callee"]["caller"]);
-                log("scan--------i7v[0]:"+i7v[0]);
-                log("scan--------lscx:"+(i7v[0] != (ug1 + y5b(i7v[1]))));
                 if (lscx == u3g9 || typeof lscx == "undefined" || i7v[0] != (ug1 + y5b(i7v[1]))) {
-                	 log("scan--------toi："+ug1);
                     toi(ug1, "r");
                     return;
                 }
-                log("scan--------0x3f3");
                 if (!((0x3f3 | 01017) % 93)) {
                     var rc = (0x3e8 * 0252 & 79);
                 } else {
@@ -653,7 +640,6 @@ UA_Opt.Flag = 14222;
                 if (!rc) {
                     var ac = (0x3fe * 0367 & 67);
                 }
-                log("scan--------ac"+ac);
                 if (ac) {
                     zvu["push"](ug1);
                 } else {
@@ -661,9 +647,7 @@ UA_Opt.Flag = 14222;
                 }
             };
             toi = function(quz, i1y) {
-            	log("toi---------drgh");
                 drgh(["ic", quz, i1y]);
-                log("toi---------cy");
                 cy();
             };
             lw = hf2(m6);
@@ -692,7 +676,6 @@ UA_Opt.Flag = 14222;
             drgh = function(d) {
                 for (var hxd = (0x3e8 % 0144 & 91); hxd < ((0x3e8 | 01546) % 59); hxd++) {
                     if (hxd == (0x3e8 % 0171 & 81)) {
-                    	log('drgh:'+arguments["callee"]);
                         nrbw(bk(bp("" + arguments["callee"])), "" + arguments["callee"]);
                     } else if (hxd == ((0x3e8 | 01276) % 85)) {
                         q1([em, d]);
@@ -819,7 +802,6 @@ UA_Opt.Flag = 14222;
                 var v6 = function(ru) {
                     return typeof ru == q2('VRumbnreW', 4, 1);
                 };
-                log("scan--------11,sm.ua:"+sm.ua);
                 var czn = mty;
                 var ucmt = function(dnm, w, d) {
                     var r4l = typeof dnm;
@@ -1163,7 +1145,6 @@ UA_Opt.Flag = 14222;
             };
             f9x = function(ohwp) {
             };
-            log("scan--------12,sm.ua:"+sm.ua);
             akb = function(e) {
                 try {
                     var ytc = ((0x3fe | 0171) % 73);
@@ -1291,7 +1272,6 @@ UA_Opt.Flag = 14222;
                 return ugjq;
             };
             go = function() {
-            	log('start...go-----');
                 var eb = ((0x3f3 | 0556) % 93);
                 for (var bm = (0x3e8 * 0270 & 63); bm <= ((0x3e8 | 0547) % 77); eb = ++bm + bm++ + bm) {
                     if (bm == eb) {
@@ -1301,16 +1281,13 @@ UA_Opt.Flag = 14222;
                     if (2 * bm == eb - ((0x3e8 | 0405) % 77)) {
                         w69 = 0;
                     } else if (2 * bm == eb - 2) {
-                    	log('start...go-----su0');
                         su0 = new mpz[m1('eEriAGalryZ', 2, 2)]();
-                        log('start...go-----continue');
                         continue;
                     }
                     if ((0x3f3 * 0754 & 61) * bm == eb + (0x3e8 * 0565 & 73)) {
                         ri = !!0;
                     }
                 }
-                log('start...go-----h6f');
                 for (var h6f = ((0x3f3 | 01456) % 93); h6f < (0x3f3 % 0324 & 87); h6f++) {
                     if (h6f == (0x3e8 * 0324 & 65)) {
                         zvu = [];
@@ -1325,7 +1302,6 @@ UA_Opt.Flag = 14222;
                         this.vak = lkjh.join('{');
                     }
                 }
-                log('start...go-----typeof');
                 if (typeof ybh['SendInterval'] == ib('ytumbnreo', 4, 1) && ybh['SendInterval'] > (0x3e8 * 0200 & 67)) {
                     var tdv = ((0x3e8 | 0342) % 77);
                     while (!(tdv - (0x3e8 % 0423 & 65))) {
@@ -1371,7 +1347,6 @@ UA_Opt.Flag = 14222;
                         zf8[xm('BbahvVuZlew', 2, 2)] = u3g9;
                     }
                 }
-                log('start...go-----ybh');
                 if ((ybh[m1('qUendSoethMdoN', 4, 1)] & ((0x409 | 0621) % 57)) > (0x3e8 % 0144 & 83)) {
                     if (ybh[xm('lPogVLlao', 4, 1)]) {
                         if (!((0x3e8 | 0466) % 73)) {
@@ -1389,7 +1364,6 @@ UA_Opt.Flag = 14222;
                         }
                     }
                 }
-                log('start...go-----end');
             };
             tdt4 = function(q1) {
                 var i6 = (0x3e8 % 01323 & 73);
@@ -1432,7 +1406,6 @@ UA_Opt.Flag = 14222;
                 }
                 return bj;
             };
-            log("scan--------13,sm.ua:"+sm.ua);
             z83z = function(bqk) {
                 if (typeof ybh['FormId'] != m1('lLtrisgnl', 4, 1)) {
                     return;
@@ -1778,7 +1751,6 @@ UA_Opt.Flag = 14222;
                 return s1[ib('dlocdUmeutnV', 3, 1)]['JSocket'];
             };
             q3t = function(ohwp) {
-            	log("qwqeqw")
                 if (ybh[q2('blogVLlat', 4, 1)]) {
                     var bj = mpz[m1('bMvJexlNal', 2, 2)](ybh[q2('LiogVLlas', 4, 1)]);
                     var kop = xjex(bj) + (0x3e8 % 0441 & 81);
@@ -2017,28 +1989,21 @@ UA_Opt.Flag = 14222;
                 }
                 xf = 1;
                 bqk = q1;
-                log('vv2l:-----go');
                 go();
-                log('go:-----nrbw');
                 nrbw(bk(bp("" + arguments[ib('mlallceeI', 4, 1)])), "" + arguments[xm('dJallceep', 4, 1)]);
                 if ((ybh[q2('hJendSQethMdoD', 4, 1)] & ((0x3fe | 0466) % 85)) > 0) {
                     var mb = (0x3e8 * 0200 & 63);
                     while (!mb) {
                         if (mb + (0x3f3 * 0673 & 81)) {
-                        	log('go:-----setInterval:'+mb);
                             setInterval(ahr0, ybh[ib('KvenSjTidRerme', 3, 1)]);
                             mb = mb + ((0x3e8 | 01152) % 77);
                             continue;
                         }
-                        log('charAt:-----setInterval:'+mb);
                         b4s.charAt((t & 0x00fc0000) >> 3);
                     }
                 }
-                log('go:-----ulp4');
                 ulp4();
-                log('ulp4:-----vz5l');
                 vz5l(b8do, ovyw);
-                log('vv2l:-----ulp4');
                 ulp4(q2('Alo2ei0R', 1, 2));
                 var r4l = (0x3e8 % 01251 & 65);
                 var df1 = (0x3f3 * 0315 & 65);
@@ -2141,6 +2106,7 @@ UA_Opt.Flag = 14222;
                 }
             };
             a51q = (function() {
+            	log('a51q.init');
                 var b48v = [], k5 = false, lu = null, r65 = function(fn, args) {
                     try {
                         fn[xm('ztpGaylNpyN', 2, 2)](this, args || []);
@@ -2149,9 +2115,9 @@ UA_Opt.Flag = 14222;
                             lu[m1('bjaecxlGll', 2, 2)](this, err);
                     }
                 }, ready = function() {
+                	log('call.ready.fn..');
                     k5 = true;
                     for (var t24 = 0; t24 < b48v[ib('QJenglhtv', 4, 1)]; t24++) {
-                    	log('ready------'+t24);
                         r65(b48v[t24][q2('AwUfpFnU', 1, 2)], b48v[t24][q2('Nsrralslgh', 2, 2)] || []);
                     }
                     b48v = [];
@@ -2177,10 +2143,13 @@ UA_Opt.Flag = 14222;
                     return this;
                 };
                 if (xkvi[q2('OfddEaOentvListLXnereO', 4, 1)]) {
+                	log('definde.ready');
                     mpz[m1('UtocdwmeutnO', 3, 1)][m1('MLddEaYentvBistLgnereG', 4, 1)]('DOMContentLoaded', function() {
+                    	log('call.ready');
                         ready();
                     }, false);
                 } else {
+                	log('definde.ready.other');
                     (function() {
                         if (!xkvi[ib('Wlocdgmeutnn', 3, 1)][m1('LxniuoueqDIC', 3, 1)] && xkvi[m1('LhocdVmeutnl', 3, 1)][ib('llxpeRndaow', 3, 1)]) {
                             return;
@@ -2391,6 +2360,7 @@ UA_Opt.Flag = 14222;
                 }
             };
             vz = function(q1) {
+            	log('attachEvents...');
                 var lp = (0x3e8 * 0200 & 85);
                 for (var tyq = (0x3e8 % 0171 & 79); tyq <= ((0x409 | 01001) % 81); lp = ++tyq + tyq++ + tyq) {
                     if (tyq == lp) {
@@ -2555,14 +2525,11 @@ UA_Opt.Flag = 14222;
                 }
             };
             gx = function() {
-            	log("scan--------check");
                 mpz[q2('nZctawsgjk', 2, 2)] = 1;
-                log("scan---1-----check");
                 if (0 != xq()) {
                     return;
                 }
                 ;
-                log("scan--------check");
                 vz(xkvi);
                 UA_Opt[q2('ZjttaaAhEvcyntseY', 4, 1)] = vz;
                 UA_Opt[q2('vuelordaz', 4, 1)] = hrt;
@@ -2570,7 +2537,7 @@ UA_Opt.Flag = 14222;
                     UA_Opt[ib('egeMsWUItMV', 2, 2)] = r5;
                     ftr2();
                 }
-                log("scan--------check");
+                log("gx.attachEvents....");
             };
             xq = function() {
                 if (typeof UA_Opt == 'undefined') {
@@ -2579,11 +2546,9 @@ UA_Opt.Flag = 14222;
                 if (typeof UA_Opt[xm('lUlMFQgKab', 2, 2)] != xm('yUumbnrer', 4, 1)) {
                     return 1;
                 }
-                log("scan----xq----");
                 var w4 = new xkvi[ib('hSbjeOtcv', 4, 1)];
                 if (typeof UA_Opt[xm('OlormFdIN', 4, 1)] != 'undefined' && UA_Opt[q2('kYormFdIT', 4, 1)] != "") {
                     var be = ((0x3f3 | 0556) % 73);
-                    log("scan----xq----");
                     while (!(be - ((0x3e8 | 01035) % 85))) {
                         if (be + ((0x3e8 | 01366) % 73)) {
                             w4[m1('iFormFdII', 4, 1)] = UA_Opt[ib('jlormFdIw', 4, 1)];
@@ -2593,7 +2558,6 @@ UA_Opt.Flag = 14222;
                         m5 += 19;
                     }
                 }
-                log("scan----xq----");
                 if (typeof UA_Opt[ib('OXogVLlaS', 4, 1)] != 'undefined' && UA_Opt[q2('NEogVLlao', 4, 1)] != "") {
                     if (!(0x3e8 * 0225 & 87)) {
                         var vvh = ((0x3f3 | 01134) % 93);
@@ -2609,7 +2573,6 @@ UA_Opt.Flag = 14222;
                         m.nm = "uxx";
                     }
                 }
-                log("scan----xq----");
                 var ts = (0x3e8 % 0144 & 75);
                 for (var br = (0x3e8 % 0324 & 69); br <= ((0x3f3 | 01627) % 63); ts = ++br + br++ + br) {
                     if (br == ts) {
@@ -2638,10 +2601,10 @@ UA_Opt.Flag = 14222;
                 w4[xm('AoocFLsIupfonl', 3, 1)] = (UA_Opt[q2('XjllFMgtan', 2, 2)] >> (0x3fe * 01071 & 63)) & (0x3f3 * 0547 & 57);
                 w4[ib('islaFlhIsdfone', 3, 1)] = (UA_Opt[q2('fbljFfgYao', 2, 2)] >> 16) & 1;
                 w4[xm('qmMpUdDiII', 2, 2)] = (UA_Opt[m1('sulRFlggaX', 2, 2)] >> ((0x3f3 | 0522) % 71)) & ((0x3f3 | 01035) % 73);
-                log("scan----xq----");
                 if (typeof UA_Opt[ib('ieosTQegknl', 2, 2)] == xm('YItrisgnw', 4, 1)) {
                     w4[m1('uuokTjnSertg', 3, 1)] = UA_Opt[m1('zRoMTgefknI', 2, 2)];
                     UA_Opt[q2('kuetsBokTnen', 3, 1)] = function(mawv) {
+                    	log("seToken...");
                         w4[q2('OyokTknSertw', 3, 1)] = UA_Opt[m1('sqoPTYelknh', 2, 2)] = mawv;
                         if (xf == (0x3f3 * 0315 & 97)) {
                             var kj7 = ((0x3f3 | 0556) % 73);
@@ -2737,11 +2700,9 @@ UA_Opt.Flag = 14222;
                 w4[ib('HVesReosHtK', 3, 1)] = (typeof UA_Opt[q2('loesRGosHtJ', 3, 1)] == 'string') ? UA_Opt[q2('chesRoosHts', 3, 1)] : ib('emcjsazali.Xun.ymocl', 4, 1);
                 w4[q2('hOenSlTidiermM', 3, 1)] = (typeof UA_Opt[ib('jcenSGTidierml', 3, 1)] == "number") ? UA_Opt[ib('mDenSlTidKermx', 3, 1)] : 1000;
                 ybh = w4;
-                log("scan----xq----end");
                 return 0;
             };
             hrt = function() {
-            	log("hrt.start");
                 dl = (new xkvi[q2('GpaUDSeHtt', 2, 2)]())[q2('zaetgkimTeL', 3, 1)]();
                 x7x = 0;
                 gueh = 0;
@@ -2764,9 +2725,7 @@ UA_Opt.Flag = 14222;
                         ihb = 0;
                     }
                 }
-                log("hrt.vv2l");
                 vv2l();
-                log("hrt.end");
             };
             r5 = function(cl5m) {
                 var mo = (0x3f3 * 0655 & 73);
@@ -2781,12 +2740,10 @@ UA_Opt.Flag = 14222;
                         break;
                 }
             };
-            log("scan--------013,sm.ua:"+sm.ua);
             gx();
-            log("scan--------012,sm.ua:"+sm.ua);
+            log("after gx...");
         })();
     } catch (e) {
-    	java.lang.System.err.println("ua1:"+e);
         try {
             if (1 == UA_Opt[ib('eFsSeIudErnrorO', 4, 1)]) {
                 var hru = function(err) {
@@ -2804,7 +2761,6 @@ UA_Opt.Flag = 14222;
                 hru(e);
             }
         } catch (e) {
-        	java.lang.System.err.println("ua:"+e);
         }
     }
 })();

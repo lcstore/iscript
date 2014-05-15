@@ -17,11 +17,16 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.w3c.dom.UserDataHandler;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventException;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
 
 import com.lezo.iscript.envjs.window.LocationAdapt;
+import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 
-public class DocumentAdapt implements Document {
-	private static final String USER_KEY_COOKIE = "@key_cookie_";
+public class DocumentAdapt implements Document ,EventTarget{
+    private static final String USER_KEY_COOKIE = "@key_cookie_";
 	private Document document;
 	private LocationAdapt location;
 
@@ -386,5 +391,38 @@ public class DocumentAdapt implements Document {
 	public String getCookie() throws DOMException {
 		Object uObject = document.getUserData(USER_KEY_COOKIE);
 		return uObject == null ? null : uObject.toString();
+	}
+	@Override
+	public void addEventListener(String type, EventListener listener, boolean useCapture) {
+		EventTarget eventTarget = null;
+		if(document instanceof EventTarget){
+			eventTarget = (EventTarget) document;
+		}else {
+			eventTarget = (EventTarget) getOwnerDocument();
+		}
+		eventTarget = (CoreDocumentImpl) document;
+		eventTarget.addEventListener(type, listener, useCapture);
+	}
+
+	@Override
+	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
+		EventTarget eventTarget = null;
+		if(document instanceof EventTarget){
+			eventTarget = (EventTarget) document;
+		}else {
+			eventTarget = (EventTarget) getOwnerDocument();
+		}
+		eventTarget.removeEventListener(type, listener, useCapture);
+	}
+
+	@Override
+	public boolean dispatchEvent(Event event) throws EventException {
+		EventTarget eventTargetn = null;
+		if(document instanceof EventTarget){
+			eventTargetn = (EventTarget) document;
+		}else {
+			eventTargetn = (EventTarget) getOwnerDocument();
+		}
+		return eventTargetn.dispatchEvent(event);
 	}
 }

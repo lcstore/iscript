@@ -5,8 +5,12 @@ import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventException;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
 
-public class ElementJavaObject extends NativeJavaObject {
+public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 	private static final long serialVersionUID = 709148757230893792L;
 
 	public ElementJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
@@ -60,5 +64,23 @@ public class ElementJavaObject extends NativeJavaObject {
 
 	private Object doReturn(Object result) {
 		return result;
+	}
+
+	@Override
+	public void addEventListener(String type, EventListener listener, boolean useCapture) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean dispatchEvent(Event evt) throws EventException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1,11 +1,14 @@
 package com.lezo.iscript.envjs.dom;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 
 public class DocumentJavaObject extends NativeJavaObject {
 	private static final long serialVersionUID = -3084942115819596740L;
-
+	
 	public DocumentJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 	}
@@ -50,12 +53,7 @@ public class DocumentJavaObject extends NativeJavaObject {
 		return doReturn(result);
 	}
 
-	private String toGetName(String name) {
-		if ("cookie".equals(name)) {
-			return "getCookie";
-		}
-		return name;
-	}
+
 
 	private Object doReturn(Object result) {
 		return result;
