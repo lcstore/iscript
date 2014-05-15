@@ -84,13 +84,13 @@ public class DomParser {
 			@Override
 			public void run() {
 				try {
-					TimeUnit.MILLISECONDS.sleep(10000);
+					TimeUnit.MILLISECONDS.sleep(5000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				Event event = new EventImpl();
-				event.initEvent("DOMContentLoaded", false, false);
+				event.initEvent("onreadystatechange", false, false);
 				documentAdapt.dispatchEvent(event);
 				System.err.println("dispathEvent:DOMContentLoaded");
 			}
