@@ -26,7 +26,19 @@ public class DocumentJavaObject extends NativeJavaObject {
 
 	@Override
 	public void put(String name, Scriptable start, Object value) {
-		super.put(name, start, value);
+		if (!isCallSet(name, value)) {
+			super.put(name, start, value);
+		}
+	}
+
+	private boolean isCallSet(String name, Object value) {
+		boolean isCallSet = false;
+		if ("cookie".equals(name)) {
+			DocumentAdapt document = (DocumentAdapt) this.javaObject;
+			document.setCookie(value == null ? null : value.toString());
+			isCallSet = true;
+		}
+		return isCallSet;
 	}
 
 	@Override
@@ -36,6 +48,13 @@ public class DocumentJavaObject extends NativeJavaObject {
 			result = super.get(name, start);
 		}
 		return doReturn(result);
+	}
+
+	private String toGetName(String name) {
+		if ("cookie".equals(name)) {
+			return "getCookie";
+		}
+		return name;
 	}
 
 	private Object doReturn(Object result) {

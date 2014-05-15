@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,8 +17,6 @@ import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
-
-import com.yihaodian.pis.javascriptcrawler.SimpleHttpClient;
 
 public class UABuilder {
 	private static final List<String> uaSeeds = new ArrayList<String>();
@@ -122,28 +118,28 @@ public class UABuilder {
 	@Test
 	public void test() throws Exception {
 //		System.out.println(newOne());
-		ShuTaobaoClient client = new ShuTaobaoClient();
-		String username = "pis1002";
-		String password = "pis1234";
-		boolean bHadLogin = client.login(username, password);
-		System.out.println(bHadLogin);
-		if (!bHadLogin) {
-			return;
-		}
-		// while(!client.login(username,password)){
-		// TimeUnit.MILLISECONDS.sleep(60000);
-		// System.out.println("retry login:"+(++retry));
-		// }
-		// String ua = newOne();
-		// System.out.println(ua);
-		String url = "http://shu.taobao.com/trendindex?query=%E8%8B%B9%E6%9E%9C";
-		String proxyHost = "10.19.21.208";
-		int proxyPort = 8901;
-		Map<String, String> config = new HashMap<String, String>();
-		config.put("proxyHost", proxyHost);
-		config.put("proxyPort", "" + proxyPort);
-		config = null;
-		String html = SimpleHttpClient.getCurrent().get(url, config, null).getResponseText();
-		System.out.println(html);
+//		ShuTaobaoClient client = new ShuTaobaoClient();
+//		String username = "pis1002";
+//		String password = "pis1234";
+//		boolean bHadLogin = client.login(username, password);
+//		System.out.println(bHadLogin);
+//		if (!bHadLogin) {
+//			return;
+//		}
+//		// while(!client.login(username,password)){
+//		// TimeUnit.MILLISECONDS.sleep(60000);
+//		// System.out.println("retry login:"+(++retry));
+//		// }
+//		// String ua = newOne();
+//		// System.out.println(ua);
+//		String url = "http://shu.taobao.com/trendindex?query=%E8%8B%B9%E6%9E%9C";
+//		String proxyHost = "10.19.21.208";
+//		int proxyPort = 8901;
+//		Map<String, String> config = new HashMap<String, String>();
+//		config.put("proxyHost", proxyHost);
+//		config.put("proxyPort", "" + proxyPort);
+//		config = null;
+//		String html = SimpleHttpClient.getCurrent().get(url, config, null).getResponseText();
+//		System.out.println(html);
 	}
 }

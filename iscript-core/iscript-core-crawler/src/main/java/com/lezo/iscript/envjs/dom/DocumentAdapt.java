@@ -21,6 +21,7 @@ import org.w3c.dom.UserDataHandler;
 import com.lezo.iscript.envjs.window.LocationAdapt;
 
 public class DocumentAdapt implements Document {
+	private static final String USER_KEY_COOKIE = "@key_cookie_";
 	private Document document;
 	private LocationAdapt location;
 
@@ -378,4 +379,12 @@ public class DocumentAdapt implements Document {
 		this.location = location;
 	}
 
+	public void setCookie(final String cookie) throws DOMException {
+		document.setUserData(USER_KEY_COOKIE, cookie, null);
+	}
+
+	public String getCookie() throws DOMException {
+		Object uObject = document.getUserData(USER_KEY_COOKIE);
+		return uObject == null ? null : uObject.toString();
+	}
 }
