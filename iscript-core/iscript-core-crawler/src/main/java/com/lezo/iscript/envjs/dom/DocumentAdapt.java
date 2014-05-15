@@ -1,5 +1,10 @@
 package com.lezo.iscript.envjs.dom;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -25,10 +30,10 @@ import org.w3c.dom.events.EventTarget;
 import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 
-public class DocumentAdapt implements Document ,EventTarget{
-    private static final String USER_KEY_COOKIE = "@key_cookie_";
+public class DocumentAdapt implements Document, EventTarget {
 	private Document document;
 	private LocationAdapt location;
+	private Map<String, String> cookieMap = new HashMap<String, String>();
 
 	public DocumentAdapt(Document document, LocationAdapt location) {
 		super();
@@ -385,19 +390,48 @@ public class DocumentAdapt implements Document ,EventTarget{
 	}
 
 	public void setCookie(final String cookie) throws DOMException {
-		document.setUserData(USER_KEY_COOKIE, cookie, null);
+		LinkedHashMap<String, String> keyMap = getKeyMap(cookie);
+		String domain = keyMap.remove("domain");
+		for (Entry<String, String> entry : keyMap.entrySet()) {
+			String name = entry.getKey();
+			String key = name + "." + domain;
+			cookieMap.remove(key);
+			cookieMap.put(key, cookie);
+			break;
+		}
+	}
+
+	private LinkedHashMap<String, String> getKeyMap(String cookie) {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		String[] pairArray = cookie.split(";");
+		if (pairArray != null) {
+			for (String pair : pairArray) {
+				String[] keyValue = pair.trim().split("=");
+				if (keyValue != null && keyValue.length == 2) {
+					map.put(keyValue[0].trim(), keyValue[1].trim());
+				}
+			}
+		}
+		return map;
 	}
 
 	public String getCookie() throws DOMException {
-		Object uObject = document.getUserData(USER_KEY_COOKIE);
-		return uObject == null ? null : uObject.toString();
+		StringBuffer sb = new StringBuffer();
+		for (Entry<String, String> entry : cookieMap.entrySet()) {
+			if (sb.length() > 0) {
+				sb.append("; ");
+			}
+			sb.append(entry.getValue());
+		}
+		return sb.toString();
 	}
+
 	@Override
 	public void addEventListener(String type, EventListener listener, boolean useCapture) {
 		EventTarget eventTarget = null;
-		if(document instanceof EventTarget){
+		if (document instanceof EventTarget) {
 			eventTarget = (EventTarget) document;
-		}else {
+		} else {
 			eventTarget = (EventTarget) getOwnerDocument();
 		}
 		eventTarget = (CoreDocumentImpl) document;
@@ -407,9 +441,9 @@ public class DocumentAdapt implements Document ,EventTarget{
 	@Override
 	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
 		EventTarget eventTarget = null;
-		if(document instanceof EventTarget){
+		if (document instanceof EventTarget) {
 			eventTarget = (EventTarget) document;
-		}else {
+		} else {
 			eventTarget = (EventTarget) getOwnerDocument();
 		}
 		eventTarget.removeEventListener(type, listener, useCapture);
@@ -418,9 +452,9 @@ public class DocumentAdapt implements Document ,EventTarget{
 	@Override
 	public boolean dispatchEvent(Event event) throws EventException {
 		EventTarget eventTargetn = null;
-		if(document instanceof EventTarget){
+		if (document instanceof EventTarget) {
 			eventTargetn = (EventTarget) document;
-		}else {
+		} else {
 			eventTargetn = (EventTarget) getOwnerDocument();
 		}
 		return eventTargetn.dispatchEvent(event);

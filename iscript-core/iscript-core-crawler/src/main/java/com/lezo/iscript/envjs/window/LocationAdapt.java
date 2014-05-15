@@ -10,7 +10,7 @@ public class LocationAdapt {
 	public LocationAdapt() {
 	}
 
-	private URL getURL() {
+	public URL getURL() {
 		return url;
 	}
 
