@@ -41,7 +41,7 @@ public class DomParser {
 		Document document = documentBuilder.parse(is);
 		Context cx = Context.enter();
 		Scriptable scope = cx.initStandardObjects();
-		String source = FileUtils.readFileToString(new File("src/main/resources/envjs/jsDocument.js"));
+		String source = FileUtils.readFileToString(new File("src/main/resources/envjs/bdhm.js"));
 		cx.setWrapFactory(new WrapFactory() {
 			@Override
 			public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
@@ -62,6 +62,8 @@ public class DomParser {
 				} else if (javaObject instanceof Node || javaObject instanceof NodeList
 						|| javaObject instanceof Element) {
 					return new ElementJavaObject(scope, javaObject, staticType);
+				}else if(javaObject instanceof String){
+					return Context.toObject(javaObject, scope);
 				}
 				return super.wrapAsJavaObject(cx, scope, javaObject, staticType);
 			}
@@ -97,13 +99,14 @@ public class DomParser {
 		}).start();
 		cx.evaluateString(scope, source, "cmd", 0, null);
 
-		 String uaString = "UA_Opt.reload(); var sua = sm.ua;";
+//		 String uaString = "UA_Opt.reload(); var sua = sm.ua;";
 //		String uaString = "for(var i in UA_Opt){java.lang.System.out.println(i+'='+UA_Opt[i]);}";
-		 cx.evaluateString(scope, uaString, "cmd", 0, null);
+//		 cx.evaluateString(scope, uaString, "cmd", 0, null);
 
-		Object rs = ScriptableObject.getProperty(scope, "sua");
-		String ua = Context.toString(rs);
-		System.out.println("ua:" + ua);
+//		Object rs = ScriptableObject.getProperty(scope, "sua");
+//		String ua = Context.toString(rs);
+//		System.out.println("ua:------" + ua);
+		System.out.println("ua:------");
 		
 	}
 

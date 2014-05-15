@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
 import com.lezo.iscript.yeam.config.JDCid2PList;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
@@ -74,6 +75,22 @@ public class ConfigParserTest {
 	public void testJDC2list() throws Exception {
 		ConfigParser parser = new JDCid2PList();
 		TaskWritable task = new TaskWritable();
+		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testFDSSigner() throws Exception {
+		ConfigParser parser = new FDSSigner();
+		TaskWritable task = new TaskWritable();
+		task.put("user", "lcstore@126.com");
+		task.put("pwd", "fd@9Lezo");
+		task.put("user", "ajane90");
+		task.put("pwd", "fdsAJ90aj");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);

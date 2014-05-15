@@ -8,10 +8,7 @@ import org.mozilla.javascript.Scriptable;
 
 public class DocumentJavaObject extends NativeJavaObject {
 	private static final long serialVersionUID = -3084942115819596740L;
-	private static Map<String, String> adaptMap = new HashMap<String, String>();
-	static{
-		adaptMap.put("attachEvent", "dispatchEvent");
-	}
+	
 	public DocumentJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 	}
@@ -32,7 +29,19 @@ public class DocumentJavaObject extends NativeJavaObject {
 
 	@Override
 	public void put(String name, Scriptable start, Object value) {
-		super.put(name, start, value);
+		if (!isCallSet(name, value)) {
+			super.put(name, start, value);
+		}
+	}
+
+	private boolean isCallSet(String name, Object value) {
+		boolean isCallSet = false;
+		if ("cookie".equals(name)) {
+			DocumentAdapt document = (DocumentAdapt) this.javaObject;
+			document.setCookie(value == null ? null : value.toString());
+			isCallSet = true;
+		}
+		return isCallSet;
 	}
 
 	@Override
@@ -44,10 +53,7 @@ public class DocumentJavaObject extends NativeJavaObject {
 		return doReturn(result);
 	}
 
-//	private String toAdaptName(String name) {
-//		String adaptName = adaptMap.get(name);
-//		return adaptName==null?name:adaptName;
-//	}
+
 
 	private Object doReturn(Object result) {
 		return result;
