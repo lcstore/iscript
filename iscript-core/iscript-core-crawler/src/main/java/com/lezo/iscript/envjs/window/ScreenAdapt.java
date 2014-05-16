@@ -1,26 +1,21 @@
 package com.lezo.iscript.envjs.window;
 
-import java.awt.*;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
-import org.lobobrowser.js.*;
-
-public class ScreenAdapt extends AbstractScriptableDelegate {
+public class ScreenAdapt {
 	private final GraphicsEnvironment graphicsEnvironment;
 	private final GraphicsDevice graphicsDevice;
-	
-	/**
-	 * @param context
-	 */
-	ScreenAdapt() {
+
+	public ScreenAdapt() {
 		super();
-	    if (GraphicsEnvironment.isHeadless()) {
-	        this.graphicsEnvironment = null;
-	        this.graphicsDevice = null;
-	    }
-	    else {
-	    	this.graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-	    	this.graphicsDevice = this.graphicsEnvironment.getDefaultScreenDevice();
-	    }
+		if (GraphicsEnvironment.isHeadless()) {
+			this.graphicsEnvironment = null;
+			this.graphicsDevice = null;
+		} else {
+			this.graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			this.graphicsDevice = this.graphicsEnvironment.getDefaultScreenDevice();
+		}
 	}
 
 	public int getHeight() {
@@ -34,7 +29,7 @@ public class ScreenAdapt extends AbstractScriptableDelegate {
 
 	public int getWidth() {
 		GraphicsEnvironment ge = this.graphicsEnvironment;
-		if(ge == null) {
+		if (ge == null) {
 			return 0;
 		}
 		GraphicsDevice gd = ge.getDefaultScreenDevice();
@@ -43,7 +38,7 @@ public class ScreenAdapt extends AbstractScriptableDelegate {
 
 	public int getAvailHeight() {
 		GraphicsEnvironment ge = this.graphicsEnvironment;
-		if(ge == null) {
+		if (ge == null) {
 			return 0;
 		}
 		return ge.getMaximumWindowBounds().height;
@@ -51,7 +46,7 @@ public class ScreenAdapt extends AbstractScriptableDelegate {
 
 	public int getAvailWidth() {
 		GraphicsEnvironment ge = this.graphicsEnvironment;
-		if(ge == null) {
+		if (ge == null) {
 			return 0;
 		}
 		return ge.getMaximumWindowBounds().width;
@@ -59,7 +54,7 @@ public class ScreenAdapt extends AbstractScriptableDelegate {
 
 	public int getColorDepth() {
 		GraphicsDevice gd = this.graphicsDevice;
-		if(gd == null) {
+		if (gd == null) {
 			return 0;
 		}
 		return gd.getDisplayMode().getBitDepth();

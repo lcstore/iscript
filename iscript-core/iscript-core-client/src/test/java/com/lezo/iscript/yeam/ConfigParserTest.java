@@ -89,8 +89,8 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		task.put("user", "lcstore@126.com");
 		task.put("pwd", "fd@9Lezo");
-		task.put("user", "ajane90");
-		task.put("pwd", "fdsAJ90aj");
+//		task.put("user", "ajane90");
+//		task.put("pwd", "fdsAJ90aj");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
