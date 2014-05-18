@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.lezo.iscript.envjs.window.NavigatorAdapt;
+import com.lezo.iscript.envjs.window.ScreenAdapt;
 import com.lezo.iscript.envjs.window.WindowAdapt;
 
 public class EnvjsUtils {
@@ -55,14 +56,17 @@ public class EnvjsUtils {
 		DocumentAdapt documentAdapt = new DocumentAdapt(document, location);
 		documentAdapt.setUserData("g_scope_key", scope, null);
 		NavigatorAdapt navigator = new NavigatorAdapt();
+		ScreenAdapt screen = new ScreenAdapt();
 		window.setLocation(location);
 		window.setDocument(documentAdapt);
 		window.setNavigator(navigator);
 		// init host script object
-		ScriptableObject.putProperty(scope, "window", window);
+		ScriptableObject.putProperty(scope, "windowObject", window);
 		ScriptableObject.putProperty(scope, "document", documentAdapt);
 		ScriptableObject.putProperty(scope, "navigator", navigator);
 		ScriptableObject.putProperty(scope, "location", location);
+		ScriptableObject.putProperty(scope, "screen", screen);
+//		window.getClass().getMethods()[0].getName()
 	}
 
 	private static void initEnvFromScript(Context cx, Scriptable scope) throws Exception {

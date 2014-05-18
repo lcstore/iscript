@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -31,6 +32,7 @@ import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 
 public class DocumentAdapt implements Document, EventTarget {
+	private static Logger logger = Logger.getLogger(DocumentAdapt.class);
 	private Document document;
 	private LocationAdapt location;
 	private Map<String, String> cookieMap = new HashMap<String, String>();

@@ -2,6 +2,7 @@ package com.lezo.iscript.envjs.dom;
 
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -69,13 +70,13 @@ public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 	@Override
 	public void addEventListener(String type, EventListener listener, boolean useCapture) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -83,4 +84,5 @@ public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 }
