@@ -39,9 +39,9 @@ public class ConfigParserTest {
 		ConfigParser parser = new HuihuiSigner();
 		TaskWritable task = new TaskWritable();
 		task.put("user", "lcstore@126.com");
-		task.put("pwd", "126@9Lezo");
-		task.put("user", "ajane2009@163.com");
-		task.put("pwd", "AJ3251273aj");
+		task.put("pwd", "1@6@8Lezo");
+//		task.put("user", "ajane2009@163.com");
+//		task.put("pwd", "AJ3251273aj");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);

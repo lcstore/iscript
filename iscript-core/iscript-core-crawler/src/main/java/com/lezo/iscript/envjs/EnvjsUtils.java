@@ -16,6 +16,7 @@ import org.mozilla.javascript.WrapFactory;
 import org.w3c.dom.Document;
 
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
+import com.lezo.iscript.envjs.window.HistoryAdapt;
 import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.lezo.iscript.envjs.window.NavigatorAdapt;
 import com.lezo.iscript.envjs.window.ScreenAdapt;
@@ -52,22 +53,12 @@ public class EnvjsUtils {
 		Document document = documentBuilder.parse(is);
 		// create adapt window,location,document
 		WindowAdapt window = new WindowAdapt();
-		LocationAdapt location = new LocationAdapt();
-		DocumentAdapt documentAdapt = new DocumentAdapt(document, location);
+		DocumentAdapt documentAdapt = new DocumentAdapt(document, window.getLocation());
 		documentAdapt.setUserData("g_scope_key", scope, null);
-		NavigatorAdapt navigator = new NavigatorAdapt();
-		ScreenAdapt screen = new ScreenAdapt();
-		window.setLocation(location);
 		window.setDocument(documentAdapt);
-		window.setNavigator(navigator);
 		// init host script object
 		ScriptableObject.putProperty(scope, "windowObject", window);
 		ScriptableObject.putProperty(scope, "document", documentAdapt);
-		ScriptableObject.putProperty(scope, "navigator", navigator);
-		ScriptableObject.putProperty(scope, "location", location);
-		ScriptableObject.putProperty(scope, "screen", screen);
-		ScriptableObject.putProperty(scope, "simpleObject", new SimpleObject());
-//		window.getClass().getField(name)
 	}
 
 	private static void initEnvFromScript(Context cx, Scriptable scope) throws Exception {

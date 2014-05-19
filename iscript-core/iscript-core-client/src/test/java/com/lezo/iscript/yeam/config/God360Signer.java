@@ -16,8 +16,13 @@ import org.json.CookieList;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
+import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -34,21 +39,24 @@ public class God360Signer implements ConfigParser {
 		String password = (String) task.get("pwd");
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		addCookie(client);
-		String postUrl = "http://www.fanduoshao.com/member/login/";
-		HttpPost post = new HttpPost(postUrl);
-		post.addHeader("Referer", "http://www.fanduoshao.com/member/login/");
-		HttpEntity postEntity = getPostEntity(username, password);
-		post.setEntity(postEntity);
+		String postUrl = "https://login.360.cn/?o=sso&m=getToken&func=QHPass.loginUtils.tokenCallback&userName="
+				+ username + "&rand=0.5579256116856026&callback=QiUserJsonP1400255481580";
+		HttpGet post = new HttpGet(postUrl);
+		post.addHeader(
+				"Referer",
+				"http://wan.360.cn/login_pop.html?params=%7B%22defaultMethod%22%3A%22login%22%2C%22thirdLogin%22%3Atrue%2C%22src%22%3A%22360wan-top-reg%22%2C%22weakPassword%22%3Afalse%2C%22fatigue%22%3Atrue%2C%22location%22%3A%22http%253A%252F%252Fjifen.wan.360.cn%252F%22%2C%22refer%22%3A%22jifen.wan.360.cn%22%7D");
+		// HttpEntity postEntity = getPostEntity(username, password);
+		// post.setEntity(postEntity);
 
 		String html = HttpClientUtils.getContent(client, post);
-		Document dom = Jsoup.parse(html, postUrl);
-		String getUrl = "http://www.fanduoshao.com/i/order/";
-		HttpGet get = new HttpGet(getUrl);
-		get.addHeader("Referer", "http://www.fanduoshao.com/member/login/");
-		html = HttpClientUtils.getContent(client, get);
-		for (Cookie ck : client.getCookieStore().getCookies()) {
-			System.out.println(ck);
-		}
+		// Document dom = Jsoup.parse(html, postUrl);
+		// String getUrl = "http://www.fanduoshao.com/i/order/";
+		// HttpGet get = new HttpGet(getUrl);
+		// get.addHeader("Referer", "http://www.fanduoshao.com/member/login/");
+		// html = HttpClientUtils.getContent(client, get);
+		// for (Cookie ck : client.getCookieStore().getCookies()) {
+		// System.out.println(ck);
+		// }
 		JSONObject rsObject = getSignResult(task, client);
 		return rsObject.toString();
 	}
@@ -72,7 +80,29 @@ public class God360Signer implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", "http://jifen.wan.360.cn/");
 		HttpClientUtils.getContent(client, get);
+		addGuid(client);
 		printCookies(client);
+	}
+
+	private void addGuid(DefaultHttpClient client) throws Exception {
+		String url = "http://s0.qhimg.com/monitor/;monitor/fd7e782a.js";
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Referer", "http://jifen.wan.360.cn/");
+		String html = HttpClientUtils.getContent(client, get);
+		StringBuilder sb = new StringBuilder();
+		sb.append("location.href='http://jifen.wan.360.cn/';");
+		sb.append("document.domain='http://jifen.wan.360.cn/';");
+		sb.append("var hm = document.createElement(\"script\");");
+		sb.append("hm.src = \"http://s0.qhimg.com/i360/;js;pass_api_/seed,log/v3202.js\";");
+		sb.append("var s = document.getElementsByTagName(\"script\")[0];");
+		sb.append("s.parentNode.appendChild(hm);");
+		String source = sb.toString() + html + "var guidCookie=cookieUtils.get('__guid');ilog(document.cookie);";
+		Context cx = EnvjsUtils.enterContext();
+		Scriptable scope = EnvjsUtils.initStandardObjects(null);
+		cx.evaluateString(scope, source, "jscookie", 0, null);
+		String value = Context.toString(ScriptableObject.getProperty(scope, "guidCookie"));
+		client.getCookieStore().addCookie(new BasicClientCookie("__guid", value));
+		client.getCookieStore().addCookie(new BasicClientCookie("_ga", "GA1.2.219106673.1400255410"));
 	}
 
 	private void printCookies(DefaultHttpClient client) {

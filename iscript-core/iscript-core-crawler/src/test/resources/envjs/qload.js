@@ -138,3 +138,4 @@ var _3600G = _3600G || [];		qload.add("analyse", {
 			var t = document.getElementsByTagName("script")[0];
 			t.parentNode.insertBefore(e, t)
 		}();
+ilog('wga:'+window.ga);

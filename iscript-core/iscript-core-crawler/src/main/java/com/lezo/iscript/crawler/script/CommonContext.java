@@ -25,6 +25,7 @@ public class CommonContext {
 				ScriptContext scx = new ScriptContext(cxFactory, COMMON_SCRIPTABLE);
 				ClassLoader loader = CommonContext.class.getClassLoader();
 				InputStream in = loader.getResourceAsStream("script/ScriptContext.init");
+				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(in, charsetName);
 				while (scanner.hasNext()) {
 					String name = scanner.nextLine().trim();

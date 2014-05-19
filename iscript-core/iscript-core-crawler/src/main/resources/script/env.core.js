@@ -1,6 +1,10 @@
 window = this;
+window["document"] = windowObject.getDocument();
+window["navigator"] = windowObject.getNavigator();
+window["location"] = windowObject.getLocation();
+window["screen"] = windowObject.getScreen();
+window["history"] = windowObject.getHistory();
 // window["String"] = String;
-// window["document"] = document;
 // window["encodeURIComponent"] = encodeURIComponent;
 // window["Array"] = Array;
 // window["Math"] = Math;
@@ -11,9 +15,9 @@ window = this;
 // window["Boolean"] = Boolean;
 // window["Object"] = Object;
 // window["parseInt"] = parseInt;
-var setTimeout = function(expr, millis) {
-	window.setTimeout(expr, millis);
-};
+// var setTimeout = function(expr, millis) {
+// window.setTimeout(expr, millis);
+// };
 var ilog = function(msg) {
 	if (msg) {
 		java.lang.System.out.println(msg);
@@ -45,18 +49,26 @@ var ilog = function(msg) {
 						return javaObject[name](args[0], args[1], args[2]);
 					}
 				}
-				var setName = name.replace('get', 'set');
-				if (name.indexOf('get') == 0 && javaObject[setName]) {
-					var fieldName = name.substring(3, 4).toLowerCase()
-							+ name.substring(4);
-					ilog('fieldName.' + fieldName + "," + name);
-					window[fieldName] = javaObject[name]();
-				}
 			}());
 		}
 		javaClass = javaClass.getSuperclass();
 	}
 }());
-ilog('windowObject.' + windowObject.history);
-ilog('windowObject.' + window.getHistory());
-ilog('windowObject.' + window.history);
+
+var cookieUtils = {
+get: function(e) {
+	try {
+		var t, n = new RegExp("(^| )" + e + "=([^;]*)(;|$)");
+		return (t = document.cookie.match(n)) ? unescape(t[2]) : "";
+	} catch (r) {
+		return "";
+	}
+},set: function(e, t, n) {
+	n = n || {};
+	var r = n.expires;
+	typeof r == "number" && (r = new Date, r.setTime(r.getTime() + n.expires));
+	try {
+		document.cookie = e + "=" + escape(t) + (r ? ";expires=" + r.toGMTString() : "") + (n.path ? ";path=" + n.path : "") + (n.domain ? "; domain=" + n.domain : "");
+	} catch (i) {
+	}
+}}

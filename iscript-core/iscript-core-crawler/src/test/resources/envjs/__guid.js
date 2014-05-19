@@ -102,7 +102,6 @@ document.domain='http://jifen.wan.360.cn/';
                 }
                 function c() {
                 	ilog('b.len:'+b);
-                	ilog('d.history:'+JSON.stringify(d.history));
                 	ilog('d.history:'+d.history);
                     var b = [g.appName, g.version, g.language || g.browserLanguage, g.platform, k, h.width, "x", h.height, h.colorDepth, f.referrer].join(""), c = b.length, e = d.history.length;
                     while (e)

@@ -14,12 +14,12 @@ public class EnvjsTest {
 
 	@Test
 	public void test() throws Exception {
-		ScriptableObject parent = CommonContext.getCommonScriptable();
 		Context cx = EnvjsUtils.enterContext();
+		ScriptableObject parent = CommonContext.getCommonScriptable();
 		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
-		String source = FileUtils.readFileToString(new File("src/test/resources/envjs/__guid.js"));
-//		String source = FileUtils.readFileToString(new File("src/test/resources/envjs/qload.js"));
-//		cx.evaluateString(scope, source, "cmd", 0, null);source.toLowerCase()
+//		String source = FileUtils.readFileToString(new File("src/test/resources/envjs/__guid.js"));
+		String source = FileUtils.readFileToString(new File("src/test/resources/envjs/qload.js"));
+		cx.evaluateString(scope, source, "cmd", 0, null);
 //		source = FileUtils.readFileToString(new File("src/test/resources/envjs/analytics.js"));
 //		cx.evaluateString(scope, source, "cmd", 0, null);
 
