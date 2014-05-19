@@ -1,26 +1,3 @@
-/*
-    GNU LESSER GENERAL PUBLIC LICENSE
-    Copyright (C) 2006 The Lobo Project
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-    Contact info: lobochief@users.sourceforge.net
- */
-/*
- * Created on Nov 12, 2005
- */
 package com.lezo.iscript.envjs.window;
 
 import java.util.ArrayList;
@@ -37,7 +14,7 @@ import org.w3c.dom.events.EventTarget;
 
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 
-public class WindowAdapt implements EventTarget{
+public class WindowAdapt implements EventTarget {
 	private static final Logger logger = Logger.getLogger(WindowAdapt.class.getName());
 	private static final String GLOABLE_SCOPE_KEY = "g_scope_key";
 	private volatile DocumentAdapt document;
@@ -137,9 +114,9 @@ public class WindowAdapt implements EventTarget{
 								+ GLOABLE_SCOPE_KEY);
 			}
 			String scriptURI = "window.eval";
-//			if (logger.isLoggable(Level.INFO)) {
-//				logger.info("eval(): javascript follows...\r\n" + javascript);
-//			}
+			// if (logger.isLoggable(Level.INFO)) {
+			// logger.info("eval(): javascript follows...\r\n" + javascript);
+			// }
 			return ctx.evaluateString(scope, javascript, scriptURI, 1, null);
 		} finally {
 			Context.exit();

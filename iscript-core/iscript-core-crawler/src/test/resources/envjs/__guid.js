@@ -92,6 +92,7 @@ document.domain='http://jifen.wan.360.cn/';
                 return a = a.replace(/[?#].*$/, ""), a = /\.(s?htm|php)/.test(a) ? a : a.replace(/\/$/, "") + "/", a
             },getGuid: function() {
                 function a(a) {
+                	ilog('a.len:'+a);
                     var b = 0, c = 0, d = a.length - 1;
                     for (d; d >= 0; d--) {
                         var e = parseInt(a.charCodeAt(d), 10);
@@ -100,7 +101,9 @@ document.domain='http://jifen.wan.360.cn/';
                     return b
                 }
                 function c() {
-                	ilog('d.history:'+d===window);
+                	ilog('b.len:'+b);
+                	ilog('d.history:'+JSON.stringify(d.history));
+                	ilog('d.history:'+d.history);
                     var b = [g.appName, g.version, g.language || g.browserLanguage, g.platform, k, h.width, "x", h.height, h.colorDepth, f.referrer].join(""), c = b.length, e = d.history.length;
                     while (e)
                         b += e-- ^ c++;

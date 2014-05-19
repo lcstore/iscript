@@ -19,7 +19,7 @@ public class EnvjsTest {
 		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
 		String source = FileUtils.readFileToString(new File("src/test/resources/envjs/__guid.js"));
 //		String source = FileUtils.readFileToString(new File("src/test/resources/envjs/qload.js"));
-		cx.evaluateString(scope, source, "cmd", 0, null);
+//		cx.evaluateString(scope, source, "cmd", 0, null);source.toLowerCase()
 //		source = FileUtils.readFileToString(new File("src/test/resources/envjs/analytics.js"));
 //		cx.evaluateString(scope, source, "cmd", 0, null);
 
@@ -45,7 +45,6 @@ public class EnvjsTest {
 		sb.append("log('simpleObject.name:'+simpleObject.name);");
 		String source = sb.toString();
 		cx.evaluateString(scope, source, "cmd", 0, null);
-
 		// String uaString = "UA_Opt.reload(); var sua = sm.ua;";
 		// String uaString =
 		// "for(var i in UA_Opt){java.lang.System.out.println(i+'='+UA_Opt[i]);}";

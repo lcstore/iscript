@@ -20,11 +20,10 @@
  */
 package com.lezo.iscript.envjs.window;
 
-
 public class HistoryAdapt {
 	private final WindowAdapt window;
 
-	HistoryAdapt(WindowAdapt window) {
+	public HistoryAdapt(WindowAdapt window) {
 		this.window = window;
 	}
 

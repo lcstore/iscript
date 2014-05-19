@@ -66,7 +66,8 @@ public class EnvjsUtils {
 		ScriptableObject.putProperty(scope, "navigator", navigator);
 		ScriptableObject.putProperty(scope, "location", location);
 		ScriptableObject.putProperty(scope, "screen", screen);
-//		window.getClass().getMethods()[0].getName()
+		ScriptableObject.putProperty(scope, "simpleObject", new SimpleObject());
+//		window.getClass().getField(name)
 	}
 
 	private static void initEnvFromScript(Context cx, Scriptable scope) throws Exception {
