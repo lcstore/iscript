@@ -13,7 +13,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
@@ -115,7 +114,7 @@ public class UABuilder {
 		return ua;
 	}
 
-	@Test
+//	@Test
 	public void test() throws Exception {
 //		System.out.println(newOne());
 //		ShuTaobaoClient client = new ShuTaobaoClient();

@@ -24,6 +24,8 @@ public class SignTaskTimer {
 			List<Long> taskIds = new ArrayList<Long>();
 			taskIds.add(3L);
 			taskIds.add(4L);
+			taskIds.add(6L);
+			taskIds.add(7L);
 			int affect = taskPriorityService.batchUpdate(taskIds, TaskConstant.TASK_NEW);
 			log.info("<signer>.update sign task:" + affect);
 			running = true;
