@@ -39,16 +39,59 @@ public class God360Signer implements ConfigParser {
 		String password = (String) task.get("pwd");
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		addCookie(client);
+		String html = null;
+		Context cx = EnvjsUtils.enterContext();
+		Scriptable scope = EnvjsUtils.initStandardObjects(null);
+		addGuid(client, cx, scope);
+		BasicClientCookie cookie = new BasicClientCookie("count", "2");
+		cookie.setDomain(".jifen.wan.360.cn");
+		client.getCookieStore().addCookie(cookie);
+
+		String signUrl = "http://jifen.wan.360.cn/ajax_signin_count.html?token=";
+		HttpPost post = new HttpPost(signUrl);
+		post.addHeader("Referer", "http://jifen.wan.360.cn/");
+		html = HttpClientUtils.getContent(client, post);
+
+		String url = "http://wan.360.cn/getuserinfo.html";
+		HttpGet uGet = new HttpGet(url);
+		uGet.addHeader("Referer", "http://jifen.wan.360.cn/");
+		String source = HttpClientUtils.getContent(client, uGet);
+
+		url = "http://wan.360.cn/login_pop.html?params=%7B%22defaultMethod%22%3A%22login%22%2C%22thirdLogin%22%3Atrue%2C%22src%22%3A%22360wan-top-reg%22%2C%22weakPassword%22%3Afalse%2C%22fatigue%22%3Atrue%2C%22location%22%3A%22http%253A%252F%252Fjifen.wan.360.cn%252F%22%2C%22refer%22%3A%22jifen.wan.360.cn%22%7D";
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Referer", "http://jifen.wan.360.cn/");
+		html = HttpClientUtils.getContent(client, get);
+		printCookies(client);
+		//
 		String postUrl = "https://login.360.cn/?o=sso&m=getToken&func=QHPass.loginUtils.tokenCallback&userName="
 				+ username + "&rand=0.5579256116856026&callback=QiUserJsonP1400255481580";
-		HttpGet post = new HttpGet(postUrl);
-		post.addHeader(
+		HttpGet loginGet = new HttpGet(postUrl);
+		loginGet.addHeader(
 				"Referer",
 				"http://wan.360.cn/login_pop.html?params=%7B%22defaultMethod%22%3A%22login%22%2C%22thirdLogin%22%3Atrue%2C%22src%22%3A%22360wan-top-reg%22%2C%22weakPassword%22%3Afalse%2C%22fatigue%22%3Atrue%2C%22location%22%3A%22http%253A%252F%252Fjifen.wan.360.cn%252F%22%2C%22refer%22%3A%22jifen.wan.360.cn%22%7D");
 		// HttpEntity postEntity = getPostEntity(username, password);
 		// post.setEntity(postEntity);
-
-		String html = HttpClientUtils.getContent(client, post);
+		html = HttpClientUtils.getContent(client, loginGet);
+		printCookies(client);
+		StringBuilder sb = new StringBuilder();
+		sb.append("var doCallback=function(data){return data.token;};");
+		sb.append(html.replace("QHPass.loginUtils.tokenCallback", "var token =  doCallback"));
+		cx.evaluateString(scope, sb.toString(), "cmd", 0, null);
+		String token = Context.toString(ScriptableObject.getProperty(scope, "token"));
+		String encodePwd = "22c61f21b68effb5b3923d2598e631f0";
+		String loginUrl = "https://login.360.cn/?o=sso&m=login&from=pcw_wan&rtype=data&func=QHPass.loginUtils.loginCallback&userName="
+				+ username
+				+ "&pwdmethod=1&password="
+				+ encodePwd
+				+ "&isKeepAlive=1&token="
+				+ token
+				+ "&captFlag=1&captId=i360&captCode=&r=1400255502029&callback=QiUserJsonP1400255481581";
+		loginGet = new HttpGet(loginUrl);
+		loginGet.addHeader(
+				"Referer",
+				"http://wan.360.cn/login_pop.html?params=%7B%22defaultMethod%22%3A%22login%22%2C%22thirdLogin%22%3Atrue%2C%22src%22%3A%22360wan-top-reg%22%2C%22weakPassword%22%3Afalse%2C%22fatigue%22%3Atrue%2C%22location%22%3A%22http%253A%252F%252Fjifen.wan.360.cn%252F%22%2C%22refer%22%3A%22jifen.wan.360.cn%22%7D");
+		html = HttpClientUtils.getContent(client, loginGet);
+		printCookies(client);
 		// Document dom = Jsoup.parse(html, postUrl);
 		// String getUrl = "http://www.fanduoshao.com/i/order/";
 		// HttpGet get = new HttpGet(getUrl);
@@ -80,11 +123,10 @@ public class God360Signer implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", "http://jifen.wan.360.cn/");
 		HttpClientUtils.getContent(client, get);
-		addGuid(client);
-		printCookies(client);
+
 	}
 
-	private void addGuid(DefaultHttpClient client) throws Exception {
+	private void addGuid(DefaultHttpClient client, Context cx, Scriptable scope) throws Exception {
 		String url = "http://s0.qhimg.com/monitor/;monitor/fd7e782a.js";
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", "http://jifen.wan.360.cn/");
@@ -97,8 +139,6 @@ public class God360Signer implements ConfigParser {
 		sb.append("var s = document.getElementsByTagName(\"script\")[0];");
 		sb.append("s.parentNode.appendChild(hm);");
 		String source = sb.toString() + html + "var guidCookie=cookieUtils.get('__guid');ilog(document.cookie);";
-		Context cx = EnvjsUtils.enterContext();
-		Scriptable scope = EnvjsUtils.initStandardObjects(null);
 		cx.evaluateString(scope, source, "jscookie", 0, null);
 		String value = Context.toString(ScriptableObject.getProperty(scope, "guidCookie"));
 		client.getCookieStore().addCookie(new BasicClientCookie("__guid", value));

@@ -1,5 +1,4 @@
 window = this;
-window["document"] = windowObject.getDocument();
 window["navigator"] = windowObject.getNavigator();
 window["location"] = windowObject.getLocation();
 window["screen"] = windowObject.getScreen();

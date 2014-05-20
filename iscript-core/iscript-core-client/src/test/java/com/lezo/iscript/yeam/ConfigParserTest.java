@@ -104,7 +104,7 @@ public class ConfigParserTest {
 	public void test360Signer() throws Exception {
 		ConfigParser parser = new God360Signer();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore@126.com");
+		task.put("user", "lcstore");
 		task.put("pwd", "360@9Lezo");
 		// task.put("user", "ajane90");
 		// task.put("pwd", "fdsAJ90aj");
