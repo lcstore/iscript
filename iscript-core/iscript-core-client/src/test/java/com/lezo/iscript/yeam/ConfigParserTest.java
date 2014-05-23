@@ -10,6 +10,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
+import com.lezo.iscript.yeam.config.JDBBSSigner;
 import com.lezo.iscript.yeam.config.JDCid2PList;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
 import com.lezo.iscript.yeam.config.StringLinker;
@@ -40,8 +41,8 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		task.put("user", "lcstore@126.com");
 		task.put("pwd", "1@6@8Lezo");
-//		task.put("user", "ajane2009@163.com");
-//		task.put("pwd", "AJ3251273aj");
+		// task.put("user", "ajane2009@163.com");
+		// task.put("pwd", "AJ3251273aj");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -90,8 +91,8 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		task.put("user", "lcstore@126.com");
 		task.put("pwd", "fd@9Lezo");
-//		 task.put("user", "ajane90");
-//		 task.put("pwd", "fdsAJ90aj");
+		// task.put("user", "ajane90");
+		// task.put("pwd", "fdsAJ90aj");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -103,9 +104,26 @@ public class ConfigParserTest {
 	@Test
 	public void test360Signer() throws Exception {
 		ConfigParser parser = new God360Signer();
+		// TODO:
 		TaskWritable task = new TaskWritable();
 		task.put("user", "lcstore");
 		task.put("pwd", "360@9Lezo");
+		// task.put("user", "ajane90");
+		// task.put("pwd", "fdsAJ90aj");
+		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testJDBBSSigner() throws Exception {
+		ConfigParser parser = new JDBBSSigner();
+		TaskWritable task = new TaskWritable();
+		task.put("user", "lcstore");
+		task.put("pwd", "jd@9Lezo");
 		// task.put("user", "ajane90");
 		// task.put("pwd", "fdsAJ90aj");
 		try {
