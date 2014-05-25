@@ -52,13 +52,15 @@ public class EnvjsUtils {
 		// create standar document.
 		Document document = documentBuilder.parse(is);
 		// create adapt window,location,document
-		WindowAdapt window = new WindowAdapt();
-		DocumentAdapt documentAdapt = new DocumentAdapt(document, window.getLocation());
+		LocationAdapt location = new LocationAdapt();
+		DocumentAdapt documentAdapt = new DocumentAdapt(document, location);
 		documentAdapt.setUserData("g_scope_key", scope, null);
-		window.setDocument(documentAdapt);
 		// init host script object
-		ScriptableObject.putProperty(scope, "windowObject", window);
-		ScriptableObject.putProperty(scope, "document", documentAdapt);
+		ScriptableObject.putProperty(scope, "document", Context.toObject(documentAdapt, scope));
+		ScriptableObject.putProperty(scope, "navigator", Context.toObject(new NavigatorAdapt(), scope));
+		ScriptableObject.putProperty(scope, "location", Context.toObject(location, scope));
+		ScriptableObject.putProperty(scope, "screen", Context.toObject(new ScreenAdapt(), scope));
+		ScriptableObject.putProperty(scope, "history", Context.toObject(new HistoryAdapt(null), scope));
 	}
 
 	private static void initEnvFromScript(Context cx, Scriptable scope) throws Exception {

@@ -1,13 +1,14 @@
-package com.lezo.iscript.envjs;
+package com.lezo.iscript.envjs.window;
 
-import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
-public class PrototypeJavaObject extends NativeJavaObject {
-	private static final long serialVersionUID = 2792641870019524955L;
+public class WindowJavaObject extends NativeJavaObject {
+	private static final long serialVersionUID = -1399487018950636098L;
 
-	public PrototypeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
+	public WindowJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 	}
 
@@ -19,7 +20,7 @@ public class PrototypeJavaObject extends NativeJavaObject {
 		} else if (prototype != null) {
 			result = prototype.get(name, start);
 		}
-		return doReturn(result, start);
+		return doReturn(result);
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class PrototypeJavaObject extends NativeJavaObject {
 		} else if (prototype != null) {
 			result = prototype.get(index, start);
 		}
-		return doReturn(result, start);
+		return doReturn(result);
 	}
 
 	@Override
@@ -39,16 +40,11 @@ public class PrototypeJavaObject extends NativeJavaObject {
 			super.put(name, start, value);
 		} else if (prototype != null) {
 			prototype.put(name, start, value);
+			if (value instanceof Function) {
+				// global fun
+				ScriptableObject.putProperty(this.parent, name, value);
+			}
 		}
-		// if (value instanceof BaseFunction) {
-		// if (javaObject instanceof Document || javaObject instanceof
-		// WindowAdapt) {
-		// if (!ScriptableObject.hasProperty(start, name) &&
-		// !ScriptableObject.hasProperty(parent, name)) {
-		// ScriptableObject.putProperty(start, name, value);
-		// }
-		// }
-		// }
 	}
 
 	@Override
@@ -58,9 +54,9 @@ public class PrototypeJavaObject extends NativeJavaObject {
 		} else if (prototype != null) {
 			prototype.put(index, start, value);
 		}
-	}
+	} 
 
-	private Object doReturn(Object result, Scriptable scope) {
+	private Object doReturn(Object result) {
 		if (result != null) {
 			return result;
 		}

@@ -22,21 +22,14 @@
 package com.lezo.iscript.envjs.window;
 
 public class NavigatorAdapt {
+	private String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36";
+	private String platform = "Win32";
+	private String appVersion = "5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36";
+	private String appName = "Netscape";
+	private String appCodeName = "Mozilla";
 
 	public NavigatorAdapt() {
 		super();
-	}
-
-	public String getAppCodeName() {
-		return null;
-	}
-
-	public String getAppName() {
-		return null;
-	}
-
-	public String getAppVersion() {
-		return null;
 	}
 
 	public String getAppMinorVersion() {
@@ -44,11 +37,11 @@ public class NavigatorAdapt {
 	}
 
 	public String getPlatform() {
-		return null;
+		return platform;
 	}
 
 	public String getUserAgent() {
-		return "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36";
+		return this.userAgent;
 	}
 
 	public String getVendor() {
@@ -91,4 +84,37 @@ public class NavigatorAdapt {
 			return null;
 		}
 	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
+	public String getAppCodeName() {
+		return appCodeName;
+	}
+
+	public void setAppCodeName(String appCodeName) {
+		this.appCodeName = appCodeName;
+	}
+
 }

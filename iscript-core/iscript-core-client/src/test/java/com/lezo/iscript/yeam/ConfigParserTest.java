@@ -122,10 +122,12 @@ public class ConfigParserTest {
 	public void testJDBBSSigner() throws Exception {
 		ConfigParser parser = new JDBBSSigner();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore");
+		task.put("user", "lcstore@126.com");
 		task.put("pwd", "jd@9Lezo");
 		// task.put("user", "ajane90");
 		// task.put("pwd", "fdsAJ90aj");
+		String url = "http://mercury.jd.com/log.gif?t=www.100000&m=UA-J2011-1&pin=&sid=730406034|1&v=je%3D1%24sc%3D32-bit%24sr%3D1366x768%24ul%3D-%24cs%3D-%24dt%3D%E7%99%BB%E5%BD%95%E4%BA%AC%E4%B8%9C%24hn%3Dpassport.jd.com%24fl%3D-%24os%3Dwin%24br%3Dchrome%24bv%3D35.0.1916.114%24wb%3D1400996865%24xb%3D1400996865%24yb%3D1400996865%24zb%3D1%24cb%3D1%24usc%3Ddirect%24ucp%3D-%24umd%3Dnone%24uct%3D-%24lt%3D0%24ct%3D1400996864707%24tad%3D-&ref=&rm=0.3978388501193162";
+		System.out.println(url.substring(74));
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);

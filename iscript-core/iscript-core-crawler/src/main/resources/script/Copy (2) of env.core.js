@@ -5,7 +5,6 @@ var ilog = function(msg) {
 		java.lang.System.err.println("null");
 	}
 };
-
 var cookieUtils = {
 get: function(e) {
 	try {
@@ -23,21 +22,21 @@ get: function(e) {
 	} catch (i) {
 	}
 }};
-var window = this;
+
+window = this;
+window["document"] = windowObject.getDocument();
+window["navigator"] = windowObject.getNavigator();
+window["location"] = windowObject.getLocation();
+window["screen"] = windowObject.getScreen();
+window["history"] = windowObject.getHistory();
+window.self = this;
+window.window = this;
+window.opener = this;
 window.parent = null;
-window.self = window;
-window.content= window;
-window.window = window;
-window.opener = null;
 window.top = null;
+window.content= this;
 window.frames = new Array();
-window.closed = new Boolean();
-window.document= document;
-window.history= history;
-window.navigator = navigator;
-window.screen = screen;
-window.location=location;
-// window.event = new Event();
+window.closed = false;
 window.defaultStatus = "";
 window.name = "";
 window.outerWidth = 0;
@@ -59,109 +58,18 @@ window.scrollMaxY=0;
 window.fullScreen="";
 window.frameElement="";
 window.sessionStorage="";
-window = window;
 
-
-/**
- * function alert()
- * 
- * @param {String}
- *            arg
- * @memberOf Window
- */
 window.alert = function(arg){};
-/**
- * function blur()
- * 
- * @memberOf Window
- */
 window.blur = function(){};
-/**
- * function clearInterval(arg)
- * 
- * @param arg
- * @memberOf Window
- */
 window.clearInterval = function(arg){};
-/**
- * function clearTimeout(arg)
- * 
- * @param arg
- * @memberOf Window
- */
 window.clearTimeout = function(arg){};
-/**
- * function close()
- * 
- * @memberOf Window
- */
 window.close = function(){};
-/**
- * function confirm()
- * 
- * @param {String}
- *            arg
- * @memberOf Window
- * @returns {Boolean}
- */
 window.confirm = function(arg){return false;};
-/**
- * function focus()
- * 
- * @memberOf Window
- */
 window.focus = function(){};
-/**
- * function getComputedStyle(arg1, arg2)
- * 
- * @param {Element}
- *            arg1
- * @param {String}
- *            arg2
- * @memberOf Window
- * @returns {Object}
- */
 window.getComputedStyle = function(arg1,arg2){return new Object();};
-/**
- * function moveTo(arg1, arg2)
- * 
- * @param {Number}
- *            arg1
- * @param {Number}
- *            arg2
- * @memberOf Window
- */
 window.moveTo = function(arg1,arg2){};
-/**
- * function moveBy(arg1, arg2)
- * 
- * @param {Number}
- *            arg1
- * @param {Number}
- *            arg2
- * @memberOf Window
- */
 window.moveBy = function(arg1,arg2){};
-/**
- * function open(optionalArg1, optionalArg2, optionalArg3, optionalArg4)
- * 
- * @param {String}
- *            optionalArg1
- * @param {String}
- *            optionalArg2
- * @param {String}
- *            optionalArg3
- * @param {Boolean}
- *            optionalArg4
- * @memberOf Window
- * @returns {Window}
- */
 window.open = function(optionalArg1, optionalArg2, optionalArg3, optionalArg4){return null;};
-/**
- * function print()
- * 
- * @memberOf Window
- */
 window.print = function(){};
 /**
  * function prompt(arg1, arg2)
@@ -277,14 +185,11 @@ window.scroll=function(arg1,arg2){};
 
 // event
 window.dispatchEvent=function(event){
-	return window.document.dispatchEvent(event);
+	return document.dispatchEvent(event);
 };
 window.removeEventListener=function(type, listener, useCapture){
-   window.document.addEventListener(type, listener, useCapture);
+	document.addEventListener(type, listener, useCapture);
 };
 window.removeEventListener=function(type, listener, useCapture){
-	window.document.removeEventListener(type, listener, useCapture);
+	document.removeEventListener(type, listener, useCapture);
 };
-
-//function Image(width, height){gImg=this;};
-//Image.prototype = document.createElement('img');

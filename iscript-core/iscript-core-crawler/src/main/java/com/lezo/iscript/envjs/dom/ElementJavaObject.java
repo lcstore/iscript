@@ -2,7 +2,7 @@ package com.lezo.iscript.envjs.dom;
 
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
-import org.w3c.dom.Document;
+import org.mozilla.javascript.Undefined;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -26,8 +26,9 @@ public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 		} else if (javaObject instanceof NodeList) {
 			NodeList nodeList = (NodeList) javaObject;
 			result = nodeList.item(index);
+			result = result == null ? Undefined.instance : result;
 		}
-		return doReturn(result);
+		return doReturn(result, start);
 	}
 
 	@Override
@@ -60,11 +61,14 @@ public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 				result = node != null ? node.getNodeValue() : result;
 			}
 		}
-		return doReturn(result);
+		return doReturn(result, start);
 	}
 
-	private Object doReturn(Object result) {
-		return result;
+	private Object doReturn(Object result, Scriptable scope) {
+		if (result != null) {
+			return result;
+		}
+		return Scriptable.NOT_FOUND;
 	}
 
 	@Override
