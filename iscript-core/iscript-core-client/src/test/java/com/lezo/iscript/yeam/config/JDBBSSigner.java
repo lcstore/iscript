@@ -134,10 +134,14 @@ public class JDBBSSigner implements ConfigParser {
 		get.addHeader("Referer", "http://bbs.zone.jd.com/plugin.php?id=dsu_paulsign:sign");
 		html = HttpClientUtils.getContent(client, get);
 		dom = Jsoup.parse(html, get.getURI().toString());
-		Elements signAs = dom.select("#ct div.mn:contians(累计已签到)");
-		String signMsg = signAs.first().text();
+		Elements signAs = dom.select("#ct div.mn:contains(累计已签到) p");
+		StringBuilder msgBuilder = new StringBuilder();
+		for (Element element : signAs) {
+			msgBuilder.append(element.text());
+			msgBuilder.append(", ");
+		}
 		JSONObject rsObject = new JSONObject();
-		rsObject.put("rs", signMsg);
+		rsObject.put("rs", msgBuilder.toString());
 		task.getArgs().remove("pwd");
 		rsObject.put("args", new JSONObject(task.getArgs()));
 		return rsObject;
