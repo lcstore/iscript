@@ -1,11 +1,6 @@
 package com.lezo.iscript.yeam.config;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Random;
-
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.json.JSONObject;
