@@ -2,13 +2,14 @@ package com.lezo.iscript.utils;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JSONUtils {
-	private static Logger log = Logger.getLogger(JSONUtils.class);
+	private static Logger log = LoggerFactory.getLogger(JSONUtils.class);
 
 	public static JSONObject getJSONObject(Object content) {
 		if (content == null) {

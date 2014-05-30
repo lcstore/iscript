@@ -141,6 +141,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		task.put("user", "i53411308");
 		task.put("pwd", "i53411308");
+		task.put("user", "i179435038");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
