@@ -279,12 +279,15 @@ window.scroll=function(arg1,arg2){};
 window.dispatchEvent=function(event){
 	return window.document.dispatchEvent(event);
 };
-window.removeEventListener=function(type, listener, useCapture){
+window.addEventListener=function(type, listener, useCapture){
    window.document.addEventListener(type, listener, useCapture);
 };
 window.removeEventListener=function(type, listener, useCapture){
 	window.document.removeEventListener(type, listener, useCapture);
 };
+window.XMLHttpRequest=function(){
+	ilog('new XMLHttpRequest...');
+};
 
-//function Image(width, height){gImg=this;};
-//Image.prototype = document.createElement('img');
+// function Image(width, height){gImg=this;};
+// Image.prototype = document.createElement('img');

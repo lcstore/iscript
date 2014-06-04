@@ -2696,6 +2696,7 @@
             gx();
         })();
     } catch (e) {
+    	ilog(e);
         try {
             if (1 == UA_Opt['IsSendError']) {
                 var hru = function(err) {
@@ -2713,6 +2714,7 @@
                 hru(e);
             }
         } catch (e) {
+        	ilog(e);
         }
     }
 })();

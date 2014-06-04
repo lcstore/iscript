@@ -445,16 +445,17 @@ public class WindowAdapt implements EventTarget {
 
 	@Override
 	public void addEventListener(String type, EventListener listener, boolean useCapture) {
-		document.addEventListener(type, listener, useCapture);
+//		document.addEventListener(type, listener, useCapture);
 	}
 
 	@Override
 	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
-		document.removeEventListener(type, listener, useCapture);
+//		document.removeEventListener(type, listener, useCapture);
 	}
 
 	@Override
 	public boolean dispatchEvent(Event event) throws EventException {
-		return document.dispatchEvent(event);
+//		return document.dispatchEvent(event);
+		return true;
 	}
 }

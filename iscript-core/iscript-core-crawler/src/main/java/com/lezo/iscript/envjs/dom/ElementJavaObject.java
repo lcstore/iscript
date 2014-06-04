@@ -1,17 +1,21 @@
 package com.lezo.iscript.envjs.dom;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Iterator;
+
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
 
-public class ElementJavaObject extends NativeJavaObject implements EventTarget {
+public class ElementJavaObject extends NativeJavaObject {
 	private static final long serialVersionUID = 709148757230893792L;
 
 	public ElementJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
@@ -40,10 +44,21 @@ public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 	public void put(String name, Scriptable start, Object value) {
 		if (javaObject instanceof Element) {
 			Element element = (Element) javaObject;
-			element.setAttribute(name, value == null ? null : value.toString());
-		} else if (javaObject instanceof Node) {
+			if ("innerHTML".equals(name)) {
+				setInnerHTML(element, value.toString());
+			} else {
+				if ("id".equals(name)) {
+					Object documentObject = ScriptableObject.getProperty(parent, "document");
+					DocumentAdapt document = (DocumentAdapt) Context.jsToJava(documentObject, DocumentAdapt.class);
+					document.setElementById(value.toString(), element);
+				}
+				element.setAttribute(name, value == null ? null : value.toString());
+			}
+		} else if (prototype != null) {
+			prototype.put(name, start, value);
+		} else {
+			super.put(name, start, value);
 		}
-		super.put(name, start, value);
 	}
 
 	@Override
@@ -71,22 +86,41 @@ public class ElementJavaObject extends NativeJavaObject implements EventTarget {
 		return Scriptable.NOT_FOUND;
 	}
 
-	@Override
-	public void addEventListener(String type, EventListener listener, boolean useCapture) {
-		// TODO Auto-generated method stub
-
+	public void setInnerHTML(Element element, String html) {
+		SAXReader saxReader = new SAXReader();
+		try {
+			html = "<XmlRoot>" + html + "</XmlRoot>";
+			InputStream in = new ByteArrayInputStream(html.getBytes());
+			org.dom4j.Document document = saxReader.read(in);
+			org.dom4j.Element root = document.getRootElement();
+			Iterator<?> it = root.elementIterator();
+			while (it.hasNext()) {
+				org.dom4j.Element xmlElement = (org.dom4j.Element) it.next();
+				addElement(element, xmlElement);
+			}
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
-	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
-		// TODO Auto-generated method stub
+	private void addElement(Element element, org.dom4j.Element xmlElement) {
+		String tagName = xmlElement.getName();
+		org.w3c.dom.Element childElement = element.getOwnerDocument().createElement(tagName);
+		element.appendChild(childElement);
+		if (xmlElement.hasContent()) {
+			childElement.setTextContent(xmlElement.getTextTrim());
+		}
+		childElement.setNodeValue(xmlElement.getStringValue());
+		Iterator<?> ait = xmlElement.attributeIterator();
+		while (ait.hasNext()) {
+			org.dom4j.Attribute attr = (org.dom4j.Attribute) ait.next();
+			childElement.setAttribute(attr.getName(), attr.getValue());
+		}
+		Iterator<?> it = xmlElement.elementIterator();
+		while (it.hasNext()) {
+			org.dom4j.Element xmlChildElement = (org.dom4j.Element) it.next();
+			addElement(childElement, xmlChildElement);
+		}
 
 	}
-
-	@Override
-	public boolean dispatchEvent(Event evt) throws EventException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }
