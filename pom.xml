@@ -87,6 +87,8 @@
 		<quartz.version>2.2.1</quartz.version>
 		<maven-war-plugin.version>2.2.1</maven-war-plugin.version>
 		<slf4j.version>1.7.7</slf4j.version>
+		<mina.version>2.0.7</mina.version>
+		 
 	</properties>
 
 </project>

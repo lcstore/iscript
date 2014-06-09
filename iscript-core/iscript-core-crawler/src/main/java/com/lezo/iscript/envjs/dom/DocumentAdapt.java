@@ -23,19 +23,29 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.w3c.dom.UserDataHandler;
+import org.w3c.dom.events.DocumentEvent;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventException;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.html.HTMLCollection;
+import org.w3c.dom.html.HTMLElement;
 
 import com.lezo.iscript.envjs.window.LocationAdapt;
-import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
+import com.sun.org.apache.xerces.internal.dom.events.EventImpl;
+import com.sun.org.apache.xerces.internal.dom.events.MutationEventImpl;
 
-public class DocumentAdapt implements Document, EventTarget {
+//
+public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 	private static Logger logger = Logger.getLogger(DocumentAdapt.class);
 	private Document document;
 	private LocationAdapt location;
 	private Map<String, String> cookieMap = new HashMap<String, String>();
+	private String domain;
+	private String title;
+	private String referrer;
+	private HTMLElement body;
+	private Map<String, Element> idElementMap = new HashMap<String, Element>();
 
 	public DocumentAdapt(Document document, LocationAdapt location) {
 		super();
@@ -310,7 +320,23 @@ public class DocumentAdapt implements Document, EventTarget {
 
 	@Override
 	public Element getElementById(String elementId) {
-		return document.getElementById(elementId);
+		Element element = document.getElementById(elementId);
+		if (element == null) {
+			element = idElementMap.get(elementId);
+		}
+		return element;
+	}
+
+	void setElementById(String id, Element element) {
+		synchronized (this) {
+			this.idElementMap.put(id, element);
+		}
+	}
+
+	void removeElementById(String id) {
+		synchronized (this) {
+			this.idElementMap.remove(id);
+		}
 	}
 
 	@Override
@@ -428,37 +454,127 @@ public class DocumentAdapt implements Document, EventTarget {
 		return sb.toString();
 	}
 
+	public String getTitle() {
+		return this.title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getReferrer() {
+		return this.referrer;
+	}
+
+	public String getDomain() {
+		return this.domain;
+	}
+
+	public String getURL() {
+		return location.getHref();
+	}
+
+//	@Override
+//	public HTMLElement getBody() {
+//		synchronized (this) {
+//			return this.body;
+//		}
+//	}
+//
+//	@Override
+//	public void setBody(HTMLElement body) {
+//		synchronized (this) {
+//			this.body = body;
+//		}
+//	}
+
+	public HTMLCollection getImages() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public HTMLCollection getApplets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public HTMLCollection getLinks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public HTMLCollection getForms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public HTMLCollection getAnchors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void open() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void close() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void writeln(String text) {
+		write(text + "\r\n");
+	}
+
+	public NodeList getElementsByName(String elementName) {
+		return document.getElementsByTagName(elementName);
+	}
+
+	public void write(String text) {
+		System.out.println("<write>:" + text);
+	}
+
+	public Document getDocument() {
+		return document;
+	}
+
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
+	}
+
+	@Override
+	public Event createEvent(String type) throws DOMException {
+		if (type.equalsIgnoreCase("Events") || "Event".equals(type)) {
+			return new EventImpl();
+		} else if (type.equalsIgnoreCase("MutationEvents") || "MutationEvent".equals(type)) {
+			return new MutationEventImpl();
+		}
+		return new EventImpl();
+	}
+
 	@Override
 	public void addEventListener(String type, EventListener listener, boolean useCapture) {
-		EventTarget eventTarget = null;
-		if (document instanceof EventTarget) {
-			eventTarget = (EventTarget) document;
-		} else {
-			eventTarget = (EventTarget) getOwnerDocument();
-		}
-		eventTarget = (CoreDocumentImpl) document;
+		EventTarget eventTarget = (EventTarget) document;
 		eventTarget.addEventListener(type, listener, useCapture);
 	}
 
-	@Override
 	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
-		EventTarget eventTarget = null;
-		if (document instanceof EventTarget) {
-			eventTarget = (EventTarget) document;
-		} else {
-			eventTarget = (EventTarget) getOwnerDocument();
-		}
+		EventTarget eventTarget = (EventTarget) document;
 		eventTarget.removeEventListener(type, listener, useCapture);
 	}
 
-	@Override
 	public boolean dispatchEvent(Event event) throws EventException {
-		EventTarget eventTargetn = null;
-		if (document instanceof EventTarget) {
-			eventTargetn = (EventTarget) document;
-		} else {
-			eventTargetn = (EventTarget) getOwnerDocument();
-		}
-		return eventTargetn.dispatchEvent(event);
+		EventTarget eventTarget = (EventTarget) document;
+		return eventTarget.dispatchEvent(event);
 	}
+
 }

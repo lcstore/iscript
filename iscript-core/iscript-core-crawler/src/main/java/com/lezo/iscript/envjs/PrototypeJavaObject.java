@@ -1,6 +1,5 @@
 package com.lezo.iscript.envjs;
 
-import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 

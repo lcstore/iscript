@@ -27,6 +27,7 @@ import org.w3c.dom.NodeList;
 
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.envjs.EnvjsUtils;
+import com.lezo.iscript.envjs.PrototypeJavaObject;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -94,7 +95,8 @@ public class FDSSigner implements ConfigParser {
 				break;
 			}
 		}
-		DocumentAdapt document = (DocumentAdapt) ScriptableObject.getProperty(scope, "document");
+		PrototypeJavaObject documentObject = (PrototypeJavaObject) ScriptableObject.getProperty(scope, "document");
+		DocumentAdapt document = (DocumentAdapt) Context.jsToJava(documentObject, DocumentAdapt.class);
 		NodeList scriptList = document.getElementsByTagName("script");
 		Node firstNode = scriptList.item(0);
 		String hmUrl = firstNode.getAttributes().getNamedItem("src").getNodeValue();
