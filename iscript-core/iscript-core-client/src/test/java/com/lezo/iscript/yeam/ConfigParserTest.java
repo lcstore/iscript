@@ -12,6 +12,8 @@ import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
 import com.lezo.iscript.yeam.config.JDBBSSigner;
 import com.lezo.iscript.yeam.config.JDCid2PList;
+import com.lezo.iscript.yeam.config.Latest360News;
+import com.lezo.iscript.yeam.config.LatestSohuNews;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
 import com.lezo.iscript.yeam.config.StringLinker;
 import com.lezo.iscript.yeam.config.ZYueSigner;
@@ -142,6 +144,29 @@ public class ConfigParserTest {
 		task.put("user", "i53411308");
 		task.put("pwd", "i53411308");
 		task.put("user", "i179435038");
+		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testLatest360News() throws Exception {
+		ConfigParser parser = new Latest360News();
+		TaskWritable task = new TaskWritable();
+		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testLatestSohuNews() throws Exception {
+		ConfigParser parser = new LatestSohuNews();
+		TaskWritable task = new TaskWritable();
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
