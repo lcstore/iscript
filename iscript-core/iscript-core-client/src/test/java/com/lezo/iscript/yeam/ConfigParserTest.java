@@ -169,6 +169,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		try {
 			String result = parser.doParse(task);
+			
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
