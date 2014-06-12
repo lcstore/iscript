@@ -15,6 +15,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -139,7 +142,9 @@ public class ScriptTest {
 
 	@Test
 	public void testUa() throws Exception {
+		int optimizationLevel = -1;
 		Context cx = EnvjsUtils.enterContext();
+		cx.setOptimizationLevel(optimizationLevel);
 		ScriptableObject parent = CommonContext.getCommonScriptable();
 		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
 		StringBuilder sb = new StringBuilder();
@@ -152,6 +157,32 @@ public class ScriptTest {
 		Object uaObject = ScriptableObject.getProperty(scope, "newUa");
 		String ua = Context.toString(uaObject);
 		System.out.println("ua:" + ua);
+		System.out.println("end.......");
+	}
+
+	@Test
+	public void testUa2() throws Exception {
+		int optimizationLevel = -1;
+		Context cx = EnvjsUtils.enterContext();
+		EvaluatorException er=Context.reportRuntimeError("...");
+//		er.getScriptStackTrace().length()
+		cx.setOptimizationLevel(optimizationLevel);
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/deua.js"));
+		cx.evaluateString(scope, code, "tb.deua", 0, null);
+		String execString = FileUtils.readFileToString(new File("src/test/resources/js/uaexec.js"));
+		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
+		System.out.println("end.......");
+	}
+
+	@Test
+	public void testArgs() throws Exception {
+		Context cx = EnvjsUtils.enterContext();
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/args.js"));
+		cx.evaluateString(scope, code, "tb.opt", 0, null);
 		System.out.println("end.......");
 	}
 }

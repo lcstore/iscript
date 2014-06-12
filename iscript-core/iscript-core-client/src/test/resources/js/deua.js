@@ -1,3 +1,14 @@
+window.ua = "",
+window.UA_Opt = {
+    LogVal: "ua",
+    MaxMCLog: 5,
+    MaxMPLog: 5,
+    MaxKSLog: 5,
+    Token: (new Date).getTime() + ":" + Math.random(),
+    SendMethod: 8,
+    Flag: 14222
+};
+ilog('UA_Opt:'+JSON.stringify(UA_Opt));
 (function() {
     try {
         (function() {
@@ -412,6 +423,7 @@
                     }
                     0x0003f000;
                 }
+                ilog(ilogger('bp:'+gqj));
                 var ug1 = 31, i = 0, xaz = gqj["length"];
                 while (i < xaz) {
                     ug1 ^= (ug1 << 5) + (ug1 >> 2) + gqj["charCodeAt"](i++);
@@ -572,9 +584,12 @@
                 return cy(q1, dsx1);
             };
             nrbw = function(i7v, lscx) {
+            	ilog('i7v:'+JSON.stringify(i7v));
+            	ilog('lscx:'+lscx);
                 if (!q7) {
                     for (var hu = ((0x3e8 | 01726) % 73); hu < ((0x3f3 | 0162) % 63); hu++) {
                         if (hu == (0x3e8 % 0306 & 65)) {
+                        	ilog(ilogger('nrbw:'+arguments["callee"]));
                             var kwgz = bp("" + arguments["callee"]);
                         } else if (hu == ((0x3fe | 0754) % 85)) {
                             q7 = true;
@@ -587,10 +602,15 @@
                             mtk = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
                         }
                     }
+                    ilog('ddddddddddddd');
                 }
+                ilog(ilogger('nrbw.zvu:'+JSON.stringify(zvu)));
+                arguments["callee"]["caller"]=vv2l;
                 var ug1 = bp("" + arguments["callee"]["caller"]);
+                ilog('ug1:'+ug1);
                 if (lscx == u3g9 || typeof lscx == "undefined" || i7v[0] != (ug1 + y5b(i7v[1]))) {
-                    toi(ug1, "r");
+                	ilog('ddddddddddd:toi(ug1');
+                   // toi(ug1, "r");
                     return;
                 }
                 if (!((0x3f3 | 01017) % 93)) {
@@ -635,6 +655,8 @@
                 }
             };
             drgh = function(d) {
+            	ilog(ilogger('drgh:'+d));
+            	ilog(ilogger('drgh.zvu:'+JSON.stringify(zvu)));
                 for (var hxd = (0x3e8 % 0144 & 91); hxd < ((0x3e8 | 01546) % 59); hxd++) {
                     if (hxd == (0x3e8 % 0171 & 81)) {
                         nrbw(bk(bp("" + arguments["callee"])), "" + arguments["callee"]);
@@ -1250,9 +1272,12 @@
                     }
                 }
                 for (var h6f = ((0x3f3 | 01456) % 93); h6f < (0x3f3 % 0324 & 87); h6f++) {
+                	ilog(ilogger('go().h6f:'+h6f));
                     if (h6f == (0x3e8 * 0324 & 65)) {
+                    	ilog(ilogger('go().zvu = [];'));
                         zvu = [];
                     } else if (h6f == (0x3e8 % 01546 & 87)) {
+                    	ilog(ilogger('go().ydv = [];'));
                         ydv = [];
                     }
                     if (h6f == ((0x3e8 | 0754) % 59)) {
@@ -1945,6 +1970,7 @@
                 typeof zf;
             }
             vv2l = function(e) {
+            	ilog(ilogger('vv2l:'+e));
                 if (xf != (0x3e8 % 0144 & 67)) {
                     return;
                 }
@@ -1964,6 +1990,7 @@
                     }
                 }
                 ulp4();
+                ilog(ilogger('vz5l:'));
                 vz5l(b8do, ovyw);
                 ulp4(q2('Alo2ei0R', 1, 2));
                 var r4l = (0x3e8 % 01251 & 65);

@@ -1,11 +1,13 @@
-var ilog = function(msg) {
-	if (msg) {
-		java.lang.System.out.println(msg);
-	} else {
+ilogger = org.mozilla.javascript.Context.reportRuntimeError;
+var ilog = function(msgObject) {
+	if (!msgObject) {
 		java.lang.System.err.println("null");
+	} else if (msgObject.getMessage) {
+		java.lang.System.out.println(msgObject.getMessage());
+	} else {
+		java.lang.System.out.println(msgObject);
 	}
 };
-
 var cookieUtils = {
 get: function(e) {
 	try {
