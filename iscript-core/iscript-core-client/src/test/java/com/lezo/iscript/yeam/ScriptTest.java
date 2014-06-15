@@ -3,11 +3,22 @@ package com.lezo.iscript.yeam;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.dom4j.io.SAXReader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,13 +31,17 @@ import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
+import com.sun.jndi.toolkit.ctx.Continuation;
 
 public class ScriptTest {
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Test
 	public void test() throws Exception {
@@ -162,14 +177,33 @@ public class ScriptTest {
 
 	@Test
 	public void testUa2() throws Exception {
-		int optimizationLevel = -1;
+		int optimizationLevel = -2;
 		Context cx = EnvjsUtils.enterContext();
-		EvaluatorException er=Context.reportRuntimeError("...");
-//		er.getScriptStackTrace().length()
+		EvaluatorException er = Context.reportRuntimeError("...");
+		// er.getScriptStackTrace().length()
 		cx.setOptimizationLevel(optimizationLevel);
 		ScriptableObject parent = CommonContext.getCommonScriptable();
 		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
-		String code = FileUtils.readFileToString(new File("src/test/resources/js/deua.js"));
+		String argsString = FileUtils.readFileToString(new File("src/test/resources/js/uaargs.js"));
+		cx.evaluateString(scope, argsString, "tb.ua.args", 0, null);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/deua.1402674671174.js"));
+		cx.evaluateString(scope, code, "tb.deua", 0, null);
+		String execString = FileUtils.readFileToString(new File("src/test/resources/js/uaexec.js"));
+		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
+		System.out.println("end.......");
+	}
+	@Test
+	public void testUaAuth() throws Exception {
+		int optimizationLevel = -2;
+		Context cx = EnvjsUtils.enterContext();
+		EvaluatorException er = Context.reportRuntimeError("...");
+		// er.getScriptStackTrace().length()
+		cx.setOptimizationLevel(optimizationLevel);
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+		String argsString = FileUtils.readFileToString(new File("src/test/resources/js/uaargs.js"));
+		cx.evaluateString(scope, argsString, "tb.ua.args", 0, null);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/ua_authcenter_login.1402822683653.js"));
 		cx.evaluateString(scope, code, "tb.deua", 0, null);
 		String execString = FileUtils.readFileToString(new File("src/test/resources/js/uaexec.js"));
 		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
@@ -177,12 +211,66 @@ public class ScriptTest {
 	}
 
 	@Test
+	public void testApiCall() throws Exception {
+		Context cx = EnvjsUtils.enterContext();
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+		String argsString = FileUtils.readFileToString(new File("src/test/resources/js/uaargs.js"));
+		cx.evaluateString(scope, argsString, "tb.ua.args", 0, null);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/deua.1402674671174.js"));
+		cx.evaluateString(scope, code, "tb.deua", 0, null);
+		String execString = FileUtils.readFileToString(new File("src/test/resources/js/uaexec.js"));
+		int index = 0;
+		int max = 500;
+		while (index < max) {
+			try {
+				TimeUnit.SECONDS.sleep(10);
+				cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
+				Object uaObject = ScriptableObject.getProperty(scope, "newUa");
+				String ua = Context.toString(uaObject);
+
+				String apiUrl = "http://api.taobao.com/apitools/getResult.htm";
+				HttpPost post = new HttpPost(apiUrl);
+				post.addHeader("Referer",
+						"http://api.taobao.com/apitools/apiTools.htm?catId=4&apiName=taobao.item.skus.get&scopeId=");
+				post.addHeader("Accept-Encoding", "gzip, deflate");
+				String pCode = "39071575593";
+				List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+				parameters.add(new BasicNameValuePair("api_soure", "0"));
+				parameters.add(new BasicNameValuePair("app_key", "系统分配"));
+				parameters.add(new BasicNameValuePair("app_secret", "系统分配"));
+				parameters.add(new BasicNameValuePair("codeType", "JAVA"));
+				parameters.add(new BasicNameValuePair("fields",
+						"sku_id,num_iid,properties,quantity,price,outer_id,created,modified"));
+				parameters.add(new BasicNameValuePair("format", "json"));
+				parameters.add(new BasicNameValuePair("method", "taobao.item.skus.get"));
+				parameters.add(new BasicNameValuePair("num_iids", pCode));
+				parameters.add(new BasicNameValuePair("restId", "2"));
+				parameters.add(new BasicNameValuePair("session", ""));
+				parameters.add(new BasicNameValuePair("sip_http_method", "POST"));
+				parameters.add(new BasicNameValuePair("ua", ua));
+				HttpEntity entity = new UrlEncodedFormEntity(parameters, "UTF-8");
+				post.setEntity(entity);
+
+				DefaultHttpClient client = HttpClientUtils.createHttpClient();
+				String html = HttpClientUtils.getContent(client, post);
+				index++;
+				logger.info(index + ":" + html);
+			} catch (Exception e) {
+				logger.warn("" + index, e);
+			}
+		}
+
+	}
+
+	@Test
 	public void testArgs() throws Exception {
 		Context cx = EnvjsUtils.enterContext();
+		cx.setOptimizationLevel(-2);
 		ScriptableObject parent = CommonContext.getCommonScriptable();
 		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
 		String code = FileUtils.readFileToString(new File("src/test/resources/js/args.js"));
 		cx.evaluateString(scope, code, "tb.opt", 0, null);
-		System.out.println("end.......");
+		System.out.println("end......." + cx.isGeneratingSource());
 	}
 }

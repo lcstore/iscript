@@ -53,7 +53,7 @@ public class UAAnalyze {
 
 	@Test
 	public void decodeUA() throws IOException {
-		String source = "src/test/resources/js/ua.js";
+		String source = "src/test/resources/js/ua_authcenter_login.js";
 		String encoding = "UTF-8";
 		List<String> lines = FileUtils.readLines(new File(source), encoding);
 		Context cx = Context.enter();
@@ -63,7 +63,7 @@ public class UAAnalyze {
 		cx.evaluateReader(scope, in, "cmd", 0, null);
 		Pattern deReg = Pattern.compile("[0-9a-zA-Z]+\\('[a-zA-Z]+',[0-9\\s]+,[0-9\\s]+\\)");
 		// deReg = Pattern.compile("\\(.*?,.*?,.*?\\)");
-		String deUAOpt = "src/test/resources/js/deua." + System.currentTimeMillis() + ".js";
+		String deUAOpt = "src/test/resources/js/ua_authcenter_login." + System.currentTimeMillis() + ".js";
 		Writer out = new FileWriter(new File(deUAOpt));
 		BufferedWriter bWriter = new BufferedWriter(out);
 		for (String line : lines) {

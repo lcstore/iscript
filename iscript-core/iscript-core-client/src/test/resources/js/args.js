@@ -8,8 +8,10 @@ function oneArgs(a) {
 	ilog('oneArgs.length:' + JSON.stringify(arguments.length));
 }
 function sum(a, b) {
+	var kont  = new  Continuation();
 	var iSum = a + b;
 	ilog('a+b:' + iSum);
+	ilog('con:' + kont);
 	ilog('sum.arguments:' + JSON.stringify(arguments));
 	ilog('sum.length:' + JSON.stringify(arguments.length));
 }

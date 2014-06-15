@@ -1,25 +1,21 @@
 package com.lezo.iscript.yeam;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.w3c.dom.Document;
+
+import com.lezo.iscript.crawler.script.CommonContext;
+import com.lezo.iscript.envjs.EnvjsUtils;
 
 public class UABuilder {
 	private static final List<String> uaSeeds = new ArrayList<String>();
-	private static ScriptableObject scope = null;
+	private static Scriptable scope = null;
 	static {
 		// uaSeeds.add("252fCJmZk4PGRVHHxtOZXsnZHo9ay11PWsQKg%3D%3D%7CfyJ6Zyd9OWIhY3YiZ3UoaRg%3D%7CfiB4D157YHtufDUqfHY4fmo7dCQaAxlbU1AFS2IT%7CeSRiYjNhIHA2cGU0c2Y7fGgsdTdwNXJlO39rM35lIXE3bSxqej8W%7CeCVoaEATTRBZGBJEAghGAwNCCFMBDAUBOxI%3D%7Cey93eSgW%7Cei93eSgW%7CdSpyBUAQTBBZFAtVGQtQEA1MHlwMSBAFUQkeRwMcQxdQCVUQA1cVH0sJEU4cWwFHHwFVFm1c%7CdCltbTwERRRWEwVOZmI%2FeG0reTtlJ2R3IWNyYiYkZTF6KmgoPGIlOmIjPXwpal8NVUJ4LlU%3D%7Cdy93AFEQThBRERtIBRtbHgpIEzwI%7Cdi52AVARTx9eGRNDBxdXEApIEzwI%7CcSlxBlcWSBBREwRPDRxFHQBBEFMKJw4%3D%7CcClxBlcWSHo7fmAwaHgnZxZJGkQPXQUSRwQWSmMS%7CcypyBVQVS3k6fG8kYX4kDQ1MA1MYRAgXQgQTTQ5%2FUQ%3D%3D%7CcitzBFUUSng6eWwnYnArAgJDDFwXSwcYTQoYQQNyXA%3D%3D%7CbTdvGElbC04PTEYRSV4CRVkfTw9Tflc%3D%7CbDZuGUhaCk8PV0EKT1kGQlgcRwQwHQ%3D%3D%7CbzdzbzBjPWY6f207Y3YvbGwqcC5wNW15Mn9rK2hoLWIlYCFmbDp8ditubi99I3g4EQ%3D%3D");
 		uaSeeds.add("235fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWEobH0tYXIubh8=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2c2w7eGk9fGAnfjx7OX5uMXNkPHpmJ3w9bS9qeCx6AQ==|eCVoaEATTRdeHxVAGBxbW1V7RQ==|ey93eSgW|ei93eSgW|dShtbUUEHgMHA1YLUFlZQgkTHkJfTlURFwwECxBRDQMUEAITRw8XXlVICldeRFlEXEVRUQ4OHw4QGgYGFw9FBBZFRV0uLyk/Pz0saXozYX9+N2JiY3lWUQMdBUYXBl5MQBQZDB5ZS1MBMippdHBdWEdUGxJbTAYUSlZYFxsfCkMCE1tCRldQQUZKHBxKQWo+NydiY2V0aUZHExhRHwcHWw1cG0FwITVnIUEITlcWMy0rPCFpIDFjbnV3Z2t0OHo7Lw4WX1RJCxUfCU5WVh0WR1MKTScmIDY2NCVgc1gLFQ0ERRNSf2dnNSJzZz54YSEDVA9KDB9KeHslZHo8bVlaTBZVRlMaWE8MElQUSApLX34vO2IkPX1YCE0fSTII|dCtzBEUUVBFWFwhDBBZIEAlKGUcfXB4ORQYWQhoHRxRSF1ASDDYf|dyptbUUEISE/L2Z2cXcsenorHyQDUxYCSQ0HWwMYXB0yBg==|ditvbz4GRhtSHg9EbGg1cmcgez5gJ2R0JWN2ZiIgYzRzL2kqPGsuO2IjOHgpYzIeSEIUPTkI|cStzBFViQGVKTgkdGktITgYqeChtJWVvOGB3K2l0Mw0i|cCpyBVRjQWRLTwgcG0pJTwcreSlsKmthNm55JWh1Mgwj|cylxBldgQmdITAsfGElKTAQoeipvKGVvOGB3KmxxNwkm|cihwB1ZhQ2ZJTQoeGUhLTQUpeytuKGpgN294JWR9Nwkm|bTdvGEl+XHlWUhUBBldUUho2ZDRxN3Z8K3NkOXpvJRs0|bDZuGUh/XXhXUxQAB1ZVUxs3ZTVwN3pwJ39oNnNnJBo1|bzVtGkt8XntUUBcDBFVWUBg0ZjZzMnB6LXViOHRqLhA/|bjRsG0p9X3pVURYCBVRXURk1ZzdyM3F7LHRjOH9hKhQ7|aTNrHE16WH1SVhEFAlNQVh4yYDB1NHZ8K3NkP3hiKBY5|aDJqHUx7WXxTVxAEA1JRVx8zYTF0NXd9KnJlPn5gJBo1|azFpHk94Wn9QVBMHAFFSVBwwYjJ3NnR+KXFmPX1lLhA/|ajBoH055W35RVRIGAVBTVR0xYzN2N3V/KHBnPH1hKxU6|ZT9nEEF2VHFeWh0JDl9cWhI+bDx5OHpwJ39oM3JtLxE+|ZD5mEUB3VXBfWxwID15dWxM/bT14OXtxJn5pMnNmJhg3|Zz1lEkN0VnNcWB8LDF1eWBA8bj57OnhyJX1qMXNuLBI9|ZjxkE0J1V3JdWR4KDVxfWRE9bz96P3txInptNnRrKhQ7|YTtjFEVyUHVaXhkNCltYXhY6aDh9OHtxJn5pPXtnJxk2|YDpiFURzUXRbXxgMC1pZXxc7aTl8PX91InptOXtmLRM8|YzlhFkdwUndYXBsPCFlaXBQ4ajp/OHpwI3tsOHRrIB4x|YjhgF0ZxU3ZZXRoOCVhbXRU5azt+OHV/KHBnMndsJxk2|XQdfKHlObElmYiUxNmdkYioGVARBCExGEUleC0pREC4B|XAZeKXhPbUhnYyQwN2ZlYysHVQVAB0pAF09YDUFfHyEO|XwRcK3pNb0plYSYyNWRnYSkFVwdCAlpOG19PGjNC|XgRcK3pNb0plYSYyNWRnYSkFVwdCA0BKHUVSB0BcH0VqXg==|WQNbLH1KaE1iZiE1MmNgZi4CUABFBEdNGkJRD0NZHkxjVw==|WAJaLXxLaUxjZyA0M2JhZy8DUQFEBUZMG0NQBUlUFUFuWg==|WwJaLXxVeEJHURoUFGF5bDQuLn47EFVDE0tfAkU0azhmLX8nN2MuOmclVHo=|WgFZLn9We0FEUhkXF2J6bzctLX04eSExZSg8YiFQfg==|VQ1JVQpZB1wARVcBWUwVVlYQShRKD1dAFlZcAVlEAVIMXBxEUAJaThZOUBBfH0QYXkkCRFISV0IdTwVAAUJIHlxWC0pKCF8BWRpCVQBYTxJKVxRbEFUdRVQfXVcOVk4RQwdCAFhPBEBKC05QD10eKg==");
@@ -44,101 +40,99 @@ public class UABuilder {
 		scope = initScriptable();
 	}
 
-	private static ScriptableObject initScriptable() {
-		Context cx = Context.enter();
-		ScriptableObject scope = cx.initStandardObjects();
-		DocumentBuilder docBuilder = null;
+	private static Scriptable initScriptable() {
+		Context cx = EnvjsUtils.enterContext();
+		Scriptable scope = null;
 		try {
-			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
+			ScriptableObject parent = CommonContext.getCommonScriptable();
+			scope = EnvjsUtils.initStandardObjects(parent);
+			String argsString = FileUtils.readFileToString(new File("src/test/resources/js/uaargs.js"));
+			cx.evaluateString(scope, argsString, "tb.ua.args", 0, null);
+			String code = FileUtils.readFileToString(new File("src/test/resources/js/deua.1402674671174.js"));
+			cx.evaluateString(scope, code, "tb.deua", 0, null);
+		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			Context.exit();
 		}
-		Document doc = docBuilder.newDocument();
-		ScriptableObject.putProperty(scope, "$document", doc);
-		try {
-			InputStream in = null;
-			Reader reader = null;
-			String optName = "com/yihaodian/pis/javascriptcrawler/resources/taobao.opt.js";
-			in = Thread.currentThread().getContextClassLoader().getResourceAsStream(optName);
-			reader = new InputStreamReader(in);
-			cx.evaluateReader(scope, reader, "tbua", 0, null);
-			IOUtils.closeQuietly(in);
-			IOUtils.closeQuietly(reader);
-
-			String uaName = "com/yihaodian/pis/javascriptcrawler/resources/taobao.ua.js";
-			in = Thread.currentThread().getContextClassLoader().getResourceAsStream(uaName);
-			reader = new InputStreamReader(in);
-			cx.evaluateReader(scope, reader, "tbua", 0, null);
-			IOUtils.closeQuietly(in);
-			IOUtils.closeQuietly(reader);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		Context.exit();
 		return scope;
 	}
 
-	public static String selectOne() {
-		Random random = new Random();
-		int index = random.nextInt(uaSeeds.size());
-		int start = random.nextInt(999) + 1;
-		String uaHead = "000" + start;
-		int numLen = 3;
-		uaHead = uaHead.substring(uaHead.length() - numLen);
-		String ua = uaSeeds.get(index);
-		// ua = uaHead + ua.substring(3);
-		return ua;
+	public static StringBuilder newLogUaOpt() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("!UA_Opt?UA_Opt = new Object():'';");
+		sb.append("UA_Opt.ExTarget = [ 'TPL_password_1','J_Pwd1','J_PwdV'];");
+		sb.append("UA_Opt.ResHost = 'acjstb.aliyun.com';");
+		sb.append("UA_Opt.FormId = 'J_StaticForm';");
+		sb.append("UA_Opt.LogVal = 'log'; ");
+		sb.append("UA_Opt.Token = new Date().getTime()+':'+Math.random();  ");
+		sb.append("UA_Opt.ImgUrl = '';");
+		sb.append("UA_Opt.GetAttrs = ['href', 'src']; ");
+		sb.append("UA_Opt.MaxMCLog = 150;  ");
+		sb.append("UA_Opt.MaxKSLog = 150;  ");
+		sb.append("UA_Opt.MaxMPLog = 150;  ");
+		sb.append("UA_Opt.MPInterval = 150;  ");
+		sb.append("UA_Opt.SendInterval = 10;  ");
+		sb.append("UA_Opt.SendMethod = 1;");
+		sb.append("UA_Opt.Flag = 131071;");
+		return sb;
+	}
+	public static StringBuilder newLoadUaOpt() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("var ua = '';");
+		sb.append("!UA_Opt?UA_Opt = new Object():'';");
+		sb.append("UA_Opt.LogVal = 'ua';");
+		sb.append("UA_Opt.SendMethod = 8;");
+		sb.append("UA_Opt.MaxMCLog=3;");
+		sb.append("UA_Opt.MaxMPLog=3;");
+		sb.append("UA_Opt.MaxKSLog=3;");
+		sb.append("UA_Opt.Token=new Date().getTime()+':'+Math.random();");
+		sb.append("UA_Opt.SendMethod=8;");
+		sb.append("UA_Opt.Flag=14222;");
+		return sb;
 	}
 
-	public static String newOne() {
-		String ua = null;
-		Object rs = null;
+	public static StringBuilder newLoginUaOpt() {
+		// form_tk,json_ua define before this
+		StringBuilder sb = new StringBuilder();
+		sb.append("var json_ua = null;");
+		sb.append("var form_tk = (document.getElementsByName('rds_form_token')[0] && document.getElementsByName('rds_form_token')[0].value) || '';");
+		sb.append("!UA_Opt?UA_Opt = new Object:'';");
+		sb.append("UA_Opt.ExTarget = ['password','password_input'];");
+		sb.append("UA_Opt.FormId = 'login';");
+		sb.append("UA_Opt.GetAttrs = ['href', 'src'];");
+		sb.append("UA_Opt.Token = form_tk;");
+		sb.append("UA_Opt.LogVal = 'json_ua';");
+		sb.append("UA_Opt.MaxMCLog = 100;");
+		sb.append("UA_Opt.MaxKSLog = 100;");
+		sb.append("UA_Opt.MaxMPLog = 100;");
+		sb.append("UA_Opt.MaxFocusLog = 100;");
+		sb.append("UA_Opt.SendMethod = 9;");
+		sb.append("UA_Opt.Flag = 32766;");
+		return sb;
+	}
+
+	public static String newUa(StringBuilder argsBuilder) {
+		String ua = "";
 		try {
-			Context cx = Context.enter();
-			String source = "ua = '';UA_Opt.Token=new Date().getTime()+':'+Math.random();";
-			source += "UA_Opt.oCustom={};UA_Opt.oCustom.oEnv=[400];UA_Opt.oCustom.oSet= [ 20, [ \"de\", \"8_807245418\"] ];UA_Opt.reload();";
-			cx.evaluateString(scope, source, "cmd", 0, null);
-			
-			source = "UA_Opt.oCustom={};UA_Opt.oCustom.oEnv=[400,399];var rand =Math.ceil(Math.random()*(96659-15807)+15807);UA_Opt.oCustom.oSet = [ 20, [ \"to\", [ rand, new Date().getTime(), \"20\" ] ] ];";
-			source += "UA_Opt.reload(); var sua = eval(UA_Opt.LogVal);";
-			cx.evaluateString(scope, source, "cmd", 0, null);
-			rs = ScriptableObject.getProperty(scope, "sua");
-			ua = Context.toString(rs);
+			Context cx = EnvjsUtils.enterContext();
+			StringBuilder sb = argsBuilder;
+			sb.append("window.UA_Opt.reload();");
+			sb.append("var newUa = eval(UA_Opt.LogVal);");
+			sb.append("ilog(UA_Opt.LogVal+'='+newUa);");
+			cx.evaluateString(scope, sb.toString(), "tb.uaexec", 0, null);
+			Object uaObject = ScriptableObject.getProperty(scope, "newUa");
+			ua = Context.toString(uaObject);
+		} finally {
 			Context.exit();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		if (ua == null) {
-			ua = selectOne();
-		}
+		System.out.println("ua:" + ua);
 		return ua;
 	}
 
-//	@Test
+	@Test
 	public void test() throws Exception {
-//		System.out.println(newOne());
-//		ShuTaobaoClient client = new ShuTaobaoClient();
-//		String username = "pis1002";
-//		String password = "pis1234";
-//		boolean bHadLogin = client.login(username, password);
-//		System.out.println(bHadLogin);
-//		if (!bHadLogin) {
-//			return;
-//		}
-//		// while(!client.login(username,password)){
-//		// TimeUnit.MILLISECONDS.sleep(60000);
-//		// System.out.println("retry login:"+(++retry));
-//		// }
-//		// String ua = newOne();
-//		// System.out.println(ua);
-//		String url = "http://shu.taobao.com/trendindex?query=%E8%8B%B9%E6%9E%9C";
-//		String proxyHost = "10.19.21.208";
-//		int proxyPort = 8901;
-//		Map<String, String> config = new HashMap<String, String>();
-//		config.put("proxyHost", proxyHost);
-//		config.put("proxyPort", "" + proxyPort);
-//		config = null;
-//		String html = SimpleHttpClient.getCurrent().get(url, config, null).getResponseText();
-//		System.out.println(html);
+		System.out.println("#1:"+UABuilder.newUa(newLoadUaOpt()));
+		System.out.println("#2:"+UABuilder.newUa(newLoginUaOpt()));
 	}
 }
