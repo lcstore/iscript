@@ -1,11 +1,13 @@
-var ilog = function(msg) {
-	if (msg) {
-		java.lang.System.out.println(msg);
-	} else {
+ilogger = org.mozilla.javascript.Context.reportRuntimeError;
+var ilog = function(msgObject) {
+	if (!msgObject) {
 		java.lang.System.err.println("null");
+	} else if (msgObject.getMessage) {
+		java.lang.System.out.println(msgObject.getMessage());
+	} else {
+		java.lang.System.out.println(msgObject);
 	}
 };
-
 var cookieUtils = {
 get: function(e) {
 	try {
@@ -40,18 +42,18 @@ window.location=location;
 // window.event = new Event();
 window.defaultStatus = "";
 window.name = "";
-window.outerWidth = 0;
-window.outerHeight = 0;
+window.status = "";
+window.outerWidth = 1366;
+window.outerHeight = 728 ;
 window.pageXOffset = 0;
 window.pageYOffset = 0;
-window.status = "";
-window.innerWidth = 0;
-window.innerHeight = 0;
+window.innerWidth = 1366;
+window.innerHeight = 147;
 window.screenX = 0;
 window.screenY = 0;
 window.screenLeft = 0;
 window.screenTop = 0;
-window.length = 0;
+window.length = 1;
 window.scrollX=0;
 window.scrollY=0;
 window.scrollMaxX=0;

@@ -1,34 +1,26 @@
-var m1 = function(nu, gw, w3) {
-	var y = gw + w3;
-	var ci = "";
-	var q = "";
-	nu = nu.substr(((0x3fe | 0513) % 73), nu.length - ((0x3fe | 0200) % 85));
-	var jf = nu.length;
-	for (var dv = (0x3e8 * 0171 & 87); dv < jf; ++dv) {
-		if (dv % y == y - (0x3f3 * 0673 & 97)) {
-			ci = nu.substr(dv - y + (0x3e8 % 0475 & 73), y);
-			ci = ci.charAt(y - (0x3f3 * 0207 & 75))
-					+ ci
-							.substr((0x3e8 % 01071 & 81), y
-									- ((0x3fe | 0646) % 85))
-					+ ci.charAt(((0x3e8 | 0574) % 85));
-			ci = ci.substr((0x3e8 * 0200 & 75), gw);
-			q = q + ci;
+iu = function(lr, u, lq) {
+	var zk = u + lq;
+	var fy = "";
+	var yn = "";
+	lr = lr.substr((0x3e8 % 01267 & 65), lr.length - (0x3fe * 0277 & 91));
+	var p8 = lr.length;
+	for (var wg = ((0x3f3 | 01215) % 93); wg < p8; ++wg) {
+		if (wg % zk == zk - (0x3e8 % 01107 & 85)) {
+			fy = lr.substr(wg - zk + (0x3f3 * 0673 & 73), zk);
+			fy = fy.split("").reverse().join("");
+			fy = fy.substr((0x3e8 % 0540 & 65), u);
+			yn = yn + fy;
 		}
 	}
-	var nq = jf % y;
-	if (nq != ((0x3e8 | 0513) % 59)) {
-		ci = nu.substr(jf - nq, jf - (0x3f3 * 0727 & 67));
-		if (ci.length != ((0x3e8 | 0216) % 67)) {
-			ci = ci.charAt(nq - (0x4b9 % 01134))
-					+ ci.substr((0x3f3 * 0207 & 81), nq - (0x3e8 % 01116 & 71))
-					+ ci.charAt((0x3e8 * 0200 & 59));
-		}
-		ci = ci.substr((0x3e8 % 0367 & 81), gw);
-		q = q + ci;
+	var sq = p8 % zk;
+	if (sq != (0x3e8 * 0270 & 63)) {
+		fy = lr.substr(p8 - sq, p8 - (0x3e8 % 01053 & 67));
+		fy = fy.split("").reverse().join("");
+		fy = fy.substr(((0x3e8 | 01215) % 67), u);
+		yn = yn + fy;
 	}
-	return q;
+	return yn;
 };
-var q2 = m1;
-var ib = m1;
-var xm = m1;
+var p = iu;
+var h8 = p;
+var q = iu;

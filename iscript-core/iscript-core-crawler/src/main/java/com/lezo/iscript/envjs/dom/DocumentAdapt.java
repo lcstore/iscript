@@ -29,7 +29,6 @@ import org.w3c.dom.events.EventException;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.html.HTMLCollection;
-import org.w3c.dom.html.HTMLElement;
 
 import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.sun.org.apache.xerces.internal.dom.events.EventImpl;
@@ -44,7 +43,8 @@ public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 	private String domain;
 	private String title;
 	private String referrer;
-	private HTMLElement body;
+//	private HTMLElement body;
+	private Element body;
 	private Map<String, Element> idElementMap = new HashMap<String, Element>();
 
 	public DocumentAdapt(Document document, LocationAdapt location) {
@@ -474,19 +474,26 @@ public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 		return location.getHref();
 	}
 
-//	@Override
-//	public HTMLElement getBody() {
-//		synchronized (this) {
-//			return this.body;
-//		}
-//	}
-//
-//	@Override
-//	public void setBody(HTMLElement body) {
-//		synchronized (this) {
-//			this.body = body;
-//		}
-//	}
+	public Element getBody() {
+		if (this.body != null) {
+			return this.body;
+		}
+		synchronized (this) {
+			if (this.body == null) {
+				NodeList nodeList = document.getElementsByTagName("body");
+				this.body = (Element) nodeList.item(0);
+			}
+		}
+		return this.body;
+	}
+
+	//
+	// @Override
+	// public void setBody(HTMLElement body) {
+	// synchronized (this) {
+	// this.body = body;
+	// }
+	// }
 
 	public HTMLCollection getImages() {
 		// TODO Auto-generated method stub
