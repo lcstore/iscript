@@ -32,7 +32,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
-import com.lezo.iscript.yeam.UABuilder;
+import com.lezo.iscript.yeam.ua.UABuilder;
 
 public class EtaoLoginTest {
 
@@ -52,25 +52,26 @@ public class EtaoLoginTest {
 		ua = "152fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYuaHwuaXktbx4=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo/eWo1dG8tdDZxNHlvOndkPHBuLXg+bipoez4X|eCVoaEASTBRVFARPCAJMFAlTEj0J|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy52AVART307eGohZ3UtdWshbi1yN29+LGhiPXllSwRGA1EHDVISBzYf|di52AVARTxdWEARPCB9LEwZMHFtvQg==|cSlxBlcWSBBQFABLDRlEHAJFFFABLAU=|cChwB1YXSRFRFgZNCB9FHQNIHl8EKQA=|cypyBVQVS3k4fGk3b3ggZxZJGkQPXQURTwsaRG0c|cipyBVQVSxNTHglCBBZNFQpJGlANIAk=|bTRsG0oLVWcmY3UgeG0zdQRbCFYdTxcCVRcFWHEA|bDRwbDNgPmU5fG44YHUsb28pcy1zNm56MXxoKG13KH0jfyNjaT95cy11aCsV";
 		ua = "223fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYub3Evb3ktYRA=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo4dGs0dmwmfz16M3BjMndjOHRsLn48ZyJgdzIb|eCVoaEARTxNRCRxXAWJ+a2VLdQ==|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy93AFEQThZWFQpBBhFJEQ9NGlltQA==|di93AFEQTnw9eWY4YHUobx5BEkwHVQ0ZTQ8dLAU=|cSltcS59I3gkYXMlfWgxcnI0bjBuK3NnLGF1NXZ2NGJN";
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
-		addTabaoToken(client);
+//		addTabaoToken(client);
 		Document homeDoc = getLoginHomeHtml(client);
 
 		String mLoginUrl = getNextUrl(homeDoc, "div.login-tb > script");
 		HttpGet getLogin = new HttpGet(mLoginUrl);
 		getLogin.addHeader("Referer", homeDoc.baseUri());
 		String html = HttpClientUtils.getContent(client, getLogin);
-		Document mLoginDoc = Jsoup.parse(html,mLoginUrl);
+		Document mLoginDoc = Jsoup.parse(html, mLoginUrl);
 
 		String mPayUrl = getNextUrl(homeDoc, "div.login-pay > script");
 		HttpGet mPayGet = new HttpGet(mPayUrl);
 		getLogin.addHeader("Referer", homeDoc.baseUri());
 		html = HttpClientUtils.getContent(client, mPayGet);
-		Document mPayDoc = Jsoup.parse(html,mPayUrl);
+		Document mPayDoc = Jsoup.parse(html, mPayUrl);
 		// TODO get
 		if (needcode(client, mLoginDoc, username)) {
 			return;
 		}
-		ua = UABuilder.newUa(UABuilder.newLoginUaOpt());
+		StringBuilder sb = UABuilder.newLoginUaOpt();
+		ua = UABuilder.newUa(sb.toString());
 		HttpEntity postEntity = getPostEntity(mLoginDoc, username, password, ua);
 		// System.out.println(EntityUtils.toString(postEntity));
 		HttpPost postLogin = new HttpPost("https://login.taobao.com/member/login.jhtml");
@@ -182,8 +183,8 @@ public class EtaoLoginTest {
 
 	private boolean needcode(DefaultHttpClient client, Document homeDoc, String username) throws Exception {
 		HttpPost post = new HttpPost();
-		StringBuilder sb =UABuilder.newLogUaOpt();
-		String ua = UABuilder.newUa(sb);
+		StringBuilder sb = UABuilder.newLogUaOpt();
+		String ua = UABuilder.newUa(sb.toString());
 		// ua =
 		// "152fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYuaHwuaXktbx4=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo/eWo1dG8tdDZxNHlvOndkPHBuLXg+bipoez4X|eCVoaEASTBRVFARPCAJMFAlTEj0J|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy52AVART307eGohZ3UtdWshbi1yN29+LGhiPXllSwRGA1EHDVISBzYf|di52AVARTxdWEARPCB9LEwZMHFtvQg==|cSlxBlcWSBBQFABLDRlEHAJFFFABLAU=|cChwB1YXSRFRFgZNCB9FHQNIHl8EKQA=|cypyBVQVS3k4fGk3b3ggZxZJGkQPXQURTwsaRG0c|cipyBVQVSxNTHglCBBZNFQpJGlANIAk=|bTRsG0oLVWcmY3UgeG0zdQRbCFYdTxcCVRcFWHEA|bDRwbDNgPmU5fG44YHUsb28pcy1zNm56MXxoKG13KH0jfyNjaT95cy11aCsV";
 		post.setURI(new URI("https://login.taobao.com/member/request_nick_check.do?_input_charset=utf-8"));

@@ -20,7 +20,6 @@ import com.lezo.iscript.envjs.window.HistoryAdapt;
 import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.lezo.iscript.envjs.window.NavigatorAdapt;
 import com.lezo.iscript.envjs.window.ScreenAdapt;
-import com.lezo.iscript.envjs.window.WindowAdapt;
 
 public class EnvjsUtils {
 	private static final WrapFactory WRAP_FACTORY = new EnvjsWrapFactory();

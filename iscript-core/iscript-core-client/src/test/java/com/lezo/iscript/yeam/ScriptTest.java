@@ -209,6 +209,20 @@ public class ScriptTest {
 		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
 		System.out.println("end.......");
 	}
+	@Test
+	public void testUaLog() throws Exception {
+		Context cx = EnvjsUtils.enterContext();
+		// er.getScriptStackTrace().length()
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+		String argsString = FileUtils.readFileToString(new File("src/test/resources/js/uaargs.js"));
+		cx.evaluateString(scope, argsString, "tb.ua.args", 0, null);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/ua_action_log.1402939313185.js"));
+		cx.evaluateString(scope, code, "tb.deua", 0, null);
+		String execString = FileUtils.readFileToString(new File("src/test/resources/js/uaexec.js"));
+		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
+		System.out.println("end.......");
+	}
 
 	@Test
 	public void testApiCall() throws Exception {
