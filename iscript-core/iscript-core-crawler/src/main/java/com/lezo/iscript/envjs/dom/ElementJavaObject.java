@@ -48,8 +48,7 @@ public class ElementJavaObject extends NativeJavaObject {
 				setInnerHTML(element, value.toString());
 			} else {
 				if ("id".equals(name)) {
-					Object documentObject = ScriptableObject.getProperty(parent, "document");
-					DocumentAdapt document = (DocumentAdapt) Context.jsToJava(documentObject, DocumentAdapt.class);
+					DocumentAdapt document = findDocument(start);
 					document.setElementById(value.toString(), element);
 				}
 				element.setAttribute(name, value == null ? null : value.toString());
@@ -59,6 +58,21 @@ public class ElementJavaObject extends NativeJavaObject {
 		} else {
 			super.put(name, start, value);
 		}
+	}
+
+	private DocumentAdapt findDocument(Scriptable start) {
+		Scriptable actScriptable = start;
+		Object documentObject = null;
+		while (actScriptable != null) {
+			documentObject = ScriptableObject.getProperty(actScriptable, "document");
+			if (documentObject != null && documentObject != ScriptableObject.NOT_FOUND
+					&& documentObject instanceof DocumentAdapt) {
+				break;
+			}
+			actScriptable = actScriptable.getParentScope();
+		}
+		DocumentAdapt documentAdapt = (DocumentAdapt) Context.jsToJava(documentObject, DocumentAdapt.class);
+		return documentAdapt;
 	}
 
 	@Override

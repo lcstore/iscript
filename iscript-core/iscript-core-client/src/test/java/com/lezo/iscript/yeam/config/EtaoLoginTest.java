@@ -18,7 +18,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -31,8 +33,12 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
+import com.lezo.iscript.envjs.EnvjsUtils;
+import com.lezo.iscript.yeam.ua.LogUaFactory;
 import com.lezo.iscript.yeam.ua.UABuilder;
+import com.lezo.iscript.yeam.ua.UaFactory;
 
 public class EtaoLoginTest {
 
@@ -51,8 +57,11 @@ public class EtaoLoginTest {
 		// "235fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWEobH0tYXIubh8=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2c2w7eGk9fGAnfjx7OX5uMXNkPHpmJ3w9bS9qeCx6AQ==|eCVoaEATTRdeHxVAGBxbW1V7RQ==|ey93eSgW|ei93eSgW|dShtbUUEHgMHA1YLUFlZQgkTHkJfTlURFwwECxBRDQMUEAITRw8XXlVICldeRFlEXEVRUQ4OHw4QGgYGFw9FBBZFRV0uLyk/Pz0saXozYX9+N2JiY3lWUQMdBUYXBl5MQBQZDB5ZS1MBMippdHBdWEdUGxJbTAYUSlZYFxsfCkMCE1tCRldQQUZKHBxKQWo+NydiY2V0aUZHExhRHwcHWw1cG0FwITVnIUEITlcWMy0rPCFpIDFjbnV3Z2t0OHo7Lw4WX1RJCxUfCU5WVh0WR1MKTScmIDY2NCVgc1gLFQ0ERRNSf2dnNSJzZz54YSEDVA9KDB9KeHslZHo8bVlaTBZVRlMaWE8MElQUSApLX34vO2IkPX1YCE0fSTII|dCtzBEUUVBFWFwhDBBZIEAlKGUcfXB4ORQYWQhoHRxRSF1ASDDYf|dyptbUUEISE/L2Z2cXcsenorHyQDUxYCSQ0HWwMYXB0yBg==|ditvbz4GRhtSHg9EbGg1cmcgez5gJ2R0JWN2ZiIgYzRzL2kqPGsuO2IjOHgpYzIeSEIUPTkI|cStzBFViQGVKTgkdGktITgYqeChtJWVvOGB3K2l0Mw0i|cCpyBVRjQWRLTwgcG0pJTwcreSlsKmthNm55JWh1Mgwj|cylxBldgQmdITAsfGElKTAQoeipvKGVvOGB3KmxxNwkm|cihwB1ZhQ2ZJTQoeGUhLTQUpeytuKGpgN294JWR9Nwkm|bTdvGEl+XHlWUhUBBldUUho2ZDRxN3Z8K3NkOXpvJRs0|bDZuGUh/XXhXUxQAB1ZVUxs3ZTVwN3pwJ39oNnNnJBo1|bzVtGkt8XntUUBcDBFVWUBg0ZjZzMnB6LXViOHRqLhA/|bjRsG0p9X3pVURYCBVRXURk1ZzdyM3F7LHRjOH9hKhQ7|aTNrHE16WH1SVhEFAlNQVh4yYDB1NHZ8K3NkP3hiKBY5|aDJqHUx7WXxTVxAEA1JRVx8zYTF0NXd9KnJlPn5gJBo1|azFpHk94Wn9QVBMHAFFSVBwwYjJ3NnR+KXFmPX1lLhA/|ajBoH055W35RVRIGAVBTVR0xYzN2N3V/KHBnPH1hKxU6|ZT9nEEF2VHFeWh0JDl9cWhI+bDx5OHpwJ39oM3JtLxE+|ZD5mEUB3VXBfWxwID15dWxM/bT14OXtxJn5pMnNmJhg3|Zz1lEkN0VnNcWB8LDF1eWBA8bj57OnhyJX1qMXNuLBI9|ZjxkE0J1V3JdWR4KDVxfWRE9bz96P3txInptNnRrKhQ7|YTtjFEVyUHVaXhkNCltYXhY6aDh9OHtxJn5pPXtnJxk2|YDpiFURzUXRbXxgMC1pZXxc7aTl8PX91InptOXtmLRM8|YzlhFkdwUndYXBsPCFlaXBQ4ajp/OHpwI3tsOHRrIB4x|YjhgF0ZxU3ZZXRoOCVhbXRU5azt+OHV/KHBnMndsJxk2|XQdfKHlObElmYiUxNmdkYioGVARBCExGEUleC0pREC4B|XAZeKXhPbUhnYyQwN2ZlYysHVQVAB0pAF09YDUFfHyEO|XwRcK3pNb0plYSYyNWRnYSkFVwdCAlpOG19PGjNC|XgRcK3pNb0plYSYyNWRnYSkFVwdCA0BKHUVSB0BcH0VqXg==|WQNbLH1KaE1iZiE1MmNgZi4CUABFBEdNGkJRD0NZHkxjVw==|WAJaLXxLaUxjZyA0M2JhZy8DUQFEBUZMG0NQBUlUFUFuWg==|WwJaLXxVeEJHURoUFGF5bDQuLn47EFVDE0tfAkU0azhmLX8nN2MuOmclVHo=|WgFZLn9We0FEUhkXF2J6bzctLX04eSExZSg8YiFQfg==|VQ1JVQpZB1wARVcBWUwVVlYQShRKD1dAFlZcAVlEAVIMXBxEUAJaThZOUBBfH0QYXkkCRFISV0IdTwVAAUJIHlxWC0pKCF8BWRpCVQBYTxJKVxRbEFUdRVQfXVcOVk4RQwdCAFhPBEBKC05QD10eKg==";
 		ua = "152fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYuaHwuaXktbx4=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo/eWo1dG8tdDZxNHlvOndkPHBuLXg+bipoez4X|eCVoaEASTBRVFARPCAJMFAlTEj0J|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy52AVART307eGohZ3UtdWshbi1yN29+LGhiPXllSwRGA1EHDVISBzYf|di52AVARTxdWEARPCB9LEwZMHFtvQg==|cSlxBlcWSBBQFABLDRlEHAJFFFABLAU=|cChwB1YXSRFRFgZNCB9FHQNIHl8EKQA=|cypyBVQVS3k4fGk3b3ggZxZJGkQPXQURTwsaRG0c|cipyBVQVSxNTHglCBBZNFQpJGlANIAk=|bTRsG0oLVWcmY3UgeG0zdQRbCFYdTxcCVRcFWHEA|bDRwbDNgPmU5fG44YHUsb28pcy1zNm56MXxoKG13KH0jfyNjaT95cy11aCsV";
 		ua = "223fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYub3Evb3ktYRA=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo4dGs0dmwmfz16M3BjMndjOHRsLn48ZyJgdzIb|eCVoaEARTxNRCRxXAWJ+a2VLdQ==|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy93AFEQThZWFQpBBhFJEQ9NGlltQA==|di93AFEQTnw9eWY4YHUobx5BEkwHVQ0ZTQ8dLAU=|cSltcS59I3gkYXMlfWgxcnI0bjBuK3NnLGF1NXZ2NGJN";
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
-//		addTabaoToken(client);
+		// addTabaoToken(client);
 		Document homeDoc = getLoginHomeHtml(client);
 
 		String mLoginUrl = getNextUrl(homeDoc, "div.login-tb > script");
@@ -67,11 +76,10 @@ public class EtaoLoginTest {
 		html = HttpClientUtils.getContent(client, mPayGet);
 		Document mPayDoc = Jsoup.parse(html, mPayUrl);
 		// TODO get
-		if (needcode(client, mLoginDoc, username)) {
+		if (needcode(client, mLoginDoc, scope, username)) {
 			return;
 		}
-		StringBuilder sb = UABuilder.newLoginUaOpt();
-		ua = UABuilder.newUa(sb.toString());
+		System.out.println("needcode=false");
 		HttpEntity postEntity = getPostEntity(mLoginDoc, username, password, ua);
 		// System.out.println(EntityUtils.toString(postEntity));
 		HttpPost postLogin = new HttpPost("https://login.taobao.com/member/login.jhtml");
@@ -181,12 +189,34 @@ public class EtaoLoginTest {
 		return vstUrl;
 	}
 
-	private boolean needcode(DefaultHttpClient client, Document homeDoc, String username) throws Exception {
+	private boolean needcode(DefaultHttpClient client, Document homeDoc, Scriptable scope, String username)
+			throws Exception {
 		HttpPost post = new HttpPost();
-		StringBuilder sb = UABuilder.newLogUaOpt();
-		String ua = UABuilder.newUa(sb.toString());
-		// ua =
-		// "152fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYuaHwuaXktbx4=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo/eWo1dG8tdDZxNHlvOndkPHBuLXg+bipoez4X|eCVoaEASTBRVFARPCAJMFAlTEj0J|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy52AVART307eGohZ3UtdWshbi1yN29+LGhiPXllSwRGA1EHDVISBzYf|di52AVARTxdWEARPCB9LEwZMHFtvQg==|cSlxBlcWSBBQFABLDRlEHAJFFFABLAU=|cChwB1YXSRFRFgZNCB9FHQNIHl8EKQA=|cypyBVQVS3k4fGk3b3ggZxZJGkQPXQURTwsaRG0c|cipyBVQVSxNTHglCBBZNFQpJGlANIAk=|bTRsG0oLVWcmY3UgeG0zdQRbCFYdTxcCVRcFWHEA|bDRwbDNgPmU5fG44YHUsb28pcy1zNm56MXxoKG13KH0jfyNjaT95cy11aCsV";
+		UaFactory factory = new LogUaFactory();
+		factory.initUa(factory.getUaOpt(), scope);
+		StringBuilder sb = new StringBuilder();
+		sb.append("UA_Opt.Token= new Date().getTime()+':'+Math.random();");
+		sb.append("window.UA_Opt.reload();");
+		sb.append("var event = document.createEvent('HTMLEvents');");
+		sb.append("event.initEvent('focus', true, true);");
+		sb.append("document.dispatchEvent(event);");
+		for (int index = 0; index < username.length(); index++) {
+			sb.append("var event = document.createEvent('HTMLEvents');");
+			sb.append("event.initEvent('keydown', true, true);");
+			sb.append("document.dispatchEvent(event);");
+		}
+		sb.append("var uaInput = window['document']['getElementById']('UA_InputId')['value'];");
+		sb.append("ilog('uaInput:'+uaInput);");
+
+		String ua = "222PDMMH1c9M1gRdDNAbHFZRmpyWEJpdV5XAwo=|PzMTAicyFQsiORAMJzoQCk0=|PjESajAjdVsFN2pFDzctGw96YVoUNH9aEC1+DQhoehsTdH1WUXQGHWh5Bw50LClx|OTULGSkoHRgvIRgTKiYcEiQlHhUwIggSOiICFjMhBxAwJgIQIE0=|ODQBGFoqdhtFLGkeRTwiBwBaXQ==|Oz4XHDVB|Oj4WHDRB|NTkEFV83N0NDMzAJHyZzSRQgeg4Ob2ENAGIuAUFsbgELbGkJGyZ3SRAgfg4UZmALDDR/QAYsYxEOeGARAX1tWwsuZ0I4MF1UNCZRRSV4UQokbwIMcX8uDFp1NhALdX8UEDJ0VxI2Z1oTBX9qEQ1OYSEGSGh1WVM/IVBMbSkZSHZuEwBmcFsEKXFMVzgnVHgmHUJ0MBFTZQwQfnxDFDdgR0V1cEYxYwNWMRAUIiEQZ3wIG2F1TxA7cVRfNzBaFWggWmY2CVFgPw1WaXgBDGxgSVJ8YToTX3c2BVNmJzlSSz5uDFs/H1drIxsGKTMbBihHDXU4Rw11S1B5ZUtQeRYTcD0VSXQmWkU1KBAaJSgQGlY/ZApWP2V5R1Vldzgq|NDoYYSlXHXsqSxpnKVMbfy5PHmMvVhxgMFgGbCpdH24pQhFxJix7|NzsHFyVMFHkjSBJkTkZ/ck9AdndERXFyR0V3OUcXcSVDFXsjShJ9K04adytOEhIwPgJjID4=|NjoFFl40CV1nOQhOe25MTGBuNyd5B0gzZANIM2QCVjd0aik=|MTgBCC04AQotOxkKNTkADiw7FRciIg4TPycTFj8vDgM/NgZr";
+		ua = factory.getUa(sb.toString(), scope);
+		printCookies(client);
+		BasicClientCookie cookie = new BasicClientCookie(
+				"_umdata",
+				"AE071DAD6F6E6124D14FA2968C944E1B252A7ADCBEE4D808F915D81298BA7F56F48892778DFF21B62009E1A40AE44CC6CFC819EAD70D0F2F8E89EC67FEDA8369796E9ADBFD4C7772");
+		cookie.setDomain(".login.taobao.com");
+		cookie.setPath("/member/");
+		// client.getCookieStore().addCookie(cookie);
 		post.setURI(new URI("https://login.taobao.com/member/request_nick_check.do?_input_charset=utf-8"));
 		post.addHeader("Referer", homeDoc.baseUri());
 		post.addHeader("Cache-Control", "no-cache");
@@ -202,6 +232,18 @@ public class EtaoLoginTest {
 			System.out.println(html);
 		}
 		return status;
+	}
+
+	private void printCookies(DefaultHttpClient client) {
+		List<Cookie> cookieList = client.getCookieStore().getCookies();
+		if (cookieList.isEmpty()) {
+			System.out.println("no cookie...");
+		} else {
+			for (Cookie ck : cookieList) {
+				System.out.println(ck);
+			}
+		}
+
 	}
 
 	private HttpEntity getPostEntity(Document dom, String username, String password, String ua)
