@@ -895,6 +895,7 @@ document.body.appendChild(staticFormEle);
                 return qit;
             };
             hci = function(e) {
+            	 ilog(ilogger('ua.start:'+log));
                 try {
                 	ilog(ilogger('hci,mousedown...'));
                     if (au0['MaxMCLog'] > ((0x3e8 | 01177) % 93) && n49 >= au0['MaxMCLog']) {
@@ -931,15 +932,18 @@ document.body.appendChild(staticFormEle);
                             }
                             ua.value = it.join('|');
                         }
+                        ilog(ilogger('ua.value:'+ua));
                     }
                     var wdy = c36m;
                     if (yc2 && yc2['id']) {
                         wdy = ncn['encodeURIComponent'](yc2['id']);
                     }
                     var dgm = c36m;
+                    ilog(ilogger('ua.nodeName:'+yc2['nodeName']));
                     if (yc2['nodeName'] != 'shape') {
                         for (var i = (0x3e8 * 0252 & 97); i < au0['GetAttrs']['length']; i++) {
                             var zr = yc2['getAttribute'](au0['GetAttrs'][i]);
+                            ilog(ilogger('ua.zr:'+zr));
                             if (zr) {
                                 if (dgm['length'] == 0) {
                                     if (!(0x3e8 % 0504 & 97)) {
@@ -961,6 +965,7 @@ document.body.appendChild(staticFormEle);
                             }
                         }
                     }
+                    ilog(ilogger('ua:'+log));
                     var xs9o = [svzf, gu2];
                     if (yc2['nodeName'] == 'IMG' || yc2['nodeName'] == 'A') {
                         var b8t = yc2['getBoundingClientRect']();
@@ -1171,7 +1176,8 @@ document.body.appendChild(staticFormEle);
                 }
             };
             wkfh = function(nu2) {
-                try {
+                try {ilog(ilogger(nu2));
+                    ilog(ilogger('log.start:'+log));
                     if (au0['MaxKSLog'] > 0 && lf >= au0['MaxKSLog']) {
                         return;
                     }
@@ -1223,6 +1229,7 @@ document.body.appendChild(staticFormEle);
                     }
                     tq(f5q);
                     lf++;
+                    ilog(ilogger('log.end:'+log));
                 } catch (err) {
                 }
             };
