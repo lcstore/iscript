@@ -1,21 +1,3 @@
-//to insert <input name='ua'/> into FormId element:J_StaticForm
-//UA_InputId
-var staticFormEle = document['createElement']("form");
-staticFormEle['action'] = 'https://login.taobao.com/member/login.jhtml';
-staticFormEle['method'] = 'post';
-staticFormEle['id'] = 'J_StaticForm';
-var userEle = document['createElement']("input");
-userEle['type'] = 'text';
-userEle['name'] = 'TPL_username';
-userEle['id'] = 'TPL_username_1';
-userEle['class'] = 'login-text J_UserName';
-userEle['value'] = '';
-userEle['maxlength'] = '32';
-userEle['tabindex'] = '1';
-
-staticFormEle.appendChild(userEle);
-document.body.appendChild(staticFormEle);
-
 (function() {
     try {
         (function() {
@@ -740,7 +722,6 @@ document.body.appendChild(staticFormEle);
                 return bwu['join'](c36m) + te;
             };
             ekp = function(s5q, bwu) {
-            	arguments["callee"]["caller"]=bwu;
                 if (!h5b) {
                     var l1q = dz("" + arguments["callee"]);
                     ydg["push"](l1q);
@@ -895,17 +876,13 @@ document.body.appendChild(staticFormEle);
                 return qit;
             };
             hci = function(e) {
-            	 ilog(ilogger('ua.start:'+log));
                 try {
-                	ilog(ilogger('hci,mousedown...'));
                     if (au0['MaxMCLog'] > ((0x3e8 | 01177) % 93) && n49 >= au0['MaxMCLog']) {
                         return;
                     }
                     var usow = e || ncn['event'];
                     var svzf = usow['pageX'];
                     var gu2 = usow['pageY'];
-                    ilog(ilogger('hci,svzf:'+svzf));
-                    ilog(ilogger('hci,gu2:'+gu2));
                     if (svzf == undefined) {
                         svzf = usow['clientX'] + a3x['document']['body']['scrollLeft'];
                         gu2 = usow['clientY'] + krg['document']['body']['scrollTop'];
@@ -932,18 +909,15 @@ document.body.appendChild(staticFormEle);
                             }
                             ua.value = it.join('|');
                         }
-                        ilog(ilogger('ua.value:'+ua));
                     }
                     var wdy = c36m;
                     if (yc2 && yc2['id']) {
                         wdy = ncn['encodeURIComponent'](yc2['id']);
                     }
                     var dgm = c36m;
-                    ilog(ilogger('ua.nodeName:'+yc2['nodeName']));
                     if (yc2['nodeName'] != 'shape') {
                         for (var i = (0x3e8 * 0252 & 97); i < au0['GetAttrs']['length']; i++) {
                             var zr = yc2['getAttribute'](au0['GetAttrs'][i]);
-                            ilog(ilogger('ua.zr:'+zr));
                             if (zr) {
                                 if (dgm['length'] == 0) {
                                     if (!(0x3e8 % 0504 & 97)) {
@@ -965,7 +939,6 @@ document.body.appendChild(staticFormEle);
                             }
                         }
                     }
-                    ilog(ilogger('ua:'+log));
                     var xs9o = [svzf, gu2];
                     if (yc2['nodeName'] == 'IMG' || yc2['nodeName'] == 'A') {
                         var b8t = yc2['getBoundingClientRect']();
@@ -1032,8 +1005,6 @@ document.body.appendChild(staticFormEle);
             };
             qit = function(nu2) {
                 if (au0['LogVal']) {
-                	ilog(ilogger('qit.log.args:'+JSON.stringify(nu2)));
-                	ilog(ilogger('qit.log.start:'+log));
                     var xluv = krg['eval'](au0['LogVal']);
                     var d7 = eh21(xluv) + 1;
                     var f5q = z47o(nu2, d7);
@@ -1059,7 +1030,6 @@ document.body.appendChild(staticFormEle);
                     }
                     xluv = f4(xluv);
                     ncn['eval'](au0['LogVal'] + gx + s9i + xluv + s9i + jt('R;TBf', 1, 2));
-                    ilog(ilogger('qit.log.end:'+log));
                 }
             };
             g6vk = function() {
@@ -1180,7 +1150,6 @@ document.body.appendChild(staticFormEle);
             };
             wkfh = function(nu2) {
                 try {
-                    ilog(ilogger('log.start['+nu2.type+']:'+log));
                     if (au0['MaxKSLog'] > 0 && lf >= au0['MaxKSLog']) {
                         return;
                     }
@@ -1209,8 +1178,6 @@ document.body.appendChild(staticFormEle);
                     if (yc2 && yc2['id']) {
                         wdy = ncn['encodeURIComponent'](yc2['id']);
                     }
-                    ilog(ilogger('log.target['+nu2.type+']:'+yc2+",tag:"+yc2.tagName));
-                    ilog(ilogger('log.wdy:'+wdy));
                     for (var i = ((0x3e8 | 01611) % 77); i < au0['ExTarget']['length']; i++) {
                         if (au0['ExTarget'][i] == wdy) {
                             return;
@@ -1234,7 +1201,6 @@ document.body.appendChild(staticFormEle);
                     }
                     tq(f5q);
                     lf++;
-                    ilog(ilogger('log.end:'+log));
                 } catch (err) {
                 }
             };
@@ -1637,7 +1603,6 @@ document.body.appendChild(staticFormEle);
                 }
             };
             tq = function(aj3w) {
-            	arguments['callee']['caller']=iw;
                 var kx = aj3w;
                 if (!b60) {
                     return;
@@ -1976,9 +1941,7 @@ document.body.appendChild(staticFormEle);
                         } else {
                             mtk = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
                         }
-                        ilog(ilogger('element:'+au0['FormId']+":"+ut));
                         if (ut) {
-                        	ilog(ilogger('create input_ua..'));
                             var di = ((0x3e8 | 01537) % 93);
                             for (var s9 = (0x3e8 % 0144 & 67); s9 <= ((0x3f3 | 01341) % 67); di = ++s9 + s9++ + s9) {
                                 if (s9 == di) {
@@ -1992,8 +1955,6 @@ document.body.appendChild(staticFormEle);
                                     continue;
                                 }
                                 if ((0x3fe * 0475 & 69) * s9 == di + (0x3e8 * 0655 & 61)) {
-                                	ilog(ilogger('UA ele:'+vk));
-                                	ilog(ilogger('UA cn9:'+cn9));
                                     cn9['id'] = vk;
                                 }
                             }
@@ -2150,7 +2111,6 @@ document.body.appendChild(staticFormEle);
                 bstl("10");
             };
             j2u = (function() {
-            	ilog(ilogger('j2u = (function()..'));
                 var e5 = [], dr0z = false, t3b = null, ahd = function(fn, args) {
                     try {
                         fn['apply'](this, args || []);
@@ -2574,7 +2534,6 @@ document.body.appendChild(staticFormEle);
                     if (2 * nxru == ey - ((0x409 | 01717) % 95)) {
                         qhp["keydown"] = wkfh;
                     } else if (2 * nxru == ey - 2) {
-                    	ilog(ilogger('hci,qhp[mousedown]...'));
                         qhp['mousedown'] = hci;
                         continue;
                     }
@@ -2649,9 +2608,7 @@ document.body.appendChild(staticFormEle);
                     }
                     this.UAOpt = u8u3;
                 }
-                ilog(ilogger('au0:'+JSON.stringify(au0)));
                 if (au0['EnableMCLog']) {
-                	ilog(ilogger(' wlzp("mousedown");'));
                     wlzp("mousedown");
                 }
                 if (au0['EnableKSLog']) {
@@ -2742,11 +2699,9 @@ document.body.appendChild(staticFormEle);
                 }
                 xs7();
             };
-            ilog(ilogger('0x3fe | 0531.....'));
             var s6j = ((0x3fe | 0531) % 73);
             while (!(s6j - (0x3e8 % 01143 & 97))) {
                 if (s6j + (0x3e8 * 0200 & 77)) {
-                	ilog(ilogger('d5().....'));
                     d5();
                     s6j = s6j - (0x3f3 * 0513 & 77);
                     continue;
@@ -2754,9 +2709,7 @@ document.body.appendChild(staticFormEle);
                 this.UAOpt = e45t;
             }
         })();
-        ilog(ilogger('} catch (e)'));
     } catch (e) {
-    	ilog(ilogger(e));
         try {
             if (1 == UA_Opt['IsSendError']) {
                 var i3d = function(err) {
@@ -2766,7 +2719,6 @@ document.body.appendChild(staticFormEle);
                 i3d(e);
             }
         } catch (e) {
-        	ilog(ilogger(e));
         }
     }
 })();

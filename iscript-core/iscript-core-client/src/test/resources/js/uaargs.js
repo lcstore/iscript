@@ -1,5 +1,5 @@
-window.location.href = 'http://www.etao.com/?tbpm=20140614';
-document.referer = 'http://www.etao.com/?tbpm=20140614';
+window.location.href = 'http://login.etao.com/?spm=0.0.0.0.NTyQZP&redirect_url=http%3A%2F%2Fjf.etao.com%2F%3F';
+document.referer = 'http://jf.etao.com/?';
 ilog('start.........');
 
 //var json_ua = null,form_tk = (document.getElementsByName('rds_form_token')[0] && document.getElementsByName('rds_form_token')[0].value) || '';
