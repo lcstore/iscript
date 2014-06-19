@@ -24,8 +24,8 @@ public class DaoConfigUtilsTest {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_CRAWLER_STRATEGY_CONFIG";
-		String daoQualifyName = "com.vipshop.crawler.task.dao.CrawlerStrategyConfigDao";
+		String tableName = "T_PROMOTION_PRODUCT";
+		String daoQualifyName = "com.vipshop.dp.core.productdatamgr.dao.PromotionProductDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);

@@ -223,6 +223,16 @@ public class ScriptTest {
 		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
 		System.out.println("end.......");
 	}
+	@Test
+	public void testUm() throws Exception {
+		Context cx = EnvjsUtils.enterContext();
+		// er.getScriptStackTrace().length()
+		ScriptableObject parent = CommonContext.getCommonScriptable();
+		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
+		String code = FileUtils.readFileToString(new File("src/test/resources/js/um.js"));
+		cx.evaluateString(scope, code, "tb.um", 0, null);
+		System.out.println("end.......");
+	}
 
 	@Test
 	public void testApiCall() throws Exception {

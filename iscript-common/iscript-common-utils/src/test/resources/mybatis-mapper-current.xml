@@ -2,39 +2,63 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.vipshop.crawler.task.dao.CrawlerStrategyConfigDao">
-	<resultMap type="CrawlerStrategyConfigDto" id="RM_CrawlerStrategyConfigDto">
+<mapper namespace="com.vipshop.dp.core.productdatamgr.dao.PromotionProductDao">
+	<resultMap type="PromotionProductDto" id="RM_PromotionProductDto">
 		<result column="ID" property="id"/>
 		<result column="SITE_ID" property="siteId"/>
-		<result column="STRATEGY_NAME" property="strategyName"/>
-		<result column="STRATEGY_CONTENT" property="strategyContent"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PROMOTION_CODE" property="promotionCode"/>
+		<result column="PROMOTION_NAME" property="promotionName"/>
+		<result column="PROMOTION_URL" property="promotionUrl"/>
+		<result column="PROMOTION_PRICE" property="promotionPrice"/>
+		<result column="PROMOTION_MARKET_PRICE" property="promotionMarketPrice"/>
+		<result column="PROMOTION_TYPE" property="promotionType"/>
+		<result column="PROMOTION_START_TIME" property="promotionStartTime"/>
+		<result column="PROMOTION_END_TIME" property="promotionEndTime"/>
+		<result column="CREATION_DATE" property="creationDate"/>
+		<result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
+		<result column="IS_DELETED" property="isDeleted"/>
 	</resultMap>
-	<sql id="CrawlerStrategyConfigDto-coloumn-list">
+	<sql id="PromotionProductDto-coloumn-list">
 		SITE_ID
-		,STRATEGY_NAME
-		,STRATEGY_CONTENT
-		,CREATE_TIME
-		,UPDATE_TIME
+		,PRODUCT_CODE
+		,PROMOTION_CODE
+		,PROMOTION_NAME
+		,PROMOTION_URL
+		,PROMOTION_PRICE
+		,PROMOTION_MARKET_PRICE
+		,PROMOTION_TYPE
+		,PROMOTION_START_TIME
+		,PROMOTION_END_TIME
+		,CREATION_DATE
+		,LAST_UPDATE_TIME
+		,IS_DELETED
 	</sql>
-	<insert id="batchInsert" parameterType="CrawlerStrategyConfigDto">
-		INSERT INTO T_CRAWLER_STRATEGY_CONFIG(
-		<include refid="CrawlerStrategyConfigDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="PromotionProductDto">
+		INSERT INTO T_PROMOTION_PRODUCT(
+		<include refid="PromotionProductDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.strategyName},#{item.strategyContent},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.productCode},#{item.promotionCode},#{item.promotionName},#{item.promotionUrl},#{item.promotionPrice},#{item.promotionMarketPrice},#{item.promotionType},#{item.promotionStartTime},#{item.promotionEndTime},#{item.creationDate},#{item.lastUpdateTime},#{item.isDeleted})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="CrawlerStrategyConfigDto">
-		UPDATE T_CRAWLER_STRATEGY_CONFIG SET
+	<update id="updateOne" parameterType="PromotionProductDto">
+		UPDATE T_PROMOTION_PRODUCT SET
 		SITE_ID=#{siteId},
-		STRATEGY_NAME=#{strategyName},
-		STRATEGY_CONTENT=#{strategyContent},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		PRODUCT_CODE=#{productCode},
+		PROMOTION_CODE=#{promotionCode},
+		PROMOTION_NAME=#{promotionName},
+		PROMOTION_URL=#{promotionUrl},
+		PROMOTION_PRICE=#{promotionPrice},
+		PROMOTION_MARKET_PRICE=#{promotionMarketPrice},
+		PROMOTION_TYPE=#{promotionType},
+		PROMOTION_START_TIME=#{promotionStartTime},
+		PROMOTION_END_TIME=#{promotionEndTime},
+		CREATION_DATE=#{creationDate},
+		LAST_UPDATE_TIME=#{lastUpdateTime},
+		IS_DELETED=#{isDeleted}
 		WHERE ID=#{id}
 	</update>
 </mapper>
