@@ -7,14 +7,15 @@
 		<result column="ID" property="id"/>
 		<result column="SITE_ID" property="siteId"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
 		<result column="PROMOTION_CODE" property="promotionCode"/>
-		<result column="PROMOTION_NAME" property="promotionName"/>
 		<result column="PROMOTION_URL" property="promotionUrl"/>
 		<result column="PROMOTION_PRICE" property="promotionPrice"/>
 		<result column="PROMOTION_MARKET_PRICE" property="promotionMarketPrice"/>
 		<result column="PROMOTION_TYPE" property="promotionType"/>
 		<result column="PROMOTION_START_TIME" property="promotionStartTime"/>
 		<result column="PROMOTION_END_TIME" property="promotionEndTime"/>
+		<result column="VIP_CODE" property="vipCode"/>
 		<result column="CREATION_DATE" property="creationDate"/>
 		<result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
 		<result column="IS_DELETED" property="isDeleted"/>
@@ -22,14 +23,15 @@
 	<sql id="PromotionProductDto-coloumn-list">
 		SITE_ID
 		,PRODUCT_CODE
+		,PRODUCT_NAME
 		,PROMOTION_CODE
-		,PROMOTION_NAME
 		,PROMOTION_URL
 		,PROMOTION_PRICE
 		,PROMOTION_MARKET_PRICE
 		,PROMOTION_TYPE
 		,PROMOTION_START_TIME
 		,PROMOTION_END_TIME
+		,VIP_CODE
 		,CREATION_DATE
 		,LAST_UPDATE_TIME
 		,IS_DELETED
@@ -41,21 +43,22 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.productCode},#{item.promotionCode},#{item.promotionName},#{item.promotionUrl},#{item.promotionPrice},#{item.promotionMarketPrice},#{item.promotionType},#{item.promotionStartTime},#{item.promotionEndTime},#{item.creationDate},#{item.lastUpdateTime},#{item.isDeleted})
+			(#{item.siteId},#{item.productCode},#{item.productName},#{item.promotionCode},#{item.promotionUrl},#{item.promotionPrice},#{item.promotionMarketPrice},#{item.promotionType},#{item.promotionStartTime},#{item.promotionEndTime},#{item.vipCode},#{item.creationDate},#{item.lastUpdateTime},#{item.isDeleted})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="PromotionProductDto">
 		UPDATE T_PROMOTION_PRODUCT SET
 		SITE_ID=#{siteId},
 		PRODUCT_CODE=#{productCode},
+		PRODUCT_NAME=#{productName},
 		PROMOTION_CODE=#{promotionCode},
-		PROMOTION_NAME=#{promotionName},
 		PROMOTION_URL=#{promotionUrl},
 		PROMOTION_PRICE=#{promotionPrice},
 		PROMOTION_MARKET_PRICE=#{promotionMarketPrice},
 		PROMOTION_TYPE=#{promotionType},
 		PROMOTION_START_TIME=#{promotionStartTime},
 		PROMOTION_END_TIME=#{promotionEndTime},
+		VIP_CODE=#{vipCode},
 		CREATION_DATE=#{creationDate},
 		LAST_UPDATE_TIME=#{lastUpdateTime},
 		IS_DELETED=#{isDeleted}
