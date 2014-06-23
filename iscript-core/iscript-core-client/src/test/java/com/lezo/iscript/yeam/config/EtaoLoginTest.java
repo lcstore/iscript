@@ -49,8 +49,8 @@ public class EtaoLoginTest {
 	public void test() throws Exception {
 		String username = "ajane90";
 		String password = "aj891209";
-		username = "lcstore99";
-		password = "taobao@9Lezo";
+//		username = "lcstore99";
+//		password = "taobao@9Lezo";
 		String ua = "186fCJmZk4PGRVHHxtNZngkZ3k+aC52PmgTKQ==|fyJ6Zyd9OWAiY3wpa3UsaBk=|fiB4D150Q1JSSgMWB1MdRUsAQR9Uc24mJT5vcCZXeQ==|eSRiYjNhIHA2cmY0eW03e2IheDp9NHltOXpvMXBoKXo+YipofDkQ|eCVoaEARTxFZARBbDU9RSAsgZDpxXHU=|ey93eSgW|ei93eSgW|dShtbUUEHgMHA1YLUFlZQgkTHkJfTlURFwwECxBRDQMUEAITRw8XXlVICldeRFlEXEVEQgsKQxsJBRUdAh9XVEUbUVYPHkBGXVhJSVxNDwoMRVVCb3NxaXJ9fS8zYnw6alkVVxYCI3JmP3kTExgfWFxJAAUQWRsMT1EXVwtJezE5KmVnNihuPwsBEAhCR1IXEEZGF1Z5TQ==|dCtzBEAaRB1BBBBPCAJYHwRbCUgXUQkYSQUPUhUJTgFEG1N6AQ==|dyptbUUEISE/L2Z2cXcsenorHyQDUxYCSQ0HWwMYXB0yBg==|ditvbz4GRhtSHg9EbGg1cmcgez5gJ2R0JWN2ZiIgYzRzL2kqPGsuO2IjOHgpYzIeSEIUPTkI|cStzBFViQGVKTgkdGktITgYqeChtJWFrPGR6JmcWOA==|cCpyBVRjQWRLTwgcG0pJTwcreSlsK2xmMWl+Im51W2U=|cylxBldgQmdITAsfGElKTAQoeipvJ2BqPWVyKG1xX2E=|cihwB1ZhQ2ZJTQoeGUhLTQUpeytuKmdtOmJ2KmhxX2E=|bTdvGEl+XHlWUhUBBldUUho2ZDRxNHB6LXVhPHBkSnQ=|bDZuGUh/XXhXUxQAB1ZVUxs3ZTVwNXB6LXVhOXVgTnA=|bzVtGkt8XntUUBcDBFVWUBg0ZjZzNnB6LXVhNXhiTHI=|bjdvGElgTXdyZC8hIVRMWQEbG0sOJWl6LHRgPXEAXwxSGUsTAV8bDD0U|aTJqHUx7WXxTVxAEA1JRVx8zYTF0NGx+IGVxQGk=|aDNrHE1kSXN2YCslJVBIXQUfH08KSxMBXxgKOxI=|azN3azRnOWI+e2k/Z3IraGgudCp0MWl+KGhiP2d6P2wyYiJ6bjxkcChwbi5hIXomYHc8emwsaXwjdylzM2t/IQg=";
 		ua = "152fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYuaHwuaXktbx4=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo/eWo1dG8tdDZxNHlvOndkPHBuLXg+bipoez4X|eCVoaEASTBRVFARPCAJMFAlTEj0J|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy52AVART307eGohZ3UtdWshbi1yN29+LGhiPXllSwRGA1EHDVISBzYf|di52AVARTxdWEARPCB9LEwZMHFtvQg==|cSlxBlcWSBBQFABLDRlEHAJFFFABLAU=|cChwB1YXSRFRFgZNCB9FHQNIHl8EKQA=|cypyBVQVS3k4fGk3b3ggZxZJGkQPXQURTwsaRG0c|cipyBVQVSxNTHglCBBZNFQpJGlANIAk=|bTRsG0oLVWcmY3UgeG0zdQRbCFYdTxcCVRcFWHEA|bDRwbDNgPmU5fG44YHUsb28pcy1zNm56MXxoKG13KH0jfyNjaT95cy11aCsV";
 		ua = "223fCJmZk4PGRVHHxtEb3EtbnA3YSd/N2EaIA==|fyJ6Zyd9OWYub3Evb3ktYRA=|fiB4D150Q1JSSgMWB1MdRUsBQB5Vcm8nJD9ucSdWeA==|eSRiYjNhIHA2dGo4dGs0dmwmfz16M3BjMndjOHRsLn48ZyJgdzIb|eCVoaEARTxNRCRxXAWJ+a2VLdQ==|ey93eSgW|ei93eSgW|dSpyBUEbRRxABRFODQdYHQdAD0wWUBIYSAoUVBEOTRpEGlwQa1E=|dCltbTwERRRTHghDa28ydWAlcDphIW16Lml/byspazx9ImQjMWIhNmovNnMpbjQYTkQSOz8O|dy93AFEQThZWFQpBBhFJEQ9NGlltQA==|di93AFEQTnw9eWY4YHUobx5BEkwHVQ0ZTQ8dLAU=|cSltcS59I3gkYXMlfWgxcnI0bjBuK3NnLGF1NXZ2NGJN";
@@ -107,11 +107,11 @@ public class EtaoLoginTest {
 		html = HttpClientUtils.getContent(client, new HttpGet(callBackUrl));
 		printCookies(client);
 		// System.out.println("html:" + html);
-		LoadUaFactory loadUaFactory = new LoadUaFactory();
+//		LoadUaFactory loadUaFactory = new LoadUaFactory();
 //		logUaFactory.initUa(logUaFactory.getUaOpt(), scope);
-		String callString = "window.UA_Opt.reload();";
+//		String callString = "window.UA_Opt.reload();";
 //		ua = loadUaFactory.getUa(callString, scope);
-		System.out.println("login:" + ua);
+//		System.out.println("login:" + ua);
 //		ua = URLEncoder.encode(ua,CHARSET_NAME);
 		ua = "111PDMMH1c9M1gRdDNMbH1ZSmp%2BWE5peV5bAwY%3D%7CPzMTAicyFAAhMRAFJzAfB0I%3D%7CPjESajApWFs3NlIUfjZNAm8uTXkkF0B4NwsVVkg%3D%7COTULGSkoHRguKhsbKi8cGCotEB0%2BJQ4UOC0LHD8tCRQ6Jg4fPT1g%7CODQBGFoodhxGKGoZWjV4QQsgbmkLDWVhHUNAHg%3D%3D%7COz4XHDVB%7COj4WHDRB%7CNTsZYClMGWAoWBFhPVIMaj5GD389TxF%2BIUYRaiBTEmM%2BUg5mODtl%7CNDgEFCZPF3wgRBloRUp0fkRNdnlPSX5%2FRkd0O0QVdCZDE3oqQhJ7J00WeCVLHHhAWmxrMUls%7CNz4bZTlHFXYhQxRvJ10XcSRBFnhLJQ%3D%3D%7CNj8aZDhGFHcgQhVuJlwWcCNBF3ZKKw%3D%3D%7CMTgdYz8JWSQ6TF8vNGZaRHZ1RUF9bUlZcHVCQ3N1SigX%7CMDgcYz5BEhojLhMYPywMHFEwYRxDPm8MWTtsDTFQ%7CMzoDCi86AwgvORsINzsCDC45FxUgIAwSICsSByUrEwcmKxcYSg%3D%3D";
 		HttpGet get = new HttpGet("http://jf.etao.com/ajax/getCreditForSrp.htm?jfSource=1&ua=" + ua + "&_ksTS="
