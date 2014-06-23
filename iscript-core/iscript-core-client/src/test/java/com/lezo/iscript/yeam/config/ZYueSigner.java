@@ -1,5 +1,8 @@
 package com.lezo.iscript.yeam.config;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -14,7 +17,6 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.envjs.EnvjsUtils;
-import com.lezo.iscript.envjs.dom.DocumentAdapt;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -49,34 +51,26 @@ public class ZYueSigner implements ConfigParser {
 		String result = "fail to sign.";
 		if (!signAs.isEmpty()) {
 			String signCode = signAs.first().attr("onclick");
+			signCode = signCode.replace("checkGo", "gotoUrlWithSeedValidate");
 			Elements scriptAs = dom.select("body script");
-			Elements rewriteAs = dom.select("#winner_rewrite");
 			String mark = "gotoUrlWithSeedValidate";
-			String markOther = "view_award_names";
-			StringBuilder sb = new StringBuilder();
-			sb.append("var b = document.createElement('b');");
-			sb.append("b.id='winner_rewrite';");
-			sb.append("b.style='margin-top:12px';");
-			if (rewriteAs.isEmpty()) {
-				sb.append("b['data-item']=1;");
-			}else {
-				sb.append("b['data-item']="+rewriteAs.first().attr("data-item")+";");
-			}
-			sb.append("b.setIdAttribute('id',true);");
+			String scriptString = null;
 			for (Element e : scriptAs) {
 				String curString = e.html();
-				if (curString.indexOf(mark) > 0 || curString.indexOf(markOther) > 0) {
-//					sb.append(e.html());
+				if (curString.indexOf(mark) > 0) {
+					scriptString = curString;
+					break;
 				}
 			}
-//			sb.append("(function() {" + signCode + "})();");
+			StringBuilder sb = new StringBuilder();
+			sb.append("location.href='http://ah2.zhangyue.com/zybook3/app/app.php';");
+			sb.append(scriptString);
+			sb.append("(function() {" + signCode + "})();");
 			sb.append("var signUrl = location.href;");
 
 			Scriptable scope = EnvjsUtils.initStandardObjects(null);
 			Context cx = EnvjsUtils.enterContext();
-//			cx.evaluateString(scope, sb.toString(), "cmd", 0, null);
-			DocumentAdapt document = (DocumentAdapt) ScriptableObject.getProperty(scope, "document");
-			
+			cx.evaluateString(scope, sb.toString(), "cmd", 0, null);
 			String signUrl = Context.toString(ScriptableObject.getProperty(scope, "signUrl"));
 			signUrl = encodeUrl(signUrl);
 			get = new HttpGet(signUrl);
@@ -88,12 +82,21 @@ public class ZYueSigner implements ConfigParser {
 			String luckyDraw = luckyElements.isEmpty() ? "No lucky." : luckyElements.text();
 			String nextSignUrl = signUrl.replace("sign.turncard", "sign.registration");
 			nextSignUrl = encodeUrl(nextSignUrl);
+
 			get = new HttpGet(nextSignUrl);
 			get.addHeader("Referer", signUrl);
 			result = luckyDraw;
 			if (!luckyElements.isEmpty()) {
-				String luckyString = HttpClientUtils.getContent(client, get);
-				result += ", " + luckyString;
+				Pattern oReg = Pattern.compile(".*恭喜您获得([0-9]+)次抽奖机会.*");
+				Matcher matcher = oReg.matcher(result);
+				int count = 1;
+				if (matcher.find()) {
+					count = Integer.valueOf(matcher.group(1));
+				}
+				while (count-- > 0) {
+					String luckyString = HttpClientUtils.getContent(client, get);
+					result += ", " + luckyString;
+				}
 			}
 		}
 

@@ -6,6 +6,11 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
+import com.lezo.iscript.utils.encrypt.Base64Decryptor;
+import com.lezo.iscript.utils.encrypt.Base64Encryptor;
+import com.lezo.iscript.utils.encrypt.Encryptor;
+import com.lezo.iscript.utils.encrypt.EncryptorFactory;
+
 public class EncryptTest {
 
 	@Test

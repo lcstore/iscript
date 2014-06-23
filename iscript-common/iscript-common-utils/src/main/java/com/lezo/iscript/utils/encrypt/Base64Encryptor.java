@@ -1,4 +1,4 @@
-package com.lezo.encrypt;
+package com.lezo.iscript.utils.encrypt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,20 +6,19 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import com.lezo.iscript.utils.encrypt.Decryptor;
 
-import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
-public class Base64Decryptor implements Decryptor {
-	private BASE64Decoder decoder = new BASE64Decoder();
+public class Base64Encryptor implements Encryptor {
+	private BASE64Encoder encoder = new BASE64Encoder();
 
 	@Override
-	public String decript(byte[] source) throws Exception {
+	public String encript(byte[] source) throws Exception {
 		InputStream in = new ByteArrayInputStream(source);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		try {
-			decoder.decodeBuffer(in, out);
+			encoder.encode(in, out);
 			out.flush();
 			return new String(out.toByteArray());
 		} catch (Exception e) {
@@ -31,7 +30,8 @@ public class Base64Decryptor implements Decryptor {
 	}
 
 	@Override
-	public String decript(byte[] source, String key) throws Exception {
-		return decript(source);
+	public String encript(byte[] source, String key) throws Exception {
+		return encript(source);
 	}
+
 }

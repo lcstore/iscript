@@ -17,6 +17,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>iscript-service-crawler</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>iscript-core-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>

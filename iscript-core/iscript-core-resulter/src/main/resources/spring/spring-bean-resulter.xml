@@ -35,4 +35,6 @@
 			<value>com.lezo.iscript.yeam.service.TaskRemoteService</value>
 		</property>
 	</bean>
+	
+	
 </beans>
