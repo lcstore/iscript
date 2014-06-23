@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.BarCodeItemDao">
+	<resultMap type="BarCodeItemDto" id="RM_BarCodeItemDto">
+		<result column="ID" property="id"/>
+		<result column="SHOP_ID" property="shopId"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="PRODUCT_BRAND" property="productBrand"/>
+		<result column="PRODUCT_MODEL" property="productModel"/>
+		<result column="PRODUCT_ATTR" property="productAttr"/>
+		<result column="IMG_URL" property="imgUrl"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="BarCodeItemDto-coloumn-list">
+		SHOP_ID
+		,BAR_CODE
+		,PRODUCT_NAME
+		,PRODUCT_URL
+		,PRODUCT_BRAND
+		,PRODUCT_MODEL
+		,PRODUCT_ATTR
+		,IMG_URL
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="BarCodeItemDto">
+		INSERT INTO T_BARCODE_ITEM(
+		<include refid="BarCodeItemDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.shopId},#{item.barCode},#{item.productName},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.imgUrl},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="BarCodeItemDto">
+		UPDATE T_BARCODE_ITEM SET
+		SHOP_ID=#{shopId},
+		BAR_CODE=#{barCode},
+		PRODUCT_NAME=#{productName},
+		PRODUCT_URL=#{productUrl},
+		PRODUCT_BRAND=#{productBrand},
+		PRODUCT_MODEL=#{productModel},
+		PRODUCT_ATTR=#{productAttr},
+		IMG_URL=#{imgUrl},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+</mapper>
