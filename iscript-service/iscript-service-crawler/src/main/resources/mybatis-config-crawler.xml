@@ -8,5 +8,6 @@
 		<mapper resource="mybatis/mybatis-mapper-typeconfig.xml" />
 		<mapper resource="mybatis/mybatis-mapper-taskconfig.xml" />
 		<mapper resource="mybatis/mybatis-mapper-proxyAddr.xml" />
+		<mapper resource="mybatis/mybatis-mapper-barCodeItem.xml" />
 	</mappers>
 </configuration>

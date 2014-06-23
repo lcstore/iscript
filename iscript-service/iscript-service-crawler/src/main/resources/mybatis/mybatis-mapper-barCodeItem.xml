@@ -52,4 +52,18 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getBarCodeItemDtos" parameterType="map" resultMap="RM_BarCodeItemDto">
+	  SELECT ID,<include refid="BarCodeItemDto-coloumn-list"/>
+	  FROM T_BARCODE_ITEM
+	  <where>
+	    <if test="shopId !=null">
+	       AND SHOP_ID=#{shopId}
+	    </if>
+	    <if test="barCodeList.isEmpty()!=false">
+	       <foreach collection="barCodeList" item="barCode" open="AND BAR_CODE IN(" close=")" separator=",">
+	          #{barCode}
+	       </foreach>
+	    </if>
+	  </where>
+	</select>
 </mapper>

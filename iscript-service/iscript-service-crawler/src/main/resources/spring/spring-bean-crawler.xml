@@ -24,4 +24,9 @@
 			value="com.lezo.iscript.service.crawler.dao.ProxyAddrDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="barCodeItemDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.BarCodeItemDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>
