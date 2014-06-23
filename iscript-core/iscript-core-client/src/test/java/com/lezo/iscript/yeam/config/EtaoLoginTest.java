@@ -1,8 +1,6 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +36,6 @@ import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.yeam.ua.LoadUaFactory;
 import com.lezo.iscript.yeam.ua.LogUaFactory;
-import com.lezo.iscript.yeam.ua.UABuilder;
-import com.lezo.iscript.yeam.ua.UaFactory;
 
 public class EtaoLoginTest {
 

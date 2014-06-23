@@ -7,5 +7,6 @@
 		<mapper resource="mybatis/mybatis-mapper-taskpriority.xml" />
 		<mapper resource="mybatis/mybatis-mapper-typeconfig.xml" />
 		<mapper resource="mybatis/mybatis-mapper-taskconfig.xml" />
+		<mapper resource="mybatis/mybatis-mapper-proxyAddr.xml" />
 	</mappers>
 </configuration>

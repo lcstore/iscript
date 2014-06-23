@@ -6,6 +6,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import com.lezo.iscript.utils.encrypt.Encryptor;
+
 import sun.misc.BASE64Encoder;
 
 public class Base64Encryptor implements Encryptor {

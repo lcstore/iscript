@@ -11,43 +11,27 @@ import org.springframework.stereotype.Service;
 import com.lezo.iscript.service.crawler.dao.TaskPriorityDao;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.TaskPriorityService;
+import com.lezo.iscript.utils.BatchIterator;
 
 @Service
 public class TaskPriorityServiceImpl implements TaskPriorityService {
-	private static final int EXECUTE_SIZE = 200;
 	@Autowired
 	private TaskPriorityDao taskPriorityDao;
 
 	@Override
 	public void batchInsert(List<TaskPriorityDto> dtoList) {
-		if (CollectionUtils.isEmpty(dtoList)) {
-			return;
-		}
-		int total = dtoList.size();
-		int fromIndex = 0;
-		while (fromIndex < total) {
-			int toIndex = fromIndex + EXECUTE_SIZE;
-			toIndex = toIndex > total ? total : toIndex;
-			List<TaskPriorityDto> subList = dtoList.subList(fromIndex, toIndex);
-			taskPriorityDao.batchInsert(subList);
-			fromIndex = toIndex;
+		BatchIterator<TaskPriorityDto> it = new BatchIterator<TaskPriorityDto>(dtoList);
+		while(it.hasNext()){
+			taskPriorityDao.batchInsert(it.next());
 		}
 	}
 
 	@Override
 	public int batchUpdate(List<Long> taskIds, int status) {
-		int affect = 0;
-		if (CollectionUtils.isEmpty(taskIds)) {
-			return affect;
-		}
-		int total = taskIds.size();
-		int fromIndex = 0;
-		while (fromIndex < total) {
-			int toIndex = fromIndex + EXECUTE_SIZE;
-			toIndex = toIndex > total ? total : toIndex;
-			List<Long> subList = taskIds.subList(fromIndex, toIndex);
-			affect += taskPriorityDao.batchUpdate(subList, status);
-			fromIndex = toIndex;
+		int affect=0;
+		BatchIterator<Long> it = new BatchIterator<Long>(taskIds);
+		while(it.hasNext()){
+			affect+=taskPriorityDao.batchUpdate(it.next(),status);
 		}
 		return affect;
 	}

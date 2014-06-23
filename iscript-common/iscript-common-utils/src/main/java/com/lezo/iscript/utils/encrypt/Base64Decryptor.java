@@ -1,4 +1,4 @@
-package com.lezo.encrypt;
+package com.lezo.iscript.utils.encrypt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,7 +6,6 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import com.lezo.iscript.utils.encrypt.Decryptor;
 
 import sun.misc.BASE64Decoder;
 

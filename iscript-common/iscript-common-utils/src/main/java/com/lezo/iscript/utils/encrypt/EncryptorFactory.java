@@ -1,4 +1,4 @@
-package com.lezo.encrypt;
+package com.lezo.iscript.utils.encrypt;
 
 import java.security.MessageDigest;
 
@@ -7,7 +7,6 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.lezo.iscript.utils.encrypt.Encryptor;
 
 public class EncryptorFactory {
 	public static final String KEY_MD5 = "MD5";

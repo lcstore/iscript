@@ -14,7 +14,7 @@ import com.jcloud.jss.client.StorageHttpClient;
 import com.jcloud.jss.http.Method;
 import com.jcloud.jss.http.Scheme;
 import com.jcloud.jss.http.StorageHttpResponse;
-import com.lezo.encrypt.EncryptorFactory;
+import com.lezo.iscript.utils.encrypt.EncryptorFactory;
 
 public class JssClientApiTest {
 
