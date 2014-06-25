@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class BarCodeItemDto {
 	private Long id;
-	private Integer shopId;
+	private String shopCode;
 	private String barCode;
 	private String productName;
 	private String productUrl;
@@ -21,14 +21,6 @@ public class BarCodeItemDto {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Integer getShopId() {
-		return shopId;
-	}
-
-	public void setShopId(Integer shopId) {
-		this.shopId = shopId;
 	}
 
 	public String getBarCode() {
@@ -101,6 +93,14 @@ public class BarCodeItemDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getShopCode() {
+		return shopCode;
+	}
+
+	public void setShopCode(String shopCode) {
+		this.shopCode = shopCode;
 	}
 
 }
