@@ -3,9 +3,17 @@ package com.lezo.encrypt;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.codec.net.BCodec;
+import org.apache.commons.codec.net.QCodec;
 import org.junit.Test;
 
+import com.google.common.primitives.Bytes;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
 import com.lezo.iscript.utils.encrypt.Base64Encryptor;
 import com.lezo.iscript.utils.encrypt.Encryptor;
@@ -55,5 +63,13 @@ public class EncryptTest {
 
 		BigInteger mac = new BigInteger(hmacEncryptor.encript(inputData, key).getBytes());
 		System.err.println("HMAC:/n" + mac.toString(16));
+	}
+
+	@Test
+	public void testBase() throws Exception {
+		String value = "C8F5ED06998269CF325247233010C01C0C7300240C41AF520450662B7463699D30734E8E24704D8902D25D2698E08C08A8277B08406060D4BA332C239C020C17787204016430C9C39C43102214806953A620670680F0E546A0131F8DD8504B0200211A2A74204CD12E5173842440C41EB2C50D0D4990135FCAEF2028DDC2BF82";
+		byte[] bytes = Base64.decodeBase64(value);
+		System.out.println(Base64.isBase64(value));
+		System.out.println(new String(bytes,Charsets.UTF_8));
 	}
 }
