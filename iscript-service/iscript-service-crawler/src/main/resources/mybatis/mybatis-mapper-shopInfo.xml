@@ -5,16 +5,22 @@
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ShopInfoDao">
 	<resultMap type="ShopInfoDto" id="RM_ShopInfoDto">
 		<result column="ID" property="id"/>
+		<result column="SITE_CODE" property="siteCode"/>
 		<result column="SHOP_NAME" property="shopName"/>
 		<result column="SHOP_CODE" property="shopCode"/>
 		<result column="SHOP_URL" property="shopUrl"/>
+		<result column="ON_LINE" property="onLine"/>
+		<result column="IS_SELF" property="isSelf"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="ShopInfoDto-coloumn-list">
-		SHOP_NAME
+		SITE_CODE
+		,SHOP_NAME
 		,SHOP_CODE
 		,SHOP_URL
+		,ON_LINE
+		,IS_SELF
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
@@ -25,15 +31,17 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.createTime},#{item.updateTime})
+			(#{item.siteCode},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.onLine},#{item.isSelf},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ShopInfoDto">
 		UPDATE T_SHOP_INFO SET
+		SITE_CODE=#{siteCode},
 		SHOP_NAME=#{shopName},
 		SHOP_CODE=#{shopCode},
 		SHOP_URL=#{shopUrl},
-		CREATE_TIME=#{createTime},
+		ON_LINE=#{onLine},
+		IS_SELF=#{isSelf},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>

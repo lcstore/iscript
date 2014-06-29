@@ -2,15 +2,20 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-public class BarCodeItemDto {
+public class ProductDto {
 	private Long id;
-	private String barCode;
+	private Integer shopId;
+	private String siteCode;
+	private String productCode;
 	private String productName;
+	private Float marketPrice;
 	private String productUrl;
 	private String productBrand;
 	private String productModel;
 	private String productAttr;
+	private String barCode;
 	private String imgUrl;
+	private Date onsailTime;
 	private Date createTime;
 	private Date updateTime;
 
@@ -22,12 +27,28 @@ public class BarCodeItemDto {
 		this.id = id;
 	}
 
-	public String getBarCode() {
-		return barCode;
+	public Integer getShopId() {
+		return shopId;
 	}
 
-	public void setBarCode(String barCode) {
-		this.barCode = barCode;
+	public void setShopId(Integer shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getSiteCode() {
+		return siteCode;
+	}
+
+	public void setSiteCode(String siteCode) {
+		this.siteCode = siteCode;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
 	public String getProductName() {
@@ -70,6 +91,14 @@ public class BarCodeItemDto {
 		this.productAttr = productAttr;
 	}
 
+	public String getBarCode() {
+		return barCode;
+	}
+
+	public void setBarCode(String barCode) {
+		this.barCode = barCode;
+	}
+
 	public String getImgUrl() {
 		return imgUrl;
 	}
@@ -94,4 +123,19 @@ public class BarCodeItemDto {
 		this.updateTime = updateTime;
 	}
 
+	public Date getOnsailTime() {
+		return onsailTime;
+	}
+
+	public void setOnsailTime(Date onsailTime) {
+		this.onsailTime = onsailTime;
+	}
+
+	public Float getMarketPrice() {
+		return marketPrice;
+	}
+
+	public void setMarketPrice(Float marketPrice) {
+		this.marketPrice = marketPrice;
+	}
 }

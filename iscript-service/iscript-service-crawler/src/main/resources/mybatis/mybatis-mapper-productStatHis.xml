@@ -2,8 +2,8 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatDao">
-	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatHisDao">
+	<resultMap type="ProductStatDto" id="RM_ProductStatHisDto">
 		<result column="ID" property="id"/>
 		<result column="SHOP_ID" property="shopId"/>
 		<result column="SITE_CODE" property="siteCode"/>
@@ -54,7 +54,6 @@
 		SOLD_NUM=#{soldNum},
 		COMMENT_NUM=#{commentNum},
 		STOCK_NUM=#{stockNum},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>

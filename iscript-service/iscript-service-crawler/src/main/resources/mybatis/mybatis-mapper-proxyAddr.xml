@@ -40,4 +40,17 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getProxyAddrDto" parameterType="map" resultMap="RM_ProxyAddrDto">
+	  SELECT ID,<include refid="ProxyAddrDto-coloumn-list"/>
+	  WHERE IP=#{ip} AND PORT=#{port}
+	  LIMIT 1
+	</select>
+	<select id="getProxyAddrDtos" parameterType="map" resultMap="RM_ProxyAddrDto">
+	  SELECT ID,<include refid="ProxyAddrDto-coloumn-list"/>
+	  <where>
+	    <foreach collection="ipList" item="ipValue" open="IP IN(" close=")" separator=",">
+	      #{ipValue}
+	    </foreach>
+	  </where>
+	</select>
 </mapper>

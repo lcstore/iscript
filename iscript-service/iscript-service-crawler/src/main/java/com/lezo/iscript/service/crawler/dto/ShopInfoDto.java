@@ -4,9 +4,12 @@ import java.util.Date;
 
 public class ShopInfoDto {
 	private Integer id;
+	private String siteCode;
 	private String shopName;
 	private String shopCode;
 	private String shopUrl;
+	private Integer onLine = 0;
+	private Integer isSelf = 0 ;
 	private Date createTime;
 	private Date updateTime;
 
@@ -16,6 +19,14 @@ public class ShopInfoDto {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getSiteCode() {
+		return siteCode;
+	}
+
+	public void setSiteCode(String siteCode) {
+		this.siteCode = siteCode;
 	}
 
 	public String getShopName() {
@@ -42,6 +53,22 @@ public class ShopInfoDto {
 		this.shopUrl = shopUrl;
 	}
 
+	public Integer getOnLine() {
+		return onLine;
+	}
+
+	public void setOnLine(Integer onLine) {
+		this.onLine = onLine;
+	}
+
+	public Integer getIsSelf() {
+		return isSelf;
+	}
+
+	public void setIsSelf(Integer isSelf) {
+		this.isSelf = isSelf;
+	}
+
 	public Date getCreateTime() {
 		return createTime;
 	}
@@ -57,4 +84,5 @@ public class ShopInfoDto {
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
+
 }

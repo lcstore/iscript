@@ -16,35 +16,39 @@ import com.lezo.iscript.utils.InetAddressUtils;
 public class ProxyAddrServiceImpl implements ProxyAddrService {
 	@Autowired
 	private ProxyAddrDao proxyAddrDao;
+
 	@Override
 	public void batchInsertProxyAddrs(List<ProxyAddrDto> dtoList) {
 		BatchIterator<ProxyAddrDto> it = new BatchIterator<ProxyAddrDto>(dtoList);
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			proxyAddrDao.batchInsert(it.next());
 		}
-		
+
 	}
+
 	@Override
 	public void batchUpdateProxyAddrs(List<ProxyAddrDto> dtoList) {
 		BatchIterator<ProxyAddrDto> it = new BatchIterator<ProxyAddrDto>(dtoList);
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			proxyAddrDao.batchUpdate(it.next());
 		}
 	}
+
 	@Override
 	public ProxyAddrDto getProxyAddrDto(String ipString, int port) {
-		if(StringUtils.isEmpty(ipString) || port <1){
+		if (StringUtils.isEmpty(ipString) || port < 1) {
 			return null;
 		}
 		return getProxyAddrDto(InetAddressUtils.ip2int(ipString), port);
 	}
+
 	@Override
-	public ProxyAddrDto getProxyAddrDto(int ipValue, int port) {
+	public ProxyAddrDto getProxyAddrDto(Long ipValue, int port) {
 		return proxyAddrDao.getProxyAddrDto(ipValue, port);
 	}
+
 	public void setProxyAddrDao(ProxyAddrDao proxyAddrDao) {
 		this.proxyAddrDao = proxyAddrDao;
 	}
-
 
 }

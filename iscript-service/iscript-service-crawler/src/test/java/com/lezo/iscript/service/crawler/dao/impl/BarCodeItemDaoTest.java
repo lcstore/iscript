@@ -44,7 +44,6 @@ public class BarCodeItemDaoTest {
 		dto.setProductAttr("productAttr");
 		dto.setProductName("productName");
 		dto.setProductUrl("productUrl");
-		dto.setShopCode("shopCode");
 		dto.setUpdateTime(new Date());
 		dtoList.add(dto);
 		barCodeItemDao.batchInsert(dtoList);
@@ -133,7 +132,6 @@ public class BarCodeItemDaoTest {
 				dto.setProductBrand(JSONUtils.getString(itemObject, "pBrand"));
 				dto.setProductModel(JSONUtils.getString(itemObject, "pModel"));
 				dto.setProductAttr(JSONUtils.getString(itemObject, "pText"));
-				dto.setShopCode(dto.getBarCode().substring(0, 8));
 				dto.setImgUrl(JSONUtils.getString(itemObject, "pImg"));
 				dto.setCreateTime(new Date());
 				dto.setUpdateTime(new Date());

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductDao">
+	<resultMap type="ProductDto" id="RM_ProductDto">
+		<result column="ID" property="id"/>
+		<result column="SHOP_ID" property="shopId"/>
+		<result column="SITE_CODE" property="siteCode"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="MARKET_PRICE" property="marketPrice"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="PRODUCT_BRAND" property="productBrand"/>
+		<result column="PRODUCT_MODEL" property="productModel"/>
+		<result column="PRODUCT_ATTR" property="productAttr"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="IMG_URL" property="imgUrl"/>
+		<result column="ONSAIL_TIME" property="onsailTime"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="ProductDto-coloumn-list">
+		SHOP_ID
+		,SITE_CODE
+		,PRODUCT_CODE
+		,PRODUCT_NAME
+		,MARKET_PRICE
+		,PRODUCT_URL
+		,PRODUCT_BRAND
+		,PRODUCT_MODEL
+		,PRODUCT_ATTR
+		,BAR_CODE
+		,IMG_URL
+		,ONSAIL_TIME
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="ProductDto">
+		INSERT INTO T_PRODUCT(
+		<include refid="ProductDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.shopId},#{item.siteCode},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="ProductDto">
+		UPDATE T_PRODUCT SET
+		SHOP_ID=#{shopId},
+		SITE_CODE=#{siteCode},
+		PRODUCT_CODE=#{productCode},
+		PRODUCT_NAME=#{productName},
+		MARKET_PRICE=#{marketPrice},
+		PRODUCT_URL=#{productUrl},
+		PRODUCT_BRAND=#{productBrand},
+		PRODUCT_MODEL=#{productModel},
+		PRODUCT_ATTR=#{productAttr},
+		BAR_CODE=#{barCode},
+		IMG_URL=#{imgUrl},
+		ONSAIL_TIME=#{onsailTime},
+		UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	<select id="getProductDtos" parameterType="map" resultMap="RM_ProductDto">
+	   SELECT ID,<include refid="ProductDto-coloumn-list"/>
+	   FROM T_PRODUCT
+	   WHERE 1=1
+	   <if test="codeList.isEmpty()">
+	     AND 1=0
+	   </if>
+	   <if test="!codeList.isEmpty()">
+		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
+		      #{code}
+		   </foreach>
+	   </if>
+	   <if test="shopId !=null">
+	     AND SHOP_ID=#{shopId}
+	   </if>
+	   <if test="siteCode !=null">
+	     AND SITE_CODE=#{siteCode}
+	   </if>
+	</select>
+</mapper>

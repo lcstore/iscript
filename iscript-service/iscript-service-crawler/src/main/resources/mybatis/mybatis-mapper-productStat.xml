@@ -33,7 +33,7 @@
 		,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="ProductStatDto">
-		INSERT INTO T_PRODUCT_STAT(
+		INSERT INTO T_PRODUCT_STAT_HIS(
 		<include refid="ProductStatDto-coloumn-list" />
 		)
 		VALUES
@@ -43,7 +43,7 @@
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
-		UPDATE T_PRODUCT_STAT SET
+		UPDATE T_PRODUCT_STAT_HIS SET
 		SHOP_ID=#{shopId},
 		SITE_CODE=#{siteCode},
 		PRODUCT_ID=#{productId},
@@ -54,7 +54,6 @@
 		SOLD_NUM=#{soldNum},
 		COMMENT_NUM=#{commentNum},
 		STOCK_NUM=#{stockNum},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>

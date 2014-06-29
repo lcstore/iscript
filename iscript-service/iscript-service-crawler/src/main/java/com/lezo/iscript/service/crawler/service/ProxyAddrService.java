@@ -11,5 +11,5 @@ public interface ProxyAddrService {
 
 	ProxyAddrDto getProxyAddrDto(String ipString, int port);
 	
-	ProxyAddrDto getProxyAddrDto(int ipValue, int port);
+	ProxyAddrDto getProxyAddrDto(Long ipValue, int port);
 }
