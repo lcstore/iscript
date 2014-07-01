@@ -79,7 +79,7 @@ public class FlushTaskTimer {
 		taskPriorityDto.setUrl(JSONUtils.getString(argsObject, "url"));
 		taskPriorityDto.setLevel(JSONUtils.getInteger(argsObject, "level"));
 		taskPriorityDto.setSource(JSONUtils.getString(argsObject, "src"));
-		Date createTime = JSONUtils.get(argsObject, "ctime", Date.class);
+		Date createTime = JSONUtils.get(argsObject, "ctime");
 		createTime = createTime == null ? new Date() : createTime;
 		taskPriorityDto.setCreatTime(createTime);
 		taskPriorityDto.setStatus(TaskConstant.TASK_NEW);

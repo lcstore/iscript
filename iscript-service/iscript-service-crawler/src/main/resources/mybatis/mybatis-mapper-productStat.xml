@@ -33,7 +33,7 @@
 		,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="ProductStatDto">
-		INSERT INTO T_PRODUCT_STAT_HIS(
+		INSERT INTO T_PRODUCT_STAT(
 		<include refid="ProductStatDto-coloumn-list" />
 		)
 		VALUES
@@ -43,7 +43,7 @@
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
-		UPDATE T_PRODUCT_STAT_HIS SET
+		UPDATE T_PRODUCT_STAT SET
 		SHOP_ID=#{shopId},
 		SITE_CODE=#{siteCode},
 		PRODUCT_ID=#{productId},
@@ -57,4 +57,23 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getProductStatDtos" parameterType="map" resultMap="RM_ProductStatDto">
+	   SELECT ID,<include refid="ProductStatDto-coloumn-list"/>
+	   FROM T_PRODUCT_STAT
+	   WHERE 1=1
+	   <if test="codeList.isEmpty()">
+	     AND 1=0
+	   </if>
+	   <if test="!codeList.isEmpty()">
+		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
+		      #{code}
+		   </foreach>
+	   </if>
+	   <if test="shopId !=null">
+	     AND SHOP_ID=#{shopId}
+	   </if>
+	   <if test="siteCode !=null">
+	     AND SITE_CODE=#{siteCode}
+	   </if>
+	</select>
 </mapper>

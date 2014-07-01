@@ -66,11 +66,11 @@ public class QiniuResultHandler implements ResultHandle {
 		if (rsObject == null) {
 			return;
 		}
-		JSONObject nextObject = JSONUtils.get(rsObject, "next", JSONObject.class);
+		JSONObject nextObject = JSONUtils.get(rsObject, "next");
 		if (nextObject == null) {
 			return;
 		}
-		JSONObject argsObject = JSONUtils.get(rsObject, "args", JSONObject.class);
+		JSONObject argsObject = JSONUtils.get(rsObject, "args");
 		TaskWritable taskWritable = new TaskWritable();
 		addArgs(taskWritable, argsObject);
 		addArgs(taskWritable, nextObject);
@@ -127,15 +127,15 @@ public class QiniuResultHandler implements ResultHandle {
 
 	private String getFileName(ResultWritable resultWritable) {
 		JSONObject rsObject = JSONUtils.getJSONObject(resultWritable.getResult());
-		String rsContent = JSONUtils.get(rsObject, "rs", String.class);
+		String rsContent = JSONUtils.get(rsObject, "rs");
 		rsObject = JSONUtils.getJSONObject(rsContent);
-		JSONObject argsObject = JSONUtils.get(rsObject, "args", JSONObject.class);
-		String type = JSONUtils.get(argsObject, "type", String.class);
+		JSONObject argsObject = JSONUtils.get(rsObject, "args");
+		String type = JSONUtils.get(argsObject, "type");
 		StringBuilder sb = new StringBuilder();
 		if (argsObject != null) {
 			sb.append(type);
 			sb.append(".");
-			String sbid = JSONUtils.get(argsObject, "bid", String.class);
+			String sbid = JSONUtils.get(argsObject, "bid");
 			if (sbid != null) {
 				sb.append(sbid);
 			}

@@ -45,8 +45,7 @@ public class JSONUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T get(JSONObject jObj, String key, Class<T> destClass) {
+	public static <T> T get(JSONObject jObj, String key) {
 		if (!jObj.isNull(key)) {
 			try {
 				return (T) jObj.get(key);
@@ -58,15 +57,18 @@ public class JSONUtils {
 	}
 
 	public static Object getObject(JSONObject jObj, String key) {
-		return get(jObj, key, Object.class);
+		return get(jObj, key);
 	}
 
 	public static String getString(JSONObject jObj, String key) {
-		return get(jObj, key, String.class);
+		return get(jObj, key);
 	}
 
 	public static Integer getInteger(JSONObject jObj, String key) {
-		return get(jObj, key, Integer.class);
+		return get(jObj, key);
+	}
+	public static Float getFloat(JSONObject jObj, String key) {
+		return get(jObj, key);
 	}
 
 }

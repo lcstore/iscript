@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.lezo.iscript.service.crawler.dto.ProductDto;
+import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 
 public interface ProductStatDao {
-	void batchInsert(List<ProductDto> dtoList);
+	void batchInsert(List<ProductStatDto> dtoList);
 
-	List<ProductDto> getProductDtos(@Param(value = "codeList") List<String> codeList,
+	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList,
 			@Param(value = "shopId") Integer shopId, @Param(value = "siteCode") String siteCode);
 
 }
