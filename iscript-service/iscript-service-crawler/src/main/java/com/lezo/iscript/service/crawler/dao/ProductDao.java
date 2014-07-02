@@ -9,6 +9,8 @@ import com.lezo.iscript.service.crawler.dto.ProductDto;
 public interface ProductDao {
 	void batchInsert(List<ProductDto> dtoList);
 
+	void batchUpdate(List<ProductDto> dtoList);
+
 	List<ProductDto> getProductDtos(@Param(value = "codeList") List<String> codeList,
 			@Param(value = "shopId") Integer shopId, @Param(value = "siteCode") String siteCode);
 

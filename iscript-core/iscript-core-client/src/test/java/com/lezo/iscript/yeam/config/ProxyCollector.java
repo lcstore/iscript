@@ -61,7 +61,7 @@ public class ProxyCollector implements ConfigParser {
 		Pattern oReg = Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[^0-9]+?([0-9]+)", Pattern.MULTILINE);
 		Matcher matcher = oReg.matcher(html);
 		String key = "proxys";
-		JSONArray proxyArray = JSONUtils.get(jObject, key, JSONArray.class);
+		JSONArray proxyArray = JSONUtils.get(jObject, key);
 		if (proxyArray == null) {
 			proxyArray = new JSONArray();
 			JSONUtils.put(jObject, key, proxyArray);

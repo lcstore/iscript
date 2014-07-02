@@ -121,7 +121,7 @@ public class BarCodeItemDaoTest {
 			return dtoList;
 		}
 		JSONObject jsonObject = JSONUtils.getJSONObject(line.substring(index));
-		JSONArray itemArray = JSONUtils.get(jsonObject, "items", JSONArray.class);
+		JSONArray itemArray = JSONUtils.get(jsonObject, "items");
 		for (int i = 0; i < itemArray.length(); i++) {
 			try {
 				JSONObject itemObject = itemArray.getJSONObject(i);
@@ -183,7 +183,7 @@ public class BarCodeItemDaoTest {
 			return dtoMap;
 		}
 		JSONObject jsonObject = JSONUtils.getJSONObject(line.substring(index));
-		JSONArray itemArray = JSONUtils.get(jsonObject, "items", JSONArray.class);
+		JSONArray itemArray = JSONUtils.get(jsonObject, "items");
 		for (int i = 0; i < itemArray.length(); i++) {
 			try {
 				JSONObject itemObject = itemArray.getJSONObject(i);

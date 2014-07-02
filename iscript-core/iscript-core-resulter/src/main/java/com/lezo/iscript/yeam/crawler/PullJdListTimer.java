@@ -2,7 +2,12 @@ package com.lezo.iscript.yeam.crawler;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,9 +15,12 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
+import com.lezo.iscript.service.crawler.service.ProductService;
+import com.lezo.iscript.service.crawler.service.ProductStatService;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -20,6 +28,10 @@ public class PullJdListTimer {
 	private static Logger log = Logger.getLogger(PullJdListTimer.class);
 	private static volatile boolean running = false;
 	private static final JDCid2PList jdCid2PList = new JDCid2PList();
+	@Autowired
+	private ProductService productService;
+	@Autowired
+	private ProductStatService productStatService;
 
 	public void run() {
 		if (running) {
@@ -65,18 +77,102 @@ public class PullJdListTimer {
 		if (oList == null) {
 			return;
 		}
-
 		System.out.println(oList);
-		List<ProductDto> productDtos = new ArrayList<ProductDto>();
-		List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
 		for (int i = 0; i < oList.length(); i++) {
 			try {
+				List<ProductDto> productDtos = new ArrayList<ProductDto>();
+				List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
 				JSONObject itemObject = oList.getJSONObject(i);
 				handleItem(itemObject, productDtos, productStatDtos);
+				handleDtos(productDtos, productStatDtos);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
+
+	}
+
+	private void handleDtos(List<ProductDto> productDtos, List<ProductStatDto> productStatDtos) {
+		List<ProductDto> insertDtos = new ArrayList<ProductDto>();
+		List<ProductDto> updateDtos = new ArrayList<ProductDto>();
+		List<ProductStatDto> insertStatDtos = new ArrayList<ProductStatDto>();
+		List<ProductStatDto> updateStatDtos = new ArrayList<ProductStatDto>();
+		doAssort(productDtos, insertDtos, updateDtos);
+		doStatAssort(productStatDtos, insertStatDtos, updateStatDtos);
+
+	}
+
+	private void doAssort(List<ProductDto> productDtos, List<ProductDto> insertDtos, List<ProductDto> updateDtos) {
+		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
+		Map<String, ProductDto> dtoMap = new HashMap<String, ProductDto>();
+		for (ProductDto dto : productDtos) {
+			String key = dto.getShopId() + "-" + dto.getProductCode();
+			dtoMap.put(key, dto);
+			Set<String> codeSet = shopMap.get(dto.getShopId());
+			if (codeSet == null) {
+				codeSet = new HashSet<String>();
+				shopMap.put(dto.getShopId(), codeSet);
+			}
+			codeSet.add(dto.getProductCode());
+		}
+		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
+			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()),
+					entry.getKey(), null);
+			Set<String> hasCodeSet = new HashSet<String>();
+			for (ProductDto dto : hasDtos) {
+				String key = dto.getShopId() + "-" + dto.getProductCode();
+				ProductDto newDto = dtoMap.get(key);
+				hasCodeSet.add(dto.getProductCode());
+				newDto.setId(dto.getId());
+				updateDtos.add(newDto);
+			}
+			for (String code : entry.getValue()) {
+				if (hasCodeSet.contains(code)) {
+					continue;
+				}
+				String key = entry.getKey() + "-" + code;
+				ProductDto newDto = dtoMap.get(key);
+				insertDtos.add(newDto);
+			}
+
+		}
+
+	}
+	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos, List<ProductStatDto> updateDtos) {
+		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
+		Map<String, ProductStatDto> dtoMap = new HashMap<String, ProductStatDto>();
+		for (ProductStatDto dto : productDtos) {
+			String key = dto.getShopId() + "-" + dto.getProductCode();
+			dtoMap.put(key, dto);
+			Set<String> codeSet = shopMap.get(dto.getShopId());
+			if (codeSet == null) {
+				codeSet = new HashSet<String>();
+				shopMap.put(dto.getShopId(), codeSet);
+			}
+			codeSet.add(dto.getProductCode());
+		}
+		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
+			List<ProductStatDto> hasDtos = productStatService.getProductStatDtos(new ArrayList<String>(entry.getValue()),
+					entry.getKey(), null);
+			Set<String> hasCodeSet = new HashSet<String>();
+			for (ProductStatDto dto : hasDtos) {
+				String key = dto.getShopId() + "-" + dto.getProductCode();
+				ProductStatDto newDto = dtoMap.get(key);
+				hasCodeSet.add(dto.getProductCode());
+				newDto.setId(dto.getId());
+				updateDtos.add(newDto);
+			}
+			for (String code : entry.getValue()) {
+				if (hasCodeSet.contains(code)) {
+					continue;
+				}
+				String key = entry.getKey() + "-" + code;
+				ProductStatDto newDto = dtoMap.get(key);
+				insertDtos.add(newDto);
+			}
+			
+		}
+		
 	}
 
 	private void handleItem(JSONObject itemObject, List<ProductDto> productDtos, List<ProductStatDto> productStatDtos) {

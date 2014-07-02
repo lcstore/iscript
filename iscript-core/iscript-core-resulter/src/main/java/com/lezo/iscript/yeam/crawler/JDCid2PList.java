@@ -2,9 +2,12 @@ package com.lezo.iscript.yeam.crawler;
 
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.mybatis.spring.SqlSessionFactoryBean;
 
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -44,7 +47,9 @@ public class JDCid2PList implements ConfigParser {
 			JSONObject oNextObject = new JSONObject();
 			oNextObject.put("page", page + 1);
 			rs.put("next", oNextObject);
-		}
+		}SqlSession sqlSession=null;
+		SqlSessionFactoryBean sqlSessionFactoryBean=null;
+		SqlSessionFactory factory =null;
 		return rs.toString();
 	}
 

@@ -32,9 +32,9 @@ public class JDCid2PList implements ConfigParser {
 		int page = pageArgs == null || pageArgs < 1 ? 1 : pageArgs;
 		JSONObject oPListObject = getPList(argsObject, page);
 		JSONObject scListResObject = JSONUtils.get(oPListObject,
-				"jingdong_ware_promotion_search_catelogy_list_responce", JSONObject.class);
-		JSONObject scListObject = JSONUtils.get(scListResObject, "searchCatelogyList", JSONObject.class);
-		JSONArray wareInfos = JSONUtils.get(scListObject, "wareInfo", JSONArray.class);
+				"jingdong_ware_promotion_search_catelogy_list_responce");
+		JSONObject scListObject = JSONUtils.get(scListResObject, "searchCatelogyList");
+		JSONArray wareInfos = JSONUtils.get(scListObject, "wareInfo");
 		JSONUtils.put(rs, "oList", wareInfos);
 		scListObject.remove("wareInfo");
 		JSONObject oHeadObject = scListObject;
