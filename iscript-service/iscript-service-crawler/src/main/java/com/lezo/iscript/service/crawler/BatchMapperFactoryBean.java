@@ -82,7 +82,8 @@ public class BatchMapperFactoryBean<T> extends MapperFactoryBean<T> {
 		private void doBatchInvoke(Object proxy, Method method, Object[] args) {
 			SqlSession sqlSession = sqlSessionFactory.openSession(false);
 			try {
-				Method updateOneMethod = getUpdateOne(method);
+				Map<String, Object> map = new HashMap<String, Object>();
+				sqlSession.update("method", map);
 			} catch (Exception ex) {
 				sqlSession.rollback();
 			} finally {
