@@ -5,7 +5,6 @@ import java.util.Date;
 public class ProductDto {
 	private Long id;
 	private Integer shopId;
-	private String siteCode;
 	private String productCode;
 	private String productName;
 	private Float marketPrice;
@@ -33,14 +32,6 @@ public class ProductDto {
 
 	public void setShopId(Integer shopId) {
 		this.shopId = shopId;
-	}
-
-	public String getSiteCode() {
-		return siteCode;
-	}
-
-	public void setSiteCode(String siteCode) {
-		this.siteCode = siteCode;
 	}
 
 	public String getProductCode() {

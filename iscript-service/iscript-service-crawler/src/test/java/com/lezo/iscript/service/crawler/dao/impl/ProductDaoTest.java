@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,7 +25,6 @@ public class ProductDaoTest {
 		dto.setBarCode("barCode");
 		dto.setCreateTime(new Date());
 		dto.setMarketPrice(1000F);
-		dto.setSiteCode("siteCode");
 		dto.setShopId(1001);
 		dto.setProductCode("productCode");
 		dto.setProductName("productName");
@@ -34,12 +34,28 @@ public class ProductDaoTest {
 	}
 
 	@Test
+	public void testBatchUpdate() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+		ProductDao productDao = SpringBeanUtils.getBean(ProductDao.class);
+		List<String> codeList = new ArrayList<String>();
+		codeList.add("productCode");
+		List<ProductDto> dtoList = productDao.getProductDtos(codeList, null);
+		dtoList = productDao.getProductDtos(codeList, null);
+		for (ProductDto dto : dtoList) {
+			dto.setProductAttr("update.attr.678");
+		}
+		productDao.batchUpdate(dtoList);
+	}
+
+	@Test
 	public void testGetProductDtos() {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		ProductDao productDao = SpringBeanUtils.getBean(ProductDao.class);
 		List<String> codeList = new ArrayList<String>();
-		codeList.add("barCode");
-		List<ProductDto> dtoList =productDao.getProductDtos(codeList, null, null);
+		codeList.add("productCode");
+		List<ProductDto> dtoList = productDao.getProductDtos(codeList, null);
+		Assert.assertEquals(false, dtoList.isEmpty());
 	}
 }

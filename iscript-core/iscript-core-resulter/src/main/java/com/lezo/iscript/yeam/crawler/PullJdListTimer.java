@@ -138,7 +138,9 @@ public class PullJdListTimer {
 		}
 
 	}
-	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos, List<ProductStatDto> updateDtos) {
+
+	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos,
+			List<ProductStatDto> updateDtos) {
 		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
 		Map<String, ProductStatDto> dtoMap = new HashMap<String, ProductStatDto>();
 		for (ProductStatDto dto : productDtos) {
@@ -152,8 +154,8 @@ public class PullJdListTimer {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<ProductStatDto> hasDtos = productStatService.getProductStatDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey(), null);
+			List<ProductStatDto> hasDtos = productStatService.getProductStatDtos(
+					new ArrayList<String>(entry.getValue()), entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductStatDto dto : hasDtos) {
 				String key = dto.getShopId() + "-" + dto.getProductCode();
@@ -170,9 +172,9 @@ public class PullJdListTimer {
 				ProductStatDto newDto = dtoMap.get(key);
 				insertDtos.add(newDto);
 			}
-			
+
 		}
-		
+
 	}
 
 	private void handleItem(JSONObject itemObject, List<ProductDto> productDtos, List<ProductStatDto> productStatDtos) {
@@ -181,7 +183,6 @@ public class PullJdListTimer {
 		if (StringUtils.isEmpty(productDto.getProductCode())) {
 			return;
 		}
-		productDto.setSiteCode("jd.com");
 		productDto.setImgUrl(JSONUtils.getString(itemObject, "imageUrl"));
 		productDto.setProductName(JSONUtils.getString(itemObject, "wareName"));
 		productDto.setMarketPrice(JSONUtils.getFloat(itemObject, "martPrice"));

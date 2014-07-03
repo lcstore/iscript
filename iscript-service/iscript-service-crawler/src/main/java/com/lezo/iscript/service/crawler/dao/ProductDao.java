@@ -12,6 +12,6 @@ public interface ProductDao {
 	void batchUpdate(List<ProductDto> dtoList);
 
 	List<ProductDto> getProductDtos(@Param(value = "codeList") List<String> codeList,
-			@Param(value = "shopId") Integer shopId, @Param(value = "siteCode") String siteCode);
+			@Param(value = "shopId") Integer shopId);
 
 }

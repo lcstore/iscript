@@ -6,7 +6,6 @@
 	<resultMap type="ProductDto" id="RM_ProductDto">
 		<result column="ID" property="id"/>
 		<result column="SHOP_ID" property="shopId"/>
-		<result column="SITE_CODE" property="siteCode"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
 		<result column="PRODUCT_NAME" property="productName"/>
 		<result column="MARKET_PRICE" property="marketPrice"/>
@@ -22,7 +21,6 @@
 	</resultMap>
 	<sql id="ProductDto-coloumn-list">
 		SHOP_ID
-		,SITE_CODE
 		,PRODUCT_CODE
 		,PRODUCT_NAME
 		,MARKET_PRICE
@@ -43,13 +41,12 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopId},#{item.siteCode},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime})
+			(#{item.shopId},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductDto">
 		UPDATE T_PRODUCT SET
 		SHOP_ID=#{shopId},
-		SITE_CODE=#{siteCode},
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		MARKET_PRICE=#{marketPrice},
@@ -77,9 +74,6 @@
 	   </if>
 	   <if test="shopId !=null">
 	     AND SHOP_ID=#{shopId}
-	   </if>
-	   <if test="siteCode !=null">
-	     AND SITE_CODE=#{siteCode}
 	   </if>
 	</select>
 </mapper>

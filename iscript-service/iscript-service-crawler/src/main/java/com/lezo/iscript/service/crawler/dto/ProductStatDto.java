@@ -5,8 +5,6 @@ import java.util.Date;
 public class ProductStatDto {
 	private Long id;
 	private Integer shopId;
-	private String siteCode;
-	private Long productId;
 	private String productCode;
 	private String productName;
 	private Float productPrice;
@@ -31,22 +29,6 @@ public class ProductStatDto {
 
 	public void setShopId(Integer shopId) {
 		this.shopId = shopId;
-	}
-
-	public String getSiteCode() {
-		return siteCode;
-	}
-
-	public void setSiteCode(String siteCode) {
-		this.siteCode = siteCode;
-	}
-
-	public Long getProductId() {
-		return productId;
-	}
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
 	}
 
 	public String getProductCode() {

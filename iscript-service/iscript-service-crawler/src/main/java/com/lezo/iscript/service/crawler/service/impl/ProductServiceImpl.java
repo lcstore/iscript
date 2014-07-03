@@ -26,11 +26,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public void batchUpdateProductDtos(List<ProductDto> dtoList) {
+		BatchIterator<ProductDto> it = new BatchIterator<ProductDto>(dtoList);
+		while (it.hasNext()) {
+			productDao.batchUpdate(it.next());
+		}
+	}
+
+	@Override
 	public List<ProductDto> getProductDtos(List<String> codeList, Integer shopId, String siteCode) {
 		List<ProductDto> dtoList = new ArrayList<ProductDto>();
 		BatchIterator<String> it = new BatchIterator<String>(codeList);
 		while (it.hasNext()) {
-			List<ProductDto> subList = productDao.getProductDtos(it.next(), shopId, siteCode);
+			List<ProductDto> subList = productDao.getProductDtos(it.next(), shopId);
 			if (CollectionUtils.isNotEmpty(subList)) {
 				dtoList.addAll(subList);
 			}
