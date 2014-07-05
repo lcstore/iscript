@@ -39,7 +39,7 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 		if (StringUtils.isEmpty(ipString) || port < 1) {
 			return null;
 		}
-		return getProxyAddrDto(InetAddressUtils.ip2int(ipString), port);
+		return getProxyAddrDto(InetAddressUtils.inet_aton(ipString), port);
 	}
 
 	@Override

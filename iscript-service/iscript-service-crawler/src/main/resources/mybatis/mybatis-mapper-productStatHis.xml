@@ -3,11 +3,12 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatHisDao">
-	<resultMap type="ProductStatDto" id="RM_ProductStatHisDto">
+	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
 		<result column="ID" property="id"/>
 		<result column="SHOP_ID" property="shopId"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
 		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
 		<result column="PRODUCT_PRICE" property="productPrice"/>
 		<result column="MARKET_PRICE" property="marketPrice"/>
 		<result column="SOLD_NUM" property="soldNum"/>
@@ -20,6 +21,7 @@
 		SHOP_ID
 		,PRODUCT_CODE
 		,PRODUCT_NAME
+		,PRODUCT_URL
 		,PRODUCT_PRICE
 		,MARKET_PRICE
 		,SOLD_NUM
@@ -35,7 +37,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
@@ -43,6 +45,7 @@
 		SHOP_ID=#{shopId},
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
+		PRODUCT_URL=#{productUrl},
 		PRODUCT_PRICE=#{productPrice},
 		MARKET_PRICE=#{marketPrice},
 		SOLD_NUM=#{soldNum},
@@ -51,4 +54,20 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getProductStatDtos" parameterType="map" resultMap="RM_ProductStatDto">
+	   SELECT ID,<include refid="ProductStatDto-coloumn-list"/>
+	   FROM T_PRODUCT_STAT_HIS
+	   WHERE 1=1
+	   <if test="codeList.isEmpty()">
+	     AND 1=0
+	   </if>
+	   <if test="!codeList.isEmpty()">
+		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
+		      #{code}
+		   </foreach>
+	   </if>
+	   <if test="shopId !=null">
+	     AND SHOP_ID=#{shopId}
+	   </if>
+	</select>
 </mapper>

@@ -25,9 +25,4 @@
 	<!-- 数据库访问参数配置 -->
 	<import resource="classpath:spring/spring-config-jdbc.xml" />
 	<import resource="classpath:spring/spring-context-init.xml" />
-
-	<import resource="classpath:spring/spring-config-mvc.xml" />
-	<import resource="classpath:spring/spring-bean-tasker.xml" />
-	<import resource="classpath:spring/spring-bean-timer.xml" />
-	<import resource="classpath:spring/spring-bean-crawler.xml" />
 </beans>  

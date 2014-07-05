@@ -2,8 +2,8 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ShopInfoDao">
-	<resultMap type="ShopInfoDto" id="RM_ShopInfoDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ShopDao">
+	<resultMap type="ShopDto" id="RM_ShopDto">
 		<result column="ID" property="id"/>
 		<result column="SITE_CODE" property="siteCode"/>
 		<result column="SHOP_NAME" property="shopName"/>
@@ -14,7 +14,7 @@
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="ShopInfoDto-coloumn-list">
+	<sql id="ShopDto-coloumn-list">
 		SITE_CODE
 		,SHOP_NAME
 		,SHOP_CODE
@@ -24,9 +24,9 @@
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="ShopInfoDto">
-		INSERT INTO T_SHOP_INFO(
-		<include refid="ShopInfoDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="ShopDto">
+		INSERT INTO T_SHOP(
+		<include refid="ShopDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
@@ -34,8 +34,8 @@
 			(#{item.siteCode},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.onLine},#{item.isSelf},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ShopInfoDto">
-		UPDATE T_SHOP_INFO SET
+	<update id="updateOne" parameterType="ShopDto">
+		UPDATE T_SHOP SET
 		SITE_CODE=#{siteCode},
 		SHOP_NAME=#{shopName},
 		SHOP_CODE=#{shopCode},
@@ -45,4 +45,17 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getShopDto" resultMap="RM_ShopDto">
+	   SELECT ID,<include refid="ShopDto-coloumn-list"/>
+	   FROM T_SHOP
+	   WHERE ID=#{shopId}
+	</select>
+	<select id="getShopDtos" resultMap="RM_ShopDto">
+	   SELECT ID,<include refid="ShopDto-coloumn-list"/>
+	   FROM T_SHOP
+	   WHERE 1=1
+	   <if test="siteCode!=null">
+	     AND SITE_CODE=#{siteCode}
+	   </if>
+	</select>
 </mapper>

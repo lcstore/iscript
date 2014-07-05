@@ -22,9 +22,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.lezo.iscript.service.crawler.dao.BarCodeItemDao;
-import com.lezo.iscript.service.crawler.dao.ShopInfoDao;
+import com.lezo.iscript.service.crawler.dao.ShopDao;
 import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
-import com.lezo.iscript.service.crawler.dto.ShopInfoDto;
+import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 
@@ -147,38 +147,38 @@ public class BarCodeItemDaoTest {
 	public void testFileShopBatchInsert() throws Exception {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
-		ShopInfoDao shopInfoDao = SpringBeanUtils.getBean(ShopInfoDao.class);
+		ShopDao shopInfoDao = SpringBeanUtils.getBean(ShopDao.class);
 		String file = "D:/ancc-p1/result-1001.log";
 		Reader in = new FileReader(file);
 		BufferedReader bReader = new BufferedReader(in);
 		int count = 0;
-		Map<String, ShopInfoDto> shopMap = new HashMap<String, ShopInfoDto>();
+		Map<String, ShopDto> shopMap = new HashMap<String, ShopDto>();
 		while (bReader.ready()) {
 			String line = bReader.readLine();
 			if (line == null) {
 				break;
 			}
-			Map<String, ShopInfoDto> dtoMap = createShopInfoDto(line);
+			Map<String, ShopDto> dtoMap = createShopInfoDto(line);
 			if (dtoMap.isEmpty()) {
 				continue;
 			}
 			count++;
 			shopMap.putAll(dtoMap);
 			if (shopMap.size() >= 200) {
-				shopInfoDao.batchInsert(new ArrayList<ShopInfoDto>(shopMap.values()));
+				shopInfoDao.batchInsert(new ArrayList<ShopDto>(shopMap.values()));
 				shopMap.clear();
 			}
 		}
 		if (!shopMap.isEmpty()) {
-			shopInfoDao.batchInsert(new ArrayList<ShopInfoDto>(shopMap.values()));
+			shopInfoDao.batchInsert(new ArrayList<ShopDto>(shopMap.values()));
 		}
 		IOUtils.closeQuietly(bReader);
 		System.out.println("total.count:" + count);
 	}
 
-	private Map<String, ShopInfoDto> createShopInfoDto(String line) {
+	private Map<String, ShopDto> createShopInfoDto(String line) {
 		int index = line.indexOf("{");
-		Map<String, ShopInfoDto> dtoMap = new HashMap<String, ShopInfoDto>();
+		Map<String, ShopDto> dtoMap = new HashMap<String, ShopDto>();
 		if (index < 0) {
 			return dtoMap;
 		}
@@ -188,7 +188,7 @@ public class BarCodeItemDaoTest {
 			try {
 				JSONObject itemObject = itemArray.getJSONObject(i);
 				String barCode = JSONUtils.getString(itemObject, "pBarCode");
-				ShopInfoDto dto = new ShopInfoDto();
+				ShopDto dto = new ShopDto();
 				dto.setShopCode(barCode.substring(0, 8));
 				dto.setShopName(JSONUtils.getString(itemObject, "spName"));
 				dto.setShopUrl(JSONUtils.getString(itemObject, "spUrl"));

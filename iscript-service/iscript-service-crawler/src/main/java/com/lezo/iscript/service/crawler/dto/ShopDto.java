@@ -2,7 +2,7 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-public class ShopInfoDto {
+public class ShopDto {
 	private Integer id;
 	private String siteCode;
 	private String shopName;

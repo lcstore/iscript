@@ -7,6 +7,7 @@ public class ProductStatDto {
 	private Integer shopId;
 	private String productCode;
 	private String productName;
+	private String productUrl;
 	private Float productPrice;
 	private Float marketPrice;
 	private Integer soldNum;
@@ -101,6 +102,14 @@ public class ProductStatDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getProductUrl() {
+		return productUrl;
+	}
+
+	public void setProductUrl(String productUrl) {
+		this.productUrl = productUrl;
 	}
 
 }

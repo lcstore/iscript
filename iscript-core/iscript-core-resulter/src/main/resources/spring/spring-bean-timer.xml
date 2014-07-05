@@ -4,11 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-	<bean id="cacheTaskTimer" class="com.lezo.iscript.yeam.tasker.CacheTaskTimer">
-		<property name="tasker" value="tasker" />
-	</bean>
-	<bean id="assembleTaskTimer" class="com.lezo.iscript.yeam.tasker.AssembleTaskTimer">
-		<property name="tasker" value="tasker" />
+	<bean id="pullJdListTimer" class="com.lezo.iscript.yeam.crawler.PullJdListTimer">
 	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
@@ -17,11 +13,7 @@
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="assembleTaskTimer" method="run"
-			fixed-delay="30000" />
-	</task:scheduled-tasks>
-	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="cacheTaskTimer" method="run"
-			fixed-delay="60000" />
+		<task:scheduled ref="pullJdListTimer" method="run"
+			fixed-delay="60000"/>
 	</task:scheduled-tasks>
 </beans>
