@@ -11,6 +11,8 @@
 		<result column="PRODUCT_NAME" property="productName"/>
 		<result column="PRODUCT_URL" property="productUrl"/>
 		<result column="PRODUCT_PRICE" property="productPrice"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="IMG_URL" property="imgUrl"/>
 		<result column="SOURCE" property="source"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
@@ -22,6 +24,8 @@
 		,PRODUCT_NAME
 		,PRODUCT_URL
 		,PRODUCT_PRICE
+		,BAR_CODE
+		,IMG_URL
 		,SOURCE
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -33,7 +37,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.similarCode},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.source},#{item.createTime},#{item.updateTime})
+			(#{item.similarCode},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.source},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="SimilarDto">
@@ -44,9 +48,45 @@
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
 		PRODUCT_PRICE=#{productPrice},
+		BAR_CODE=#{barCode},
+		IMG_URL=#{imgUrl},
 		SOURCE=#{source},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	
+	<select id="getSimilarDtos" parameterType="map" resultMap="RM_SimilarDto">
+	   SELECT ID,<include refid="SimilarDto-coloumn-list"/>
+	   FROM T_SIMILAR
+	   WHERE 1=1
+	   <if test="codeList.isEmpty()">
+	     AND 1=0
+	   </if>
+	   <if test="!codeList.isEmpty()">
+		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
+		      #{code}
+		   </foreach>
+	   </if>
+	   <if test="shopId !=null">
+	     AND SHOP_ID=#{shopId}
+	   </if>
+	</select>
+	<select id="getSimilarDtoBySimilarCodes" parameterType="map" resultMap="RM_SimilarDto">
+	   SELECT ID,<include refid="SimilarDto-coloumn-list"/>
+	   FROM T_SIMILAR
+	   WHERE 1=1
+	   <if test="similarCodeList.isEmpty()">
+	     AND 1=0
+	   </if>
+	   <if test="!similarCodeList.isEmpty()">
+		   <foreach collection="similarCodeList" item="similarCode" open="AND SIMILAR_CODE IN(" close=")" separator=",">
+		      #{similarCode}
+		   </foreach>
+	   </if>
+	   <if test="shopIds !=null">
+	     <foreach collection="shopIds" item="shopId" open="AND SHOP_ID IN(" close=")" separator=",">
+		      #{shopId}
+		   </foreach>
+	   </if>
+	</select>
 </mapper>

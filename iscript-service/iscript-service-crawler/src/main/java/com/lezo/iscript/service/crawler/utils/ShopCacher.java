@@ -117,14 +117,10 @@ public class ShopCacher {
 
 	private String getSiteCodeFromUrl(String shopUrl) {
 		try {
+			//http://www.gome.com.cn/product/A0004331780.html&version=3.2.1&vendor=chrome
 			URL newUrl = new URL(shopUrl);
 			String host = newUrl.getHost();
-			int fromIndex = host.length();
-			int count = 0;
-			while (fromIndex > 0 && count < 2) {
-				count++;
-				fromIndex = host.lastIndexOf('.', fromIndex - 1);
-			}
+			int fromIndex =host.indexOf('.');
 			int index = fromIndex < 0 ? 0 : fromIndex + 1;
 			return host.substring(index);
 		} catch (MalformedURLException e) {

@@ -13,5 +13,6 @@
 		<mapper resource="mybatis/mybatis-mapper-product.xml" />
 		<mapper resource="mybatis/mybatis-mapper-productStat.xml" />
 		<mapper resource="mybatis/mybatis-mapper-productStatHis.xml" />
+		<mapper resource="mybatis/mybatis-mapper-similar.xml" />
 	</mappers>
 </configuration>

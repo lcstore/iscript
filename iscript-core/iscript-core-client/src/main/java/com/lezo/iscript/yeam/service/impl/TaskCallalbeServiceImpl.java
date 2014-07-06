@@ -27,7 +27,12 @@ public class TaskCallalbeServiceImpl implements TaskCallalbeService {
 			rsWritable.setStatus(ResultConstant.RESULT_SUCCESS);
 		} catch (Exception e) {
 			rsWritable.setStatus(ResultConstant.RESULT_FAIL);
-			JSONUtils.put(rsObject, "ex", e);
+			StringBuilder sb = new StringBuilder();
+			for (StackTraceElement se : e.getStackTrace()) {
+				sb.append(se.toString());
+				sb.append("\n");
+			}
+			JSONUtils.put(rsObject, "ex", sb.toString());
 			log.warn("", e);
 		} finally {
 			rsWritable.setResult(rsObject.toString());

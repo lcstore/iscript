@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> getProductDtos(List<String> codeList, Integer shopId, String siteCode) {
+	public List<ProductDto> getProductDtos(List<String> codeList, Integer shopId) {
 		List<ProductDto> dtoList = new ArrayList<ProductDto>();
 		BatchIterator<String> it = new BatchIterator<String>(codeList);
 		while (it.hasNext()) {
@@ -48,6 +48,11 @@ public class ProductServiceImpl implements ProductService {
 
 	public void setProductDao(ProductDao productDao) {
 		this.productDao = productDao;
+	}
+
+	@Override
+	public List<ProductDto> getProductDtosFromId(Long fromId, int limit, Integer shopId) {
+		return productDao.getProductDtosFromId(fromId, limit, shopId);
 	}
 
 }

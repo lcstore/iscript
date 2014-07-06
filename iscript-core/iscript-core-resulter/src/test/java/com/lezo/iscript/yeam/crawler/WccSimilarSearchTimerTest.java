@@ -12,14 +12,15 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 
-public class PullJdListTimerTest {
+public class WccSimilarSearchTimerTest {
 
 	@Test
-	public void testPullJd() {
-		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+	public void testDoSimilarSearch() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml","classpath:spring/spring-bean-resulter.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
-		PullJdListTimer timer = SpringBeanUtils.getBean(PullJdListTimer.class);
-		timer.run();
+		WccSimilarSearchTimer timer = SpringBeanUtils.getBean(WccSimilarSearchTimer.class);
+//		timer.run();
+		Thread.currentThread().join();
 	}
 
 	@Test
@@ -37,6 +38,7 @@ public class PullJdListTimerTest {
 //		url = "";
 		url = toDestUrl(url);
 		System.out.println(url);
+		url = "http://item.jd.com/856886.html";
 		System.out.println(getCodeFromUrl(url));
 	}
 

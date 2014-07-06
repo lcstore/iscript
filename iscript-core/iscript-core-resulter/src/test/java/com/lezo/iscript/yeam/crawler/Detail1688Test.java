@@ -10,16 +10,29 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.lezo.iscript.service.crawler.service.BarCodeItemService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class PullJdListTimerTest {
+public class Detail1688Test {
 
 	@Test
-	public void testPullJd() {
-		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+	public void testDetail() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml","classpath:spring/spring-bean-resulter.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
-		PullJdListTimer timer = SpringBeanUtils.getBean(PullJdListTimer.class);
-		timer.run();
+		BarCodeItemService barCodeItemService = SpringBeanUtils.getBean(BarCodeItemService.class);
+		Detail1688 parser = new Detail1688();
+		parser.setBarCodeItemService(barCodeItemService);
+		String url = "http://s.1688.com/promotion/offer_search.htm?spm=a260k.635.794254077.4&tab=%20import%20&keywords=%BD%F8%BF%DA%CA%B3%C6%B7#beginPage=100";
+		url = "http://s.1688.com/selloffer/offer_search.htm?spm=a260k.635.794254077.3&keywords=%C1%E3%CA%B3&descendOrder=true&from=industrySearch&industryFlag=food&sortType=booked&uniqfield=userid&n=y&filt=y";
+//		url = "http://s.1688.com/selloffer/offer_search.htm?spm=a260k.635.794254077.8&keywords=%C8%E2%CB%C9%B1%FD&descendOrder=true&from=industrySearch&industryFlag=food&sortType=booked&uniqfield=userid&n=y&filt=y";
+		url = "http://s.1688.com/selloffer/offer_search.htm?spm=a260k.635.794254077.10&keywords=%BF%AA%D0%C4%B9%FB&descendOrder=true&from=industrySearch&industryFlag=food&sortType=booked&uniqfield=userid&n=y&filt=y";
+//		url = "http://detail.1688.com/offer/1004662875.html";
+		TaskWritable task = new TaskWritable();
+		task.put("url", url);
+		task.put("isList", 1);
+		parser.doParse(task);
+		Thread.currentThread().join();
 	}
 
 	@Test
@@ -37,6 +50,7 @@ public class PullJdListTimerTest {
 //		url = "";
 		url = toDestUrl(url);
 		System.out.println(url);
+		url = "http://item.jd.com/856886.html";
 		System.out.println(getCodeFromUrl(url));
 	}
 

@@ -35,6 +35,14 @@
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 
+	<bean id="productStatHisDao"
+		class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+					value="com.lezo.iscript.service.crawler.dao.ProductStatHisDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- batch update dao -->
 	<bean id="productDao"
 		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
@@ -47,11 +55,10 @@
 					value="com.lezo.iscript.service.crawler.dao.ProductStatDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
-	<bean id="productStatHisDao"
-		class="org.mybatis.spring.mapper.MapperFactoryBean">
+	<bean id="similarDao"
+		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
-					value="com.lezo.iscript.service.crawler.dao.ProductStatHisDao" />
+					value="com.lezo.iscript.service.crawler.dao.SimilarDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
-	
 </beans>

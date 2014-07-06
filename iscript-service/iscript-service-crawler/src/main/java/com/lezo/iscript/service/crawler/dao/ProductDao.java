@@ -14,4 +14,7 @@ public interface ProductDao {
 	List<ProductDto> getProductDtos(@Param(value = "codeList") List<String> codeList,
 			@Param(value = "shopId") Integer shopId);
 
+	List<ProductDto> getProductDtosFromId(@Param(value = "fromId") Long fromId, @Param(value = "limit") int limit,
+			@Param(value = "shopId") Integer shopId);
+
 }

@@ -132,7 +132,7 @@ public class PullJdListTimer {
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
 			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey(), null);
+					entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductDto dto : hasDtos) {
 				String key = dto.getShopId() + "-" + dto.getProductCode();

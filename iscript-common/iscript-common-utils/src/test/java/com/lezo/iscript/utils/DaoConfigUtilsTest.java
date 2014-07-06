@@ -17,6 +17,23 @@ public class DaoConfigUtilsTest {
 		String params = DaoConfigUtils.getDtoParams(columnList);
 		System.out.println(params);
 	}
+	@Test
+	public void testField2Param() throws IOException {
+		File file = new File("src/test/resources/sqlLine.sql");
+		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
+		List<String> columnList = DBFieldUtils.sql2Field(sqlLines);
+		List<String> paramList = DBFieldUtils.field2Param(columnList);
+		for (String col : paramList) {
+			String dtoFiled = "private String " + col + ";";
+			// System.out.println("<parameter property=\""+col+"\" javaType=\"java.lang.String\"/>");
+			String derbyInsert = "#{item." + col + ",typeHandler=DerbyTypeHandler},";
+			// System.out.print("#" + col + "#,");
+			String insertString = "#{item." + col + "},";
+//			 insertString = "#" + col + "#,";
+//			System.out.print(insertString);
+			 System.out.println(dtoFiled);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -24,8 +41,8 @@ public class DaoConfigUtilsTest {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_PRODUCT_STAT";
-		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.ProductStatDao";
+		String tableName = "T_SIMILAR";
+		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.SimilarDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);

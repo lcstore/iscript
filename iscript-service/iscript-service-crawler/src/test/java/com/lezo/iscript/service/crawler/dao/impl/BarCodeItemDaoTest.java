@@ -1,7 +1,6 @@
 package com.lezo.iscript.service.crawler.dao.impl;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class BarCodeItemDaoTest {
 
 		List<String> barCodeList = new ArrayList<String>();
 		barCodeList.add("bc");
-		List<BarCodeItemDto> dtoList = barCodeItemDao.getBarCodeItemDtos(barCodeList, null);
+		List<BarCodeItemDto> dtoList = barCodeItemDao.getBarCodeItemDtos(barCodeList);
 		Assert.assertEquals(false, dtoList.isEmpty());
 	}
 
@@ -99,7 +98,7 @@ public class BarCodeItemDaoTest {
 		for (BarCodeItemDto dto : dtoList) {
 			dtoMap.put(dto.getBarCode(), dto);
 		}
-		List<BarCodeItemDto> hasDtos = barCodeItemDao.getBarCodeItemDtos(new ArrayList<String>(dtoMap.keySet()), null);
+		List<BarCodeItemDto> hasDtos = barCodeItemDao.getBarCodeItemDtos(new ArrayList<String>(dtoMap.keySet()));
 		Map<String, BarCodeItemDto> hasMap = new HashMap<String, BarCodeItemDto>();
 		for (BarCodeItemDto dto : hasDtos) {
 			hasMap.put(dto.getBarCode(), dto);
