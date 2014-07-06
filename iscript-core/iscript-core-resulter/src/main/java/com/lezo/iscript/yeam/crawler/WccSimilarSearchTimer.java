@@ -65,9 +65,13 @@ public class WccSimilarSearchTimer {
 				if (fromId < dto.getId()) {
 					fromId = dto.getId();
 				}
+				task.put("wShopId", dto.getShopId());
+				task.put("wCode", dto.getProductCode());
 				task.put("wUrl", dto.getProductUrl());
 				task.put("wPrice", dto.getMarketPrice());
 				task.put("wName", dto.getProductName());
+				task.put("wBCode", dto.getBarCode());
+				task.put("wImgUrl", dto.getImgUrl());
 				String rs = doRetryCall(task);
 				if (StringUtils.isEmpty(rs)) {
 					log.warn("can not get similar,code:" + dto.getProductCode() + ",url:" + dto.getProductUrl()
@@ -98,6 +102,17 @@ public class WccSimilarSearchTimer {
 		}
 		Long similarCode = System.currentTimeMillis();
 		List<SimilarDto> similarDtos = new ArrayList<SimilarDto>();
+
+		SimilarDto dto = new SimilarDto();
+		dto.setShopId(JSONUtils.getInteger(argsObject, "wShopId"));
+		dto.setProductCode(JSONUtils.getString(argsObject, "wCode"));
+		dto.setProductName(JSONUtils.getString(argsObject, "wName"));
+		dto.setProductUrl(JSONUtils.getString(argsObject, "wUrl"));
+		dto.setProductPrice(JSONUtils.getFloat(argsObject, "wPrice"));
+		dto.setImgUrl(JSONUtils.getString(argsObject, "wImgUrl"));
+		dto.setBarCode(JSONUtils.getString(argsObject, "wBCode"));
+		dto.setSource("wcc");
+		similarDtos.add(dto);
 		for (int i = 0; i < oList.length(); i++) {
 			try {
 				JSONObject itemObject = oList.getJSONObject(i);
