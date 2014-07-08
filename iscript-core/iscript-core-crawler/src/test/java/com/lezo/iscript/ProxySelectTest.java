@@ -13,6 +13,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.HttpGet;
@@ -52,7 +53,12 @@ public class ProxySelectTest {
 	public void test() throws Exception, IOException {
 //		DefaultHttpClient client = createHttpClient();
 		DefaultHttpClient client = new DefaultHttpClient();
-		HttpUriRequest request = new HttpGet("http://item.jd.com/856850.html");
+//		HttpUriRequest request = new HttpGet("http://item.jd.com/856850.html");
+//		HttpUriRequest request = new HttpGet("http://www.blogjava.net/yidinghe/archive/2012/11/10/391147.html");
+		HttpUriRequest request = new HttpGet("http://42.120.61.21/yidinghe/archive/2012/11/10/391147.html");
+		request.addHeader("Host", "www.blogjava.net");
+//		HttpHost virtualHost=new HttpHost("www.blogjava.net");
+//		request.getParams().setParameter(ClientPNames.VIRTUAL_HOST, virtualHost);
 		SchemeRegistry schreg = client.getConnectionManager().getSchemeRegistry();
 		ProxySelector prosel = new ProxySelector() {
 			private List<Proxy> proxyList;
