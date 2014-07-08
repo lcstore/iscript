@@ -2,17 +2,17 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-public class ProductStatDto {
+public class SimilarDto {
 	private Long id;
+	private Long similarCode;
 	private Integer shopId;
 	private String productCode;
 	private String productName;
 	private String productUrl;
 	private Float productPrice;
-	private Float marketPrice;
-	private Integer soldNum;
-	private Integer commentNum;
-	private Integer stockNum;
+	private String barCode;
+	private String imgUrl;
+	private String source;
 	private Date createTime;
 	private Date updateTime;
 
@@ -22,6 +22,14 @@ public class ProductStatDto {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getSimilarCode() {
+		return similarCode;
+	}
+
+	public void setSimilarCode(Long similarCode) {
+		this.similarCode = similarCode;
 	}
 
 	public Integer getShopId() {
@@ -48,6 +56,14 @@ public class ProductStatDto {
 		this.productName = productName;
 	}
 
+	public String getProductUrl() {
+		return productUrl;
+	}
+
+	public void setProductUrl(String productUrl) {
+		this.productUrl = productUrl;
+	}
+
 	public Float getProductPrice() {
 		return productPrice;
 	}
@@ -56,36 +72,12 @@ public class ProductStatDto {
 		this.productPrice = productPrice;
 	}
 
-	public Float getMarketPrice() {
-		return marketPrice;
+	public String getSource() {
+		return source;
 	}
 
-	public void setMarketPrice(Float marketPrice) {
-		this.marketPrice = marketPrice;
-	}
-
-	public Integer getSoldNum() {
-		return soldNum;
-	}
-
-	public void setSoldNum(Integer soldNum) {
-		this.soldNum = soldNum;
-	}
-
-	public Integer getCommentNum() {
-		return commentNum;
-	}
-
-	public void setCommentNum(Integer commentNum) {
-		this.commentNum = commentNum;
-	}
-
-	public Integer getStockNum() {
-		return stockNum;
-	}
-
-	public void setStockNum(Integer stockNum) {
-		this.stockNum = stockNum;
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 	public Date getCreateTime() {
@@ -104,12 +96,20 @@ public class ProductStatDto {
 		this.updateTime = updateTime;
 	}
 
-	public String getProductUrl() {
-		return productUrl;
+	public String getBarCode() {
+		return barCode;
 	}
 
-	public void setProductUrl(String productUrl) {
-		this.productUrl = productUrl;
+	public void setBarCode(String barCode) {
+		this.barCode = barCode;
+	}
+
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
 	}
 
 }

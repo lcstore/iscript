@@ -2,6 +2,7 @@ package com.lezo.iscript.utils;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -65,10 +66,23 @@ public class JSONUtils {
 	}
 
 	public static Integer getInteger(JSONObject jObj, String key) {
-		return get(jObj, key);
+		Object jObject = get(jObj, key);
+		if(jObject instanceof Double){
+			Double dValue = (Double) jObject;
+			return dValue.intValue();
+		}else if(jObject instanceof Float){
+			Float fValue = (Float) jObject;
+			return fValue.intValue();
+		}
+		return Integer.valueOf(jObject.toString());
 	}
 	public static Float getFloat(JSONObject jObj, String key) {
-		return get(jObj, key);
+		Object jObject = get(jObj, key);
+		if(jObject instanceof Double){
+			Double dValue = (Double) jObject;
+			return dValue.floatValue();
+		}
+		return Float.valueOf(jObject.toString());
 	}
 
 }

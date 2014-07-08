@@ -4,6 +4,15 @@
     "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<mappers>
-		<mapper resource="mybatis-config-crawler.xml" />
+		<mapper resource="mybatis/mybatis-mapper-taskpriority.xml" />
+		<mapper resource="mybatis/mybatis-mapper-typeconfig.xml" />
+		<mapper resource="mybatis/mybatis-mapper-taskconfig.xml" />
+		<mapper resource="mybatis/mybatis-mapper-proxyAddr.xml" />
+		<mapper resource="mybatis/mybatis-mapper-barCodeItem.xml" />
+		<mapper resource="mybatis/mybatis-mapper-shop.xml" />
+		<mapper resource="mybatis/mybatis-mapper-product.xml" />
+		<mapper resource="mybatis/mybatis-mapper-productStat.xml" />
+		<mapper resource="mybatis/mybatis-mapper-productStatHis.xml" />
+		<mapper resource="mybatis/mybatis-mapper-similar.xml" />
 	</mappers>
 </configuration>

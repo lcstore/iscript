@@ -9,5 +9,7 @@ public interface ProductService {
 
 	void batchUpdateProductDtos(List<ProductDto> dtoList);
 
-	List<ProductDto> getProductDtos(List<String> codeList, Integer shopId, String siteCode);
+	List<ProductDto> getProductDtos(List<String> codeList, Integer shopId);
+
+	List<ProductDto> getProductDtosFromId(Long fromId, int limit, Integer shopId);
 }

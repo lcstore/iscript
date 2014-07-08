@@ -43,7 +43,7 @@ public class ProductDaoTest {
 		List<ProductDto> dtoList = productDao.getProductDtos(codeList, null);
 		dtoList = productDao.getProductDtos(codeList, null);
 		for (ProductDto dto : dtoList) {
-			dto.setProductAttr("update.attr.678");
+			dto.setProductAttr("update.attr.999");
 		}
 		productDao.batchUpdate(dtoList);
 	}

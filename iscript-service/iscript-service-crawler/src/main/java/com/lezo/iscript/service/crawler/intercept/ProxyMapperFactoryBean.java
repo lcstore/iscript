@@ -11,15 +11,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.springframework.beans.factory.FactoryBean;
+import org.mybatis.spring.mapper.MapperFactoryBean;
 
-public class IntercepterProxy<T> implements InvocationHandler, InterceptHandler, FactoryBean<T> {
+public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements InvocationHandler {
 	public static final String DEFAULT_INTERCEPT_METHOD = "batchUpdate";
 	private SqlSessionFactory sqlSessionFactory;
-	private Object targetObject;
+	private T targetObject;
 	private String methodName = DEFAULT_INTERCEPT_METHOD;
 	private List<String> keyList;
-
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (isIntercept(method)) {
@@ -28,25 +27,6 @@ public class IntercepterProxy<T> implements InvocationHandler, InterceptHandler,
 		return method.invoke(this.targetObject, args);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public T getObject() throws Exception {
-		return (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), targetObject.getClass()
-				.getInterfaces(), this);
-	}
-
-	@Override
-	public Class<?> getObjectType() {
-		Class<?>[] interfaces = targetObject.getClass().getInterfaces();
-		return interfaces[0];
-	}
-
-	@Override
-	public boolean isSingleton() {
-		return true;
-	}
-
-	@Override
 	public Object doIntercepter(Object proxy, Method method, Object[] args) throws Exception {
 		List<?> dataList = (List<?>) args[0];
 		SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
@@ -74,7 +54,6 @@ public class IntercepterProxy<T> implements InvocationHandler, InterceptHandler,
 		return null;
 	}
 
-	@Override
 	public boolean isIntercept(Method method) {
 		Class<?>[] pTypes = method.getParameterTypes();
 		if (pTypes == null || pTypes.length < 1) {
@@ -83,12 +62,12 @@ public class IntercepterProxy<T> implements InvocationHandler, InterceptHandler,
 		return method.getName().equals(this.methodName) && List.class.isAssignableFrom(pTypes[0]);
 	}
 
-	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
-		this.sqlSessionFactory = sqlSessionFactory;
-	}
-
-	public void setTargetObject(T targetObject) {
-		this.targetObject = targetObject;
+	@SuppressWarnings("unchecked")
+	@Override
+	public T getObject() throws Exception {
+		this.targetObject= super.getObject();
+		return (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), targetObject.getClass()
+				.getInterfaces(), this);
 	}
 
 	public void setMethodName(String methodName) {
@@ -97,6 +76,12 @@ public class IntercepterProxy<T> implements InvocationHandler, InterceptHandler,
 
 	public void setKeyList(List<String> keyList) {
 		this.keyList = keyList;
+	}
+
+	@Override
+	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+		this.sqlSessionFactory = sqlSessionFactory;
+		super.setSqlSessionFactory(sqlSessionFactory);
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.crawler;
+﻿package com.lezo.iscript.yeam.crawler;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,28 +11,32 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
+import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
+import com.lezo.iscript.service.crawler.service.ProductStatHisService;
 import com.lezo.iscript.service.crawler.service.ProductStatService;
+import com.lezo.iscript.service.crawler.utils.ShopCacher;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class PullJdListTimer {
-	private static Logger log = LoggerFactory.getLogger(PullJdListTimer.class);
+	private static Logger log = Logger.getLogger(PullJdListTimer.class);
 	private static volatile boolean running = false;
 	private static final JDCid2PList jdCid2PList = new JDCid2PList();
 	@Autowired
 	private ProductService productService;
 	@Autowired
 	private ProductStatService productStatService;
+	@Autowired
+	private ProductStatHisService productStatHisService;
 
 	public void run() {
 		if (running) {
@@ -68,7 +72,6 @@ public class PullJdListTimer {
 				log.info("Next:" + page + "," + JSONUtils.get(rsObject, "oHeader"));
 			}
 			handleResult(rsObject);
-			break;
 		}
 
 	}
@@ -78,7 +81,6 @@ public class PullJdListTimer {
 		if (oList == null) {
 			return;
 		}
-		System.out.println(oList);
 		for (int i = 0; i < oList.length(); i++) {
 			try {
 				List<ProductDto> productDtos = new ArrayList<ProductDto>();
@@ -97,13 +99,22 @@ public class PullJdListTimer {
 		List<ProductDto> insertDtos = new ArrayList<ProductDto>();
 		List<ProductDto> updateDtos = new ArrayList<ProductDto>();
 		List<ProductStatDto> insertStatDtos = new ArrayList<ProductStatDto>();
+		List<ProductStatDto> insertStatHisDtos = new ArrayList<ProductStatDto>();
 		List<ProductStatDto> updateStatDtos = new ArrayList<ProductStatDto>();
 		doAssort(productDtos, insertDtos, updateDtos);
-		doStatAssort(productStatDtos, insertStatDtos, updateStatDtos);
-		productService.batchUpdateProductDtos(updateDtos);
+		doStatAssort(productStatDtos, insertStatDtos, updateStatDtos, insertStatHisDtos);
 		productService.batchInsertProductDtos(insertDtos);
-		productStatService.batchUpdateProductStatDtos(updateStatDtos);
+		productService.batchUpdateProductDtos(updateDtos);
 		productStatService.batchInsertProductStatDtos(insertStatDtos);
+		productStatService.batchUpdateProductStatDtos(updateStatDtos);
+		turnCreateTime2UpdateTime(insertStatHisDtos);
+		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
+	}
+
+	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {
+		for (ProductStatDto hisDto : insertStatHisDtos) {
+			hisDto.setCreateTime(hisDto.getUpdateTime());
+		}
 	}
 
 	private void doAssort(List<ProductDto> productDtos, List<ProductDto> insertDtos, List<ProductDto> updateDtos) {
@@ -121,7 +132,7 @@ public class PullJdListTimer {
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
 			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey(), null);
+					entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductDto dto : hasDtos) {
 				String key = dto.getShopId() + "-" + dto.getProductCode();
@@ -144,7 +155,7 @@ public class PullJdListTimer {
 	}
 
 	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos,
-			List<ProductStatDto> updateDtos) {
+			List<ProductStatDto> updateDtos, List<ProductStatDto> insertStatHisDtos) {
 		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
 		Map<String, ProductStatDto> dtoMap = new HashMap<String, ProductStatDto>();
 		for (ProductStatDto dto : productDtos) {
@@ -161,12 +172,15 @@ public class PullJdListTimer {
 			List<ProductStatDto> hasDtos = productStatService.getProductStatDtos(
 					new ArrayList<String>(entry.getValue()), entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
-			for (ProductStatDto dto : hasDtos) {
-				String key = dto.getShopId() + "-" + dto.getProductCode();
+			for (ProductStatDto oldDto : hasDtos) {
+				String key = oldDto.getShopId() + "-" + oldDto.getProductCode();
 				ProductStatDto newDto = dtoMap.get(key);
-				hasCodeSet.add(dto.getProductCode());
-				newDto.setId(dto.getId());
+				hasCodeSet.add(oldDto.getProductCode());
+				newDto.setId(oldDto.getId());
 				updateDtos.add(newDto);
+				if (isChange(oldDto, newDto)) {
+					insertStatHisDtos.add(newDto);
+				}
 			}
 			for (String code : entry.getValue()) {
 				if (hasCodeSet.contains(code)) {
@@ -175,6 +189,7 @@ public class PullJdListTimer {
 				String key = entry.getKey() + "-" + code;
 				ProductStatDto newDto = dtoMap.get(key);
 				insertDtos.add(newDto);
+				insertStatHisDtos.add(newDto);
 			}
 
 		}
@@ -190,19 +205,54 @@ public class PullJdListTimer {
 		productDto.setImgUrl(JSONUtils.getString(itemObject, "imageUrl"));
 		productDto.setProductName(JSONUtils.getString(itemObject, "wareName"));
 		productDto.setMarketPrice(JSONUtils.getFloat(itemObject, "martPrice"));
-		productDto.setProductUrl(String.format("http://item.jd.com/%.html", productDto.getProductCode()));
+		productDto.setProductUrl(String.format("http://item.jd.com/%s.html", productDto.getProductCode()));
 		productDto.setCreateTime(new Date());
 		productDto.setUpdateTime(productDto.getCreateTime());
+		ShopDto dto = ShopCacher.getInstance().insertIfAbsent("京东商城", "http://www.jd.com/", null);
+		if (dto != null) {
+			productDto.setShopId(dto.getId());
+		}
 
 		ProductStatDto statDto = new ProductStatDto();
 		statDto.setProductCode(productDto.getProductCode());
 		statDto.setProductName(productDto.getProductName());
+		statDto.setProductUrl(productDto.getProductUrl());
 		statDto.setProductPrice(JSONUtils.getFloat(itemObject, "jdPrice"));
+		statDto.setMarketPrice(productDto.getMarketPrice());
 		statDto.setCreateTime(productDto.getCreateTime());
 		statDto.setUpdateTime(productDto.getUpdateTime());
+		statDto.setShopId(1001);
 
 		productDtos.add(productDto);
 		productStatDtos.add(statDto);
+	}
+
+	public boolean isChange(ProductStatDto oldDto, ProductStatDto newDto) {
+		if (!isSameObject(oldDto.getProductPrice(), newDto.getProductPrice())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getStockNum(), newDto.getStockNum())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getCommentNum(), newDto.getCommentNum())) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isSameObject(Object lObject, Object rObject) {
+		if (lObject == null && rObject == null) {
+			return true;
+		} else if (lObject == null && rObject != null) {
+			return false;
+		}
+		return lObject.equals(rObject);
 	}
 
 	private String doRetryCall(TaskWritable task) {

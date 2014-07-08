@@ -76,4 +76,13 @@
 	     AND SHOP_ID=#{shopId}
 	   </if>
 	</select>
+	<select id="getProductDtosFromId" parameterType="map" resultMap="RM_ProductDto">
+	   SELECT ID,<include refid="ProductDto-coloumn-list"/>
+	   FROM T_PRODUCT
+	   WHERE ID > #{fromId}
+	   <if test="shopId !=null">
+	     AND SHOP_ID=#{shopId}
+	   </if>
+	   LIMIT #{limit}
+	</select>
 </mapper>

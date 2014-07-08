@@ -8,8 +8,9 @@ import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
 
 public interface BarCodeItemDao {
 	void batchInsert(List<BarCodeItemDto> dtoList);
+	
+	void batchUpdate(List<BarCodeItemDto> dtoList);
 
-	List<BarCodeItemDto> getBarCodeItemDtos(@Param(value = "barCodeList") List<String> barCodeList,
-			@Param(value = "shopCode") String shopCode);
+	List<BarCodeItemDto> getBarCodeItemDtos(List<String> barCodeList);
 
 }
