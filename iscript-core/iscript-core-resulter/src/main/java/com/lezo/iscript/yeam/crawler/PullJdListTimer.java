@@ -11,10 +11,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lezo.iscript.service.crawler.dto.ProductDto;
@@ -25,7 +26,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class PullJdListTimer {
-	private static Logger log = Logger.getLogger(PullJdListTimer.class);
+	private static Logger log = LoggerFactory.getLogger(PullJdListTimer.class);
 	private static volatile boolean running = false;
 	private static final JDCid2PList jdCid2PList = new JDCid2PList();
 	@Autowired
@@ -99,7 +100,10 @@ public class PullJdListTimer {
 		List<ProductStatDto> updateStatDtos = new ArrayList<ProductStatDto>();
 		doAssort(productDtos, insertDtos, updateDtos);
 		doStatAssort(productStatDtos, insertStatDtos, updateStatDtos);
-
+		productService.batchUpdateProductDtos(updateDtos);
+		productService.batchInsertProductDtos(insertDtos);
+		productStatService.batchUpdateProductStatDtos(updateStatDtos);
+		productStatService.batchInsertProductStatDtos(insertStatDtos);
 	}
 
 	private void doAssort(List<ProductDto> productDtos, List<ProductDto> insertDtos, List<ProductDto> updateDtos) {
