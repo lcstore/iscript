@@ -73,7 +73,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>iscript-core-rest</artifactId>
+			<artifactId>iscript-common-rest</artifactId>
 			<version>${project.version}</version>
 			<exclusions>
 				<exclusion>

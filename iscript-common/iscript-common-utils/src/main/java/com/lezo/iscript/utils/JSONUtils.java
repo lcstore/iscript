@@ -67,18 +67,25 @@ public class JSONUtils {
 
 	public static Integer getInteger(JSONObject jObj, String key) {
 		Object jObject = get(jObj, key);
-		if(jObject instanceof Double){
+		if (jObject == null) {
+			return null;
+		}
+		if (jObject instanceof Double) {
 			Double dValue = (Double) jObject;
 			return dValue.intValue();
-		}else if(jObject instanceof Float){
+		} else if (jObject instanceof Float) {
 			Float fValue = (Float) jObject;
 			return fValue.intValue();
 		}
 		return Integer.valueOf(jObject.toString());
 	}
+
 	public static Float getFloat(JSONObject jObj, String key) {
 		Object jObject = get(jObj, key);
-		if(jObject instanceof Double){
+		if (jObject == null) {
+			return null;
+		}
+		if (jObject instanceof Double) {
 			Double dValue = (Double) jObject;
 			return dValue.floatValue();
 		}

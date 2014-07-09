@@ -24,10 +24,11 @@ public class CodeParser {
 			return matcher.group(1);
 		}
 		// amazon,
-		oReg = Pattern.compile("dp/([0-9a-zA-Z]{8,})/");
+		oReg = Pattern.compile("(?<=dp/)[0-9a-zA-Z]{8,}|(?<=asin=)[0-9a-zA-Z]{8,}");
 		matcher = oReg.matcher(productUrl);
 		if (matcher.find()) {
-			return matcher.group(1);
+			String code = matcher.group();
+			return code != null ? code.toUpperCase() : null;
 		}
 		// yhd
 		oReg = Pattern.compile("item/([0-9a-zA-Z]{6,})");

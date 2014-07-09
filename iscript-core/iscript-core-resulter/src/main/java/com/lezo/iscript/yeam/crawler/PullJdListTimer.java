@@ -1,4 +1,4 @@
-﻿package com.lezo.iscript.yeam.crawler;
+package com.lezo.iscript.yeam.crawler;
 
 import java.util.ArrayList;
 import java.util.Date;
