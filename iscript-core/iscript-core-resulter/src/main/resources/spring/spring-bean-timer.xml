@@ -10,18 +10,22 @@
 	</bean>
 	<bean id="HuihuiSimilarSearcher" class="com.lezo.iscript.yeam.crawler.HuihuiSimilarSearcher">
 	</bean>
+	<bean id="BarCodeSimilarSearcher" class="com.lezo.iscript.yeam.crawler.BarCodeSimilarSearcher">
+	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="3" />
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
- 	<task:scheduled-tasks scheduler="scheduler">
+	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="pullJdListTimer" method="run"
 			cron="0 0 0/2 * * ?" fixed-delay="60000" />
 		<task:scheduled ref="wccSimilarSearchTimer" method="run"
-			fixed-delay="300000" />
+			cron="0 0 0/5 * * ?" fixed-delay="60000" />
 		<task:scheduled ref="HuihuiSimilarSearcher" method="run"
-			fixed-delay="300000" />
+			cron="0 0 0/5 * * ?" fixed-delay="60000" />
+		<task:scheduled ref="BarCodeSimilarSearcher" method="run"
+			cron="0 0 0/5 * * ?" fixed-delay="60000" />
 	</task:scheduled-tasks>
 </beans>

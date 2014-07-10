@@ -1,6 +1,7 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,6 +49,14 @@ public class BarCodeItemServiceImpl implements BarCodeItemService {
 
 	public void setBarCodeItemDao(BarCodeItemDao barCodeItemDao) {
 		this.barCodeItemDao = barCodeItemDao;
+	}
+
+	@Override
+	public List<BarCodeItemDto> getBarCodeItemDtoFromId(Long fromId, int limit, String cateName) {
+		if (limit < 1) {
+			return Collections.emptyList();
+		}
+		return barCodeItemDao.getBarCodeItemDtoFromId(fromId, limit, cateName);
 	}
 
 }

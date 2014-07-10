@@ -21,6 +21,7 @@
 	<context:component-scan base-package="com.lezo.iscript.service.crawler.dao"></context:component-scan>
 	<context:component-scan base-package="com.lezo.iscript.service.crawler.service"></context:component-scan>
 	<context:component-scan base-package="com.lezo.iscript.service.crawler.service"></context:component-scan>
+	<context:component-scan base-package="com.lezo.iscript.yeam.crawler"></context:component-scan>
 
 	<!-- 完成请求和注解POJO的映射 -->
 	<bean

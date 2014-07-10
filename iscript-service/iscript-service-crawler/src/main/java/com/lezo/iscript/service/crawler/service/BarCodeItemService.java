@@ -11,4 +11,6 @@ public interface BarCodeItemService {
 	void batchUpdateBarCodeItemDtos(List<BarCodeItemDto> dtoList);
 
 	List<BarCodeItemDto> getBarCodeItemDtos(List<String> barCodeList);
+
+	List<BarCodeItemDto> getBarCodeItemDtoFromId(Long fromId, int limit, String cateName);
 }

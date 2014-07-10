@@ -3,6 +3,7 @@ package com.lezo.iscript.yeam.crawler;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,8 @@ public class WccSimilarSearchTimer {
 	private ProductService productService;
 	@Autowired
 	private SimilarService similarService;
+	@Autowired
+	private SimilarDtoStorageCaller similarDtoStorageCaller;
 
 	public void run() {
 		if (running) {
@@ -122,7 +125,7 @@ public class WccSimilarSearchTimer {
 			}
 		}
 		addSimilarCode(similarDtos, similarCode);
-		handleDtos(similarDtos);
+		similarDtoStorageCaller.handleDtos(similarDtos);
 
 	}
 
@@ -130,76 +133,6 @@ public class WccSimilarSearchTimer {
 		for (SimilarDto dto : similarDtos) {
 			dto.setSimilarCode(similarCode);
 		}
-	}
-
-	private void handleDtos(List<SimilarDto> similarDtos) {
-		List<SimilarDto> insertDtos = new ArrayList<SimilarDto>();
-		List<SimilarDto> updateDtos = new ArrayList<SimilarDto>();
-		doAssort(similarDtos, insertDtos, updateDtos);
-		similarService.batchInsertSimilarDtos(insertDtos);
-		similarService.batchUpdateSimilarDtos(updateDtos);
-		log.info("save simialer.insert:" + insertDtos.size() + ",update:" + updateDtos.size());
-	}
-
-	private void doAssort(List<SimilarDto> similarDtos, List<SimilarDto> insertDtos, List<SimilarDto> updateDtos) {
-		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
-		Map<String, SimilarDto> dtoMap = new HashMap<String, SimilarDto>();
-		Map<Long, Set<String>> similarCodeKeyMap = new HashMap<Long, Set<String>>();
-		for (SimilarDto dto : similarDtos) {
-			String key = dto.getShopId() + "-" + dto.getProductCode();
-			dtoMap.put(key, dto);
-			Set<String> codeSet = shopMap.get(dto.getShopId());
-			if (codeSet == null) {
-				codeSet = new HashSet<String>();
-				shopMap.put(dto.getShopId(), codeSet);
-			}
-			Set<String> keySet = similarCodeKeyMap.get(dto.getSimilarCode());
-			if (keySet == null) {
-				keySet = new HashSet<String>();
-				similarCodeKeyMap.put(dto.getSimilarCode(), keySet);
-			}
-			keySet.add(key);
-			codeSet.add(dto.getProductCode());
-		}
-		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<SimilarDto> hasDtos = similarService.getSimilarDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey());
-			Set<String> hasCodeSet = new HashSet<String>();
-			Map<Long, Long> similarCodeMap = new HashMap<Long, Long>();
-			for (SimilarDto oldDto : hasDtos) {
-				String key = oldDto.getShopId() + "-" + oldDto.getProductCode();
-				SimilarDto newDto = dtoMap.get(key);
-				hasCodeSet.add(oldDto.getProductCode());
-				newDto.setId(oldDto.getId());
-				// add similar map
-				if (oldDto.getSimilarCode() != null && !newDto.getSimilarCode().equals(oldDto.getSimilarCode())) {
-					similarCodeMap.put(newDto.getSimilarCode(), oldDto.getSimilarCode());
-					newDto.setSimilarCode(oldDto.getSimilarCode());
-				}
-				updateDtos.add(newDto);
-			}
-			for (String code : entry.getValue()) {
-				if (hasCodeSet.contains(code)) {
-					continue;
-				}
-				String key = entry.getKey() + "-" + code;
-				SimilarDto newDto = dtoMap.get(key);
-				insertDtos.add(newDto);
-			}
-			// update dto similarCode
-			for (Entry<Long, Long> sEntry : similarCodeMap.entrySet()) {
-				Set<String> keySet = similarCodeKeyMap.get(sEntry.getKey());
-				if (keySet == null) {
-					continue;
-				}
-				for (String key : keySet) {
-					SimilarDto dto = dtoMap.get(key);
-					dto.setSimilarCode(sEntry.getValue());
-				}
-			}
-
-		}
-
 	}
 
 	private void handleItem(JSONObject itemObject, List<SimilarDto> similarDtos) throws Exception {
@@ -229,6 +162,8 @@ public class WccSimilarSearchTimer {
 			dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
 			dto.setImgUrl(JSONUtils.getString(mObject, "image"));
 			dto.setSource("wcc");
+			dto.setCreateTime(new Date());
+			dto.setUpdateTime(dto.getCreateTime());
 			similarDtos.add(dto);
 		}
 	}

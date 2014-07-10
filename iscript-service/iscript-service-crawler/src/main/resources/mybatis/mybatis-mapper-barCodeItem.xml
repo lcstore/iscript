@@ -4,16 +4,16 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.BarCodeItemDao">
 	<resultMap type="BarCodeItemDto" id="RM_BarCodeItemDto">
-		<result column="ID" property="id"/>
-		<result column="BAR_CODE" property="barCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="PRODUCT_BRAND" property="productBrand"/>
-		<result column="PRODUCT_MODEL" property="productModel"/>
-		<result column="PRODUCT_ATTR" property="productAttr"/>
-		<result column="IMG_URL" property="imgUrl"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="BAR_CODE" property="barCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="PRODUCT_URL" property="productUrl" />
+		<result column="PRODUCT_BRAND" property="productBrand" />
+		<result column="PRODUCT_MODEL" property="productModel" />
+		<result column="PRODUCT_ATTR" property="productAttr" />
+		<result column="IMG_URL" property="imgUrl" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="BarCodeItemDto-coloumn-list">
 		BAR_CODE
@@ -64,5 +64,15 @@
 				1 = 0
 			</if>
 		</where>
+	</select>
+	<select id="getBarCodeItemDtoFromId" parameterType="map"
+		resultMap="RM_BarCodeItemDto">
+		SELECT ID,
+		<include refid="BarCodeItemDto-coloumn-list" />
+		FROM T_BARCODE_ITEM
+		WHERE ID > #{fromId}
+		<if test="cateName !=null">
+		</if>
+		LIMIT #{limit}
 	</select>
 </mapper>
