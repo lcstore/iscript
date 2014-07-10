@@ -11,5 +11,5 @@ deploy.sh
 *.exe
 *.o
 *.so
-
+jdbc.properties
 /iscript-core-client/src/test/java/com/lezo/iscript/yeam/ConfigParserTest.java
