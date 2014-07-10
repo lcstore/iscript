@@ -16,4 +16,5 @@ public interface BarCodeItemDao {
 	List<BarCodeItemDto> getBarCodeItemDtoFromId(@Param(value = "fromId") Long fromId,
 			@Param(value = "limit") int limit, @Param(value = "cateName") String cateName);
 
+	void deleteFromId(List<Long> idList);
 }

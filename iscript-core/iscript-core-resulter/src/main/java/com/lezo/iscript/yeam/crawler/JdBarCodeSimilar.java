@@ -53,6 +53,9 @@ public class JdBarCodeSimilar implements ConfigParser {
 						proxyList = new ArrayList<Proxy>();
 						proxyList.add(createProxy("122.96.59.102", 843));
 						proxyList.add(createProxy("89.46.101.122", 8089));
+						proxyList.add(createProxy("98.143.148.82", 7808));
+						proxyList.add(createProxy("5.135.58.225", 3127));
+						proxyList.add(createProxy("23.89.198.161", 7808));
 					}
 					Random rand = new Random();
 					int index = rand.nextInt(proxyList.size());

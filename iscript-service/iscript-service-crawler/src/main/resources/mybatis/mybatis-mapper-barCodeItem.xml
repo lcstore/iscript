@@ -54,13 +54,13 @@
 		<include refid="BarCodeItemDto-coloumn-list" />
 		FROM T_BARCODE_ITEM
 		<where>
-			<if test="barCodeList.isEmpty()==false">
-				<foreach collection="barCodeList" item="barCode" open="AND BAR_CODE IN("
+			<if test="list.isEmpty()==false">
+				<foreach collection="list" item="barCode" open="AND BAR_CODE IN("
 					close=")" separator=",">
 					#{barCode}
 				</foreach>
 			</if>
-			<if test="barCodeList.isEmpty()">
+			<if test="list.isEmpty()">
 				1 = 0
 			</if>
 		</where>
@@ -75,4 +75,16 @@
 		</if>
 		LIMIT #{limit}
 	</select>
+	<delete id="deleteFromId" >
+	    DELETE FROM T_BARCODE_ITEM
+	    WHERE 1=1
+	    <if test="!list.isEmpty()">
+	      <foreach collection="list" item="id" open="AND ID IN(" close=")" separator=",">
+	         #{id}
+	      </foreach>
+	    </if>
+	    <if test="list.isEmpty()">
+	        AND 1=0
+	    </if>
+	</delete>
 </mapper>
