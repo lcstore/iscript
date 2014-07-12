@@ -83,7 +83,7 @@ public class SimpleHttpBrowser {
 		supportedSchemes.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		supportedSchemes.register(new Scheme("https", 443, PlainSocketFactory.getSocketFactory()));
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		return tsconnectionManager;
 	}
 

@@ -2,49 +2,46 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.SimilarDao">
-	<resultMap type="SimilarDto" id="RM_SimilarDto">
+<mapper namespace="cn.lecode.crawler.dao.NewsListDao">
+	<resultMap type="NewsListDto" id="RM_NewsListDto">
 		<result column="ID" property="id"/>
-		<result column="SIMILAR_CODE" property="similarCode"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="SOURCE" property="source"/>
+		<result column="SITE_HOST" property="siteHost"/>
+		<result column="NEWS_TITLE" property="newsTitle"/>
+		<result column="NEWS_URL" property="newsUrl"/>
+		<result column="NEWS_SORT" property="newsSort"/>
+		<result column="NEWS_TYPE" property="newsType"/>
+		<result column="PUBLISH_TIME" property="publishTime"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="SimilarDto-coloumn-list">
-		SIMILAR_CODE
-		,SHOP_ID
-		,PRODUCT_CODE
-		,PRODUCT_NAME
-		,PRODUCT_URL
-		,PRODUCT_PRICE
-		,SOURCE
+	<sql id="NewsListDto-coloumn-list">
+		SITE_HOST
+		,NEWS_TITLE
+		,NEWS_URL
+		,NEWS_SORT
+		,NEWS_TYPE
+		,PUBLISH_TIME
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="SimilarDto">
-		INSERT INTO T_SIMILAR(
-		<include refid="SimilarDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="NewsListDto">
+		INSERT INTO T_NEWS_LIST(
+		<include refid="NewsListDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.similarCode},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.source},#{item.createTime},#{item.updateTime})
+			(#{item.siteHost},#{item.newsTitle},#{item.newsUrl},#{item.newsSort},#{item.newsType},#{item.publishTime},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="SimilarDto">
-		UPDATE T_SIMILAR SET
-		SIMILAR_CODE=#{similarCode},
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
-		PRODUCT_NAME=#{productName},
-		PRODUCT_URL=#{productUrl},
-		PRODUCT_PRICE=#{productPrice},
-		SOURCE=#{source},
+	<update id="updateOne" parameterType="NewsListDto">
+		UPDATE T_NEWS_LIST SET
+		SITE_HOST=#{siteHost},
+		NEWS_TITLE=#{newsTitle},
+		NEWS_URL=#{newsUrl},
+		NEWS_SORT=#{newsSort},
+		NEWS_TYPE=#{newsType},
+		PUBLISH_TIME=#{publishTime},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}

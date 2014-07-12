@@ -15,6 +15,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -79,7 +82,8 @@ public class HttpClientUtils {
 		addHttpsTrustStrategy(supportedSchemes);
 		// addHttpsTrustManager(supportedSchemes);
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
+		tsconnectionManager.setDefaultMaxPerRoute(HttpParamsConstant.MAX_ROUTE_CONNECTIONS);
 		return tsconnectionManager;
 	}
 
@@ -147,8 +151,8 @@ public class HttpClientUtils {
 		// CookiePolicy.BROWSER_COMPATIBILITY);
 
 		// set timeout
-		HttpConnectionParams.setConnectionTimeout(_params, HttpParamsConstant.DEFAULT_TIMEOUT);
-		HttpConnectionParams.setSoTimeout(_params, HttpParamsConstant.DEFAULT_TIMEOUT);
+		HttpConnectionParams.setConnectionTimeout(_params, HttpParamsConstant.CONNECT_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(_params, HttpParamsConstant.READ_TIMEOUT);
 		return _params;
 	}
 

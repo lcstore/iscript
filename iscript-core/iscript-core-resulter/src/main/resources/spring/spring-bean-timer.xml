@@ -18,7 +18,7 @@
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<task:scheduled-tasks scheduler="scheduler">
+	<!-- <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="pullJdListTimer" method="run"
 			cron="0 0 0/2 * * ?" fixed-delay="60000" />
 		<task:scheduled ref="wccSimilarSearchTimer" method="run"
@@ -27,5 +27,5 @@
 			cron="0 0 0/5 * * ?" fixed-delay="60000" />
 		<task:scheduled ref="BarCodeSimilarSearcher" method="run"
 			cron="0 0 0/5 * * ?" fixed-delay="60000" />
-	</task:scheduled-tasks>
+	</task:scheduled-tasks> -->
 </beans>

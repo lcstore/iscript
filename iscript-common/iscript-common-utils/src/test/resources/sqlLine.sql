@@ -1,10 +1,9 @@
-  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SIMILAR_CODE` bigint(20) NOT NULL COMMENT '相似编码,第一批的stamp',
-  `SHOP_ID` int NOT NULL COMMENT '商店ID',
-  `PRODUCT_CODE` varchar(50)  NOT NULL COMMENT '商品编号',
-  `PRODUCT_NAME` varchar(1000) COMMENT '商品名称',
-  `PRODUCT_URL` varchar(1000) COMMENT '商品链接',
-  `PRODUCT_PRICE` float(12,2) COMMENT '当前价',
-  `SOURCE` varchar(2000) COMMENT '来源，JSON存多个来源',
+ `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `SITE_HOST` varchar(50) not null COMMENT '网站域名',
+  `NEWS_TITLE` varchar(1000) COMMENT '新闻标题',
+  `NEWS_URL` varchar(1000) COMMENT '新闻链接',
+  `NEWS_SORT` varchar(100) COMMENT '分类名称',
+  `NEWS_TYPE` tinyint default '0'  COMMENT '新闻类型',
+  `PUBLISH_TIME` datetime COMMENT '发布时间',
   `CREATE_TIME` timestamp NULL  COMMENT '创建时间',
-  `UPDATE_TIME` timestamp 
+  `UPDATE_TIME` timestamp NOT

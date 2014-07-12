@@ -72,7 +72,7 @@ public class LoginAnalyer {
 	@Test
 	public void test() throws Exception {
 		DefaultHttpClient client = createHttpClient();
-		 addProxy(client);
+		addProxy(client);
 		HttpContext cx = createHttpContext();
 		CookieStore cxStore = (CookieStore) cx.getAttribute(ClientContext.COOKIE_STORE);
 		String passUrl = "http://passport.jd.com/uc/login?ltype=logout";
@@ -249,7 +249,7 @@ public class LoginAnalyer {
 		}
 
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		return tsconnectionManager;
 	}
 

@@ -1,10 +1,6 @@
 package com.lezo.iscript.yeam.crawler;
 
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class BarCodeUtils {
 	private static final int BAR_CODE_LEN = 13;// EAN-13

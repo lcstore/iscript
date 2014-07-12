@@ -36,6 +36,9 @@ public class LatestSohuNews implements ConfigParser {
 		get.addHeader("Accept", "text/javascript, application/javascript, */*");
 
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
+		int index = html.indexOf("{");
+		index = index < 0 ? 0 : index;
+		html = html.substring(index);
 		JSONObject rsObject = new JSONObject();
 		rsObject.put("rs", html);
 		task.getArgs().remove("pwd");

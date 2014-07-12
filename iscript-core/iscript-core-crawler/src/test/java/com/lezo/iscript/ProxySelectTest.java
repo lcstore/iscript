@@ -53,15 +53,18 @@ import com.lezo.iscript.crawler.http.UserAgentManager;
 
 public class ProxySelectTest {
 	private Logger log = LoggerFactory.getLogger(getClass());
+
 	@Test
 	public void test() throws Exception, IOException {
-//		DefaultHttpClient client = createHttpClient();
+		// DefaultHttpClient client = createHttpClient();
 		DefaultHttpClient client = new DefaultHttpClient();
-//		HttpUriRequest request = new HttpGet("http://item.jd.com/856850.html");
-//		HttpUriRequest request = new HttpGet("http://www.blogjava.net/yidinghe/archive/2012/11/10/391147.html");
+		// HttpUriRequest request = new
+		// HttpGet("http://item.jd.com/856850.html");
+		// HttpUriRequest request = new
+		// HttpGet("http://www.blogjava.net/yidinghe/archive/2012/11/10/391147.html");
 		HttpUriRequest request = new HttpGet("http://42.120.61.21/yidinghe/archive/2012/11/10/391147.html");
 		request.addHeader("Host", "www.blogjava.net");
-		HttpHost virtualHost=new HttpHost("www.blogjava.net");
+		HttpHost virtualHost = new HttpHost("www.blogjava.net");
 		request.getParams().setParameter(ClientPNames.VIRTUAL_HOST, virtualHost);
 		SchemeRegistry schreg = client.getConnectionManager().getSchemeRegistry();
 		ProxySelector prosel = new ProxySelector() {
@@ -73,8 +76,8 @@ public class ProxySelectTest {
 					proxyList = new ArrayList<Proxy>();
 					String host = "10.101.0.71";
 					int port = 10003;
-					host="122.96.59.102";
-					port=843;
+					host = "122.96.59.102";
+					port = 843;
 					InetAddress addr = null;
 					try {
 						addr = InetAddress.getByName(host);
@@ -128,7 +131,7 @@ public class ProxySelectTest {
 		addHttpsTrustStrategy(supportedSchemes);
 		// addHttpsTrustManager(supportedSchemes);
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		return tsconnectionManager;
 	}
 

@@ -152,7 +152,7 @@ public class HttpBase {
 		}
 
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		return tsconnectionManager;
 	}
 

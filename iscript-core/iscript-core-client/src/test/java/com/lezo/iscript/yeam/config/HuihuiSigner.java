@@ -194,7 +194,7 @@ public class HuihuiSigner implements ConfigParser {
 		addHttpsTrustStrategy(supportedSchemes);
 		// addHttpsTrustManager(supportedSchemes);
 		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.CCM_MAX_TOTAL);
+		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		return tsconnectionManager;
 	}
 
