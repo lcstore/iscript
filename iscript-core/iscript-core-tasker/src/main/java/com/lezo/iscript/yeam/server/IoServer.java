@@ -13,6 +13,9 @@ import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactor
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
+import com.lezo.iscript.yeam.server.event.RequestWorker;
+import com.lezo.iscript.yeam.server.event.RequestProceser;
+
 public class IoServer extends IoHandlerAdapter {
 	private IoAcceptor acceptor;
 
@@ -26,10 +29,10 @@ public class IoServer extends IoHandlerAdapter {
 		acceptor.bind(new InetSocketAddress(port));
 	}
 
-	@Override	
+	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		System.out.println("Received:" + message);
-		session.write("Send back to client." + message);
+		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 	}
 
 	@Override

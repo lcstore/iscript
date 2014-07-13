@@ -1,6 +1,12 @@
 package com.lezo.iscript.yeam.io;
 
-public class IoRespone {
+import java.io.Serializable;
+
+public class IoRespone implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6135902219852876965L;
 	private int type;
 	private Object data;
 

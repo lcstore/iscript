@@ -3,14 +3,14 @@ package com.lezo.iscript.yeam.server.event;
 import org.apache.mina.core.session.IoSession;
 
 import com.lezo.iscript.yeam.server.event.handler.RequestEventHandler;
-import com.lezo.iscript.yeam.server.event.handler.RequstEventDecider;
+import com.lezo.iscript.yeam.server.event.handler.RequestEventHandlerChain;
 
-public class RequestEventWorker implements Runnable {
-	private RequestEventHandler firstHandler = new RequstEventDecider();
+public class RequestWorker implements Runnable {
+	private RequestEventHandler firstHandler = RequestEventHandlerChain.getDefaultChain().first;	
 	private IoSession session;
 	private Object message;
 
-	public RequestEventWorker(IoSession session, Object message) {
+	public RequestWorker(IoSession session, Object message) {
 		super();
 		this.session = session;
 		this.message = message;

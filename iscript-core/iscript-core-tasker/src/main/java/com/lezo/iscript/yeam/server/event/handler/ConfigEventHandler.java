@@ -9,20 +9,22 @@ import org.apache.mina.core.future.WriteFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.yeam.ClientConstant;
+import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.server.RequestConstant;
 import com.lezo.iscript.yeam.server.event.RequestEvent;
 import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
-public class ConfigEventHandler implements RequestEventHandler {
+public class ConfigEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(ConfigEventHandler.class);
-	private RequestEventHandler next = new TaskEventHandler();
+
+	public ConfigEventHandler(RequestEventHandler nextEventHandler) {
+		super(nextEventHandler);
+	}
 
 	@Override
 	public void handle(RequestEvent event, RequestEventHandler nextHandler) {
-		if (RequestEvent.TYPE_CONFIG == event.getType()) {
+		if (IoConstant.EVENT_TYPE_CONFIG == event.getType()) {
 			// TODO: sent new config to client
 			doHandle(event);
 		} else {
@@ -44,17 +46,12 @@ public class ConfigEventHandler implements RequestEventHandler {
 		}
 		IoRespone ioRespone = new IoRespone();
 		ioRespone.setType(event.getType());
-		ioRespone.setData(configStamp);
+		ioRespone.setData(configWritables);
 		WriteFuture writeFuture = event.getSession().write(ioRespone);
-		if (!writeFuture.awaitUninterruptibly(RequestConstant.WRITE_TIMEOUT)) {
+		if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {
 			String msg = "fail to update configs:" + configWritables.size();
 			logger.warn(msg, writeFuture.getException());
 		}
-	}
-
-	@Override
-	public RequestEventHandler getNextHandler() {
-		return next;
 	}
 
 }

@@ -2,11 +2,10 @@ package com.lezo.iscript.yeam.server.event;
 
 import org.apache.mina.core.session.IoSession;
 
+import com.lezo.iscript.yeam.io.IoConstant;
+
 public class RequestEvent {
-	public static final int TYPE_NONE = 0;
-	public static final int TYPE_CONFIG = 1;
-	public static final int TYPE_TASK = 2;
-	private int type = TYPE_NONE;
+	private int type = IoConstant.EVENT_TYPE_NONE;
 	private IoSession session;
 	private Object message;
 
