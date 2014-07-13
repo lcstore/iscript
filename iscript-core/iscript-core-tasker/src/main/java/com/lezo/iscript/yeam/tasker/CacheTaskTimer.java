@@ -20,6 +20,7 @@ import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.service.crawler.service.TypeConfigService;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
+import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class CacheTaskTimer {
@@ -63,7 +64,7 @@ public class CacheTaskTimer {
 	}
 
 	private void cacheTasks(TypeConfigDto typeConfigDto, int level) {
-		Queue<TaskWritable> queue = TaskCacher.getInstance().getQueue(typeConfigDto.getType());
+		TaskQueue queue = TaskCacher.getInstance().getQueue(typeConfigDto.getType());
 		int hasSize = queue.size();
 		if (hasSize > typeConfigDto.getMinSize()) {
 			return;
@@ -81,7 +82,7 @@ public class CacheTaskTimer {
 			List<Long> taskIds = new ArrayList<Long>(taskList.size());
 			for (TaskPriorityDto dto : taskList) {
 				TaskWritable task = getTaskWritable(dto);
-				if (queue.offer(task)) {
+				if (queue.offer(task, dto.getLevel())) {
 					taskIds.add(dto.getTaskId());
 				}
 			}

@@ -1,14 +1,10 @@
 package com.lezo.iscript.yeam.tasker.cache;
 
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class TaskCacher {
 	private static final TaskCacher INSTANCE = new TaskCacher();
-	private ConcurrentHashMap<String, Queue<TaskWritable>> taskQueueMap = new ConcurrentHashMap<String, Queue<TaskWritable>>();
+	private ConcurrentHashMap<String, TaskQueue> taskQueueMap = new ConcurrentHashMap<String, TaskQueue>();
 
 	private TaskCacher() {
 	}
@@ -17,13 +13,13 @@ public class TaskCacher {
 		return INSTANCE;
 	}
 
-	public Queue<TaskWritable> getQueue(String type) {
-		Queue<TaskWritable> queue = taskQueueMap.get(type);
+	public TaskQueue getQueue(String type) {
+		TaskQueue queue = taskQueueMap.get(type);
 		if (queue == null) {
 			synchronized (taskQueueMap) {
 				queue = taskQueueMap.get(type);
 				if (queue == null) {
-					queue = new LinkedBlockingQueue<TaskWritable>();
+					queue = new TaskQueue(type);
 					taskQueueMap.put(type, queue);
 				}
 			}
@@ -31,7 +27,7 @@ public class TaskCacher {
 		return queue;
 	}
 
-	public ConcurrentHashMap<String, Queue<TaskWritable>> getTypeQueueMap() {
+	public ConcurrentHashMap<String, TaskQueue> getTypeQueueMap() {
 		return taskQueueMap;
 	}
 }

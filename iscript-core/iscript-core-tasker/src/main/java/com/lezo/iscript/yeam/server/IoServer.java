@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.simple;
+package com.lezo.iscript.yeam.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
