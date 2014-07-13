@@ -1,8 +1,7 @@
 package com.lezo.iscript.yeam.storage;
 
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -10,28 +9,6 @@ import org.slf4j.Logger;
 public class StorageTimeTrigger implements StorageTrigger {
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(StorageTimeTrigger.class);
 	private ConcurrentHashMap<Class<?>, StorageListener<?>> listenerMap = new ConcurrentHashMap<Class<?>, StorageListener<?>>();
-	private Timer trigger;
-
-	public StorageTimeTrigger(long delay, long period) {
-		super();
-		this.trigger = new Timer();
-		this.trigger.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				doTrigger();
-
-			}
-		}, delay, period);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> StorageListener<T> getListener(Class<T> dataClass) {
-		StorageListener<?> listener = listenerMap.get(dataClass);
-		if (listener == null) {
-			return null;
-		}
-		return (StorageListener<T>) listener;
-	}
 
 	@Override
 	public void addListener(Class<?> dataClass, StorageListener<?> listener) {
@@ -40,11 +17,24 @@ public class StorageTimeTrigger implements StorageTrigger {
 
 	@Override
 	public void doTrigger() {
+		logger.info("start to trigger listener:" + listenerMap.size());
+		long start = System.currentTimeMillis();
 		for (Entry<Class<?>, StorageListener<?>> entry : listenerMap.entrySet()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("trigger listener:" + entry.getKey().getName());
 			}
 			entry.getValue().doStorage();
+		}
+		long cost = System.currentTimeMillis() - start;
+		logger.info("finish to trigger listener:" + listenerMap.size() + ",cost:" + cost);
+	}
+
+	public void setListeners(List<StorageListener<?>> listeners) {
+		if (listeners == null) {
+			return;
+		}
+		for (StorageListener<?> storageListener : listeners) {
+			addListener(storageListener.getClass(), storageListener);
 		}
 	}
 }

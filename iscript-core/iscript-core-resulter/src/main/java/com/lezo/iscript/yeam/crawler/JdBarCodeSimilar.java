@@ -1,96 +1,26 @@
 package com.lezo.iscript.yeam.crawler;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.URI;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.routing.HttpRoutePlanner;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.http.HttpDriver;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class JdBarCodeSimilar implements ConfigParser {
 	private static Logger log = Logger.getLogger(JdBarCodeSimilar.class);
-	private DefaultHttpClient client;
-	private Scriptable scope;
-
-	public JdBarCodeSimilar() {
-		try {
-			ScriptableObject parent = CommonContext.getCommonScriptable();
-			scope = Context.enter().initStandardObjects(parent);
-			client = HttpClientUtils.createHttpClient();
-			ProxySelector prosel = new ProxySelector() {
-				private List<Proxy> proxyList;
-
-				@Override
-				public List<Proxy> select(URI uri) {
-					if (proxyList == null) {
-						proxyList = new ArrayList<Proxy>();
-						proxyList.add(createProxy("122.96.59.102", 843));
-						proxyList.add(createProxy("89.46.101.122", 8089));
-						proxyList.add(createProxy("98.143.148.82", 7808));
-						proxyList.add(createProxy("5.135.58.225", 3127));
-						proxyList.add(createProxy("23.89.198.161", 7808));
-					}
-					Random rand = new Random();
-					int index = rand.nextInt(proxyList.size());
-					List<Proxy> select = new ArrayList<Proxy>();
-					select.add(proxyList.get(index));
-					return select;
-				}
-
-				private Proxy createProxy(String host, int port) {
-					InetAddress addr = null;
-					try {
-						addr = InetAddress.getByName(host);
-					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					SocketAddress sa = new InetSocketAddress(addr, port);
-					return new Proxy(Proxy.Type.HTTP, sa);
-				}
-
-				@Override
-				public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-					// TODO Auto-generated method stub
-
-				}
-			};
-			SchemeRegistry schreg = client.getConnectionManager().getSchemeRegistry();
-			HttpRoutePlanner routePlanner = new ProxySelectorRoutePlanner(schreg, prosel);
-			client.setRoutePlanner(routePlanner);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			Context.exit();
-		}
-	}
+	private DefaultHttpClient client = HttpDriver.getInstance().getClient();
 
 	public String getName() {
 		return "jd-barCode";

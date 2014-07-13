@@ -1,7 +1,6 @@
 package com.lezo.iscript.yeam.storage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class StorageBuffer<E> {
+	private final Object lock = new Object();
 	private List<E> dataList;
 	private int capacity;
 
@@ -22,7 +22,7 @@ public class StorageBuffer<E> {
 		if (data == null) {
 			return;
 		}
-		synchronized (dataList) {
+		synchronized (lock) {
 			dataList.add(data);
 		}
 	}
@@ -31,24 +31,26 @@ public class StorageBuffer<E> {
 		if (CollectionUtils.isEmpty(dataCollection)) {
 			return;
 		}
-		synchronized (dataList) {
+		synchronized (lock) {
 			for (E data : dataCollection) {
 				dataList.add(data);
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<E> moveTo() {
 		List<E> copyList = Collections.emptyList();
 		if (CollectionUtils.isEmpty(dataList)) {
 			return copyList;
 		}
-		synchronized (dataList) {
+		synchronized (lock) {
 			if (!CollectionUtils.isEmpty(dataList)) {
-				copyList = (List<E>) Arrays.asList(new Object[dataList.size()]);
-				Collections.copy(dataList, copyList);
-				dataList.clear();
+				// copyList = (List<E>) Arrays.asList(new
+				// Object[dataList.size()]);
+				// Collections.copy(dataList, copyList);
+				// dataList.clear();
+				copyList = dataList;
+				dataList = new ArrayList<E>(capacity);
 			}
 		}
 		return copyList;

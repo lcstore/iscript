@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,12 +34,22 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class LsdBarCodeGetter implements ConfigParser {
 	public static final int BUFFER_SIZE = 200;
 	private static Logger log = Logger.getLogger(LsdBarCodeGetter.class);
-	private HttpDriver httpDriver = new HttpDriver();
+	private HttpDriver httpDriver = HttpDriver.getInstance();
 	private List<BarCodeItemDto> dtoList = new ArrayList<BarCodeItemDto>(200);
 	private BarCodeItemService barCodeItemService;
 	private ExecutorService dbCaller = Executors.newFixedThreadPool(1);
+	private Timer saveTimer;
 
 	public LsdBarCodeGetter() {
+		saveTimer = new Timer(true);
+		saveTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				log.info("@@start to save....");
+				addSaver();
+				log.info("@@end to save....");
+			}
+		}, 60 * 1000);
 	}
 
 	public String getName() {
@@ -198,13 +210,18 @@ public class LsdBarCodeGetter implements ConfigParser {
 		private void addProducts(Document dom) {
 			Elements oUrlAs = dom.select("a[target][href*=goods-]");
 			log.info("Get " + oUrlAs.size() + " product from list:" + this.url);
+			Set<String> urlSet = new HashSet<String>();
 			if (!oUrlAs.isEmpty()) {
 				for (Element oUrlEle : oUrlAs) {
 					String pUrl = oUrlEle.absUrl("href");
+					if (urlSet.contains(pUrl)) {
+						continue;
+					}
+					urlSet.add(pUrl);
 					httpDriver.execute(new ProductGetter(pUrl));
 				}
 			}
-			log.info("add " + oUrlAs.size() + " product,and Queue size:" + httpDriver.getTaskQueue().size());
+			log.info("add " + urlSet.size() + " product,and Queue size:" + httpDriver.getTaskQueue().size());
 
 		}
 

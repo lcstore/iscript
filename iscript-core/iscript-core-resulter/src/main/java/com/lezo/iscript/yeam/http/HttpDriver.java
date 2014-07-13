@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 
 public class HttpDriver {
+	private static final HttpDriver INSTANCE = new HttpDriver();
 	private int coreSize = 3;
 	private int maxSize = 5;
 	private DefaultHttpClient client;
@@ -35,11 +36,15 @@ public class HttpDriver {
 	private ExecutorService executor = new ThreadPoolExecutor(coreSize, maxSize, 60000L, TimeUnit.MILLISECONDS,
 			taskQueue);
 
-	public HttpDriver() {
+	private HttpDriver() {
 		client = HttpClientUtils.createHttpClient();
 		SchemeRegistry schreg = client.getConnectionManager().getSchemeRegistry();
 		HttpRoutePlanner routePlanner = new ProxySelectorRoutePlanner(schreg, new SimpleProxySelector(getProxyList()));
 		client.setRoutePlanner(routePlanner);
+	}
+
+	public static HttpDriver getInstance() {
+		return INSTANCE;
 	}
 
 	class SimpleProxySelector extends ProxySelector {
@@ -55,15 +60,13 @@ public class HttpDriver {
 		@Override
 		public List<Proxy> select(URI uri) {
 			Random rand = new Random();
+			if (proxyList.isEmpty()) {
+				proxyList.add(Proxy.NO_PROXY);
+			}
 			int index = rand.nextInt(proxyList.size());
 			List<Proxy> select = new ArrayList<Proxy>();
 			Proxy proxy = proxyList.get(index);
-			Integer failCount = failProxySumMap.get(proxy.address().toString());
-			if (failCount != null && failCount >= 3) {
-				logger.warn("give up to use proxy:" + proxy + " fail:" + failCount);
-			} else {
-				select.add(proxy);
-			}
+			select.add(proxy);
 			return select;
 		}
 
@@ -82,12 +85,13 @@ public class HttpDriver {
 
 	public List<Proxy> getProxyList() {
 		List<Proxy> proxyList = new ArrayList<Proxy>();
-		proxyList.add(createProxy("5.135.176.41", 3123));
-		proxyList.add(createProxy("188.241.141.112", 3127));
-		proxyList.add(createProxy("198.52.199.152", 8089));
+		proxyList.add(createProxy("89.46.101.122", 8089));
+		// proxyList.add(createProxy("188.241.141.112", 3127));
 		proxyList.add(createProxy("23.89.198.161", 7808));
-		proxyList.add(createProxy("198.52.217.44", 3127));
-		proxyList.add(createProxy("93.115.8.229", 7808));
+		// proxyList.add(createProxy("93.115.8.229", 7808));
+		// proxyList.add(createProxy("66.85.131.18", 3127));
+		// proxyList.add(createProxy("212.68.44.133", 3128));
+		proxyList.add(Proxy.NO_PROXY);
 		return proxyList;
 	}
 

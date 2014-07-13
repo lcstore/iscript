@@ -12,13 +12,25 @@
 	</bean>
 	<bean id="BarCodeSimilarSearcher" class="com.lezo.iscript.yeam.crawler.BarCodeSimilarSearcher">
 	</bean>
+	<bean id="haole9BarCodeGetter" class="com.lezo.iscript.yeam.crawler.Haole9BarCodeGetter" init-method="init">
+	  <property name="barCodeItemStorager" ref="barCodeItemStorager"></property>
+	</bean>
+	<bean id="barCodeItemStorager" class="com.lezo.iscript.yeam.storage.BarCodeItemStorager">
+	</bean>
+	<bean id="storageTimeTrigger" class="com.lezo.iscript.yeam.storage.StorageTimeTrigger">
+	  <property name="listeners">
+	     <list>
+	        <ref bean="barCodeItemStorager"/>
+	     </list>
+	  </property>
+	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="3" />
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<!-- <task:scheduled-tasks scheduler="scheduler">
+	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="pullJdListTimer" method="run"
 			cron="0 0 0/2 * * ?" fixed-delay="60000" />
 		<task:scheduled ref="wccSimilarSearchTimer" method="run"
@@ -27,5 +39,7 @@
 			cron="0 0 0/5 * * ?" fixed-delay="60000" />
 		<task:scheduled ref="BarCodeSimilarSearcher" method="run"
 			cron="0 0 0/5 * * ?" fixed-delay="60000" />
-	</task:scheduled-tasks> -->
+		<task:scheduled ref="storageTimeTrigger" method="doTrigger"
+			 fixed-delay="60000" />
+	</task:scheduled-tasks>
 </beans>

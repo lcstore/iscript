@@ -1,8 +1,6 @@
 package com.lezo.iscript.yeam.crawler;
 
-import java.net.URLEncoder;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -15,12 +13,13 @@ import org.mozilla.javascript.ScriptableObject;
 import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.http.HttpDriver;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class HuihuiSimilar implements ConfigParser {
 	private static Logger log = Logger.getLogger(HuihuiSimilar.class);
-	private DefaultHttpClient client = HttpClientUtils.createHttpClient();
+	private DefaultHttpClient client = HttpDriver.getInstance().getClient();
 	private Scriptable scope;
 
 	public HuihuiSimilar() {
