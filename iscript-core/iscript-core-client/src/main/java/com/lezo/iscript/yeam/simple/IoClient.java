@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam.simple;
 
 import java.net.InetSocketAddress;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
@@ -14,6 +15,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.simple.event.ResponeProceser;
 import com.lezo.iscript.yeam.simple.event.ResponeWorkerFactory;
+import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
 
 public class IoClient extends IoHandlerAdapter {
 	private static final long CONNECT_TIMEOUT = 20000;
@@ -22,6 +24,16 @@ public class IoClient extends IoHandlerAdapter {
 	private int port;
 	private NioSocketConnector connector;
 	private IoSession session;
+
+	public IoClient() {
+		super();
+		this.host = ClientPropertiesUtils.getProperty("host");
+		String sPort = ClientPropertiesUtils.getProperty("port");
+		assertEmpty("host", host);
+		assertEmpty("port", sPort);
+		this.port = Integer.valueOf(sPort);
+		configConnector();
+	}
 
 	public IoClient(String host, int port) {
 		super();
@@ -82,6 +94,12 @@ public class IoClient extends IoHandlerAdapter {
 					e1.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private void assertEmpty(String key, String value) {
+		if (StringUtils.isEmpty(value)) {
+			throw new IllegalArgumentException("please set property[" + key + "]");
 		}
 	}
 }
