@@ -2,7 +2,6 @@ package com.lezo.iscript.yeam.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Random;
 
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoHandlerAdapter;
@@ -13,8 +12,8 @@ import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactor
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
-import com.lezo.iscript.yeam.server.event.RequestWorker;
 import com.lezo.iscript.yeam.server.event.RequestProceser;
+import com.lezo.iscript.yeam.server.event.RequestWorker;
 
 public class IoServer extends IoHandlerAdapter {
 	private IoAcceptor acceptor;
@@ -37,10 +36,6 @@ public class IoServer extends IoHandlerAdapter {
 
 	@Override
 	public void messageSent(IoSession session, Object message) throws Exception {
-		Random random = new Random();
-		int num = random.nextInt(100);
-		System.out.println("Sent to client:" + num);
-		session.write(num);
 	}
 
 }
