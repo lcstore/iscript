@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -192,6 +193,7 @@ public class ScriptTest {
 		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
 		System.out.println("end.......");
 	}
+
 	@Test
 	public void testUaAuth() throws Exception {
 		int optimizationLevel = -2;
@@ -203,12 +205,14 @@ public class ScriptTest {
 		Scriptable scope = EnvjsUtils.initStandardObjects(parent);
 		String argsString = FileUtils.readFileToString(new File("src/test/resources/js/uaargs.js"));
 		cx.evaluateString(scope, argsString, "tb.ua.args", 0, null);
-		String code = FileUtils.readFileToString(new File("src/test/resources/js/ua_authcenter_login.1402822683653.js"));
+		String code = FileUtils
+				.readFileToString(new File("src/test/resources/js/ua_authcenter_login.1402822683653.js"));
 		cx.evaluateString(scope, code, "tb.deua", 0, null);
 		String execString = FileUtils.readFileToString(new File("src/test/resources/js/uaexec.js"));
 		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
 		System.out.println("end.......");
 	}
+
 	@Test
 	public void testUaLog() throws Exception {
 		Context cx = EnvjsUtils.enterContext();
@@ -223,6 +227,7 @@ public class ScriptTest {
 		cx.evaluateString(scope, execString, "tb.uaexec", 0, null);
 		System.out.println("end.......");
 	}
+
 	@Test
 	public void testUm() throws Exception {
 		Context cx = EnvjsUtils.enterContext();
@@ -296,5 +301,18 @@ public class ScriptTest {
 		String code = FileUtils.readFileToString(new File("src/test/resources/js/args.js"));
 		cx.evaluateString(scope, code, "tb.opt", 0, null);
 		System.out.println("end......." + cx.isGeneratingSource());
+	}
+
+	@Test
+	public void testException() {
+		try {
+			String aa = null;
+			throw new IllegalArgumentException("args error...");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("--------------------");
+			System.out.println(ExceptionUtils.getStackTrace(e));
+		}
 	}
 }

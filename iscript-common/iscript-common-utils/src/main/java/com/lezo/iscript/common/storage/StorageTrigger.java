@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.storage;
+package com.lezo.iscript.common.storage;
 
 public interface StorageTrigger {
 

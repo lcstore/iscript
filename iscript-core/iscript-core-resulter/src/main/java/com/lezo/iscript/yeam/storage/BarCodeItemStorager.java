@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.common.storage.StorageBuffer;
+import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
 import com.lezo.iscript.service.crawler.service.BarCodeItemService;
 

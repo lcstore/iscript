@@ -1,10 +1,23 @@
 package com.lezo.iscript.yeam.simple.event.woker;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.LoggerFactory;
+
+import com.lezo.iscript.yeam.client.task.TaskCallable;
+import com.lezo.iscript.yeam.client.task.TasksCaller;
 import com.lezo.iscript.yeam.io.IoRespone;
+import com.lezo.iscript.yeam.writable.ResultWritable;
+import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class TaskResponeWorker implements Runnable {
+	private static org.slf4j.Logger logger = LoggerFactory.getLogger(TaskResponeWorker.class);
 	private IoRespone ioRespone;
-	private static final Object lock = new Object();
+	private static final Object WRITE_LOCK = new Object();
 
 	public TaskResponeWorker(IoRespone ioRespone) {
 		super();
@@ -13,8 +26,37 @@ public class TaskResponeWorker implements Runnable {
 
 	@Override
 	public void run() {
-		synchronized (lock) {
-			System.out.println("");
+		handleRespone();
+	}
+
+	private void handleRespone() {
+		List<TaskWritable> taskList = getTaskList();
+		if (CollectionUtils.isEmpty(taskList)) {
+			return;
 		}
+		// keep ConfigResponeWorker working in the lineS
+		synchronized (WRITE_LOCK) {
+			ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
+			for (TaskWritable taskWritable : taskList) {
+				Future<ResultWritable> future = caller.submit(new TaskCallable(taskWritable));
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<TaskWritable> getTaskList() {
+		List<TaskWritable> configList = new ArrayList<TaskWritable>();
+		try {
+			Object dataObject = ioRespone.getData();
+			if (dataObject instanceof TaskWritable) {
+				TaskWritable TaskWritable = (TaskWritable) dataObject;
+				configList.add(TaskWritable);
+			} else if (dataObject instanceof List) {
+				configList = (List<TaskWritable>) dataObject;
+			}
+		} catch (Exception e) {
+			logger.warn("can not cast data to config.", e);
+		}
+		return configList;
 	}
 }

@@ -55,11 +55,14 @@ public class IoClient extends IoHandlerAdapter {
 	}
 
 	public IoSession getSession() {
-		if (session != null) {
+		if (session != null && session.isConnected()) {
 			return session;
 		}
 		synchronized (this) {
-			session = reConnect();
+			if (session != null && session.isConnected()) {
+			} else {
+				session = reConnect();
+			}
 		}
 		return session;
 	}
