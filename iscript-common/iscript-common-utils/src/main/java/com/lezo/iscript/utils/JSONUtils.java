@@ -2,7 +2,6 @@ package com.lezo.iscript.utils;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -90,6 +89,17 @@ public class JSONUtils {
 			return dValue.floatValue();
 		}
 		return Float.valueOf(jObject.toString());
+	}
+
+	public static Long getLong(JSONObject jObj, String key) {
+		Object jObject = get(jObj, key);
+		if (jObject == null) {
+			return null;
+		}
+		if (jObject instanceof Long) {
+			return (Long) jObject;
+		}
+		return Long.valueOf(jObject.toString());
 	}
 
 }

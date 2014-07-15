@@ -9,17 +9,13 @@ import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.server.event.RequestEvent;
 import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
+import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class RequestEventDecider extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(RequestEventDecider.class);
 
-	public RequestEventDecider(RequestEventHandler nextEventHandler) {
-		super(nextEventHandler);
-	}
-
 	@Override
 	public void handle(RequestEvent event, RequestEventHandler nextHandler) {
-		handleResult(event);
 		if (IoConstant.EVENT_TYPE_NONE == event.getType()) {
 			decideType(event);
 		}
@@ -27,14 +23,6 @@ public class RequestEventDecider extends AbstractEventHandler {
 			nextHandler = getNextHandler();
 		}
 		nextHandler.handle(event, nextHandler.getNextHandler());
-	}
-
-	private void handleResult(RequestEvent event) {
-		IoRequest ioRequest = getIoRequest(event);
-		if (ioRequest == null || ioRequest.getData() == null) {
-			return;
-		}
-		// TODO: handle result...
 	}
 
 	/**
@@ -48,7 +36,11 @@ public class RequestEventDecider extends AbstractEventHandler {
 			return;
 		}
 		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
-		Long cstamp = JSONUtils.get(hObject, "cstamp");
+		if (hObject == null) {
+			logger.warn("get an empty header..");
+			return;
+		}
+		Long cstamp = JSONUtils.getLong(hObject, "cstamp");
 		if (cstamp == null || cstamp < ConfigBuffer.getInstance().getStamp()) {
 			event.setType(IoConstant.EVENT_TYPE_CONFIG);
 		} else {

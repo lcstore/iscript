@@ -1,6 +1,7 @@
 package com.lezo.iscript.yeam.simple;
 
 import com.lezo.iscript.yeam.io.IoRequest;
+import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 
 public class IoClientTest {
 	public static void main(String[] args) {
@@ -11,6 +12,7 @@ public class IoClientTest {
 		// session.write("update config");
 
 		IoRequest request = new IoRequest();
+		request.setHeader(HeaderUtils.getHeader().toString());
 		SessionSender.getInstance().send(request);
 	}
 

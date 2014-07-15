@@ -1,29 +1,18 @@
 package com.lezo.iscript.yeam.server.event.handler;
 
 public class RequestEventHandlerChain {
-	public RequestEventHandler first;
-	public RequestEventHandler last;
-	public RequestEventHandler current;
 
-	public void addEventHandler(RequestEventHandler handler) {
-		if (this.first == null) {
-			this.last = this.first = handler;
-		} else {
-			this.last = handler;
-		}
-		this.current = handler;
-	}
-
-	public static RequestEventHandlerChain getDefaultChain() {
-		RequestEventHandlerChain chain = new RequestEventHandlerChain();
+	public static AbstractEventHandler getDefaultChain() {
+		RequestEventDecider requestEventDecider = new RequestEventDecider();
+		ConfigEventHandler configEventHandler = new ConfigEventHandler();
+		TaskEventHandler taskEventHandler = new TaskEventHandler();
+		ResultEventHandler resultEventHandler = new ResultEventHandler();
 		EmptyEventHandler emptyEventHandler = new EmptyEventHandler();
-		TaskEventHandler taskEventHandler = new TaskEventHandler(emptyEventHandler);
-		ConfigEventHandler configEventHandler = new ConfigEventHandler(taskEventHandler);
-		chain.addEventHandler(new RequestEventDecider(configEventHandler));
-		chain.addEventHandler(new RequestEventDecider(configEventHandler));
-		chain.addEventHandler(new RequestEventDecider(taskEventHandler));
-		chain.addEventHandler(new RequestEventDecider(emptyEventHandler));
-		return chain;
+		requestEventDecider.setNextEventHandler(configEventHandler);
+		configEventHandler.setNextEventHandler(taskEventHandler);
+		taskEventHandler.setNextEventHandler(resultEventHandler);
+		resultEventHandler.setNextEventHandler(emptyEventHandler);
+		return requestEventDecider;
 	}
 
 }

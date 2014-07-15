@@ -9,10 +9,6 @@ import com.lezo.iscript.yeam.server.event.RequestEvent;
 public class TaskEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
 
-	public TaskEventHandler(RequestEventHandler nextEventHandler) {
-		super(nextEventHandler);
-	}
-
 	@Override
 	public void handle(RequestEvent event, RequestEventHandler nextHandler) {
 		if (IoConstant.EVENT_TYPE_TASK == event.getType()) {

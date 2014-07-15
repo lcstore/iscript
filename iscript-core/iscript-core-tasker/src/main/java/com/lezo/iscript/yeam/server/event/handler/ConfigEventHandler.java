@@ -18,10 +18,6 @@ import com.lezo.iscript.yeam.writable.ConfigWritable;
 public class ConfigEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(ConfigEventHandler.class);
 
-	public ConfigEventHandler(RequestEventHandler nextEventHandler) {
-		super(nextEventHandler);
-	}
-
 	@Override
 	public void handle(RequestEvent event, RequestEventHandler nextHandler) {
 		if (IoConstant.EVENT_TYPE_CONFIG == event.getType()) {
