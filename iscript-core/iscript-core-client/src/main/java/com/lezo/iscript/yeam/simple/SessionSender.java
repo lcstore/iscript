@@ -7,7 +7,7 @@ import com.lezo.iscript.yeam.io.IoRequest;
 
 public class SessionSender {
 	private static SessionSender instance;
-	private IoClient ioClient = new IoClient();
+	private IoClient ioClient;
 
 	private SessionSender() {
 	}
@@ -36,6 +36,14 @@ public class SessionSender {
 
 	public IoSession getSession() {
 		return ioClient.getSession();
+	}
+
+	public IoClient getIoClient() {
+		return ioClient;
+	}
+
+	public void setIoClient(IoClient ioClient) {
+		this.ioClient = ioClient;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,22 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 	private static Logger logger = LoggerFactory.getLogger(ResultFutureStorager.class);
 	private static final int capacity = 200;
 	private StorageBuffer<Future<ResultWritable>> storageBuffer = new StorageBuffer<Future<ResultWritable>>(capacity);
+	private static ResultFutureStorager instance;
+
+	private ResultFutureStorager() {
+	}
+
+	public static ResultFutureStorager getInstance() {
+		if (instance != null) {
+			return instance;
+		}
+		synchronized (instance) {
+			if (instance == null) {
+				instance = new ResultFutureStorager();
+			}
+		}
+		return instance;
+	}
 
 	@Override
 	public void doStorage() {
@@ -39,9 +56,9 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 	}
 
 	private void sendWait(List<Future<ResultWritable>> waitList) {
+		logger.info("start to send wait result..");
+		long start = System.currentTimeMillis();
 		if (!waitList.isEmpty()) {
-			long start = System.currentTimeMillis();
-			logger.info("start to send wait result..");
 			List<ResultWritable> rwList = new ArrayList<ResultWritable>(waitList.size());
 			for (Future<ResultWritable> rsf : waitList) {
 				try {
@@ -49,13 +66,16 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 					rwList.add(rw);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					logger.warn(ExceptionUtils.getStackTrace(e));
 				} catch (ExecutionException e) {
 					e.printStackTrace();
+					logger.warn(ExceptionUtils.getStackTrace(e));
 				}
 			}
-			long cost = System.currentTimeMillis() - start;
-			logger.info("finish to send wait result:" + waitList.size() + ",cost:" + cost);
+			sendRequest(rwList);
 		}
+		long cost = System.currentTimeMillis() - start;
+		logger.info("finish to send wait result:" + waitList.size() + ",cost:" + cost);
 
 	}
 
@@ -71,7 +91,9 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 					rwList.add(rw);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					logger.warn(ExceptionUtils.getStackTrace(e));
 				} catch (ExecutionException e) {
+					logger.warn(ExceptionUtils.getStackTrace(e));
 					e.printStackTrace();
 				}
 			} else {
@@ -92,5 +114,9 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 			ioRequest.setData(rwList);
 			SessionSender.getInstance().send(ioRequest);
 		}
+	}
+
+	public StorageBuffer<Future<ResultWritable>> getStorageBuffer() {
+		return storageBuffer;
 	}
 }

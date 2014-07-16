@@ -13,9 +13,9 @@ public class RequestEvent {
 		return type;
 	}
 
-	public void setType(int type) {
-		this.type = type;
-	}
+//	public void setType(int type) {
+//		this.type = type;
+//	}
 
 	public IoSession getSession() {
 		return session;

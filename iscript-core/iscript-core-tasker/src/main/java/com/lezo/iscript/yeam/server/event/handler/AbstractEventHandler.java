@@ -1,15 +1,33 @@
 package com.lezo.iscript.yeam.server.event.handler;
 
-public abstract class AbstractEventHandler implements RequestEventHandler {
-	private RequestEventHandler nextEventHandler;
+import com.lezo.iscript.yeam.io.IoRequest;
+import com.lezo.iscript.yeam.server.event.RequestEvent;
 
+public abstract class AbstractEventHandler implements RequestEventHandler {
 	@Override
-	public RequestEventHandler getNextHandler() {
-		return this.nextEventHandler;
+	public void handle(RequestEvent event) {
+		if (!isAccept(event)) {
+			return;
+		}
+		doHandle(event);
 	}
 
-	public void setNextEventHandler(RequestEventHandler nextEventHandler) {
-		this.nextEventHandler = nextEventHandler;
+	protected abstract void doHandle(RequestEvent event);
+
+	protected boolean isAccept(RequestEvent event) {
+		return true;
+	}
+
+	protected final IoRequest getIoRequest(RequestEvent event) {
+		Object dataObject = event.getMessage();
+		if (dataObject == null) {
+			return null;
+		}
+		if (dataObject instanceof IoRequest) {
+		} else {
+			return null;
+		}
+		return (IoRequest) dataObject;
 	}
 
 }
