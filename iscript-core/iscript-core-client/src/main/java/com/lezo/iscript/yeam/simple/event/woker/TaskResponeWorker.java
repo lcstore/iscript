@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.yeam.client.task.TaskCallable;
 import com.lezo.iscript.yeam.client.task.TasksCaller;
 import com.lezo.iscript.yeam.io.IoRespone;
+import com.lezo.iscript.yeam.simple.storage.ResultFutureStorager;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -34,11 +35,13 @@ public class TaskResponeWorker implements Runnable {
 		if (CollectionUtils.isEmpty(taskList)) {
 			return;
 		}
-		// keep ConfigResponeWorker working in the lineS
+		// keep ConfigResponeWorker working in the line
 		synchronized (WRITE_LOCK) {
 			ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
+			ResultFutureStorager storager = ResultFutureStorager.getInstance();
 			for (TaskWritable taskWritable : taskList) {
 				Future<ResultWritable> future = caller.submit(new TaskCallable(taskWritable));
+				storager.getStorageBuffer().add(future);
 			}
 		}
 	}
