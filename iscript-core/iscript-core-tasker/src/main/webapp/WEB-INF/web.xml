@@ -32,8 +32,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-				classpath:spring-config-ds.xml,
-				classpath:spring/spring-bean-tasker.xml
+				classpath:spring-config-ds.xml
 		</param-value>
 	</context-param>
 	<listener>

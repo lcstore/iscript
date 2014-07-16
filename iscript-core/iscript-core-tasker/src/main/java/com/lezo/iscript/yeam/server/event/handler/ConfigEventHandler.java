@@ -33,7 +33,7 @@ public class ConfigEventHandler extends AbstractEventHandler {
 			}
 		}
 		IoRespone ioRespone = new IoRespone();
-		ioRespone.setType(event.getType());
+		ioRespone.setType(IoConstant.EVENT_TYPE_CONFIG);
 		ioRespone.setData(configWritables);
 		WriteFuture writeFuture = event.getSession().write(ioRespone);
 		if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {

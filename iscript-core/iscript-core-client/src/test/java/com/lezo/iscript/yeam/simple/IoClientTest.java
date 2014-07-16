@@ -14,6 +14,7 @@ public class IoClientTest {
 		IoRequest request = new IoRequest();
 		request.setHeader(HeaderUtils.getHeader().toString());
 		SessionSender.getInstance().send(request);
+		
 	}
 
 }

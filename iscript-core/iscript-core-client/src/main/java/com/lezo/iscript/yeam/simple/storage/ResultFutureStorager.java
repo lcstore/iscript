@@ -31,7 +31,7 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 		if (instance != null) {
 			return instance;
 		}
-		synchronized (instance) {
+		synchronized (ResultFutureStorager.class) {
 			if (instance == null) {
 				instance = new ResultFutureStorager();
 			}
@@ -43,6 +43,8 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 	public void doStorage() {
 		final List<Future<ResultWritable>> copyList = storageBuffer.moveTo();
 		if (CollectionUtils.isEmpty(copyList)) {
+			logger.info("No result to commit,send header to server.");
+			sendHeader();
 			return;
 		}
 		StorageCaller.getInstance().execute(new Runnable() {
@@ -53,6 +55,12 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 			}
 
 		});
+	}
+
+	private void sendHeader() {
+		IoRequest request = new IoRequest();
+		request.setHeader(HeaderUtils.getHeader().toString());
+		SessionSender.getInstance().send(request);
 	}
 
 	private void sendWait(List<Future<ResultWritable>> waitList) {

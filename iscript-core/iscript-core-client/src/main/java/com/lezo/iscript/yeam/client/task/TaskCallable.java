@@ -30,6 +30,11 @@ public class TaskCallable implements Callable<ResultWritable> {
 		JSONObject rsObject = new JSONObject();
 		rsObject.put("args", new JSONObject(task.getArgs()));
 		try {
+			Object typeObject = task.get("type");
+			if (typeObject == null) {
+				throw new IllegalArgumentException("No type for task,id:" + task.getId() + ",args:"
+						+ JSONUtils.get(rsObject, "args"));
+			}
 			String type = task.get("type").toString();
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			String rs = parser.doParse(task);

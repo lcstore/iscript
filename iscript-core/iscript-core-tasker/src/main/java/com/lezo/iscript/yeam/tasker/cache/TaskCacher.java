@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.tasker.cache;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskCacher {
@@ -27,7 +29,7 @@ public class TaskCacher {
 		return queue;
 	}
 
-	public ConcurrentHashMap<String, TaskQueue> getTypeQueueMap() {
-		return taskQueueMap;
+	public List<String> getTypeList() {
+		return new ArrayList<String>(taskQueueMap.keySet());
 	}
 }

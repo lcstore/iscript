@@ -6,9 +6,10 @@ import com.lezo.iscript.yeam.simple.event.woker.ConfigResponeWorker;
 import com.lezo.iscript.yeam.simple.event.woker.TaskResponeWorker;
 
 public class ResponeWorkerFactory {
+	private static final Runnable NONE_WORKER = new NoneWorker();
 
 	public Runnable createWorker(IoRespone ioRespone) {
-		Runnable worker = null;
+		Runnable worker = NONE_WORKER;
 		switch (ioRespone.getType()) {
 		case IoConstant.EVENT_TYPE_CONFIG: {
 			worker = new ConfigResponeWorker(ioRespone);
@@ -25,6 +26,16 @@ public class ResponeWorkerFactory {
 			break;
 		}
 		return worker;
+	}
+
+	static class NoneWorker implements Runnable {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 
 }

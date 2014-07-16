@@ -2,7 +2,7 @@ package com.lezo.iscript.yeam.server.event;
 
 import org.apache.mina.core.session.IoSession;
 
-import com.lezo.iscript.yeam.server.event.handler.RequestEventNotifyer;
+import com.lezo.iscript.yeam.server.event.handler.RequestEventHandleChain;
 
 public class RequestWorker implements Runnable {
 	private IoSession session;
@@ -18,6 +18,6 @@ public class RequestWorker implements Runnable {
 	public void run() {
 		// TODO: record this request
 		RequestEvent event = RequestEventBuilder.creatEvent(session, message);
-		RequestEventNotifyer.notifyEvent(event);
+		RequestEventHandleChain.doEvent(event);
 	}
 }

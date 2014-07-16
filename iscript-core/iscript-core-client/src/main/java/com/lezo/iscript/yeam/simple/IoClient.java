@@ -11,6 +11,8 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.simple.event.ResponeProceser;
@@ -18,6 +20,7 @@ import com.lezo.iscript.yeam.simple.event.ResponeWorkerFactory;
 import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
 
 public class IoClient extends IoHandlerAdapter {
+	private static Logger logger = LoggerFactory.getLogger(IoClient.class);
 	private static final long CONNECT_TIMEOUT = 20000;
 	private ResponeWorkerFactory workerFactory = new ResponeWorkerFactory();
 	private String host;
@@ -47,16 +50,22 @@ public class IoClient extends IoHandlerAdapter {
 		this.connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
 		this.connector.getFilterChain()
 				.addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
-		this.connector.getFilterChain().addLast("logger", new LoggingFilter());
+		if (logger.isDebugEnabled()) {
+			this.connector.getFilterChain().addLast("logger", new LoggingFilter());
+		}
 		this.connector.setHandler(this);
 	}
 
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
-		System.out.println("Get from server:" + message);
+		if (message == null) {
+			return;
+		}
 		if (message instanceof IoRespone) {
 			IoRespone ioRespone = (IoRespone) message;
 			ResponeProceser.getInstance().execute(workerFactory.createWorker(ioRespone));
+		} else {
+			logger.warn("Get unkown message.className:" + message.getClass().getName());
 		}
 	}
 
@@ -86,8 +95,7 @@ public class IoClient extends IoHandlerAdapter {
 				future.awaitUninterruptibly();
 				return future.getSession();
 			} catch (RuntimeIoException e) {
-				System.err.println("Failed to connect.");
-				e.printStackTrace();
+				logger.warn("Can not coonect to " + host + ":" + port);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {

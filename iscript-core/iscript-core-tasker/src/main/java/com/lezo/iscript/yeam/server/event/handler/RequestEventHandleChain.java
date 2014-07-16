@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.lezo.iscript.yeam.server.event.RequestEvent;
 
-public class RequestEventNotifyer {
+public class RequestEventHandleChain {
 	private static final List<RequestEventHandler> EVENT_HANDLER_LIST = new ArrayList<RequestEventHandler>();
 	static {
 		EVENT_HANDLER_LIST.add(new ConfigEventHandler());
@@ -14,9 +14,14 @@ public class RequestEventNotifyer {
 		EVENT_HANDLER_LIST.add(new EmptyEventHandler());
 	}
 
-	public static void notifyEvent(RequestEvent event) {
+	public static void doEvent(RequestEvent event) {
 		for (RequestEventHandler handler : EVENT_HANDLER_LIST) {
-			handler.handle(event);
+			try {
+				handler.handle(event);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

@@ -108,4 +108,8 @@ public class TaskQueue {
 		return type;
 	}
 
+	public List<Integer> getLeveList() {
+		return new ArrayList<Integer>(levelQueueMap.keySet());
+	}
+
 }

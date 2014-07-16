@@ -18,12 +18,12 @@ public class ResultEventHandler extends AbstractEventHandler {
 			return;
 		}
 		Object rsObject = ioRequest.getData();
-		if (rsObject == null || !(rsObject instanceof ResultWritable)) {
-			return;
+		@SuppressWarnings("unchecked")
+		List<ResultWritable> rWritables = (List<ResultWritable>) rsObject;
+		for (ResultWritable rWritable : rWritables) {
+			logger.info("id:" + rWritable.getTaskId() + ",rs:" + rWritable.getResult());
 		}
-		ResultWritable rWritable = (ResultWritable) rsObject;
 		// TODO: handle result...
-		logger.info("getTaskId:" + rWritable.getTaskId());
 	}
 
 	@Override
@@ -37,8 +37,7 @@ public class ResultEventHandler extends AbstractEventHandler {
 			return false;
 		}
 		if (dataObject instanceof List) {
-		} else {
-			return false;
+			return true;
 		}
 		return false;
 	}
