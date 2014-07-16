@@ -7,9 +7,9 @@ import java.util.concurrent.TimeUnit;
 
 public class ResponeProceser {
 	private static ResponeProceser instance;
-	private int coreSize = 2;
-	private int maxSize = 5;
-	private BlockingQueue<Runnable> taskQueue = new ArrayBlockingQueue<Runnable>(1000);
+	private int coreSize = 1;
+	private int maxSize = 3;
+	private BlockingQueue<Runnable> taskQueue = new ArrayBlockingQueue<Runnable>(100);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(coreSize, maxSize, 60000L, TimeUnit.MILLISECONDS,
 			taskQueue);
 
