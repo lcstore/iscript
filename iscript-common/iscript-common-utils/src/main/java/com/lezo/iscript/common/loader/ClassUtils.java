@@ -1,9 +1,11 @@
-package com.lezo.iscript.yeam.loader;
+package com.lezo.iscript.common.loader;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.lezo.iscript.common.compile.CacheJavaCompiler;
 
 public class ClassUtils {
 	private static final Pattern SRC_REG = Pattern.compile("SourceFile.*?(([A-Z]{1}[0-9a-zA-Z]+))\\.java");
@@ -48,5 +50,12 @@ public class ClassUtils {
 			return packageName == null ? name : packageName + "." + name;
 		}
 		return null;
+	}
+
+	public static Object newObject(String codeSource) throws Exception {
+		CacheJavaCompiler compiler = CacheJavaCompiler.getInstance();
+		String className = ClassUtils.getClassNameFromJava(codeSource);
+		Class<?> newClass = compiler.doCompile(className, codeSource);
+		return newClass.newInstance();
 	}
 }

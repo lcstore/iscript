@@ -6,9 +6,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import com.lezo.iscript.yeam.config.compile.CacheJavaCompiler;
-import com.lezo.iscript.yeam.loader.ClassUtils;
-import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.common.loader.ClassUtils;
 
 public class ClassUtilsTest {
 
@@ -19,6 +17,6 @@ public class ClassUtilsTest {
 		String className = "com.lezo.iscript.yeam.config.StringLinker";
 		String javaClsName = ClassUtils.getClassNameFromJava(codeSource);
 		System.out.println(javaClsName);
-		
+
 	}
 }

@@ -15,7 +15,8 @@ import org.apache.log4j.Logger;
 
 public class HardUtils {
 	private static final String[] WINDOWS_UUID_CMD = { "wmic", "csproduct", "get", "uuid" };
-	private static final String[] LINUX_UUID_CMD = { "blkid", "-s", "UUID" };
+	private static final String[] LINUX_UUID_CMD = { "ls", "-l", "/dev/disk/by-uuid" };
+	// private static final String[] LINUX_UUID_CMD = { "blkid", "-s", "UUID" };
 	private static final Pattern uuidReg = Pattern.compile("([0-9a-zA-z]+-){4}[0-9a-zA-z]+");
 
 	public static List<String> getOSUUIDs() throws IOException {

@@ -5,11 +5,9 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import com.lezo.iscript.yeam.config.HuihuiSigner;
-import com.lezo.iscript.yeam.config.compile.CacheJavaCompiler;
-import com.lezo.iscript.yeam.loader.ClassUtils;
+import com.lezo.iscript.common.compile.CacheJavaCompiler;
+import com.lezo.iscript.common.loader.ClassUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigCompileTest {
 
@@ -39,6 +37,7 @@ public class ConfigCompileTest {
 		System.out.println(parser.getName());
 		parser.doParse(null);
 	}
+
 	@Test
 	public void testHuihuiSign() throws Exception {
 		File file = new File("src/test/java/com/lezo/iscript/yeam/config/HuihuiSigner.java");

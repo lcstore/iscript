@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.loader;
+package com.lezo.iscript.common.loader;
 
 import java.security.SecureClassLoader;
 

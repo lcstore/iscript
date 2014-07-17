@@ -2,10 +2,13 @@ package com.lezo.iscript.yeam.server.event.handler;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.yeam.io.IoRequest;
+import com.lezo.iscript.yeam.result.ResultHandlerCaller;
+import com.lezo.iscript.yeam.result.ResultHandlerWoker;
 import com.lezo.iscript.yeam.server.event.RequestEvent;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
@@ -20,10 +23,13 @@ public class ResultEventHandler extends AbstractEventHandler {
 		Object rsObject = ioRequest.getData();
 		@SuppressWarnings("unchecked")
 		List<ResultWritable> rWritables = (List<ResultWritable>) rsObject;
-		for (ResultWritable rWritable : rWritables) {
-			logger.info("id:" + rWritable.getTaskId() + ",rs:" + rWritable.getResult());
+		if (!CollectionUtils.isEmpty(rWritables)) {
+			ResultHandlerCaller caller = ResultHandlerCaller.getInstance();
+			caller.execute(new ResultHandlerWoker(rWritables));
+			String msg = String.format("add %d result to caller.active woker:%d,in Queue worker:%d", rWritables.size(),
+					caller.getExecutor().getActiveCount(), caller.getExecutor().getQueue().size());
+			logger.info(msg);
 		}
-		// TODO: handle result...
 	}
 
 	@Override

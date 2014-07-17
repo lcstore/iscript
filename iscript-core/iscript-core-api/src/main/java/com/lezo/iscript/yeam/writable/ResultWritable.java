@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class ResultWritable implements Serializable {
 	private static final long serialVersionUID = 3628691351919899205L;
 	private Long taskId;
+	private String type;
 	private int status;
 	private String result;
 
@@ -30,6 +31,14 @@ public class ResultWritable implements Serializable {
 
 	public void setResult(String result) {
 		this.result = result;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

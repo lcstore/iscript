@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.loader;
+package com.lezo.iscript.common.loader;
 
 public interface ResourceCacheable {
 	byte[] findResource(final String name);

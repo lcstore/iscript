@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.config.compile;
+package com.lezo.iscript.common.compile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

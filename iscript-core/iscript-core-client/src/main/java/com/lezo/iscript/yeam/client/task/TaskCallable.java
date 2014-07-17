@@ -28,7 +28,8 @@ public class TaskCallable implements Callable<ResultWritable> {
 		ResultWritable rsWritable = new ResultWritable();
 		rsWritable.setTaskId(task.getId());
 		JSONObject rsObject = new JSONObject();
-		rsObject.put("args", new JSONObject(task.getArgs()));
+		JSONObject argsObject = new JSONObject(task.getArgs());
+		rsObject.put("args", argsObject);
 		try {
 			Object typeObject = task.get("type");
 			if (typeObject == null) {
@@ -36,6 +37,8 @@ public class TaskCallable implements Callable<ResultWritable> {
 						+ JSONUtils.get(rsObject, "args"));
 			}
 			String type = task.get("type").toString();
+			rsWritable.setType(type);
+			argsObject.remove("type");
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			String rs = parser.doParse(task);
 			rsObject.put("rs", rs);

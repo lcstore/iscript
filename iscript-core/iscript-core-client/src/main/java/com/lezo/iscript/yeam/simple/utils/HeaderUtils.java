@@ -19,7 +19,7 @@ public class HeaderUtils {
 		JSONUtils.put(headObject, "tmax", caller.getLargestPoolSize());
 		JSONUtils.put(headObject, "tsize", caller.getQueue().size());
 		JSONUtils.put(headObject, "mac", HardConstant.MAC_ADDR);
-		JSONUtils.put(headObject, "osid", HardConstant.OS_UUID);
+		JSONUtils.put(headObject, "name", ClientPropertiesUtils.getProperty("name"));
 		return headObject;
 	}
 }

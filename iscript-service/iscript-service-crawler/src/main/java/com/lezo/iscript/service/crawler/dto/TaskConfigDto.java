@@ -5,11 +5,14 @@ import java.util.Date;
 public class TaskConfigDto {
 	public static final int STATUS_ENABLE = 1;
 	public static final int STATUS_DISABLE = 0;
+	public static final int DEST_CONFIG = 0;
+	public static final int DEST_STRATEGY = 1;
 	private String id;
 	private String type;
 	private String config;
 	private String source;
 	private int status;
+	private int destType = DEST_CONFIG;
 	private Date createTime;
 	private Date updateTime;
 
@@ -67,5 +70,13 @@ public class TaskConfigDto {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	public int getDestType() {
+		return destType;
+	}
+
+	public void setDestType(int destType) {
+		this.destType = destType;
 	}
 }

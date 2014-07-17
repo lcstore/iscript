@@ -9,6 +9,7 @@
 		<result column="CONFIG" property="config" />
 		<result column="SOURCE" property="source" />
 		<result column="STATUS" property="status" />
+		<result column="DEST_TYPE" property="destType" />
 		<result column="CREATE_TIME" property="createTime" />
 		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
@@ -22,12 +23,13 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.config},#{item.source},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.type},#{item.config},#{item.source},#{item.status},#{item.destType},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="TaskConfigDto">
 		UPDATE T_TASK_CONFIG SET
 		CONFIG=#{config}, SOURCE=#{source}, STATUS=#{status},
+		DEST_TYPE=#{destType},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
@@ -40,7 +42,7 @@
 			]]>
 		</if>
 		<if test="status != null">
-		   AND STATUS=#{status}
+			AND STATUS=#{status}
 		</if>
 		ORDER BY UPDATE_TIME DESC
 	</select>

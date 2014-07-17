@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.config.compile;
+package com.lezo.iscript.common.compile;
 
 import java.io.IOException;
 import java.util.ArrayList;

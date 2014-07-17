@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 
+import com.lezo.iscript.common.compile.CacheJavaCompiler;
+import com.lezo.iscript.common.loader.ClassUtils;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.config.compile.CacheJavaCompiler;
-import com.lezo.iscript.yeam.loader.ClassUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
@@ -60,31 +60,23 @@ public class ConfigParserBuffer {
 
 	private ConfigParser newScriptParser(ConfigWritable configWritable) {
 		try {
-			String config = new String(configWritable.getContent(),
-					ClientConstant.CLIENT_CHARSET);
+			String config = new String(configWritable.getContent(), ClientConstant.CLIENT_CHARSET);
 			ConfigParser parser = new ScriptConfigParser(config);
 			return parser;
 		} catch (UnsupportedEncodingException e) {
-			log.error(
-					"fail to buffer config[" + configWritable.getName() + "]",
-					e);
+			log.error("fail to buffer config[" + configWritable.getName() + "]", e);
 		}
 		return null;
 	}
 
 	private ConfigParser newClassParser(ConfigWritable configWritable) {
 		byte[] bytes = configWritable.getContent();
-		CacheJavaCompiler compiler = CacheJavaCompiler.getInstance();
 		try {
 			String codeSource = new String(bytes, "UTF-8");
-			String className = ClassUtils.getClassNameFromJava(codeSource);
-			Class<?> newClass = compiler.doCompile(className, codeSource);
-			ConfigParser parser = (ConfigParser) newClass.newInstance();
+			ConfigParser parser = (ConfigParser) ClassUtils.newObject(codeSource);
 			return parser;
 		} catch (Exception ex) {
-			log.error(
-					"fail to buffer config[" + configWritable.getName() + "]",
-					ex);
+			log.error("fail to buffer config[" + configWritable.getName() + "]", ex);
 		}
 		return null;
 	}
@@ -98,8 +90,8 @@ public class ConfigParserBuffer {
 	}
 
 	public Iterator<Entry<String, ConfigParser>> unmodifyIterator() {
-		Collection<Entry<String, ConfigParser>> unmodifyList = CollectionUtils
-				.unmodifiableCollection(configMap.entrySet());
+		Collection<Entry<String, ConfigParser>> unmodifyList = CollectionUtils.unmodifiableCollection(configMap
+				.entrySet());
 		return unmodifyList.iterator();
 	}
 }

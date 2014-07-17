@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.config.compile;
+package com.lezo.iscript.common.compile;
 
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;

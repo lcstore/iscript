@@ -24,7 +24,7 @@ public class ConfigBuffer {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public void addConfig(String name, ConfigWritable configWritable) {
+	public synchronized void addConfig(String name, ConfigWritable configWritable) {
 		configMap.put(name, configWritable);
 		stamp = configWritable.getStamp();
 	}

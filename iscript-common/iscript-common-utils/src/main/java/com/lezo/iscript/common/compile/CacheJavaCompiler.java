@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.config.compile;
+package com.lezo.iscript.common.compile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,9 +22,9 @@ import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import com.lezo.iscript.yeam.loader.OverrideClassLoader;
-import com.lezo.iscript.yeam.loader.ResourceCacheable;
-import com.lezo.iscript.yeam.loader.ResourceManager;
+import com.lezo.iscript.common.loader.OverrideClassLoader;
+import com.lezo.iscript.common.loader.ResourceCacheable;
+import com.lezo.iscript.common.loader.ResourceManager;
 
 public class CacheJavaCompiler {
 	private static CacheJavaCompiler instance;

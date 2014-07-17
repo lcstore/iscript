@@ -63,8 +63,8 @@ public class TaskEventHandler extends AbstractEventHandler {
 		IoRequest request = getIoRequest(event);
 		JSONObject hObject = JSONUtils.getJSONObject(request.getHeader());
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %d task for client:%s,cost:%s", taskOffers.size(),
-				JSONUtils.getString(hObject, "osid"), cost);
+		String msg = String.format("Offer %d task for client:%s-%s,cost:%s", taskOffers.size(),
+				JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "mac"), cost);
 		logger.info(msg);
 
 	}

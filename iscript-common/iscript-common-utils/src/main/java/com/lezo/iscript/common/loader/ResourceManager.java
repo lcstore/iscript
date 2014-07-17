@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.loader;
+package com.lezo.iscript.common.loader;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
