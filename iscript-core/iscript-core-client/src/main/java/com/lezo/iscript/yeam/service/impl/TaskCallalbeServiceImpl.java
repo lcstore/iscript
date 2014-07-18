@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.ResultConstant;
 import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.TaskCallalbeService;
@@ -24,9 +23,9 @@ public class TaskCallalbeServiceImpl implements TaskCallalbeService {
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			String rs = parser.doParse(task);
 			rsObject.put("rs", rs);
-			rsWritable.setStatus(ResultConstant.RESULT_SUCCESS);
+			rsWritable.setStatus(ResultWritable.RESULT_SUCCESS);
 		} catch (Exception e) {
-			rsWritable.setStatus(ResultConstant.RESULT_FAIL);
+			rsWritable.setStatus(ResultWritable.RESULT_FAIL);
 			StringBuilder sb = new StringBuilder();
 			for (StackTraceElement se : e.getStackTrace()) {
 				sb.append(se.toString());

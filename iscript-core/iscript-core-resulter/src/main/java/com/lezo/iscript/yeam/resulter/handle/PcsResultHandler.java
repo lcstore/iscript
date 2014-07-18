@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.baidu.pcs.BaiduPCSActionInfo.PCSFileInfoResponse;
 import com.baidu.pcs.BaiduPCSClient;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.ResultConstant;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class PcsResultHandler implements ResultHandle {
@@ -22,7 +21,7 @@ public class PcsResultHandler implements ResultHandle {
 
 	@Override
 	public void handle(ResultWritable resultWritable) {
-		if (resultWritable.getStatus() != ResultConstant.RESULT_SUCCESS) {
+		if (resultWritable.getStatus() != ResultWritable.RESULT_SUCCESS) {
 			return;
 		}
 		String name = getFileName(resultWritable);

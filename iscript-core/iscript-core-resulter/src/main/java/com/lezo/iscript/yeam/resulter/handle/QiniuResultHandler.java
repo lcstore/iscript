@@ -14,9 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.ResultConstant;
 import com.lezo.iscript.yeam.service.TaskRemoteService;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -37,7 +35,7 @@ public class QiniuResultHandler implements ResultHandle {
 
 	@Override
 	public void handle(ResultWritable resultWritable) {
-		if (resultWritable.getStatus() != ResultConstant.RESULT_SUCCESS) {
+		if (resultWritable.getStatus() != ResultWritable.RESULT_SUCCESS) {
 			return;
 		}
 		String uptoken = getUptoken();

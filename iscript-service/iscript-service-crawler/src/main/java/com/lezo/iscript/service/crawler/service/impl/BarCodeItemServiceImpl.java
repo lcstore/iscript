@@ -2,9 +2,16 @@ package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +22,7 @@ import com.lezo.iscript.utils.BatchIterator;
 
 @Service
 public class BarCodeItemServiceImpl implements BarCodeItemService {
+	private static Logger logger = LoggerFactory.getLogger(BarCodeItemServiceImpl.class);
 	@Autowired
 	private BarCodeItemDao barCodeItemDao;
 
@@ -59,4 +67,37 @@ public class BarCodeItemServiceImpl implements BarCodeItemService {
 		return barCodeItemDao.getBarCodeItemDtoFromId(fromId, limit, cateName);
 	}
 
+	@Override
+	public void batchSaveBarCodeItemDtos(List<BarCodeItemDto> dtoList) {
+		List<BarCodeItemDto> insertDtos = new ArrayList<BarCodeItemDto>();
+		List<BarCodeItemDto> updateDtos = new ArrayList<BarCodeItemDto>();
+		doAssort(dtoList, insertDtos, updateDtos);
+		batchInsertBarCodeItemDtos(insertDtos);
+		batchUpdateBarCodeItemDtos(updateDtos);
+		logger.info("save BarCodeItemDto.insert:" + insertDtos.size() + ",update:" + updateDtos.size());
+	}
+
+	private void doAssort(List<BarCodeItemDto> barCodeItemDtos, List<BarCodeItemDto> insertDtos,
+			List<BarCodeItemDto> updateDtos) {
+		Map<String, BarCodeItemDto> dtoMap = new HashMap<String, BarCodeItemDto>();
+		for (BarCodeItemDto dto : barCodeItemDtos) {
+			String key = dto.getBarCode();
+			dtoMap.put(key, dto);
+		}
+		List<String> barCodeList = new ArrayList<String>(dtoMap.keySet());
+
+		List<BarCodeItemDto> hasDtos = getBarCodeItemDtos(barCodeList);
+		Set<String> hasCodeSet = new HashSet<String>();
+		for (BarCodeItemDto oldDto : hasDtos) {
+			String key = oldDto.getBarCode();
+			hasCodeSet.add(key);
+		}
+		for (Entry<String, BarCodeItemDto> entry : dtoMap.entrySet()) {
+			if (hasCodeSet.contains(entry.getKey())) {
+				continue;
+			}
+			BarCodeItemDto newDto = entry.getValue();
+			insertDtos.add(newDto);
+		}
+	}
 }

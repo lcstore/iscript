@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.ResultConstant;
 import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.ResultWritable;
@@ -42,11 +41,14 @@ public class TaskCallable implements Callable<ResultWritable> {
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			String rs = parser.doParse(task);
 			rsObject.put("rs", rs);
-			rsWritable.setStatus(ResultConstant.RESULT_SUCCESS);
+			rsWritable.setStatus(ResultWritable.RESULT_SUCCESS);
 		} catch (Exception e) {
-			rsWritable.setStatus(ResultConstant.RESULT_FAIL);
+			rsWritable.setStatus(ResultWritable.RESULT_FAIL);
 			String strStack = ExceptionUtils.getStackTrace(e);
-			JSONUtils.put(rsObject, "ex", strStack);
+			JSONObject exObject = new JSONObject();
+			JSONUtils.put(exObject, "name", e.getClass().getName());
+			JSONUtils.put(exObject, "stack", ExceptionUtils.getStackTrace(e));
+			JSONUtils.put(rsObject, "ex", exObject);
 			logger.warn(strStack);
 		} finally {
 			rsWritable.setResult(rsObject.toString());
