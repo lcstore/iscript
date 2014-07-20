@@ -1,6 +1,8 @@
 package com.lezo.iscript.yeam.simple.event.woker;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,7 +35,11 @@ public class ConfigResponeWorker implements Runnable {
 		// keep ConfigResponeWorker working in the lineS
 		synchronized (CONFIG_WRITE_LOCK) {
 			ConfigParserBuffer configBuffer = ConfigParserBuffer.getInstance();
-			for (ConfigWritable configWritable : configList) {
+			doStampAsc(configList);
+			int size = configList.size();
+			// use index to foreach the list，keep the queue.
+			for (int i = 0; i < size; i++) {
+				ConfigWritable configWritable = configList.get(i);
 				if (configBuffer.addConfig(configWritable.getName(), configWritable)) {
 					logger.info("update.config[" + configWritable.getName() + "].stamp:" + configWritable.getStamp());
 				} else {
@@ -41,6 +47,20 @@ public class ConfigResponeWorker implements Runnable {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 按照stamp升序排列
+	 * 
+	 * @param configList
+	 */
+	private void doStampAsc(List<ConfigWritable> configList) {
+		Collections.sort(configList, new Comparator<ConfigWritable>() {
+			@Override
+			public int compare(ConfigWritable o1, ConfigWritable o2) {
+				return new Long(o1.getStamp()).compareTo(o2.getStamp());
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")

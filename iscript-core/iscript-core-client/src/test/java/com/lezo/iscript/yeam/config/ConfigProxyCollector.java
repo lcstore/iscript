@@ -17,19 +17,20 @@ import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.simple.utils.HttpUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ProxyCollector implements ConfigParser {
+public class ConfigProxyCollector implements ConfigParser {
 
 	@Override
 	public String getName() {
-		return "zyue-sign";
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		String url = (String) task.get("url");
-		DefaultHttpClient client = HttpClientUtils.createHttpClient();
+		DefaultHttpClient client = HttpUtils.getDefaultHttpRequestManager().getClient();
 
 		BasicClientCookie cookie = new BasicClientCookie("__utma",
 				"193324902.1016719687.1401026096.1401026096.1401026096.1");
@@ -39,18 +40,14 @@ public class ProxyCollector implements ConfigParser {
 		cookie = new BasicClientCookie("__utmz",
 				"193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
 		client.getCookieStore().addCookie(cookie);
-		String nextUrl = url;
-		JSONObject jObject = new JSONObject();
-		while (StringUtils.isNotEmpty(nextUrl)) {
-			System.out.println("doUrl:" + nextUrl);
-			nextUrl = handleUrl(nextUrl, jObject, client);
+		if (StringUtils.isEmpty(url)) {
+			url = "http://www.cool-proxy.net/proxies/http_proxy_list/page:1/sort:score/direction:desc";
 		}
-//		JSONObject rsObject = new JSONObject();
-//		String result = "";
-//		rsObject.put("rs", result);
-//		task.getArgs().remove("pwd");
-//		rsObject.put("args", new JSONObject(task.getArgs()));
-
+		JSONObject jObject = new JSONObject();
+		String nextUrl = handleUrl(url, jObject, client);
+		JSONArray nextArray = new JSONArray();
+		nextArray.put(nextUrl);
+		JSONUtils.put(jObject, "nexts", nextArray);
 		return jObject.toString();
 	}
 

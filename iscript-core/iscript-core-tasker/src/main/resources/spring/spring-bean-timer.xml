@@ -12,7 +12,17 @@
 	</bean>
 	<bean id="signTaskTimer" class="com.lezo.iscript.yeam.tasker.SignTaskTimer">
 	</bean>
-	<bean id="flushTaskTimer" class="com.lezo.iscript.yeam.tasker.FlushTaskTimer">
+
+	<bean id="taskPriorityStorager"
+		class="com.lezo.iscript.yeam.tasker.storage.TaskPriorityStorager">
+	</bean>
+
+	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
+		<property name="listeners">
+			<list>
+				<ref bean="taskPriorityStorager" />
+			</list>
+		</property>
 	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
@@ -24,18 +34,19 @@
 		<task:scheduled ref="assembleTaskTimer" method="run"
 			fixed-delay="30000" />
 	</task:scheduled-tasks>
-	
+
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
+
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="flushTaskTimer" method="run"
+		<task:scheduled ref="taskStorageTimeTrigger" method="doTrigger"
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
-	
+
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="signTaskTimer" method="run"
-			cron="0 20 9 * * ?"/>
+			cron="0 20 9 * * ?" />
 	</task:scheduled-tasks>
 </beans>

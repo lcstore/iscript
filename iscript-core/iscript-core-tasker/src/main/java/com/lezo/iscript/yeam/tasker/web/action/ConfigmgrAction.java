@@ -29,7 +29,7 @@ public class ConfigmgrAction {
 	@Autowired
 	private TaskConfigService taskConfigService;
 
-	@RequestMapping("listConfigs.action")
+	@RequestMapping("listConfigs")
 	public String listConfigs(Model model) throws Exception {
 		Date afterStamp = new Date(0);
 		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(afterStamp, null);
@@ -40,17 +40,18 @@ public class ConfigmgrAction {
 		return "/listConfigs";
 	}
 
-	@RequestMapping("deleteConfig.action")
+	@RequestMapping("deleteConfig")
 	@ResponseBody
 	public String deleteConfig(Model model, String type) throws Exception {
 		taskConfigService.deleteConfig(type);
 		return "OK";
 	}
 
-	@RequestMapping("addConfig.action")
+	@RequestMapping("addConfig")
 	public ModelAndView addConfig(@RequestParam("configType") String configType,
-			@RequestParam("configFile") MultipartFile file, Model model) throws Exception {
-		ModelAndView mav = new ModelAndView("redirect:/configmgr/listConfigs.action");
+			@RequestParam("destType") int destType, @RequestParam("configFile") MultipartFile file, Model model)
+			throws Exception {
+		ModelAndView mav = new ModelAndView("redirect:/configmgr/listConfigs");
 		Integer siteId = 1;
 		if (!isValidate(siteId, configType, file)) {
 			return mav;
@@ -78,6 +79,7 @@ public class ConfigmgrAction {
 		confDto.setSource(file.getOriginalFilename());
 		confDto.setConfig(content);
 		confDto.setType(configType);
+		confDto.setDestType(destType);
 		confDto.setCreateTime(new Date());
 		confDto.setUpdateTime(confDto.getCreateTime());
 		confDto.setStatus(TaskConfigDto.STATUS_ENABLE);

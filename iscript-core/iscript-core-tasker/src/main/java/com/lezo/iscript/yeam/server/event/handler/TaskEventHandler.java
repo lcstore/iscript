@@ -27,43 +27,46 @@ public class TaskEventHandler extends AbstractEventHandler {
 	@Override
 	protected void doHandle(RequestEvent event) {
 		long start = System.currentTimeMillis();
+		IoRequest request = getIoRequest(event);
+		JSONObject hObject = JSONUtils.getJSONObject(request.getHeader());
+
 		TaskCacher taskCancher = TaskCacher.getInstance();
 		List<String> typeList = taskCancher.getTypeList();
 		List<TaskWritable> taskOffers = new ArrayList<TaskWritable>(PER_OFFER_SIZE);
 		if (!typeList.isEmpty()) {
 			// shuffle type to offer task random
 			Collections.shuffle(typeList);
-			int typeSize = typeList.size();
-			int limit = PER_OFFER_SIZE / typeSize + PER_OFFER_SIZE % typeSize;
+			int cycle = 0;
+			int limit = 2;
 			int remain = PER_OFFER_SIZE;
-			for (String type : typeList) {
-				TaskQueue taskQueue = taskCancher.getQueue(type);
-				synchronized (taskQueue) {
-					List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
-					if (!CollectionUtils.isEmpty(taskList)) {
-						remain -= taskList.size();
-						taskOffers.addAll(taskList);
-						if (remain < 1) {
-							break;
+			while (remain > 0 && ++cycle <= 3) {
+				for (String type : typeList) {
+					TaskQueue taskQueue = taskCancher.getQueue(type);
+					synchronized (taskQueue) {
+						List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
+						if (!CollectionUtils.isEmpty(taskList)) {
+							remain -= taskList.size();
+							taskOffers.addAll(taskList);
+							if (remain < 1) {
+								break;
+							}
 						}
 					}
 				}
 			}
 			if (!taskOffers.isEmpty()) {
-			}
-			IoRespone ioRespone = new IoRespone();
-			ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
-			ioRespone.setData(taskOffers);
-			WriteFuture writeFuture = event.getSession().write(ioRespone);
-			if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {
-				String msg = "fail to offer tasks:" + taskOffers.size();
-				logger.warn(msg, writeFuture.getException());
+				IoRespone ioRespone = new IoRespone();
+				ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
+				ioRespone.setData(taskOffers);
+				WriteFuture writeFuture = event.getSession().write(ioRespone);
+				if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {
+					String msg = "fail to offer tasks:" + taskOffers.size();
+					logger.warn(msg, writeFuture.getException());
+				}
 			}
 		}
-		IoRequest request = getIoRequest(event);
-		JSONObject hObject = JSONUtils.getJSONObject(request.getHeader());
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %d task for client:%s-%s,cost:%s", taskOffers.size(),
+		String msg = String.format("Offer %d task for client:%s@%s,cost:%s", taskOffers.size(),
 				JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "mac"), cost);
 		logger.info(msg);
 

@@ -5,7 +5,7 @@ import java.util.TimerTask;
 
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.common.storage.StorageTimeTrigger;
-import com.lezo.iscript.yeam.simple.storage.ResultFutureStorager;
+import com.lezo.iscript.yeam.simple.storage.ResultStorager;
 
 public class ClientMain {
 	private Timer timer = new Timer();
@@ -19,7 +19,7 @@ public class ClientMain {
 		SessionSender.getInstance().setIoClient(ioClient);
 
 		final StorageTimeTrigger timeTrigger = new StorageTimeTrigger();
-		StorageListener<?> listener = ResultFutureStorager.getInstance();
+		StorageListener<?> listener = ResultStorager.getInstance();
 		timeTrigger.addListener(listener.getClass(), listener);
 		long delay = 1000L;
 		long period = 30000L;

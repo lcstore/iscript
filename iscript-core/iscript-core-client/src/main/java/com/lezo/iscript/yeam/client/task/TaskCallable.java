@@ -24,18 +24,20 @@ public class TaskCallable implements Callable<ResultWritable> {
 
 	@Override
 	public ResultWritable call() throws Exception {
+		long start = System.currentTimeMillis();
 		ResultWritable rsWritable = new ResultWritable();
 		rsWritable.setTaskId(task.getId());
 		JSONObject rsObject = new JSONObject();
 		JSONObject argsObject = new JSONObject(task.getArgs());
 		rsObject.put("args", argsObject);
+		String type = null;
 		try {
 			Object typeObject = task.get("type");
 			if (typeObject == null) {
 				throw new IllegalArgumentException("No type for task,id:" + task.getId() + ",args:"
 						+ JSONUtils.get(rsObject, "args"));
 			}
-			String type = task.get("type").toString();
+			type = task.get("type").toString();
 			rsWritable.setType(type);
 			argsObject.remove("type");
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
@@ -52,6 +54,10 @@ public class TaskCallable implements Callable<ResultWritable> {
 			logger.warn(strStack);
 		} finally {
 			rsWritable.setResult(rsObject.toString());
+			long cost = System.currentTimeMillis() - start;
+			String msg = String.format("done task:%d,type:%s,status:%d,cost:%d", task.getId(), type,
+					rsWritable.getStatus(), cost);
+			logger.info(msg);
 		}
 		return rsWritable;
 	}

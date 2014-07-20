@@ -7,6 +7,11 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.config.Config1688Category;
+import com.lezo.iscript.yeam.config.Config1688List;
+import com.lezo.iscript.yeam.config.Config1688Product;
+import com.lezo.iscript.yeam.config.ConfigProxyDetector;
+import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
@@ -173,4 +178,78 @@ public class ConfigParserTest {
 			e.printStackTrace();
 		}
 	}
+
+	@Test
+	public void testConfig1688Category() throws Exception {
+		String url = "http://s.1688.com/selloffer/offer_search.htm?spm=a260k.635.794254077.10&keywords=%BF%AA%D0%C4%B9%FB&descendOrder=true&from=industrySearch&industryFlag=food&sortType=booked&uniqfield=userid&n=y&filt=y";
+		ConfigParser parser = new Config1688Category();
+		TaskWritable task = new TaskWritable();
+		try {
+			task.put("url", url);
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testConfig1688List() throws Exception {
+		String url = "http://s.1688.com/selloffer/offer_search.htm?spm=a260k.635.794254077.10&keywords=%BF%AA%D0%C4%B9%FB&descendOrder=true&from=industrySearch&industryFlag=food&sortType=booked&uniqfield=userid&n=y&filt=y";
+		ConfigParser parser = new Config1688List();
+		TaskWritable task = new TaskWritable();
+		try {
+			task.put("url", url);
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testConfig1688Product() throws Exception {
+		String url = "http://detail.1688.com/offer/1225054841.html";
+		url = "http://detail.1688.com/offer/37687586366.html";
+		url = "http://detail.1688.com/offer/37687586366.html";
+		ConfigParser parser = new Config1688Product();
+		TaskWritable task = new TaskWritable();
+		try {
+			task.put("url", url);
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testConfigProxyDetector() throws Exception {
+		String url = "http://detail.1688.com/offer/1225054841.html";
+		ConfigParser parser = new ConfigProxyDetector();
+		TaskWritable task = new TaskWritable();
+		try {
+			task.put("ip", "92.222.153.153");
+			task.put("port", 7808);
+			task.put("url", url);
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testConfigProxyCollector() throws Exception {
+		String url = "http://detail.1688.com/offer/1225054841.html";
+		ConfigParser parser = new ConfigProxyCollector();
+		TaskWritable task = new TaskWritable();
+		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }

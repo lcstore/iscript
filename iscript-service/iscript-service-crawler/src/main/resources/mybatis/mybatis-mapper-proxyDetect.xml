@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyDetectDao">
+	<resultMap type="ProxyDetectDto" id="RM_ProxyDetectDto">
+		<result column="ID" property="id" />
+		<result column="IP" property="ip" />
+		<result column="PORT" property="port" />
+		<result column="DOMAIN" property="domain" />
+		<result column="URL" property="url" />
+		<result column="DETECTOR" property="detector" />
+		<result column="CUR_COST" property="curCost" />
+		<result column="MIN_COST" property="minCost" />
+		<result column="MAX_COST" property="maxCost" />
+		<result column="RETRY_TIMES" property="retryTimes" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+	<sql id="ProxyDetectDto-coloumn-list">
+		IP ,PORT ,DOMAIN ,URL ,DETECTOR ,CUR_COST ,MIN_COST
+		,MAX_COST ,RETRY_TIMES ,STATUS ,CREATE_TIME ,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="ProxyDetectDto">
+		INSERT INTO T_PROXY_DETECT(
+		<include refid="ProxyDetectDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="updateOne" parameterType="ProxyDetectDto">
+		UPDATE T_PROXY_DETECT SET
+		CUR_COST=#{curCost}, MIN_COST=#{minCost}, MAX_COST=#{maxCost},
+		RETRY_TIMES=#{retryTimes}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	<select id="getProxyDetectDtos" parameterType="map"
+		resultMap="RM_ProxyDetectDto">
+		SELECT * FROM T_PROXY_DETECT
+		WHERE 1=1
+		<if test="ipLongs!=null &amp;&amp; !ipLongs.isEmpty()">
+			<foreach collection="ipLongs" item="ip" open="IP IN(" close=")"
+				separator=",">
+				#{ip}
+			</foreach>
+		</if>
+		<if test="portList!=null &amp;&amp; !portList.isEmpty()">
+			<foreach collection="portList" item="port" open="PORT IN("
+				close=")" separator=",">
+				#{port}
+			</foreach>
+		</if>
+		<if test="status!=null">
+			AND STATUS=#{status}
+		</if>
+	</select>
+	<select id="getProxyDetectDtosFromId" parameterType="map"
+		resultMap="RM_ProxyDetectDto">
+		SELECT * FROM T_PROXY_DETECT
+		WHERE ID > #{fromId}
+		<if test="status!=null">
+			AND STATUS=#{status}
+		</if>
+		LIMIT #{limit}
+	</select>
+</mapper>

@@ -25,4 +25,10 @@ public class StorageBufferFactory {
 		}
 		return hasStorageBuffer;
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> StorageBuffer<T> getStorageBuffer(Class<T> storageClass) {
+		String name = storageClass.getSimpleName();
+		return (StorageBuffer<T>) getStorageBuffer(name);
+	}
 }

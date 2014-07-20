@@ -19,14 +19,21 @@ public class StorageTimeTrigger implements StorageTrigger {
 	public void doTrigger() {
 		logger.info("start to trigger listener:" + listenerMap.size());
 		long start = System.currentTimeMillis();
+		StringBuilder sb = new StringBuilder();
 		for (Entry<Class<?>, StorageListener<?>> entry : listenerMap.entrySet()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("trigger listener:" + entry.getKey().getName());
 			}
+			if (sb.length() > 0) {
+				sb.append(",");
+			}
+			sb.append(entry.getKey().getName());
 			entry.getValue().doStorage();
 		}
 		long cost = System.currentTimeMillis() - start;
-		logger.info("finish to trigger listener:" + listenerMap.size() + ",cost:" + cost);
+		String msg = String.format("finish to trigger listener:%d,key[%s],cost:%d", listenerMap.size(), sb.toString(),
+				cost);
+		logger.info(msg);
 	}
 
 	public void setListeners(List<StorageListener<?>> listeners) {

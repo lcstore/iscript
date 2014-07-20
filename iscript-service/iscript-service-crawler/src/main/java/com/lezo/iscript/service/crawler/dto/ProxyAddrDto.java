@@ -29,6 +29,10 @@ public class ProxyAddrDto {
 		return InetAddressUtils.inet_ntoa(ip);
 	}
 
+	public void SetIpString(String ipString) {
+		setIp(InetAddressUtils.inet_aton(ipString));
+	}
+
 	public void setIp(Long ip) {
 		this.ip = ip;
 	}

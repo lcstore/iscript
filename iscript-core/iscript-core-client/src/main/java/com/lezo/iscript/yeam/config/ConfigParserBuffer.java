@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 
-import com.lezo.iscript.common.compile.CacheJavaCompiler;
 import com.lezo.iscript.common.loader.ClassUtils;
 import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -18,7 +17,7 @@ import com.lezo.iscript.yeam.writable.ConfigWritable;
 public class ConfigParserBuffer {
 	private static Logger log = Logger.getLogger(ConfigParserBuffer.class);
 	private ConcurrentHashMap<String, ConfigParser> configMap = new ConcurrentHashMap<String, ConfigParser>();
-	private long stamp = 0;
+	private volatile long stamp = 0;
 
 	private ConfigParserBuffer() {
 	}
@@ -31,7 +30,12 @@ public class ConfigParserBuffer {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public boolean addConfig(String name, ConfigWritable configWritable) {
+	public synchronized boolean addConfig(String name, ConfigWritable configWritable) {
+		if (stamp > configWritable.getStamp()) {
+			log.warn("ignore config:" + configWritable.getName() + ",new stamp:" + configWritable.getStamp()
+					+ ",but buffer's stamp:" + stamp);
+			return false;
+		}
 		ConfigParser parser = createParser(configWritable);
 		if (parser == null) {
 			return false;

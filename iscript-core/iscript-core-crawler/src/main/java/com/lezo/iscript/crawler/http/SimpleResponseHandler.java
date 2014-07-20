@@ -9,6 +9,16 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 
 public class SimpleResponseHandler implements ResponseHandler<String> {
+	private String charset;
+
+	public SimpleResponseHandler() {
+		this(HttpParamsConstant.DEFAULT_CHARSET);
+	}
+
+	public SimpleResponseHandler(String charset) {
+		super();
+		this.charset = charset;
+	}
 
 	@Override
 	public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
@@ -16,7 +26,10 @@ public class SimpleResponseHandler implements ResponseHandler<String> {
 			return null;
 		}
 		HttpEntity entity = response.getEntity();
-		String result = EntityUtils.toString(entity, HttpParamsConstant.DEFAULT_CHARSET);
+		if (entity == null) {
+			return null;
+		}
+		String result = EntityUtils.toString(entity, charset);
 		return result;
 	}
 

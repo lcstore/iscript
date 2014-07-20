@@ -14,7 +14,7 @@
 		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="TaskConfigDto-coloumn-list">
-		TYPE ,CONFIG ,SOURCE ,STATUS ,CREATE_TIME ,UPDATE_TIME
+		TYPE ,CONFIG ,SOURCE ,STATUS,DEST_TYPE ,CREATE_TIME ,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="TaskConfigDto">
 		INSERT INTO T_TASK_CONFIG(

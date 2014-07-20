@@ -41,7 +41,7 @@ public class AssembleTaskTimer {
 
 	private void updateConfig() {
 		long configStamp = ConfigBuffer.getInstance().getStamp();
-		long strategyStamp = ConfigBuffer.getInstance().getStamp();
+		long strategyStamp = StrategyBuffer.getInstance().getStamp();
 		Date afterStamp = new Date(configStamp < strategyStamp ? strategyStamp : configStamp);
 		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(afterStamp, 1);
 		if (configList.isEmpty()) {

@@ -2,46 +2,58 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.lecode.crawler.dao.NewsListDao">
-	<resultMap type="NewsListDto" id="RM_NewsListDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyDetectDao">
+	<resultMap type="ProxyDetectDto" id="RM_ProxyDetectDto">
 		<result column="ID" property="id"/>
-		<result column="SITE_HOST" property="siteHost"/>
-		<result column="NEWS_TITLE" property="newsTitle"/>
-		<result column="NEWS_URL" property="newsUrl"/>
-		<result column="NEWS_SORT" property="newsSort"/>
-		<result column="NEWS_TYPE" property="newsType"/>
-		<result column="PUBLISH_TIME" property="publishTime"/>
+		<result column="IP" property="ip"/>
+		<result column="PORT" property="port"/>
+		<result column="DOMAIN" property="domain"/>
+		<result column="URL" property="url"/>
+		<result column="DETECTOR" property="detector"/>
+		<result column="CUR_COST" property="curCost"/>
+		<result column="MIN_COST" property="minCost"/>
+		<result column="MAX_COST" property="maxCost"/>
+		<result column="RETRY_TIMES" property="retryTimes"/>
+		<result column="STATUS" property="status"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="NewsListDto-coloumn-list">
-		SITE_HOST
-		,NEWS_TITLE
-		,NEWS_URL
-		,NEWS_SORT
-		,NEWS_TYPE
-		,PUBLISH_TIME
+	<sql id="ProxyDetectDto-coloumn-list">
+		IP
+		,PORT
+		,DOMAIN
+		,URL
+		,DETECTOR
+		,CUR_COST
+		,MIN_COST
+		,MAX_COST
+		,RETRY_TIMES
+		,STATUS
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="NewsListDto">
-		INSERT INTO T_NEWS_LIST(
-		<include refid="NewsListDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="ProxyDetectDto">
+		INSERT INTO T_PROXY_DETECT(
+		<include refid="ProxyDetectDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteHost},#{item.newsTitle},#{item.newsUrl},#{item.newsSort},#{item.newsType},#{item.publishTime},#{item.createTime},#{item.updateTime})
+			(#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="NewsListDto">
-		UPDATE T_NEWS_LIST SET
-		SITE_HOST=#{siteHost},
-		NEWS_TITLE=#{newsTitle},
-		NEWS_URL=#{newsUrl},
-		NEWS_SORT=#{newsSort},
-		NEWS_TYPE=#{newsType},
-		PUBLISH_TIME=#{publishTime},
+	<update id="updateOne" parameterType="ProxyDetectDto">
+		UPDATE T_PROXY_DETECT SET
+		IP=#{ip},
+		PORT=#{port},
+		DOMAIN=#{domain},
+		URL=#{url},
+		DETECTOR=#{detector},
+		CUR_COST=#{curCost},
+		MIN_COST=#{minCost},
+		MAX_COST=#{maxCost},
+		RETRY_TIMES=#{retryTimes},
+		STATUS=#{status},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}

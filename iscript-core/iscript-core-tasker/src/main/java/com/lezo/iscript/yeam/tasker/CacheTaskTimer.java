@@ -52,7 +52,7 @@ public class CacheTaskTimer {
 			List<String> typeList = new ArrayList<String>(typeMap.keySet());
 			List<TaskPriorityDto> typeLevelList = taskPriorityService
 					.getTaskTypeLevels(typeList, TaskConstant.TASK_NEW);
-			log.info("add task.tasker[" + tasker + "],config:" + typeConfigList.size() + ",typeLevel:"
+			log.info("add task.tasker[" + tasker + "],config size:" + typeConfigList.size() + ",typeLevel count:"
 					+ typeLevelList.size());
 			for (TaskPriorityDto dto : typeLevelList) {
 				cacheTasks(typeMap.get(dto.getType()), dto.getLevel());

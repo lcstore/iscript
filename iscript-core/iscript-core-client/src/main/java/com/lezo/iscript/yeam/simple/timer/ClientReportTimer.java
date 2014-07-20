@@ -7,7 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.yeam.simple.storage.ResultFutureStorager;
+import com.lezo.iscript.yeam.simple.storage.ResultStorager;
 
 public class ClientReportTimer extends TimerTask {
 	private Logger logger = LoggerFactory.getLogger(ClientReportTimer.class);
@@ -34,7 +34,7 @@ public class ClientReportTimer extends TimerTask {
 	}
 
 	private void sendReport() {
-		ResultFutureStorager.getInstance().doStorage();
+		ResultStorager.getInstance().doStorage();
 	}
 
 }
