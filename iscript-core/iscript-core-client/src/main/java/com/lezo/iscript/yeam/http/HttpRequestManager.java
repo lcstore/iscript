@@ -20,13 +20,12 @@ import com.lezo.iscript.crawler.utils.HttpClientUtils;
 public class HttpRequestManager {
 	private static Logger logger = LoggerFactory.getLogger(HttpRequestManager.class);
 	private DefaultHttpClient client;
-	private SimpleProxySelector proxySelector = new SimpleProxySelector(new SimpleProxyManager());
+	private static final HttpRequestManager defaultManager = new HttpRequestManager();
 
 	public HttpRequestManager() {
 		client = HttpClientUtils.createHttpClient();
-		proxySelector = new SimpleProxySelector(new SimpleProxyManager());
 		SchemeRegistry schreg = client.getConnectionManager().getSchemeRegistry();
-		ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(schreg, proxySelector);
+		ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(schreg, new SimpleProxySelector());
 		client.setRoutePlanner(routePlanner);
 	}
 
@@ -36,14 +35,6 @@ public class HttpRequestManager {
 
 	public void setClient(DefaultHttpClient client) {
 		this.client = client;
-	}
-
-	public ProxyManager getProxyManager() {
-		return proxySelector.getProxyManager();
-	}
-
-	public void setProxyManager(ProxyManager proxyManager) {
-		this.proxySelector.setProxyManager(proxyManager);
 	}
 
 	public final HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException,
@@ -76,4 +67,9 @@ public class HttpRequestManager {
 		}
 		return null;
 	}
+
+	public static HttpRequestManager getDefaultManager() {
+		return defaultManager;
+	}
+
 }

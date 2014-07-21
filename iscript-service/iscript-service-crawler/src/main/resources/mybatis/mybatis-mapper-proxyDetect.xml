@@ -43,13 +43,13 @@
 		SELECT * FROM T_PROXY_DETECT
 		WHERE 1=1
 		<if test="ipLongs!=null &amp;&amp; !ipLongs.isEmpty()">
-			<foreach collection="ipLongs" item="ip" open="IP IN(" close=")"
+			<foreach collection="ipLongs" item="ip" open="AND IP IN(" close=")"
 				separator=",">
 				#{ip}
 			</foreach>
 		</if>
 		<if test="portList!=null &amp;&amp; !portList.isEmpty()">
-			<foreach collection="portList" item="port" open="PORT IN("
+			<foreach collection="portList" item="port" open="AND PORT IN("
 				close=")" separator=",">
 				#{port}
 			</foreach>

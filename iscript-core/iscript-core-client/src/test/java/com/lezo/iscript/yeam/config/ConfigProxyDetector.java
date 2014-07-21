@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
@@ -17,22 +18,20 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.http.HttpRequestManager;
-import com.lezo.iscript.yeam.http.ProxyManager;
-import com.lezo.iscript.yeam.http.SimpleProxyManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
-import com.sun.crypto.provider.RSACipher;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
-	private HttpRequestManager httpRequestManager = new HttpRequestManager();
+	private HttpRequestManager httpRequestManager;
 	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
+		httpRequestManager = new HttpRequestManager();
+		httpRequestManager.getClient().setRoutePlanner(null);
 		detectUrls = new ArrayList<String>();
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
 	}
@@ -44,14 +43,11 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		Long id = (Long) task.get("id");
 		Integer port = (Integer) task.get("port");
 		String host = getHost(task);
-		ProxyManager proxyManager = new SimpleProxyManager();
-		proxyManager.getEnableTrackers().clear();
-		proxyManager.addTracker(id, host, port);
-		httpRequestManager.setProxyManager(proxyManager);
-
+		DefaultHttpClient client = httpRequestManager.getClient();
+		HttpHost proxy = new HttpHost(host, port);
+		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		JSONObject itemObject = new JSONObject();
 		String url = getDetectUrl(task);
 		HttpGet get = new HttpGet(url);
@@ -61,8 +57,11 @@ public class ConfigProxyDetector implements ConfigParser {
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = httpRequestManager.execute(get, context);
+			HttpHost proxyHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
+			JSONUtils.put(itemObject, "host", proxyHost.getHostName());
+			JSONUtils.put(itemObject, "port", proxyHost.getPort());
 			int statusCode = res.getStatusLine().getStatusCode();
- 			String html = EntityUtils.toString(res.getEntity());
+			String html = EntityUtils.toString(res.getEntity());
 			status = getStatus(statusCode, html);
 		} catch (Exception e) {
 			status = 0;

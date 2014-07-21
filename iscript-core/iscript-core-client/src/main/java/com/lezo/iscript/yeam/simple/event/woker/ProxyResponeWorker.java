@@ -7,14 +7,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.InetAddressUtils;
-import com.lezo.iscript.yeam.http.ProxyManager;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.simple.utils.HttpUtils;
+import com.lezo.iscript.yeam.proxy.ProxyBuffer;
 import com.lezo.iscript.yeam.writable.ProxyWritable;
 
 public class ProxyResponeWorker implements Runnable {
 	private static org.slf4j.Logger logger = LoggerFactory.getLogger(ProxyResponeWorker.class);
-	private static final Object CONFIG_WRITE_LOCK = new Object();
+	private static final Object WRITE_LOCK = new Object();
 	private IoRespone ioRespone;
 
 	public ProxyResponeWorker(IoRespone ioRespone) {
@@ -32,17 +31,18 @@ public class ProxyResponeWorker implements Runnable {
 		if (CollectionUtils.isEmpty(configList)) {
 			return;
 		}
-		synchronized (CONFIG_WRITE_LOCK) {
-			ProxyManager proxyManager = HttpUtils.getDefaultHttpRequestManager().getProxyManager();
+		synchronized (WRITE_LOCK) {
+			ProxyBuffer proxyBuffer = ProxyBuffer.getInstance();
 			int size = configList.size();
 			for (int i = 0; i < size; i++) {
 				ProxyWritable proxyWritable = configList.get(i);
 				String host = getHost(proxyWritable);
-				proxyManager.addTracker(proxyWritable.getId(), host, proxyWritable.getPort());
+				proxyBuffer.addProxy(proxyWritable.getId(), proxyBuffer.createProxy(host, proxyWritable.getPort()));
 			}
-			String msg = String.format("proxyManager add:%d,enable:%d,diable:%d", configList.size(), proxyManager
-					.getEnableTrackers().size(), proxyManager.getDiableTrackers().size());
+			String msg = String.format("proxyManager add:%d,use:%d,error:%d", configList.size(), proxyBuffer
+					.getProxys().size(), proxyBuffer.getErrors().size());
 			logger.info(msg);
+			proxyBuffer.clearErrors();
 		}
 	}
 

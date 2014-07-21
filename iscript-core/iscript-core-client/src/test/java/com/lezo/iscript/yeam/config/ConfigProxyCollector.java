@@ -16,8 +16,8 @@ import org.jsoup.select.Elements;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
+import com.lezo.iscript.yeam.http.HttpRequestManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.simple.utils.HttpUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyCollector implements ConfigParser {
@@ -30,7 +30,7 @@ public class ConfigProxyCollector implements ConfigParser {
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		String url = (String) task.get("url");
-		DefaultHttpClient client = HttpUtils.getDefaultHttpRequestManager().getClient();
+		DefaultHttpClient client = HttpRequestManager.getDefaultManager().getClient();
 
 		BasicClientCookie cookie = new BasicClientCookie("__utma",
 				"193324902.1016719687.1401026096.1401026096.1401026096.1");
