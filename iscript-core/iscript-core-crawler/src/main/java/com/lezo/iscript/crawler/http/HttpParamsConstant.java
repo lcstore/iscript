@@ -15,7 +15,7 @@ public class HttpParamsConstant {
 	/**
 	 * 每个路由最大连接数
 	 */
-	public final static int MAX_ROUTE_CONNECTIONS = 20;
+	public final static int MAX_ROUTE_CONNECTIONS = 50;
 	/**
 	 * 连接超时时间
 	 */

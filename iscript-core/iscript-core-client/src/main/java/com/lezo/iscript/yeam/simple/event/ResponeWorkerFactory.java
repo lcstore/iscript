@@ -3,6 +3,7 @@ package com.lezo.iscript.yeam.simple.event;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.simple.event.woker.ConfigResponeWorker;
+import com.lezo.iscript.yeam.simple.event.woker.ProxyResponeWorker;
 import com.lezo.iscript.yeam.simple.event.woker.TaskResponeWorker;
 
 public class ResponeWorkerFactory {
@@ -17,6 +18,10 @@ public class ResponeWorkerFactory {
 		}
 		case IoConstant.EVENT_TYPE_TASK: {
 			worker = new TaskResponeWorker(ioRespone);
+			break;
+		}
+		case IoConstant.EVENT_TYPE_PROXY: {
+			worker = new ProxyResponeWorker(ioRespone);
 			break;
 		}
 		case IoConstant.EVENT_TYPE_NONE: {
