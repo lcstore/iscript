@@ -229,9 +229,12 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigProxyDetector();
 		TaskWritable task = new TaskWritable();
 		try {
+			long ip = 1567820005;
 			task.put("ip", "92.222.153.153");
 			task.put("port", 7808);
-			task.put("url", url);
+			task.put("ip",ip );
+			task.put("port", 7808);
+//			task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {

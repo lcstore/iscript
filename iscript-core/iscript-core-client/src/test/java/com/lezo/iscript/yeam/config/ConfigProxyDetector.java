@@ -11,7 +11,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -20,20 +19,28 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.utils.URLUtils;
+import com.lezo.iscript.yeam.client.HardConstant;
 import com.lezo.iscript.yeam.http.HttpRequestManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
 	private HttpRequestManager httpRequestManager;
 	private List<String> detectUrls;
+	private static final String DETECTOR = String.format("%s@%s", ClientPropertiesUtils.getProperty("name"),
+			HardConstant.MAC_ADDR);
 
 	public ConfigProxyDetector() {
 		httpRequestManager = new HttpRequestManager();
 		httpRequestManager.getClient().setRoutePlanner(null);
 		detectUrls = new ArrayList<String>();
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
+		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
+		detectUrls.add("http://item.jd.com/856850.html");
+		detectUrls.add("http://detail.1688.com/offer/36970162715.html");
 	}
 
 	@Override
@@ -57,9 +64,10 @@ public class ConfigProxyDetector implements ConfigParser {
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = httpRequestManager.execute(get, context);
-			HttpHost proxyHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
-			JSONUtils.put(itemObject, "host", proxyHost.getHostName());
-			JSONUtils.put(itemObject, "port", proxyHost.getPort());
+			// HttpHost proxyHost = (HttpHost)
+			// context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
+			// JSONUtils.put(itemObject, "host", proxyHost.getHostName());
+			// JSONUtils.put(itemObject, "port", proxyHost.getPort());
 			int statusCode = res.getStatusLine().getStatusCode();
 			String html = EntityUtils.toString(res.getEntity());
 			status = getStatus(statusCode, html);
@@ -72,8 +80,10 @@ public class ConfigProxyDetector implements ConfigParser {
 		}
 		long cost = System.currentTimeMillis() - start;
 		JSONUtils.put(itemObject, "url", url);
+		JSONUtils.put(itemObject, "domain", URLUtils.getRootHost(url));
 		JSONUtils.put(itemObject, "cost", cost);
 		JSONUtils.put(itemObject, "status", status);
+		JSONUtils.put(itemObject, "detector", DETECTOR);
 		return itemObject.toString();
 	}
 

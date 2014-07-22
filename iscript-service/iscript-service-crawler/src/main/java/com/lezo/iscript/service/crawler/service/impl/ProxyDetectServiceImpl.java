@@ -2,6 +2,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +75,8 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 				continue;
 			}
 			ProxyDetectDto newDto = entry.getValue();
+			newDto.setMaxCost(newDto.getCurCost());
+			newDto.setMinCost(newDto.getCurCost());
 			insertDtos.add(newDto);
 		}
 
@@ -109,18 +112,22 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 			if (newDto == null) {
 				continue;
 			}
-			if (newDto.getMaxCost() < oldDto.getMaxCost()) {
+			newDto.setMaxCost(newDto.getCurCost());
+			newDto.setMinCost(newDto.getCurCost());
+			if (oldDto.getMaxCost() != null && newDto.getMaxCost() < oldDto.getMaxCost()) {
 				newDto.setMaxCost(oldDto.getMaxCost());
 			}
-			if (newDto.getMinCost() > oldDto.getMinCost()) {
+			if (oldDto.getMinCost() != null && newDto.getMinCost() > oldDto.getMinCost()) {
 				newDto.setMinCost(oldDto.getMinCost());
 			}
-			if (ProxyDetectDto.STATUS_USABLE == newDto.getStatus()) {
+			if (1 == newDto.getStatus()) {
+				newDto.setStatus(ProxyDetectDto.STATUS_USABLE);
 				newDto.setRetryTimes(0);
-			} else if (ProxyDetectDto.STATUS_RETRY == newDto.getStatus()) {
+			} else if (0 == newDto.getStatus()) {
 				newDto.setRetryTimes(oldDto.getRetryTimes() + 1);
 				if (newDto.getRetryTimes() >= ProxyDetectDto.MAX_RETRY_TIMES) {
-					newDto.setStatus(ProxyDetectDto.STATUS_NONUSE);
+					newDto.setRetryTimes(0);
+					newDto.setStatus(oldDto.getStatus() - 1);
 				}
 			}
 			newDto.setId(oldDto.getId());
@@ -132,6 +139,8 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 				continue;
 			}
 			ProxyDetectDto newDto = entry.getValue();
+			newDto.setMaxCost(newDto.getCurCost());
+			newDto.setMinCost(newDto.getCurCost());
 			insertDtos.add(newDto);
 		}
 	}
@@ -162,8 +171,29 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		return proxyDetectDao.getProxyDetectDtosFromId(fromId, limit, status);
 	}
 
+	@Override
+	public List<ProxyDetectDto> getProxyDetectDtosFromStatus(Integer status, Date afterUpdateTime) {
+		if (status == null) {
+			return Collections.emptyList();
+		}
+		return proxyDetectDao.getProxyDetectDtosFromStatus(status, afterUpdateTime);
+	}
+
 	public void setProxyDetectDao(ProxyDetectDao proxyDetectDao) {
 		this.proxyDetectDao = proxyDetectDao;
+	}
+
+	@Override
+	public List<ProxyDetectDto> getProxyDetectDtoFromDomain(List<String> domainList, Integer status) {
+		List<ProxyDetectDto> dtoList = new ArrayList<ProxyDetectDto>();
+		BatchIterator<String> it = new BatchIterator<String>(domainList);
+		while (it.hasNext()) {
+			List<ProxyDetectDto> subList = proxyDetectDao.getProxyDetectDtoFromDomain(it.next(), status);
+			if (CollectionUtils.isNotEmpty(subList)) {
+				dtoList.addAll(subList);
+			}
+		}
+		return dtoList;
 	}
 
 }

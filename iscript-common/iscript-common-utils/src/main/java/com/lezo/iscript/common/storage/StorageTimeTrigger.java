@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 
 public class StorageTimeTrigger implements StorageTrigger {
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(StorageTimeTrigger.class);
-	private ConcurrentHashMap<Class<?>, StorageListener<?>> listenerMap = new ConcurrentHashMap<Class<?>, StorageListener<?>>();
+	private ConcurrentHashMap<String, StorageListener<?>> listenerMap = new ConcurrentHashMap<String, StorageListener<?>>();
 
 	@Override
 	public void addListener(Class<?> dataClass, StorageListener<?> listener) {
-		listenerMap.putIfAbsent(dataClass, listener);
+		listenerMap.putIfAbsent(dataClass.getSimpleName(), listener);
 	}
 
 	@Override
@@ -20,14 +20,14 @@ public class StorageTimeTrigger implements StorageTrigger {
 		logger.info("start to trigger listener:" + listenerMap.size());
 		long start = System.currentTimeMillis();
 		StringBuilder sb = new StringBuilder();
-		for (Entry<Class<?>, StorageListener<?>> entry : listenerMap.entrySet()) {
+		for (Entry<String, StorageListener<?>> entry : listenerMap.entrySet()) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("trigger listener:" + entry.getKey().getName());
+				logger.debug("trigger listener:" + entry.getKey());
 			}
 			if (sb.length() > 0) {
 				sb.append(",");
 			}
-			sb.append(entry.getKey().getSimpleName());
+			sb.append(entry.getKey());
 			entry.getValue().doStorage();
 		}
 		long cost = System.currentTimeMillis() - start;

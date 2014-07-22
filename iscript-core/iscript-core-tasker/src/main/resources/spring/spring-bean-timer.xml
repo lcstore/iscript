@@ -12,6 +12,8 @@
 	</bean>
 	<bean id="signTaskTimer" class="com.lezo.iscript.yeam.tasker.SignTaskTimer">
 	</bean>
+	<bean id="proxyDetectTimer" class="com.lezo.iscript.yeam.tasker.ProxyDetectTimer">
+	</bean>
 
 	<bean id="taskPriorityStorager"
 		class="com.lezo.iscript.yeam.tasker.storage.TaskPriorityStorager">
@@ -48,5 +50,10 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="signTaskTimer" method="run"
 			cron="0 20 9 * * ?" />
+	</task:scheduled-tasks>
+
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="proxyDetectTimer" method="run"
+			cron="0 0/30 * * * ?" />
 	</task:scheduled-tasks>
 </beans>
