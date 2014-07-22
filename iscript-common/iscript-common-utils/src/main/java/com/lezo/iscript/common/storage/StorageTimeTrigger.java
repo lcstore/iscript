@@ -27,7 +27,7 @@ public class StorageTimeTrigger implements StorageTrigger {
 			if (sb.length() > 0) {
 				sb.append(",");
 			}
-			sb.append(entry.getKey().getName());
+			sb.append(entry.getKey().getSimpleName());
 			entry.getValue().doStorage();
 		}
 		long cost = System.currentTimeMillis() - start;

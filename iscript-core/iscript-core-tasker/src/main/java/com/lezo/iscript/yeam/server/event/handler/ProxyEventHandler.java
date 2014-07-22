@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.service.crawler.service.ProxyDetectService;
+import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
@@ -30,7 +32,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		int remain = 5 - active;
 
 		List<ProxyWritable> proxyList = new ArrayList<ProxyWritable>(remain);
-		
+		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 		IoRespone ioRespone = new IoRespone();
 		ioRespone.setType(IoConstant.EVENT_TYPE_PROXY);
 		ioRespone.setData(proxyList);

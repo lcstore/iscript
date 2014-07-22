@@ -54,7 +54,7 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
 					addResults(rootObject, argsObject, dtoList);
-					addNextListTasks(rootObject, argsObject, taskList);
+					addNextTasks(rootObject, argsObject, taskList);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -69,7 +69,7 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 
 	}
 
-	private void addNextListTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
+	private void addNextTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
 			throws Exception {
 		JSONArray nextArray = JSONUtils.get(rootObject, "nexts");
 		if (nextArray == null) {
@@ -80,11 +80,12 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 			String nextUrl = nextArray.getString(i);
 			TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
 			taskPriorityDto.setBatchId(JSONUtils.getString(argsObject, "bid"));
-			taskPriorityDto.setType("CongfigProxyCollector");
+			taskPriorityDto.setType("ConfigProxyCollector");
 			taskPriorityDto.setUrl(nextUrl);
 			taskPriorityDto.setLevel(JSONUtils.getInteger(argsObject, "level"));
 			taskPriorityDto.setSource(JSONUtils.getString(argsObject, "src"));
 			taskPriorityDto.setCreatTime(new Date());
+			taskPriorityDto.setUpdateTime(taskPriorityDto.getCreatTime());
 			taskPriorityDto.setStatus(TaskConstant.TASK_NEW);
 			argsObject.remove("bid");
 			argsObject.remove("type");
