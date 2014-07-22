@@ -89,13 +89,13 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	private String getHost(TaskWritable task) {
 		Object ipObject = task.get("ip");
-		if (ipObject instanceof String) {
-			return ipObject.toString();
-		} else if (ipObject instanceof Long) {
-			Long ipLong = (Long) ipObject;
-			return InetAddressUtils.inet_ntoa(ipLong);
+		String ipString = ipObject.toString();
+		int index = ipString.indexOf(".");
+		if (index > 0) {
+			return ipString;
 		} else {
-			throw new IllegalArgumentException("unkonwn ip data type:" + ipObject.getClass().getName());
+			Long ipLong = Long.valueOf(ipString);
+			return InetAddressUtils.inet_ntoa(ipLong);
 		}
 	}
 
