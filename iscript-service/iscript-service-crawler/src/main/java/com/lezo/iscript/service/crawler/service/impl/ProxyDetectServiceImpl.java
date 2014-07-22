@@ -146,7 +146,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	}
 
 	private String getDtoKey(ProxyDetectDto dto) {
-		String key = dto.getIp() + "-" + dto.getPort() + "-" + dto.getDomain();
+		String key = dto.getIp() + "-" + dto.getPort();
 		return key;
 	}
 
