@@ -20,7 +20,6 @@ import com.lezo.iscript.yeam.task.TaskConstant;
 public class ProxyDetectTimer {
 	private static Logger logger = Logger.getLogger(ProxyDetectTimer.class);
 	private static volatile boolean running = false;
-	private static volatile long stamp = 0;
 	@Autowired
 	private ProxyDetectService proxyDetectService;
 	private List<Integer> checkStatusList;
@@ -43,19 +42,17 @@ public class ProxyDetectTimer {
 		try {
 			logger.info("Detect proxy is start...");
 			running = true;
-			Date afterTime = new Date(stamp);
+			Date afterTime = null;
 			for (int status : checkStatusList) {
 				List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromStatus(status, afterTime);
 				offerDetectTasks(dtoList, taskId);
 				JSONUtils.put(statusObject, "" + status, dtoList.size());
 			}
-			stamp = System.currentTimeMillis();
 		} catch (Exception ex) {
 			logger.warn(ExceptionUtils.getStackTrace(ex));
 		} finally {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("Detect proxy.taskId:%s,stamp:%s,%s,cost:%s", taskId, stamp,
-					statusObject.toString(), cost);
+			String msg = String.format("Detect proxy.taskId:%s,%s,cost:%s", taskId, statusObject.toString(), cost);
 			logger.info(msg);
 			running = false;
 		}

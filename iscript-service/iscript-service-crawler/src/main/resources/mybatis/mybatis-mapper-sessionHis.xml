@@ -40,16 +40,27 @@
 	</insert>
 	<update id="updateOne" parameterType="SessionHisDto">
 		UPDATE T_SESSION_HIS SET
-		SESSION_ID=#{sessionId},
-		CLIEN_NAME=#{clienName},
 		REQUEST_SIZE=#{requestSize},
 		RESPONE_SIZE=#{responeSize},
 		ERROR_SIZE=#{errorSize},
 		SUCCESS_NUM=#{successNum},
 		FAIL_NUM=#{failNum},
 		STATUS=#{status},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getSessionHisDtos" parameterType="map"
+		resultMap="RM_SessionHisDto">
+		SELECT * FROM T_SESSION_HIS
+		WHERE 1=1
+		<if test="sessionIds!=null &amp;&amp; !sessionIds.isEmpty()">
+			<foreach collection="sessionIds" item="sessionId" open="AND SESSION_ID IN("
+				close=")" separator=",">
+				#{sessionId}
+			</foreach>
+		</if>
+		<if test="sessionIds==null || sessionIds.isEmpty()">
+			AND　1=0
+		</if>
+	</select>
 </mapper>

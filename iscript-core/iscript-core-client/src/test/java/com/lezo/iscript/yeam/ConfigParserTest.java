@@ -10,8 +10,9 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
-import com.lezo.iscript.yeam.config.ConfigProxyDetector;
+import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
+import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
@@ -246,6 +247,18 @@ public class ConfigParserTest {
 	public void testConfigProxyCollector() throws Exception {
 		String url = "http://detail.1688.com/offer/1225054841.html";
 		ConfigParser parser = new ConfigProxyCollector();
+		TaskWritable task = new TaskWritable();
+		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testConfigEtaoSimilar() throws Exception {
+		String url = "http://detail.1688.com/offer/1225054841.html";
+		ConfigParser parser = new ConfigEtaoSimilar();
 		TaskWritable task = new TaskWritable();
 		try {
 			String result = parser.doParse(task);
