@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,15 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyCollector implements ConfigParser {
+	private List<String> proxySeedList;
+
+	public ConfigProxyCollector() {
+		proxySeedList = new ArrayList<String>();
+		proxySeedList.add("http://www.cool-proxy.net/proxies/http_proxy_list/page:1/sort:score/direction:desc");
+		proxySeedList.add("http://204.45.118.186/plists.json.php");
+		// proxySeedList.add("http://www.simpleproxylist.com/");
+		proxySeedList.add("http://www.mrhinkydink.com/proxies.htm");
+	}
 
 	@Override
 	public String getName() {
@@ -40,22 +51,27 @@ public class ConfigProxyCollector implements ConfigParser {
 		cookie = new BasicClientCookie("__utmz",
 				"193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
 		client.getCookieStore().addCookie(cookie);
-		if (StringUtils.isEmpty(url)) {
-			url = "http://www.cool-proxy.net/proxies/http_proxy_list/page:1/sort:score/direction:desc";
-		}
 		JSONObject jObject = new JSONObject();
-		String nextUrl = handleUrl(url, jObject, client);
 		JSONArray nextArray = new JSONArray();
-		nextArray.put(nextUrl);
+		if (StringUtils.isEmpty(url)) {
+			for (String seedUrl : proxySeedList) {
+				nextArray.put(seedUrl);
+			}
+		} else {
+			List<String> nextUrls = handleUrl(url, jObject, client);
+			for (String nextUrl : nextUrls) {
+				nextArray.put(nextUrl);
+			}
+		}
 		JSONUtils.put(jObject, "nexts", nextArray);
 		return jObject.toString();
 	}
 
-	private String handleUrl(String url, JSONObject jObject, DefaultHttpClient client) throws Exception {
+	private List<String> handleUrl(String url, JSONObject jObject, DefaultHttpClient client) throws Exception {
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get);
 		html = decode(html);
-		Pattern oReg = Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[^0-9]+?([0-9]+)", Pattern.MULTILINE);
+		Pattern oReg = Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[^0-9]+?([0-9]{2,})", Pattern.MULTILINE);
 		Matcher matcher = oReg.matcher(html);
 		String key = "proxys";
 		JSONArray proxyArray = JSONUtils.get(jObject, key);
@@ -71,11 +87,18 @@ public class ConfigProxyCollector implements ConfigParser {
 			System.out.println(matcher.group(1) + ":" + matcher.group(2));
 		}
 		Document dom = Jsoup.parse(html, url);
-		Elements nextElements = dom.select(".next a[href]:contains(Next)");
+		Elements nextElements = dom.select(".next a[href]:contains(Next),a[href*=p=]:contains(Next)");
+		List<String> nextList = new ArrayList<String>();
 		if (!nextElements.isEmpty()) {
-			return nextElements.first().absUrl("href");
+			String nextUrl = nextElements.first().absUrl("href");
+			nextList.add(nextUrl);
+		} else if (url.endsWith("proxies.htm")) {
+			nextElements = dom.select("a.menu[href*=proxies]:contains(page)");
+			for (int i = 1; i < nextElements.size(); i++) {
+				nextList.add(nextElements.get(i).absUrl("href"));
+			}
 		}
-		return null;
+		return nextList;
 	}
 
 	private String decode(String html) throws Exception {

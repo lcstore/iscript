@@ -27,12 +27,17 @@ public class ResultHandlerWoker implements Runnable {
 		logger.info("start to handle result:" + rWritables.size());
 		if (!CollectionUtils.isEmpty(rWritables)) {
 			for (ResultWritable rWritable : rWritables) {
-				ResultStrategy resultStrategy = getResultStrategy(rWritable);
-				if (resultStrategy == null) {
-					String msg = String.format("type:%s,rsObject:%s", rWritable.getType(), rWritable.getResult());
-					logger.info(msg);
-				} else {
-					resultStrategy.handleResult(rWritable);
+				try {
+					ResultStrategy resultStrategy = getResultStrategy(rWritable);
+					if (resultStrategy == null) {
+						String msg = String.format("type:%s,rsObject:%s", rWritable.getType(), rWritable.getResult());
+						logger.info(msg);
+					} else {
+						resultStrategy.handleResult(rWritable);
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}

@@ -241,10 +241,11 @@ public class ConfigParserTest {
 
 	@Test
 	public void testConfigProxyCollector() throws Exception {
-		String url = "http://detail.1688.com/offer/1225054841.html";
+		String url = "http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=0#table";
 		ConfigParser parser = new ConfigProxyCollector();
 		TaskWritable task = new TaskWritable();
 		try {
+//			task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
