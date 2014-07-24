@@ -66,14 +66,17 @@ public class TaskEventHandler extends AbstractEventHandler {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %d task for client:%s@%s,cost:%s", taskOffers.size(),
-				JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "mac"), cost);
+		String msg = String.format("Offer %d task for client:%s,cost:%s", taskOffers.size(),
+				JSONUtils.getString(hObject, "name"), cost);
 		logger.info(msg);
 
 	}
 
 	@Override
 	protected boolean isAccept(RequestEvent event) {
+		if (IoConstant.EVENT_TYPE_CONFIG == event.getType()) {
+			return false;
+		}
 		IoRequest ioRequest = getIoRequest(event);
 		if (ioRequest == null) {
 			return false;

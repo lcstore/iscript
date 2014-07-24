@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class SessionHisDto {
 	public static final String SESSION_ID = "sid";
-	public static final String CLIEN_NAME = "cname";
+	public static final String CLIEN_NAME = "name";
 	public static final String REQUEST_SIZE = "request";
 	public static final String RESPONE_SIZE = "respone";
 	public static final String ERROR_SIZE = "error";
@@ -12,7 +12,7 @@ public class SessionHisDto {
 	public static final String FAIL_NUM = "fail";
 	public static final String LOSE_TIME = "lostTime";
 	public static final String SAVE_STAMP = "stamp";
-	public static final long MAX_SAVE_INTERVAL = 10 * 60 * 1000;
+	public static final long MAX_SAVE_INTERVAL = 5 * 60 * 1000;
 
 	public static final int STATUS_UP = 1;
 	public static final int STATUS_DOWN = 0;

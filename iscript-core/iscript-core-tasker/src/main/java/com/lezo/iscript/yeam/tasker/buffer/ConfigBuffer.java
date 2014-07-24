@@ -26,7 +26,7 @@ public class ConfigBuffer {
 
 	public synchronized void addConfig(String name, ConfigWritable configWritable) {
 		configMap.put(name, configWritable);
-		stamp = configWritable.getStamp();
+		stamp = configWritable.getStamp() > stamp ? configWritable.getStamp() : stamp;
 	}
 
 	public ConfigWritable getConfig(String name) {

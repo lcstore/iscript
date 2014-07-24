@@ -3,9 +3,11 @@ package com.lezo.iscript.yeam.server.event.handler;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.service.crawler.dto.SessionHisDto;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.result.ResultHandlerCaller;
 import com.lezo.iscript.yeam.result.ResultHandlerWoker;
@@ -24,12 +26,32 @@ public class ResultEventHandler extends AbstractEventHandler {
 		@SuppressWarnings("unchecked")
 		List<ResultWritable> rWritables = (List<ResultWritable>) rsObject;
 		if (!CollectionUtils.isEmpty(rWritables)) {
+			add2Session(event.getSession(), rWritables);
 			ResultHandlerCaller caller = ResultHandlerCaller.getInstance();
 			caller.execute(new ResultHandlerWoker(rWritables));
 			String msg = String.format("add %d result to caller.active woker:%d,in Queue worker:%d", rWritables.size(),
 					caller.getExecutor().getActiveCount(), caller.getExecutor().getQueue().size());
 			logger.info(msg);
 		}
+	}
+
+	private void add2Session(IoSession session, List<ResultWritable> rWritables) {
+		int success = 0;
+		int fail = 0;
+		for (ResultWritable rw : rWritables) {
+			if (ResultWritable.RESULT_SUCCESS == rw.getStatus()) {
+				success++;
+			} else {
+				fail++;
+			}
+		}
+		add2Attribute(session, SessionHisDto.SUCCESS_NUM, success);
+		add2Attribute(session, SessionHisDto.FAIL_NUM, fail);
+	}
+
+	public void add2Attribute(IoSession session, String key, int num) {
+		int newValue = (Integer) session.getAttribute(key) + num;
+		session.setAttribute(key, newValue);
 	}
 
 	@Override

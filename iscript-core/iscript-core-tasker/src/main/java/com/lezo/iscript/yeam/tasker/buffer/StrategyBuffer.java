@@ -36,9 +36,10 @@ public class StrategyBuffer {
 		if (newObject instanceof ResultStrategy) {
 			ResultStrategy resultStrategy = (ResultStrategy) newObject;
 			strategyMap.put(resultStrategy.getName(), resultStrategy);
-			stamp = dto.getUpdateTime().getTime();
 		}
-		
+		long cStamp = dto.getUpdateTime().getTime();
+		stamp = cStamp > stamp ? cStamp : stamp;
+
 	}
 
 	public long getStamp() {

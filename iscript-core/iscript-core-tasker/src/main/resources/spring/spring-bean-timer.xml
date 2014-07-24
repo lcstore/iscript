@@ -18,11 +18,14 @@
 	<bean id="taskPriorityStorager"
 		class="com.lezo.iscript.yeam.tasker.storage.TaskPriorityStorager">
 	</bean>
+	<bean id="sessionStorager" class="com.lezo.iscript.yeam.tasker.storage.SessionStorager">
+	</bean>
 
 	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
 		<property name="listeners">
 			<list>
 				<ref bean="taskPriorityStorager" />
+				<ref bean="sessionStorager" />
 			</list>
 		</property>
 	</bean>

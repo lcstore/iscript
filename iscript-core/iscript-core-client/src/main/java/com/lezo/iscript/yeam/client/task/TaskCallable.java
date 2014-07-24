@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -29,17 +30,15 @@ public class TaskCallable implements Callable<ResultWritable> {
 		rsWritable.setTaskId(task.getId());
 		JSONObject rsObject = new JSONObject();
 		JSONObject argsObject = new JSONObject(task.getArgs());
-		rsObject.put("args", argsObject);
 		String type = null;
 		try {
 			Object typeObject = task.get("type");
 			if (typeObject == null) {
-				throw new IllegalArgumentException("No type for task,id:" + task.getId() + ",args:"
-						+ JSONUtils.get(rsObject, "args"));
+				throw new IllegalArgumentException("No type for task,id:" + task.getId() + ",args:" + argsObject);
 			}
-			type = task.get("type").toString();
+			type = typeObject.toString();
 			rsWritable.setType(type);
-			argsObject.remove("type");
+			// argsObject.remove("type");
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			String rs = parser.doParse(task);
 			rsObject.put("rs", rs);
@@ -53,6 +52,8 @@ public class TaskCallable implements Callable<ResultWritable> {
 			JSONUtils.put(rsObject, "ex", exObject);
 			logger.warn(strStack);
 		} finally {
+			JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+			JSONUtils.put(rsObject, "args", argsObject);
 			rsWritable.setResult(rsObject.toString());
 			long cost = System.currentTimeMillis() - start;
 			String msg = String.format("done task:%d,type:%s,status:%d,cost:%d", task.getId(), type,

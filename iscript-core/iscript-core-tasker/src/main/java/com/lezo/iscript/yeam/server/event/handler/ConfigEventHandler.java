@@ -32,6 +32,7 @@ public class ConfigEventHandler extends AbstractEventHandler {
 				configWritables.add(config);
 			}
 		}
+		event.setType(IoConstant.EVENT_TYPE_CONFIG);
 		IoRespone ioRespone = new IoRespone();
 		ioRespone.setType(IoConstant.EVENT_TYPE_CONFIG);
 		ioRespone.setData(configWritables);

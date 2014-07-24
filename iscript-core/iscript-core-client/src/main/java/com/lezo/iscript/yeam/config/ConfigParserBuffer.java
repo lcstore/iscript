@@ -31,17 +31,12 @@ public class ConfigParserBuffer {
 	}
 
 	public synchronized boolean addConfig(String name, ConfigWritable configWritable) {
-		if (stamp > configWritable.getStamp()) {
-			log.warn("ignore config:" + configWritable.getName() + ",new stamp:" + configWritable.getStamp()
-					+ ",but buffer's stamp:" + stamp);
-			return false;
-		}
 		ConfigParser parser = createParser(configWritable);
 		if (parser == null) {
 			return false;
 		}
 		configMap.put(configWritable.getName(), parser);
-		stamp = configWritable.getStamp();
+		stamp = configWritable.getStamp() > stamp ? configWritable.getStamp() : stamp;
 		return true;
 	}
 

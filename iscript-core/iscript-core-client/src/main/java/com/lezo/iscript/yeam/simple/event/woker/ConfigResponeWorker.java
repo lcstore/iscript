@@ -35,7 +35,7 @@ public class ConfigResponeWorker implements Runnable {
 		// keep ConfigResponeWorker working in the lineS
 		synchronized (CONFIG_WRITE_LOCK) {
 			ConfigParserBuffer configBuffer = ConfigParserBuffer.getInstance();
-			doStampAsc(configList);
+			// doStampAsc(configList);
 			int size = configList.size();
 			// use index to foreach the list，keep the queue.
 			for (int i = 0; i < size; i++) {

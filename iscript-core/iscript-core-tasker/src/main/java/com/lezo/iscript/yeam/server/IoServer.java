@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -15,12 +16,15 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
+import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.server.event.RequestProceser;
 import com.lezo.iscript.yeam.server.event.RequestWorker;
 
@@ -43,58 +47,64 @@ public class IoServer extends IoHandlerAdapter {
 
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
+		add2Attribute(session, SessionHisDto.REQUEST_SIZE, 1);
 		if (message == null) {
 			return;
 		}
 		RequestProceser.getInstance().execute(new RequestWorker(session, message));
+		addNewSession(session, message);
 		addTrackSession(session);
-	}
-
-	private void addTrackSession(IoSession session) {
-		String key = SessionHisDto.SAVE_STAMP;
-		Long stamp = (Long) session.getAttribute(key);
-		long cost = System.currentTimeMillis() - stamp;
-		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
-			StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
-			SessionHisDto trackDto = getSessionHisDto(session);
-			trackDto.setStatus(SessionHisDto.STATUS_UP);
-			storage.add(trackDto);
-			session.setAttribute(key, System.currentTimeMillis());
-		}
 	}
 
 	@Override
 	public void messageSent(IoSession session, Object message) throws Exception {
-		String key = SessionHisDto.RESPONE_SIZE;
-		int newValue = (Integer) session.getAttribute(key) + 1;
-		session.setAttribute(key, newValue);
+		add2Attribute(session, SessionHisDto.RESPONE_SIZE, 1);
 	}
 
 	@Override
 	public void sessionCreated(IoSession session) throws Exception {
-		List<SessionHisDto> dtoList = new ArrayList<SessionHisDto>(2);
-		addLostSession(session, dtoList);
 		resetSession(session);
-		addNewSession(session, dtoList);
-		StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
-		storage.addAll(dtoList);
 	}
 
-	private void addNewSession(IoSession session, List<SessionHisDto> dtoList) {
-		// new session
-		SessionHisDto newDto = getSessionHisDto(session);
-		dtoList.add(newDto);
+	@Override
+	public void sessionClosed(IoSession session) throws Exception {
+		SessionHisDto downDto = getSessionHisDto(session);
+		if (!StringUtils.isEmpty(downDto.getClienName())) {
+			downDto.setStatus(SessionHisDto.STATUS_DOWN);
+			StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
+			storage.add(downDto);
+		} else {
+			logger.warn(String.format("close client,not found name for sessionId:%s", downDto.getSessionId()));
+		}
 	}
 
-	private void addLostSession(IoSession session, List<SessionHisDto> dtoList) {
-		Long loseTime = (Long) session.getAttribute(SessionHisDto.LOSE_TIME);
-		if (loseTime != null) {
-			// save the last lost session
-			SessionHisDto lostDto = getSessionHisDto(session);
-			lostDto.setUpdateTime(new Date(loseTime));
-			lostDto.setStatus(SessionHisDto.STATUS_DOWN);
-			dtoList.add(lostDto);
-			session.removeAttribute(SessionHisDto.LOSE_TIME);
+	@Override
+	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+		String key = SessionHisDto.ERROR_SIZE;
+		int newValue = (Integer) session.getAttribute(key) + 1;
+		session.setAttribute(key, newValue);
+	}
+
+	public void add2Attribute(IoSession session, String key, int num) {
+		int newValue = (Integer) session.getAttribute(key) + num;
+		session.setAttribute(key, newValue);
+	}
+
+	private void addNewSession(IoSession session, Object message) {
+		if (message instanceof IoRequest && !session.containsAttribute(SessionHisDto.CLIEN_NAME)) {
+			IoRequest firstRequest = (IoRequest) message;
+			JSONObject hObject = JSONUtils.getJSONObject(firstRequest.getHeader());
+			String name = JSONUtils.getString(hObject, SessionHisDto.CLIEN_NAME);
+			if (!StringUtils.isEmpty(name)) {
+				logger.info(String.format("add new client:%s", name));
+				session.setAttribute(SessionHisDto.CLIEN_NAME, name);
+				SessionHisDto newDto = getSessionHisDto(session);
+				newDto.setStatus(SessionHisDto.STATUS_UP);
+				StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
+				storage.add(newDto);
+			} else {
+				logger.warn(String.format("can not found name from %s", hObject));
+			}
 		}
 	}
 
@@ -122,22 +132,23 @@ public class IoServer extends IoHandlerAdapter {
 		session.setAttribute(SessionHisDto.SUCCESS_NUM, 0);
 		session.setAttribute(SessionHisDto.FAIL_NUM, 0);
 		session.setAttribute(SessionHisDto.SAVE_STAMP, System.currentTimeMillis());
-		session.removeAttribute(SessionHisDto.LOSE_TIME);
 	}
 
-	@Override
-	public void sessionClosed(IoSession session) throws Exception {
-		SessionHisDto downDto = getSessionHisDto(session);
-		downDto.setStatus(SessionHisDto.STATUS_DOWN);
-		StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
-		storage.add(downDto);
-	}
-
-	@Override
-	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-		String key = SessionHisDto.ERROR_SIZE;
-		int newValue = (Integer) session.getAttribute(key) + 1;
-		session.setAttribute(key, newValue);
+	private void addTrackSession(IoSession session) {
+		String key = SessionHisDto.SAVE_STAMP;
+		Long stamp = (Long) session.getAttribute(key);
+		long cost = System.currentTimeMillis() - stamp;
+		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
+			SessionHisDto trackDto = getSessionHisDto(session);
+			if (!StringUtils.isEmpty(trackDto.getClienName())) {
+				trackDto.setStatus(SessionHisDto.STATUS_UP);
+				StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
+				storage.add(trackDto);
+			} else {
+				logger.warn(String.format("track session.can not found name for sessionId:%s", trackDto.getSessionId()));
+			}
+			session.setAttribute(key, System.currentTimeMillis());
+		}
 	}
 
 }
