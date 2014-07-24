@@ -1,7 +1,5 @@
 package com.lezo.iscript.service.crawler.utils;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.service.crawler.service.ShopService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.utils.URLUtils;
 
 public class ShopCacher {
 	private static final ConcurrentHashMap<Integer, ShopDto> shopIdMap = new ConcurrentHashMap<Integer, ShopDto>();
@@ -56,7 +55,7 @@ public class ShopCacher {
 	}
 
 	public ShopDto getDomainShopDto(String domainUrl) {
-		String siteCode = getSiteCodeFromUrl(domainUrl);
+		String siteCode = URLUtils.getRootHost(domainUrl);
 		ShopDto dto = domainMap.get(siteCode);
 		if (dto == null) {
 			logger.warn("can not found domain from Url:" + domainUrl);
@@ -86,7 +85,7 @@ public class ShopCacher {
 		if (StringUtils.isEmpty(name)) {
 			return null;
 		}
-		String siteCode = getSiteCodeFromUrl(shopUrl);
+		String siteCode = URLUtils.getRootHost(shopUrl);
 		String key = getSiteCodeNameKey(siteCode, name);
 		ShopDto curShopDto = shopKeyMap.get(key);
 		if (curShopDto == null) {
@@ -107,7 +106,7 @@ public class ShopCacher {
 			logger.warn("empty shopName.shopUrl:" + shopUrl + ",shopCode:" + shopCode);
 			return null;
 		}
-		String siteCode = getSiteCodeFromUrl(shopUrl);
+		String siteCode = URLUtils.getRootHost(shopUrl);
 		String key = getSiteCodeNameKey(siteCode, shopName);
 		ShopDto curShopDto = shopKeyMap.get(key);
 		if (curShopDto == null) {
@@ -129,7 +128,7 @@ public class ShopCacher {
 		dto.setShopCode(shopCode);
 		dto.setShopName(shopName);
 		dto.setShopUrl(shopUrl);
-		dto.setSiteCode(getSiteCodeFromUrl(shopUrl));
+		dto.setSiteCode(URLUtils.getRootHost(shopUrl));
 		dto.setCreateTime(new Date());
 		dto.setUpdateTime(dto.getCreateTime());
 		ShopService shopService = SpringBeanUtils.getBean(ShopService.class);
@@ -138,17 +137,4 @@ public class ShopCacher {
 		shopService.batchInsertShopDtos(dtoList);
 	}
 
-	private String getSiteCodeFromUrl(String shopUrl) {
-		try {
-			// http://www.gome.com.cn/product/A0004331780.html&version=3.2.1&vendor=chrome
-			URL newUrl = new URL(shopUrl);
-			String host = newUrl.getHost();
-			int fromIndex = host.indexOf('.');
-			int index = fromIndex < 0 ? 0 : fromIndex + 1;
-			return host.substring(index);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 }

@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -16,4 +17,10 @@ public interface ProxyDetectDao {
 
 	List<ProxyDetectDto> getProxyDetectDtosFromId(@Param(value = "fromId") Long fromId,
 			@Param(value = "limit") int limit, @Param(value = "status") Integer status);
+
+	List<ProxyDetectDto> getProxyDetectDtosFromStatus(@Param(value = "status") Integer status,
+			@Param(value = "afterUpdateTime") Date afterUpdateTime);
+
+	List<ProxyDetectDto> getProxyDetectDtoFromDomain(@Param(value = "domainList") List<String> domainList,
+			@Param(value = "status") Integer status);
 }

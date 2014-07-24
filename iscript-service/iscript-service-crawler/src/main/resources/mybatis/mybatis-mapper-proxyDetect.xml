@@ -43,8 +43,8 @@
 		SELECT * FROM T_PROXY_DETECT
 		WHERE 1=1
 		<if test="ipLongs!=null &amp;&amp; !ipLongs.isEmpty()">
-			<foreach collection="ipLongs" item="ip" open="AND IP IN(" close=")"
-				separator=",">
+			<foreach collection="ipLongs" item="ip" open="AND IP IN("
+				close=")" separator=",">
 				#{ip}
 			</foreach>
 		</if>
@@ -66,5 +66,28 @@
 			AND STATUS=#{status}
 		</if>
 		LIMIT #{limit}
+	</select>
+	<select id="getProxyDetectDtosFromStatus" parameterType="map"
+		resultMap="RM_ProxyDetectDto">
+		SELECT * FROM T_PROXY_DETECT
+		WHERE STATUS=#{status}
+		<if test="afterUpdateTime!=null">
+			AND UPDATE_TIME&gt;#{afterUpdateTime}
+		</if>
+	</select>
+
+	<select id="getProxyDetectDtoFromDomain" parameterType="map"
+		resultMap="RM_ProxyDetectDto">
+		SELECT * FROM T_PROXY_DETECT
+		WHERE 1=1
+		<if test="domainList!=null &amp;&amp; !domainList.isEmpty()">
+			<foreach collection="domainList" item="domain" open="AND DOMAIN IN("
+				close=")" separator=",">
+				#{domain}
+			</foreach>
+		</if>
+		<if test="status!=null">
+			AND STATUS=#{status}
+		</if>
 	</select>
 </mapper>

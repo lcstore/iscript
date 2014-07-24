@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.config;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,14 +28,14 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ConfigProxyDetector implements ConfigParser {
-	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
+public class ConfigEtaoSimilar implements ConfigParser {
+	private static Logger logger = LoggerFactory.getLogger(ConfigEtaoSimilar.class);
 	private HttpRequestManager httpRequestManager;
 	private List<String> detectUrls;
 	private static final String DETECTOR = String.format("%s@%s", ClientPropertiesUtils.getProperty("name"),
 			HardConstant.MAC_ADDR);
 
-	public ConfigProxyDetector() {
+	public ConfigEtaoSimilar() {
 		httpRequestManager = new HttpRequestManager();
 		httpRequestManager.getClient().setRoutePlanner(null);
 		detectUrls = new ArrayList<String>();
@@ -51,68 +53,30 @@ public class ConfigProxyDetector implements ConfigParser {
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
-		String host = getHost(task);
-		DefaultHttpClient client = httpRequestManager.getClient();
-		HttpHost proxy = new HttpHost(host, port);
-		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		String url = null;
 		JSONObject itemObject = new JSONObject();
-		String url = getDetectUrl(task);
-		HttpGet get = new HttpGet(url);
+//		HttpGet get = new HttpGet(url);
 		long start = System.currentTimeMillis();
-		int status = 0;
-		try {
-			// ExecutionContext.HTTP_PROXY_HOST
-			HttpContext context = new BasicHttpContext();
-			HttpResponse res = httpRequestManager.execute(get, context);
-			// HttpHost proxyHost = (HttpHost)
-			// context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
-			// JSONUtils.put(itemObject, "host", proxyHost.getHostName());
-			// JSONUtils.put(itemObject, "port", proxyHost.getPort());
-			int statusCode = res.getStatusLine().getStatusCode();
-			String html = EntityUtils.toString(res.getEntity());
-			status = getStatus(statusCode, html);
-		} catch (Exception e) {
-			status = 0;
-			String msg = ExceptionUtils.getStackTrace(e);
-			JSONUtils.put(itemObject, "ex", msg);
-			logger.warn(String.format("detect url:%s,cause:%s", url, msg));
-			get.abort();
-		}
+		String productName = "Hahne亨利 玉米片 375g 德国进口";
+		Long productPmId = 101199L;
+		String mUrl = getEtaoMatchUrl(productPmId, productName);
+		System.out.println(mUrl);
 		long cost = System.currentTimeMillis() - start;
 		JSONUtils.put(itemObject, "url", url);
-		JSONUtils.put(itemObject, "domain", URLUtils.getRootHost(url));
 		JSONUtils.put(itemObject, "cost", cost);
-		JSONUtils.put(itemObject, "status", status);
-		JSONUtils.put(itemObject, "detector", DETECTOR);
 		return itemObject.toString();
 	}
 
-	private String getHost(TaskWritable task) {
-		Object ipObject = task.get("ip");
-		String ipString = ipObject.toString();
-		int index = ipString.indexOf(".");
-		if (index > 0) {
-			return ipString;
-		} else {
-			Long ipLong = Long.valueOf(ipString);
-			return InetAddressUtils.inet_ntoa(ipLong);
+	private String getEtaoMatchUrl(Long productPmId, String productName) {
+		String productUrl = "http://www.yihaodian.com/item/" + productPmId;
+		String urlHead = "http://ruyi.etao.com/ext/productSearch?q=";
+		String urlBody = "{\"url\":\"" + productUrl + "?&ali_crowd=\",\"title\":\"" + productName + "\"}";
+		try {
+			urlBody = URLEncoder.encode(new String(urlBody.getBytes("UTF-8"), "GBK"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
-	}
 
-	private int getStatus(int statusCode, String html) {
-		if (statusCode < 200 || statusCode >= 300) {
-			return 0;
-		}
-		return 1;
-	}
-
-	private String getDetectUrl(TaskWritable task) {
-		Object urlObject = task.get("url");
-		if (urlObject != null) {
-			return urlObject.toString();
-		}
-		Random rand = new Random();
-		int index = rand.nextInt(detectUrls.size());
-		return detectUrls.get(index);
+		return urlHead + urlBody;
 	}
 }

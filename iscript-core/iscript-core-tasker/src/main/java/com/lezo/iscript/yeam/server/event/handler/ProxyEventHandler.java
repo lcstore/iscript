@@ -1,9 +1,7 @@
 package com.lezo.iscript.yeam.server.event.handler;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.mina.core.future.WriteFuture;
 import org.json.JSONObject;
@@ -17,22 +15,27 @@ import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.server.event.RequestEvent;
-import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
-import com.lezo.iscript.yeam.writable.ConfigWritable;
 import com.lezo.iscript.yeam.writable.ProxyWritable;
 
 public class ProxyEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(ProxyEventHandler.class);
 
 	protected void doHandle(RequestEvent event) {
-		long start = System.currentTimeMillis();
 		IoRequest ioRequest = getIoRequest(event);
 		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
+		offerProxys(hObject, event);
+		handleErrorProxys(hObject);
+	}
+
+	private void offerProxys(JSONObject hObject, RequestEvent event) {
+		long start = System.currentTimeMillis();
 		Integer active = JSONUtils.getInteger(hObject, "proxyactive");
 		int remain = 5 - active;
-
 		List<ProxyWritable> proxyList = new ArrayList<ProxyWritable>(remain);
 		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
+		if (proxyList.isEmpty()) {
+			return;
+		}
 		IoRespone ioRespone = new IoRespone();
 		ioRespone.setType(IoConstant.EVENT_TYPE_PROXY);
 		ioRespone.setData(proxyList);
@@ -48,12 +51,20 @@ public class ProxyEventHandler extends AbstractEventHandler {
 					JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "mac"), cost);
 			logger.info(msg);
 		}
-		handleErrorProxys(hObject);
 	}
 
 	private void handleErrorProxys(JSONObject hObject) {
-		// TODO Auto-generated method stub
-
+		Object errorObject = JSONUtils.get(hObject, "proxyerrors");
+		if (errorObject == null) {
+			return;
+		}
+		if (errorObject instanceof List) {
+			@SuppressWarnings("unchecked")
+			List<JSONObject> errorList = (List<JSONObject>) errorObject;
+			for (JSONObject error : errorList) {
+				logger.warn("error proxy." + error);
+			}
+		}
 	}
 
 	@Override
