@@ -3,6 +3,7 @@ package com.lezo.iscript.yeam.result;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,9 @@ public class ResultHandlerWoker implements Runnable {
 						resultStrategy.handleResult(rWritable);
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String msg = String.format("tid:%s,type:%s,cause:%s", rWritable.getTaskId(), rWritable.getType(),
+							ExceptionUtils.getStackTrace(e));
+					logger.warn(msg);
 				}
 			}
 		}
@@ -61,8 +63,8 @@ public class ResultHandlerWoker implements Runnable {
 			return resultStrategy;
 		}
 		resultStrategy = StrategyBuffer.getInstance().getStrategy(strategyName);
-		if(resultStrategy == null){
-			logger.warn("can not found strategy:"+strategyName);
+		if (resultStrategy == null) {
+			logger.warn("can not found strategy:" + strategyName);
 		}
 		return resultStrategy;
 	}

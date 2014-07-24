@@ -1,6 +1,7 @@
 package com.lezo.iscript.yeam.simple;
 
 import java.net.InetSocketAddress;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.mina.core.RuntimeIoException;
@@ -14,6 +15,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.yeam.client.HardConstant;
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.simple.event.ResponeProceser;
 import com.lezo.iscript.yeam.simple.event.ResponeWorkerFactory;
@@ -27,6 +29,7 @@ public class IoClient extends IoHandlerAdapter {
 	private int port;
 	private NioSocketConnector connector;
 	private IoSession session;
+	private IoSession lostSession;
 
 	public IoClient() {
 		super();
@@ -110,4 +113,25 @@ public class IoClient extends IoHandlerAdapter {
 			throw new IllegalArgumentException("please set property[" + key + "]");
 		}
 	}
+
+	@Override
+	public void sessionCreated(IoSession session) throws Exception {
+		if (this.lostSession != null) {
+			Set<Object> keySet = lostSession.getAttributeKeys();
+			for (Object key : keySet) {
+				Object value = lostSession.getAttribute(key);
+				session.setAttribute(key, value);
+			}
+			this.lostSession = null;
+		}
+		String clientName = String.format("%s@%s", ClientPropertiesUtils.getProperty("name"), HardConstant.MAC_ADDR);
+		session.setAttribute("cname", clientName);
+	}
+
+	@Override
+	public void sessionClosed(IoSession session) throws Exception {
+		this.lostSession = session;
+		this.lostSession.setAttribute("lostTime", System.currentTimeMillis());
+	}
+
 }

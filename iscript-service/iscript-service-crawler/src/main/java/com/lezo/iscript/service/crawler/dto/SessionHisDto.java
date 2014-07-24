@@ -11,6 +11,8 @@ public class SessionHisDto {
 	public static final String SUCCESS_NUM = "success";
 	public static final String FAIL_NUM = "fail";
 	public static final String LOSE_TIME = "lostTime";
+	public static final String SAVE_STAMP = "stamp";
+	public static final long MAX_SAVE_INTERVAL = 10 * 60 * 1000;
 
 	public static final int STATUS_UP = 1;
 	public static final int STATUS_DOWN = 0;

@@ -47,6 +47,20 @@ public class IoServer extends IoHandlerAdapter {
 			return;
 		}
 		RequestProceser.getInstance().execute(new RequestWorker(session, message));
+		addTrackSession(session);
+	}
+
+	private void addTrackSession(IoSession session) {
+		String key = SessionHisDto.SAVE_STAMP;
+		Long stamp = (Long) session.getAttribute(key);
+		long cost = System.currentTimeMillis() - stamp;
+		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
+			StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
+			SessionHisDto trackDto = getSessionHisDto(session);
+			trackDto.setStatus(SessionHisDto.STATUS_UP);
+			storage.add(trackDto);
+			session.setAttribute(key, System.currentTimeMillis());
+		}
 	}
 
 	@Override
@@ -60,6 +74,7 @@ public class IoServer extends IoHandlerAdapter {
 	public void sessionCreated(IoSession session) throws Exception {
 		List<SessionHisDto> dtoList = new ArrayList<SessionHisDto>(2);
 		addLostSession(session, dtoList);
+		resetSession(session);
 		addNewSession(session, dtoList);
 		StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
 		storage.addAll(dtoList);
@@ -67,68 +82,62 @@ public class IoServer extends IoHandlerAdapter {
 
 	private void addNewSession(IoSession session, List<SessionHisDto> dtoList) {
 		// new session
-		String clientName = (String) session.getAttribute(SessionHisDto.CLIEN_NAME);
-		String newSessionId = UUID.randomUUID().toString();
-		SessionHisDto newDto = new SessionHisDto();
-		newDto.setSessionId(newSessionId);
-		newDto.setCreateTime(new Date());
-		newDto.setUpdateTime(newDto.getCreateTime());
-		newDto.setClienName(clientName);
-		newDto.setRequestSize(0);
-		newDto.setResponeSize(0);
-		newDto.setErrorSize(0);
-		newDto.setSuccessNum(0);
-		newDto.setFailNum(0);
+		SessionHisDto newDto = getSessionHisDto(session);
 		dtoList.add(newDto);
-		resetSession(session, newSessionId);
 	}
 
 	private void addLostSession(IoSession session, List<SessionHisDto> dtoList) {
 		Long loseTime = (Long) session.getAttribute(SessionHisDto.LOSE_TIME);
 		if (loseTime != null) {
 			// save the last lost session
-			String clientName = (String) session.getAttribute(SessionHisDto.CLIEN_NAME);
-			SessionHisDto lostDto = new SessionHisDto();
+			SessionHisDto lostDto = getSessionHisDto(session);
 			lostDto.setUpdateTime(new Date(loseTime));
-			lostDto.setSessionId((String) session.getAttribute(SessionHisDto.SESSION_ID));
-			lostDto.setClienName(clientName);
-			lostDto.setRequestSize((Integer) session.getAttribute(SessionHisDto.REQUEST_SIZE));
-			lostDto.setResponeSize((Integer) session.getAttribute(SessionHisDto.RESPONE_SIZE));
-			lostDto.setErrorSize((Integer) session.getAttribute(SessionHisDto.ERROR_SIZE));
-			lostDto.setSuccessNum((Integer) session.getAttribute(SessionHisDto.SUCCESS_NUM));
-			lostDto.setFailNum((Integer) session.getAttribute(SessionHisDto.FAIL_NUM));
 			lostDto.setStatus(SessionHisDto.STATUS_DOWN);
 			dtoList.add(lostDto);
-
 			session.removeAttribute(SessionHisDto.LOSE_TIME);
 		}
 	}
 
-	private void resetSession(IoSession session, String newSessionId) {
+	private SessionHisDto getSessionHisDto(IoSession session) {
+		SessionHisDto dto = new SessionHisDto();
+		String clientName = (String) session.getAttribute(SessionHisDto.CLIEN_NAME);
+		dto.setCreateTime(new Date());
+		dto.setUpdateTime(dto.getCreateTime());
+		dto.setSessionId((String) session.getAttribute(SessionHisDto.SESSION_ID));
+		dto.setClienName(clientName);
+		dto.setRequestSize((Integer) session.getAttribute(SessionHisDto.REQUEST_SIZE));
+		dto.setResponeSize((Integer) session.getAttribute(SessionHisDto.RESPONE_SIZE));
+		dto.setErrorSize((Integer) session.getAttribute(SessionHisDto.ERROR_SIZE));
+		dto.setSuccessNum((Integer) session.getAttribute(SessionHisDto.SUCCESS_NUM));
+		dto.setFailNum((Integer) session.getAttribute(SessionHisDto.FAIL_NUM));
+		return dto;
+	}
+
+	private void resetSession(IoSession session) {
+		String newSessionId = UUID.randomUUID().toString();
 		session.setAttribute(SessionHisDto.SESSION_ID, newSessionId);
 		session.setAttribute(SessionHisDto.REQUEST_SIZE, 0);
 		session.setAttribute(SessionHisDto.RESPONE_SIZE, 0);
 		session.setAttribute(SessionHisDto.ERROR_SIZE, 0);
 		session.setAttribute(SessionHisDto.SUCCESS_NUM, 0);
 		session.setAttribute(SessionHisDto.FAIL_NUM, 0);
+		session.setAttribute(SessionHisDto.SAVE_STAMP, System.currentTimeMillis());
+		session.removeAttribute(SessionHisDto.LOSE_TIME);
 	}
 
 	@Override
 	public void sessionClosed(IoSession session) throws Exception {
-		String clientName = (String) session.getAttribute(SessionHisDto.CLIEN_NAME);
-		SessionHisDto downDto = new SessionHisDto();
-		downDto.setUpdateTime(new Date());
-		downDto.setSessionId((String) session.getAttribute(SessionHisDto.SESSION_ID));
-		downDto.setClienName(clientName);
-		downDto.setRequestSize((Integer) session.getAttribute(SessionHisDto.REQUEST_SIZE));
-		downDto.setResponeSize((Integer) session.getAttribute(SessionHisDto.RESPONE_SIZE));
-		downDto.setErrorSize((Integer) session.getAttribute(SessionHisDto.ERROR_SIZE));
-		downDto.setSuccessNum((Integer) session.getAttribute(SessionHisDto.SUCCESS_NUM));
-		downDto.setFailNum((Integer) session.getAttribute(SessionHisDto.FAIL_NUM));
+		SessionHisDto downDto = getSessionHisDto(session);
 		downDto.setStatus(SessionHisDto.STATUS_DOWN);
-
 		StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
 		storage.add(downDto);
+	}
+
+	@Override
+	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+		String key = SessionHisDto.ERROR_SIZE;
+		int newValue = (Integer) session.getAttribute(key) + 1;
+		session.setAttribute(key, newValue);
 	}
 
 }
