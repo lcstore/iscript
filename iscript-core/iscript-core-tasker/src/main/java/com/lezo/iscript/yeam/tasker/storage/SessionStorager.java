@@ -29,6 +29,7 @@ public class SessionStorager implements StorageListener<SessionHisDto> {
 	public void doStorage() {
 		final List<SessionHisDto> copyList = storageBuffer.moveTo();
 		if (CollectionUtils.isEmpty(copyList)) {
+			logger.info("SessionStorager task is empty...");
 			return;
 		}
 		StorageCaller.getInstance().execute(new Runnable() {

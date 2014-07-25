@@ -54,6 +54,8 @@ public class IoServer extends IoHandlerAdapter {
 		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 		addNewSession(session, message);
 		addTrackSession(session);
+		SessionHisDto dto = getSessionHisDto(session);
+		logger.info(String.format("messageReceived.sid:%s,name:%s", dto.getSessionId(), dto.getClienName()));
 	}
 
 	@Override
