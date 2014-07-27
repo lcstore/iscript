@@ -12,4 +12,6 @@ public interface SessionHisDao {
 	void batchUpdate(List<SessionHisDto> dtoList);
 
 	List<SessionHisDto> getSessionHisDtos(@Param(value = "sessionIds") List<String> sessionIds);
+
+	void updateUpSessionToInterrupt();
 }

@@ -16,6 +16,7 @@ public class SessionHisDto {
 
 	public static final int STATUS_UP = 1;
 	public static final int STATUS_DOWN = 0;
+	public static final int STATUS_INTERRUPT = -1;
 
 	private Long id;
 	private String sessionId;
@@ -119,5 +120,11 @@ public class SessionHisDto {
 
 	private int getDefaultIfNull(Integer value) {
 		return value == null ? 0 : value;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("client:%s,request:%d,respone:%d,error:%d,success:%d,fail:%d", getClienName(),
+				getRequestSize(), getResponeSize(), getErrorSize(), getSuccessNum(), getFailNum());
 	}
 }

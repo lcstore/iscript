@@ -36,12 +36,10 @@ public class SessionStorager implements StorageListener<SessionHisDto> {
 			@Override
 			public void run() {
 				// keep sync for the same storager
-				synchronized (this) {
-					long start = System.currentTimeMillis();
-					sessionHisService.batchSaveSessionHisDtos(copyList);
-					long cost = System.currentTimeMillis() - start;
-					logger.info("finish to insert task:" + copyList.size() + ",cost:" + cost);
-				}
+				long start = System.currentTimeMillis();
+				sessionHisService.batchSaveSessionHisDtos(copyList);
+				long cost = System.currentTimeMillis() - start;
+				logger.info("finish to insert task:" + copyList.size() + ",cost:" + cost);
 			}
 		});
 	}

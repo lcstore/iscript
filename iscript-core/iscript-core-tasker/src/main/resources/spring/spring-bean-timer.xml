@@ -31,8 +31,8 @@
 	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
-	<task:executor id="executor" pool-size="3" />
-	<task:scheduler id="scheduler" pool-size="10" />
+	<task:executor id="executor" pool-size="5" />
+	<task:scheduler id="scheduler" pool-size="20" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">

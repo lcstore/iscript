@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
+import com.lezo.iscript.service.crawler.service.SessionHisService;
+import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.server.event.RequestProceser;
@@ -31,6 +33,7 @@ import com.lezo.iscript.yeam.server.event.RequestWorker;
 public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
+	private StorageBuffer<SessionHisDto> storageBuffer;
 
 	public IoServer(int port) throws IOException {
 		acceptor = new NioSocketAcceptor();
@@ -42,6 +45,9 @@ public class IoServer extends IoHandlerAdapter {
 		acceptor.getSessionConfig().setReadBufferSize(2048);
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		acceptor.bind(new InetSocketAddress(port));
+		this.storageBuffer = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
+		SessionHisService sessionHisService = SpringBeanUtils.getBean(SessionHisService.class);
+		sessionHisService.updateUpSessionToInterrupt();
 		logger.info("start to listener port:" + port + " for IoServer..");
 	}
 
@@ -54,8 +60,6 @@ public class IoServer extends IoHandlerAdapter {
 		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 		addNewSession(session, message);
 		addTrackSession(session);
-		SessionHisDto dto = getSessionHisDto(session);
-		logger.info(String.format("messageReceived.sid:%s,name:%s", dto.getSessionId(), dto.getClienName()));
 	}
 
 	@Override
@@ -72,9 +76,9 @@ public class IoServer extends IoHandlerAdapter {
 	public void sessionClosed(IoSession session) throws Exception {
 		SessionHisDto downDto = getSessionHisDto(session);
 		if (!StringUtils.isEmpty(downDto.getClienName())) {
+			logger.warn(String.format("close: %s", downDto));
 			downDto.setStatus(SessionHisDto.STATUS_DOWN);
-			StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
-			storage.add(downDto);
+			this.storageBuffer.add(downDto);
 		} else {
 			logger.warn(String.format("close client,not found name for sessionId:%s", downDto.getSessionId()));
 		}
@@ -102,8 +106,7 @@ public class IoServer extends IoHandlerAdapter {
 				session.setAttribute(SessionHisDto.CLIEN_NAME, name);
 				SessionHisDto newDto = getSessionHisDto(session);
 				newDto.setStatus(SessionHisDto.STATUS_UP);
-				StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
-				storage.add(newDto);
+				this.storageBuffer.add(newDto);
 			} else {
 				logger.warn(String.format("can not found name from %s", hObject));
 			}
@@ -143,9 +146,9 @@ public class IoServer extends IoHandlerAdapter {
 		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
 			SessionHisDto trackDto = getSessionHisDto(session);
 			if (!StringUtils.isEmpty(trackDto.getClienName())) {
+				logger.info(String.format("track: %s", trackDto));
 				trackDto.setStatus(SessionHisDto.STATUS_UP);
-				StorageBuffer<SessionHisDto> storage = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
-				storage.add(trackDto);
+				this.storageBuffer.add(trackDto);
 			} else {
 				logger.warn(String.format("track session.can not found name for sessionId:%s", trackDto.getSessionId()));
 			}

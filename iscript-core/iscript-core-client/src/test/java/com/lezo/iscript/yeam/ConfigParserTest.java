@@ -13,6 +13,7 @@ import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
+import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
@@ -47,10 +48,8 @@ public class ConfigParserTest {
 	public void testHuihuiSigner() throws Exception {
 		ConfigParser parser = new HuihuiSigner();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore@126.com");
-		task.put("pwd", "1@6@8Lezo");
-		// task.put("user", "ajane2009@163.com");
-		// task.put("pwd", "AJ3251273aj");
+		task.put("user", "lcs");
+		task.put("pwd", "");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -97,10 +96,8 @@ public class ConfigParserTest {
 	public void testFDSSigner() throws Exception {
 		ConfigParser parser = new FDSSigner();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore@126.com");
-		task.put("pwd", "fd@9Lezo");
-		// task.put("user", "ajane90");
-		// task.put("pwd", "fdsAJ90aj");
+		task.put("user", "lc");
+		task.put("pwd", "fd");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -114,10 +111,8 @@ public class ConfigParserTest {
 		ConfigParser parser = new God360Signer();
 		// TODO:
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore");
-		task.put("pwd", "360@9Lezo");
-		// task.put("user", "ajane90");
-		// task.put("pwd", "fdsAJ90aj");
+		task.put("user", "l");
+		task.put("pwd", "3");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -130,10 +125,8 @@ public class ConfigParserTest {
 	public void testJDBBSSigner() throws Exception {
 		ConfigParser parser = new JDBBSSigner();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcstore@126.com");
-		task.put("pwd", "jd@9Lezo");
-		// task.put("user", "ajane90");
-		// task.put("pwd", "fdsAJ90aj");
+		task.put("user", "");
+		task.put("pwd", "");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -146,8 +139,8 @@ public class ConfigParserTest {
 	public void testZYueSigner() throws Exception {
 		ConfigParser parser = new ZYueSigner();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "i53411308");
-		task.put("pwd", "i53411308");
+		task.put("user", "");
+		task.put("pwd", "");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -233,9 +226,9 @@ public class ConfigParserTest {
 			long ip = 1567820005;
 			task.put("ip", "92.222.153.153");
 			task.put("port", 7808);
-			task.put("ip",ip );
+			task.put("ip", ip);
 			task.put("port", 7808);
-//			task.put("url", url);
+			// task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
@@ -248,20 +241,38 @@ public class ConfigParserTest {
 		String url = "http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=0#table";
 		ConfigParser parser = new ConfigProxyCollector();
 		TaskWritable task = new TaskWritable();
+		url = "https://nordvpn.com/free-proxy-list/1/?allc=all&allp=all&port&sortby=0&way=1&pp=1";
+		url = "https://nordvpn.com/free-proxy-list/34/?allc=all&allp=all&port&sortby=0&way=1&pp=1";
 		try {
-//			task.put("url", url);
+			task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 	@Test
 	public void testConfigEtaoSimilar() throws Exception {
 		String url = "http://detail.1688.com/offer/1225054841.html";
 		ConfigParser parser = new ConfigEtaoSimilar();
 		TaskWritable task = new TaskWritable();
 		try {
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testConfigYhdList() throws Exception {
+		String url = "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2";
+		ConfigParser parser = new ConfigYhdList();
+		TaskWritable task = new TaskWritable();
+		try {
+			task.put("url", url);
+			task.put("getNexts", 1);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {

@@ -35,12 +35,12 @@ public class TaskPriorityStorager implements StorageListener<TaskPriorityDto> {
 			@Override
 			public void run() {
 				// keep sync for the same storager
-				synchronized (this) {
-					long start = System.currentTimeMillis();
-					taskPriorityService.batchInsert(copyList);
-					long cost = System.currentTimeMillis() - start;
-					logger.info("finish to insert task:" + copyList.size() + ",cost:" + cost);
-				}
+				long start = System.currentTimeMillis();
+				taskPriorityService.batchInsert(copyList);
+				long cost = System.currentTimeMillis() - start;
+				logger.info(String.format("finish to insert[%s],size:%d,cost:%s", this.getClass().getSimpleName(),
+						copyList.size(), cost));
+
 			}
 		});
 	}

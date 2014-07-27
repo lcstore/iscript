@@ -31,6 +31,7 @@ public class ConfigProxyCollector implements ConfigParser {
 		proxySeedList.add("http://204.45.118.186/plists.json.php");
 		// proxySeedList.add("http://www.simpleproxylist.com/");
 		proxySeedList.add("http://www.mrhinkydink.com/proxies.htm");
+		proxySeedList.add("https://nordvpn.com/free-proxy-list/1/?allc=all&allp=all&port&sortby=0&way=1&pp=1");
 	}
 
 	@Override
@@ -69,6 +70,7 @@ public class ConfigProxyCollector implements ConfigParser {
 
 	private List<String> handleUrl(String url, JSONObject jObject, DefaultHttpClient client) throws Exception {
 		HttpGet get = new HttpGet(url);
+		get.addHeader("Referer", url);
 		String html = HttpClientUtils.getContent(client, get);
 		html = decode(html);
 		Pattern oReg = Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[^0-9]+?([0-9]{2,})", Pattern.MULTILINE);
@@ -96,6 +98,22 @@ public class ConfigProxyCollector implements ConfigParser {
 			nextElements = dom.select("a.menu[href*=proxies]:contains(page)");
 			for (int i = 1; i < nextElements.size(); i++) {
 				nextList.add(nextElements.get(i).absUrl("href"));
+			}
+		} else if (url.startsWith("https://nordvpn.com/free-proxy-list/1/")) {
+			nextElements = dom.select("#proxy_list div.full_width div.pagination div a[title*=Last][href*=page=]");
+			if (!nextElements.isEmpty()) {
+				String lastPageUrl = nextElements.first().attr("href");
+				Pattern oPageReg = Pattern.compile("(?<=&page\\=)([0-9]+)");
+				Matcher pMatcher = oPageReg.matcher(lastPageUrl);
+				if (pMatcher.find()) {
+					Integer lastPage = Integer.valueOf(pMatcher.group());
+					for (int i = 2; i <= lastPage; i++) {
+						String nextUrl = String
+								.format("https://nordvpn.com/free-proxy-list/%d/?allc=all&allp=all&port&sortby=0&way=1&pp=1",
+										i);
+						nextList.add(nextUrl);
+					}
+				}
 			}
 		}
 		return nextList;

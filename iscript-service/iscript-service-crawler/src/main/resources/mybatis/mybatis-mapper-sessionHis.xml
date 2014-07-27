@@ -4,29 +4,21 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.SessionHisDao">
 	<resultMap type="SessionHisDto" id="RM_SessionHisDto">
-		<result column="ID" property="id"/>
-		<result column="SESSION_ID" property="sessionId"/>
-		<result column="CLIEN_NAME" property="clienName"/>
-		<result column="REQUEST_SIZE" property="requestSize"/>
-		<result column="RESPONE_SIZE" property="responeSize"/>
-		<result column="ERROR_SIZE" property="errorSize"/>
-		<result column="SUCCESS_NUM" property="successNum"/>
-		<result column="FAIL_NUM" property="failNum"/>
-		<result column="STATUS" property="status"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="SESSION_ID" property="sessionId" />
+		<result column="CLIEN_NAME" property="clienName" />
+		<result column="REQUEST_SIZE" property="requestSize" />
+		<result column="RESPONE_SIZE" property="responeSize" />
+		<result column="ERROR_SIZE" property="errorSize" />
+		<result column="SUCCESS_NUM" property="successNum" />
+		<result column="FAIL_NUM" property="failNum" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="SessionHisDto-coloumn-list">
-		SESSION_ID
-		,CLIEN_NAME
-		,REQUEST_SIZE
-		,RESPONE_SIZE
-		,ERROR_SIZE
-		,SUCCESS_NUM
-		,FAIL_NUM
-		,STATUS
-		,CREATE_TIME
-		,UPDATE_TIME
+		SESSION_ID ,CLIEN_NAME ,REQUEST_SIZE ,RESPONE_SIZE
+		,ERROR_SIZE ,SUCCESS_NUM ,FAIL_NUM ,STATUS ,CREATE_TIME ,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="SessionHisDto">
 		INSERT INTO T_SESSION_HIS(
@@ -40,17 +32,17 @@
 	</insert>
 	<update id="updateOne" parameterType="SessionHisDto">
 		UPDATE T_SESSION_HIS SET
-		REQUEST_SIZE=#{requestSize},
-		RESPONE_SIZE=#{responeSize},
-		ERROR_SIZE=#{errorSize},
-		SUCCESS_NUM=#{successNum},
-		FAIL_NUM=#{failNum},
-		STATUS=#{status},
-		UPDATE_TIME=#{updateTime}
-		WHERE ID=#{id}
+		REQUEST_SIZE=#{requestSize}, RESPONE_SIZE=#{responeSize},
+		ERROR_SIZE=#{errorSize}, SUCCESS_NUM=#{successNum},
+		FAIL_NUM=#{failNum}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+		WHERE
+		ID=#{id}
 	</update>
-	<select id="getSessionHisDtos" parameterType="map"
-		resultMap="RM_SessionHisDto">
+	<update id="updateUpSessionToInterrupt">
+		UPDATE T_SESSION_HIS SET
+		STATUS=-1 WHERE STATUS=1
+	</update>
+	<select id="getSessionHisDtos" parameterType="map" resultMap="RM_SessionHisDto">
 		SELECT * FROM T_SESSION_HIS
 		WHERE 1=1
 		<if test="sessionIds!=null &amp;&amp; !sessionIds.isEmpty()">
@@ -60,7 +52,7 @@
 			</foreach>
 		</if>
 		<if test="sessionIds==null || sessionIds.isEmpty()">
-			AND　1=0
+			AND 1=0
 		</if>
 	</select>
 </mapper>

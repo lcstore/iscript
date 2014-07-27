@@ -4,53 +4,50 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 public class StorageBuffer<E> {
-	private final Object lock = new Object();
-	private List<E> dataList;
+	private BlockingQueue<E> dataQueue;
 	private int capacity;
 
 	public StorageBuffer(int capacity) {
 		super();
 		this.capacity = capacity;
-		this.dataList = new ArrayList<E>(this.capacity);
+		this.dataQueue = new LinkedBlockingQueue<E>(capacity);
 	}
 
 	public void add(E data) {
 		if (data == null) {
 			return;
 		}
-		synchronized (lock) {
-			dataList.add(data);
-		}
+		dataQueue.offer(data);
 	}
 
 	public void addAll(Collection<E> dataCollection) {
 		if (CollectionUtils.isEmpty(dataCollection)) {
 			return;
 		}
-		synchronized (lock) {
-			for (E data : dataCollection) {
-				dataList.add(data);
-			}
+		for (E e : dataCollection) {
+			dataQueue.offer(e);
 		}
 	}
 
 	public List<E> moveTo() {
 		List<E> copyList = Collections.emptyList();
-		if (CollectionUtils.isEmpty(dataList)) {
+		if (dataQueue.isEmpty()) {
 			return copyList;
 		}
-		synchronized (lock) {
-			if (!CollectionUtils.isEmpty(dataList)) {
-				// copyList = (List<E>) Arrays.asList(new
-				// Object[dataList.size()]);
-				// Collections.copy(dataList, copyList);
-				// dataList.clear();
-				copyList = dataList;
-				dataList = new ArrayList<E>(capacity);
+		int size = dataQueue.size();
+		copyList = new ArrayList<E>(size);
+		while (size-- > 0) {
+			E data = dataQueue.poll();
+			if (data == null) {
+				break;
+			} else {
+				copyList.add(data);
 			}
 		}
 		return copyList;
@@ -61,6 +58,6 @@ public class StorageBuffer<E> {
 	}
 
 	public int size() {
-		return dataList.size();
+		return dataQueue.size();
 	}
 }

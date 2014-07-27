@@ -12,4 +12,7 @@ public interface SessionHisService {
 	void batchSaveSessionHisDtos(List<SessionHisDto> dtoList);
 
 	List<SessionHisDto> getSessionHisDtos(List<String> sessionIds);
+
+	void updateUpSessionToInterrupt();
 }
+

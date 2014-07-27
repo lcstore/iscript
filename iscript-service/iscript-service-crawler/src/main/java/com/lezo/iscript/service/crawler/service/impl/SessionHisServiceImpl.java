@@ -76,7 +76,12 @@ public class SessionHisServiceImpl implements SessionHisService {
 		Map<String, SessionHisDto> dtoMap = new HashMap<String, SessionHisDto>();
 		for (SessionHisDto dto : SessionHisDtos) {
 			String key = dto.getSessionId();
-			dtoMap.put(key, dto);
+			SessionHisDto hasDto = dtoMap.get(key);
+			if (hasDto == null) {
+				dtoMap.put(key, dto);
+			} else if (dto.getUpdateTime().after(hasDto.getUpdateTime())) {
+				dtoMap.put(key, hasDto);
+			}
 		}
 		List<String> keyList = new ArrayList<String>(dtoMap.keySet());
 
@@ -98,6 +103,11 @@ public class SessionHisServiceImpl implements SessionHisService {
 			SessionHisDto newDto = entry.getValue();
 			insertDtos.add(newDto);
 		}
+	}
+
+	@Override
+	public void updateUpSessionToInterrupt() {
+		sessionHisDao.updateUpSessionToInterrupt();
 	}
 
 }
