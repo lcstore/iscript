@@ -1,7 +1,5 @@
 package com.lezo.iscript.yeam.config.strategy;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,13 +58,11 @@ public class YhdCollectorStrategy implements ResultStrategy {
 				}
 			} else if ("ConfigYhdProduct".equals(rWritable.getType())) {
 				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
-				JSONObject argsObject = JSONUtils.get(jObject, "args");
 				String rsString = JSONUtils.getString(jObject, "rs");
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
 					List<ProductDto> productDtos = new ArrayList<ProductDto>();
 					List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
-					JSONUtils.put(rootObject, "url", JSONUtils.getString(argsObject, "url"));
 					handleOne(rootObject, productDtos, productStatDtos);
 					getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
 					getStorageBuffer(ProductDto.class).addAll(productDtos);
@@ -119,6 +115,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
 		for (int i = 0; i < listArray.length(); i++) {
 			JSONObject itemObject = listArray.getJSONObject(i);
+			JSONUtils.put(itemObject, "productUrl", JSONUtils.getObject(itemObject, "url"));
 			handleOne(itemObject, productDtos, productStatDtos);
 		}
 		getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
@@ -127,6 +124,8 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		List<ProductDto> updateDtos = new ArrayList<ProductDto>();
 		doAssort(productDtos, insertDtos, updateDtos);
 		createProductTasks(argsObject, insertDtos);
+		getStorageBuffer(ProductDto.class).addAll(insertDtos);
+
 	}
 
 	private void createProductTasks(JSONObject argsObject, List<ProductDto> insertDtos) {
@@ -212,7 +211,8 @@ public class YhdCollectorStrategy implements ResultStrategy {
 	private void addRetry(ResultWritable rWritable) {
 		JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
 		JSONObject argsObject = JSONUtils.get(jObject, "args");
-		String rsString = JSONUtils.getString(jObject, "rs");
+		JSONObject exObject = JSONUtils.get(jObject, "ex");
+		// String rsString = JSONUtils.getString(jObject, "rs");
 		// JSONObject rsObject = JSONUtils.getJSONObject(rsString);
 		TaskWritable tWritable = new TaskWritable();
 		tWritable.setId(rWritable.getTaskId());
@@ -231,42 +231,44 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		Integer level = JSONUtils.getInteger(argsObject, "level");
 		level = level == null ? 0 : level;
 		TaskCacher.getInstance().getQueue(rWritable.getType()).offer(tWritable, level);
-		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()));
+		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()) + ",ex:"
+				+ exObject);
 	}
 
 	private void handleOne(JSONObject itemObject, List<ProductDto> productDtos, List<ProductStatDto> productStatDtos) {
 		ProductDto productDto = new ProductDto();
-		productDto.setProductCode(JSONUtils.getString(itemObject, "product_code"));
+		productDto.setProductCode(JSONUtils.getString(itemObject, "productCode"));
 		if (StringUtils.isEmpty(productDto.getProductCode())) {
 			return;
 		}
-		productDto.setProductUrl(JSONUtils.getString(itemObject, "url"));
+		productDto.setProductUrl(JSONUtils.getString(itemObject, "productUrl"));
 		ShopDto dto = ShopCacher.getInstance().getDomainShopDto(productDto.getProductUrl());
 		if (dto != null) {
 			productDto.setShopId(dto.getId());
 		}
-		productDto.setImgUrl(JSONUtils.getString(itemObject, "img_url"));
-		productDto.setProductName(JSONUtils.getString(itemObject, "name"));
-		productDto.setMarketPrice(JSONUtils.getFloat(itemObject, "market_price"));
+		productDto.setImgUrl(JSONUtils.getString(itemObject, "imgUrl"));
+		productDto.setProductName(JSONUtils.getString(itemObject, "productName"));
+		productDto.setMarketPrice(JSONUtils.getFloat(itemObject, "marketPrice"));
 		productDto.setCreateTime(new Date());
 		productDto.setUpdateTime(productDto.getCreateTime());
-		productDto.setProductBrand(JSONUtils.getString(itemObject, "brand"));
-		productDto.setProductModel(JSONUtils.getString(itemObject, "model"));
-		Date onsailTime = JSONUtils.get(itemObject, "onsail_time");
+		productDto.setProductBrand(JSONUtils.getString(itemObject, "productBrand"));
+		productDto.setProductModel(JSONUtils.getString(itemObject, "productModel"));
+		Date onsailTime = JSONUtils.get(itemObject, "onsailTime");
 		productDto.setOnsailTime(onsailTime);
 
 		ProductStatDto statDto = new ProductStatDto();
 		statDto.setProductCode(productDto.getProductCode());
 		statDto.setProductName(productDto.getProductName());
 		statDto.setProductUrl(productDto.getProductUrl());
-		statDto.setProductPrice(JSONUtils.getFloat(itemObject, "price"));
+		statDto.setProductPrice(JSONUtils.getFloat(itemObject, "productPrice"));
 		statDto.setMarketPrice(productDto.getMarketPrice());
 		statDto.setCreateTime(productDto.getCreateTime());
 		statDto.setUpdateTime(productDto.getUpdateTime());
 		statDto.setShopId(productDto.getShopId());
 
-		statDto.setCommentNum(JSONUtils.getInteger(itemObject, "comment_num"));
-		statDto.setStockNum(JSONUtils.getInteger(itemObject, "stock_num"));
+		statDto.setCommentNum(JSONUtils.getInteger(itemObject, "commentNum"));
+		statDto.setStockNum(JSONUtils.getInteger(itemObject, "stockNum"));
+		statDto.setSoldNum(JSONUtils.getInteger(itemObject, "soldNum"));
 
 		productDtos.add(productDto);
 		productStatDtos.add(statDto);

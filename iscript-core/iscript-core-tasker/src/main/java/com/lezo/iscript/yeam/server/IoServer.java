@@ -57,9 +57,8 @@ public class IoServer extends IoHandlerAdapter {
 		if (message == null) {
 			return;
 		}
-		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 		addNewSession(session, message);
-		addTrackSession(session);
+		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 	}
 
 	@Override
@@ -137,23 +136,6 @@ public class IoServer extends IoHandlerAdapter {
 		session.setAttribute(SessionHisDto.SUCCESS_NUM, 0);
 		session.setAttribute(SessionHisDto.FAIL_NUM, 0);
 		session.setAttribute(SessionHisDto.SAVE_STAMP, System.currentTimeMillis());
-	}
-
-	private void addTrackSession(IoSession session) {
-		String key = SessionHisDto.SAVE_STAMP;
-		Long stamp = (Long) session.getAttribute(key);
-		long cost = System.currentTimeMillis() - stamp;
-		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
-			SessionHisDto trackDto = getSessionHisDto(session);
-			if (!StringUtils.isEmpty(trackDto.getClienName())) {
-				logger.info(String.format("track: %s", trackDto));
-				trackDto.setStatus(SessionHisDto.STATUS_UP);
-				this.storageBuffer.add(trackDto);
-			} else {
-				logger.warn(String.format("track session.can not found name for sessionId:%s", trackDto.getSessionId()));
-			}
-			session.setAttribute(key, System.currentTimeMillis());
-		}
 	}
 
 }

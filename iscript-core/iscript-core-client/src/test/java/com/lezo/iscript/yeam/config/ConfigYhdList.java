@@ -75,15 +75,14 @@ public class ConfigYhdList implements ConfigParser {
 			listArray.put(itemObject);
 			Elements oNameUrlAs = ctElements.get(i).select("a[id^=pdlink].title[href][pmid]");
 			if (!oNameUrlAs.isEmpty()) {
-				JSONUtils.put(itemObject, "name", oNameUrlAs.first().text());
-				JSONUtils.put(itemObject, "url", oNameUrlAs.first().absUrl("href"));
-				JSONUtils.put(itemObject, "product_code", oNameUrlAs.first().attr("pmid"));
+				JSONUtils.put(itemObject, "productName", oNameUrlAs.first().text());
+				JSONUtils.put(itemObject, "productUrl", oNameUrlAs.first().absUrl("href"));
+				JSONUtils.put(itemObject, "productCode", oNameUrlAs.first().attr("pmid"));
 			}
 			Elements oPriceAs = ctElements.get(i).select("span[id^=price0].price[yhdprice][productid]");
 			if (!oPriceAs.isEmpty()) {
-				JSONUtils.put(itemObject, "price", oPriceAs.first().attr("yhdprice"));
 				String pid = oPriceAs.first().attr("productid");
-				JSONUtils.put(itemObject, "product_id", pid);
+				JSONUtils.put(itemObject, "productId", pid);
 				sb.append(String.format("&productIds=%s", pid));
 			}
 			Elements oCmmAs = ctElements.get(i).select("p.comment a[id^=pdlinkcomment_]");
@@ -92,7 +91,7 @@ public class ConfigYhdList implements ConfigParser {
 				Pattern oReg = Pattern.compile("[0-9]+");
 				Matcher matcher = oReg.matcher(content);
 				if (matcher.find()) {
-					JSONUtils.put(itemObject, "comment_num", matcher.group());
+					JSONUtils.put(itemObject, "commentNum", matcher.group());
 				}
 			}
 		}
@@ -115,17 +114,17 @@ public class ConfigYhdList implements ConfigParser {
 		}
 		for (int i = 0; i < listArray.length(); i++) {
 			JSONObject itemObject = listArray.getJSONObject(i);
-			String pid = JSONUtils.getString(itemObject, "product_id");
+			String pid = JSONUtils.getString(itemObject, "productId");
 			JSONObject sObject = idMap.get(pid);
 			if (sObject == null) {
 				System.err.println(itemObject);
 			} else {
-				JSONUtils.put(itemObject, "product_code", JSONUtils.getObject(sObject, "pmId"));
-				JSONUtils.put(itemObject, "stock_num", JSONUtils.getObject(sObject, "productStock"));
-				JSONUtils.put(itemObject, "market_price", JSONUtils.getObject(sObject, "marketPrice"));
-				JSONUtils.put(itemObject, "price", JSONUtils.getObject(sObject, "productPrice"));
-				JSONUtils.put(itemObject, "promot_price", JSONUtils.getObject(sObject, "promPrice"));
-				JSONUtils.put(itemObject, "yhd_price", JSONUtils.getObject(sObject, "yhdPrice"));
+				JSONUtils.put(itemObject, "productCode", JSONUtils.getObject(sObject, "pmId"));
+				JSONUtils.put(itemObject, "stockNum", JSONUtils.getObject(sObject, "productStock"));
+				JSONUtils.put(itemObject, "marketPrice", JSONUtils.getObject(sObject, "marketPrice"));
+				JSONUtils.put(itemObject, "productPrice", JSONUtils.getObject(sObject, "productPrice"));
+				JSONUtils.put(itemObject, "promotPrice", JSONUtils.getObject(sObject, "promPrice"));
+				JSONUtils.put(itemObject, "yhdPrice", JSONUtils.getObject(sObject, "yhdPrice"));
 			}
 		}
 	}

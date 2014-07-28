@@ -83,6 +83,7 @@ public class ProxyDetectTimer {
 			taskDtos.add(taskDto);
 		}
 		StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+		logger.info(String.format("add task to buffer,size:%d", taskDtos.size()));
 	}
 
 	public void setProxyDetectService(ProxyDetectService proxyDetectService) {

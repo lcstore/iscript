@@ -31,7 +31,9 @@ public class StorageBuffer<E> {
 			return;
 		}
 		for (E e : dataCollection) {
-			dataQueue.offer(e);
+			if (!dataQueue.offer(e)) {
+				break;
+			}
 		}
 	}
 

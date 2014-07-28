@@ -38,101 +38,74 @@ public class ConfigYhdProduct implements ConfigParser {
 		String url = task.get("url").toString();
 
 		HttpGet get = new HttpGet(url);
+		get.addHeader("Refer", url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
 		Elements oHomeAs = dom.select("div.layout_wrap.crumbbox div.crumb");
 		JSONObject itemObject = new JSONObject();
 		if (oHomeAs.isEmpty()) {
-			JSONUtils.put(itemObject, "stock_num", -1);
+			JSONUtils.put(itemObject, "stockNum", -1);
 			return itemObject.toString();
 		}
+		JSONUtils.put(itemObject, "productUrl", url);
 		Elements oElements = dom.select("div.main_info_con div[class^=pd] h2,#productMainName");
 		if (!oElements.isEmpty()) {
-			JSONUtils.put(itemObject, "name", oElements.first().text());
-		}
-		oElements = dom.select("#detail_prom_price,#current_price");
-		if (!oElements.isEmpty()) {
-			JSONUtils.put(itemObject, "price", oElements.first().ownText());
+			JSONUtils.put(itemObject, "productName", oElements.first().text());
 		}
 		oElements = dom.select("#productMercantId[value]");
 		if (!oElements.isEmpty()) {
-			JSONUtils.put(itemObject, "product_code", oElements.first().attr("value"));
+			JSONUtils.put(itemObject, "productCode", oElements.first().attr("value"));
 		}
-		oElements = dom.select("#hasStockNum[value]");
-		if (!oElements.isEmpty()) {
-			JSONUtils.put(itemObject, "stock_num", oElements.first().attr("value"));
-		}
-		oElements = dom.select("#companyName[value]");
-		if (!oElements.isEmpty()) {
-			JSONUtils.put(itemObject, "shop_name", oElements.first().attr("value"));
-		}
-		return itemObject.toString();
-	}
-
-	private void addListArray(Document dom, JSONArray listArray) throws Exception {
-		Elements ctElements = dom.select("li[id^=producteg_]");
-		if (ctElements.isEmpty()) {
-			return;
-		}
-		int size = ctElements.size();
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < size; i++) {
-			JSONObject itemObject = new JSONObject();
-			listArray.put(itemObject);
-			Elements oNameUrlAs = ctElements.get(i).select("a[id^=pdlink].title[href][pmid]");
-			if (!oNameUrlAs.isEmpty()) {
-				JSONUtils.put(itemObject, "name", oNameUrlAs.first().text());
-				JSONUtils.put(itemObject, "url", oNameUrlAs.first().absUrl("href"));
-				JSONUtils.put(itemObject, "product_code", oNameUrlAs.first().attr("pmid"));
-			}
-			Elements oPriceAs = ctElements.get(i).select("span[id^=price0].price[yhdprice][productid]");
-			if (!oPriceAs.isEmpty()) {
-				JSONUtils.put(itemObject, "price", oPriceAs.first().attr("yhdprice"));
-				String pid = oPriceAs.first().attr("productid");
-				JSONUtils.put(itemObject, "product_id", pid);
-				sb.append(String.format("&productIds=%s", pid));
-			}
-			Elements oCmmAs = ctElements.get(i).select("p.comment a[id^=pdlinkcomment_]");
-			if (!oCmmAs.isEmpty()) {
-				String content = oCmmAs.first().ownText();
-				Pattern oReg = Pattern.compile("[0-9]+");
-				Matcher matcher = oReg.matcher(content);
-				if (matcher.find()) {
-					JSONUtils.put(itemObject, "comment_num", matcher.group());
-				}
-			}
-		}
-		String bStockUrl = String
-				.format("http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=1%s&callback=jsonp%s",
-						sb.toString(), System.currentTimeMillis());
-		HttpGet sGet = new HttpGet(bStockUrl);
-		sGet.addHeader("Referer", dom.baseUri());
-		String html = HttpClientUtils.getContent(client, sGet, "UTF-8");
+		String detailUrl = String.format(
+				"http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s",
+				JSONUtils.getString(itemObject, "productCode"), System.currentTimeMillis());
+		HttpGet dGet = new HttpGet(detailUrl);
+		dGet.addHeader("Refer", url);
+		html = HttpClientUtils.getContent(client, dGet, "UTF-8");
 		int fromIndex = html.indexOf("(");
 		int toIndex = html.indexOf(")");
 		fromIndex = fromIndex < 0 ? 0 : fromIndex;
 		toIndex = toIndex < 0 ? 0 : html.length();
 		html = html.substring(fromIndex + 1, toIndex);
-		JSONArray sArray = new JSONArray(html);
-		Map<String, JSONObject> idMap = new HashMap<String, JSONObject>();
-		for (int i = 0; i < sArray.length(); i++) {
-			JSONObject itemObject = sArray.getJSONObject(i);
-			idMap.put(JSONUtils.getString(itemObject, "productId"), itemObject);
+		JSONObject dObject = new JSONObject(html);
+		JSONUtils.put(itemObject, "productPrice", JSONUtils.get(dObject, "currentPrice"));
+		JSONUtils.put(itemObject, "yhdPrice", JSONUtils.get(dObject, "yhdPrice"));
+		JSONUtils.put(itemObject, "promotPrice", JSONUtils.get(dObject, "promPrice"));
+		JSONUtils.put(itemObject, "marketPrice", JSONUtils.get(dObject, "marketPrice"));
+		JSONUtils.put(itemObject, "stockNum", JSONUtils.get(dObject, "currentStockNum"));
+		JSONUtils.put(itemObject, "soldNum", JSONUtils.get(dObject, "soldNum"));
+		oElements = dom.select("#companyName[value]");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "shopName", oElements.first().attr("value"));
 		}
-		for (int i = 0; i < listArray.length(); i++) {
-			JSONObject itemObject = listArray.getJSONObject(i);
-			String pid = JSONUtils.getString(itemObject, "product_id");
-			JSONObject sObject = idMap.get(pid);
-			if (sObject == null) {
-				System.err.println(itemObject);
-			} else {
-				JSONUtils.put(itemObject, "product_code", JSONUtils.getObject(sObject, "pmId"));
-				JSONUtils.put(itemObject, "stock_num", JSONUtils.getObject(sObject, "productStock"));
-				JSONUtils.put(itemObject, "market_price", JSONUtils.getObject(sObject, "marketPrice"));
-				JSONUtils.put(itemObject, "price", JSONUtils.getObject(sObject, "productPrice"));
-				JSONUtils.put(itemObject, "promot_price", JSONUtils.getObject(sObject, "promPrice"));
-				JSONUtils.put(itemObject, "yhd_price", JSONUtils.getObject(sObject, "yhdPrice"));
-			}
+		oElements = dom.select("#merchantId[value]");
+		if (!oElements.isEmpty()) {
+			String merchantId = oElements.first().attr("value");
+			String shopUrl = "1".equals(merchantId) ? "http://www.yhd.com/" : String.format(
+					"http://shop.yhd.com/m-%s.html", merchantId);
+			JSONUtils.put(itemObject, "shopUrl", shopUrl);
 		}
+		oElements = dom.select("#brandName[value]");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "brandName", oElements.first().attr("value"));
+		}
+		String mUrl = String.format(
+				"http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
+				JSONUtils.getString(itemObject, "productCode"));
+		HttpGet mGet = new HttpGet(mUrl);
+		dGet.addHeader("Refer", url);
+		html = HttpClientUtils.getContent(client, mGet, "UTF-8");
+		try {
+			fromIndex = html.indexOf("(");
+			toIndex = html.indexOf(")");
+			fromIndex = fromIndex < 0 ? 0 : fromIndex;
+			toIndex = toIndex < 0 ? 0 : html.length();
+			html = html.substring(fromIndex + 1, toIndex);
+			JSONObject mObject = new JSONObject(html);
+			JSONUtils.put(itemObject, "commentNum", JSONUtils.get(mObject, "experienceNum"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return itemObject.toString();
 	}
 }
