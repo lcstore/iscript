@@ -76,8 +76,8 @@ public class ProductStatServiceImpl implements ProductStatService {
 		turnCreateTime2UpdateTime(insertStatHisDtos);
 		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
 		long cost = System.currentTimeMillis() - start;
-		logger.info("save [%s]insert:%d,update:%d,[%s]insert:%d,cost:%s", "ProductStatDto", insertStatDtos.size(),
-				updateStatDtos.size(), "ProductStatHisDto", insertStatHisDtos.size(), cost);
+		logger.info(String.format("save [%s]insert:%d,update:%d,[%s]insert:%d,cost:%s", "ProductStatDto",
+				insertStatDtos.size(), updateStatDtos.size(), "ProductStatHisDto", insertStatHisDtos.size(), cost));
 	}
 
 	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {
