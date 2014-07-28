@@ -1,21 +1,32 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lezo.iscript.service.crawler.dao.ProductStatDao;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
+import com.lezo.iscript.service.crawler.service.ProductStatHisService;
 import com.lezo.iscript.service.crawler.service.ProductStatService;
 import com.lezo.iscript.utils.BatchIterator;
 
 @Service
 public class ProductStatServiceImpl implements ProductStatService {
+	private static Logger logger = LoggerFactory.getLogger(ProductStatServiceImpl.class);
 	@Autowired
 	private ProductStatDao productStatDao;
+	@Autowired
+	private ProductStatHisService productStatHisService;
 
 	@Override
 	public void batchInsertProductStatDtos(List<ProductStatDto> dtoList) {
@@ -50,4 +61,97 @@ public class ProductStatServiceImpl implements ProductStatService {
 		this.productStatDao = productStatDao;
 	}
 
+	@Override
+	public void batchSaveProductStatDtos(List<ProductStatDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return;
+		}
+		long start = System.currentTimeMillis();
+		List<ProductStatDto> insertStatDtos = new ArrayList<ProductStatDto>();
+		List<ProductStatDto> insertStatHisDtos = new ArrayList<ProductStatDto>();
+		List<ProductStatDto> updateStatDtos = new ArrayList<ProductStatDto>();
+		doStatAssort(dtoList, insertStatDtos, updateStatDtos, insertStatHisDtos);
+		batchInsertProductStatDtos(insertStatDtos);
+		batchUpdateProductStatDtos(updateStatDtos);
+		turnCreateTime2UpdateTime(insertStatHisDtos);
+		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
+		long cost = System.currentTimeMillis() - start;
+		logger.info("save [%s]insert:%d,update:%d,[%s]insert:%d,cost:%s", "ProductStatDto", insertStatDtos.size(),
+				updateStatDtos.size(), "ProductStatHisDto", insertStatHisDtos.size(), cost);
+	}
+
+	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {
+		for (ProductStatDto hisDto : insertStatHisDtos) {
+			hisDto.setCreateTime(hisDto.getUpdateTime());
+		}
+	}
+
+	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos,
+			List<ProductStatDto> updateDtos, List<ProductStatDto> insertStatHisDtos) {
+		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
+		Map<String, ProductStatDto> dtoMap = new HashMap<String, ProductStatDto>();
+		for (ProductStatDto dto : productDtos) {
+			String key = dto.getShopId() + "-" + dto.getProductCode();
+			dtoMap.put(key, dto);
+			Set<String> codeSet = shopMap.get(dto.getShopId());
+			if (codeSet == null) {
+				codeSet = new HashSet<String>();
+				shopMap.put(dto.getShopId(), codeSet);
+			}
+			codeSet.add(dto.getProductCode());
+		}
+		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
+			List<ProductStatDto> hasDtos = getProductStatDtos(new ArrayList<String>(entry.getValue()), entry.getKey());
+			Set<String> hasCodeSet = new HashSet<String>();
+			for (ProductStatDto oldDto : hasDtos) {
+				String key = oldDto.getShopId() + "-" + oldDto.getProductCode();
+				ProductStatDto newDto = dtoMap.get(key);
+				hasCodeSet.add(oldDto.getProductCode());
+				newDto.setId(oldDto.getId());
+				updateDtos.add(newDto);
+				if (isChange(oldDto, newDto)) {
+					insertStatHisDtos.add(newDto);
+				}
+			}
+			for (String code : entry.getValue()) {
+				if (hasCodeSet.contains(code)) {
+					continue;
+				}
+				String key = entry.getKey() + "-" + code;
+				ProductStatDto newDto = dtoMap.get(key);
+				insertDtos.add(newDto);
+				insertStatHisDtos.add(newDto);
+			}
+
+		}
+
+	}
+
+	public boolean isChange(ProductStatDto oldDto, ProductStatDto newDto) {
+		if (!isSameObject(oldDto.getProductPrice(), newDto.getProductPrice())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getStockNum(), newDto.getStockNum())) {
+			return true;
+		}
+		if (!isSameObject(oldDto.getCommentNum(), newDto.getCommentNum())) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isSameObject(Object lObject, Object rObject) {
+		if (lObject == null && rObject == null) {
+			return true;
+		} else if (lObject == null && rObject != null) {
+			return false;
+		}
+		return lObject.equals(rObject);
+	}
 }

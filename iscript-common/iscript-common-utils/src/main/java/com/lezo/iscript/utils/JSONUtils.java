@@ -61,7 +61,14 @@ public class JSONUtils {
 	}
 
 	public static String getString(JSONObject jObj, String key) {
-		return get(jObj, key);
+		Object jObject = get(jObj, key);
+		if (jObject == null) {
+			return null;
+		}
+		if (jObject instanceof String) {
+			return (String) jObject;
+		}
+		return jObject.toString();
 	}
 
 	public static Integer getInteger(JSONObject jObj, String key) {

@@ -25,7 +25,7 @@ import com.lezo.iscript.yeam.http.HttpRequestManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ConfigYhdList implements ConfigParser {
+public class ConfigYhdProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpRequestManager.getDefaultManager().getClient();
 
 	@Override
@@ -40,27 +40,33 @@ public class ConfigYhdList implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
-
-		JSONObject listObject = new JSONObject();
-		JSONArray listArray = new JSONArray();
-		JSONUtils.put(listObject, "list", listArray);
-
-		addListArray(dom, listArray);
-		Object getNexts = task.get("getNexts");
-		if (getNexts != null) {
-			JSONArray nextArray = new JSONArray();
-			JSONUtils.put(listObject, "nexts", nextArray);
-			Elements pageCoutAs = dom.select("#pageCountPage[value]");
-			if (!pageCoutAs.isEmpty()) {
-				int count = Integer.valueOf(pageCoutAs.first().attr("value"));
-				int index = url.indexOf("#page=");
-				String listHeader = index < 0 ? url : url.substring(0, index);
-				for (int i = 2; i <= count; i++) {
-					nextArray.put(String.format("%s#page=%d&sort=2", listHeader, i));
-				}
-			}
+		Elements oHomeAs = dom.select("div.layout_wrap.crumbbox div.crumb");
+		JSONObject itemObject = new JSONObject();
+		if (oHomeAs.isEmpty()) {
+			JSONUtils.put(itemObject, "stock_num", -1);
+			return itemObject.toString();
 		}
-		return listObject.toString();
+		Elements oElements = dom.select("div.main_info_con div[class^=pd] h2,#productMainName");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "name", oElements.first().text());
+		}
+		oElements = dom.select("#detail_prom_price,#current_price");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "price", oElements.first().ownText());
+		}
+		oElements = dom.select("#productMercantId[value]");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "product_code", oElements.first().attr("value"));
+		}
+		oElements = dom.select("#hasStockNum[value]");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "stock_num", oElements.first().attr("value"));
+		}
+		oElements = dom.select("#companyName[value]");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "shop_name", oElements.first().attr("value"));
+		}
+		return itemObject.toString();
 	}
 
 	private void addListArray(Document dom, JSONArray listArray) throws Exception {

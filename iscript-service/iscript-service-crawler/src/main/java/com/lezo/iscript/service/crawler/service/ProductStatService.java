@@ -9,5 +9,7 @@ public interface ProductStatService {
 
 	void batchUpdateProductStatDtos(List<ProductStatDto> dtoList);
 
+	void batchSaveProductStatDtos(List<ProductStatDto> dtoList);
+
 	List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer shopId);
 }

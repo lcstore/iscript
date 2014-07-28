@@ -110,7 +110,7 @@ public class PullJdListTimer {
 		turnCreateTime2UpdateTime(insertStatHisDtos);
 		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
 	}
-
+	
 	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {
 		for (ProductStatDto hisDto : insertStatHisDtos) {
 			hisDto.setCreateTime(hisDto.getUpdateTime());

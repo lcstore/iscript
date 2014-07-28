@@ -8,6 +8,8 @@ public interface ProductService {
 	void batchInsertProductDtos(List<ProductDto> dtoList);
 
 	void batchUpdateProductDtos(List<ProductDto> dtoList);
+	
+	void batchSaveProductDtos(List<ProductDto> dtoList);
 
 	List<ProductDto> getProductDtos(List<String> codeList, Integer shopId);
 

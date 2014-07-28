@@ -14,6 +14,7 @@ import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
+import com.lezo.iscript.yeam.config.ConfigYhdProduct;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
@@ -269,6 +270,20 @@ public class ConfigParserTest {
 	public void testConfigYhdList() throws Exception {
 		String url = "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2";
 		ConfigParser parser = new ConfigYhdList();
+		TaskWritable task = new TaskWritable();
+		try {
+			task.put("url", url);
+			task.put("getNexts", 1);
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testConfigYhdProduct() throws Exception {
+		String url = "http://item.yhd.com/item/6534749";
+		ConfigParser parser = new ConfigYhdProduct();
 		TaskWritable task = new TaskWritable();
 		try {
 			task.put("url", url);
