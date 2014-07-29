@@ -38,7 +38,7 @@ public class ProductStatStorager implements StorageListener<ProductStatDto> {
 				long start = System.currentTimeMillis();
 				productStatService.batchSaveProductStatDtos(copyList);
 				long cost = System.currentTimeMillis() - start;
-				logger.info(String.format("finish to insert[%s],size:%d,cost:%s", this.getClass().getSimpleName(),
+				logger.info(String.format("ProductStatStorager insert[%s],size:%d,cost:%s", "ProductStatDto",
 						copyList.size(), cost));
 
 			}

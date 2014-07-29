@@ -38,7 +38,7 @@ public class TaskPriorityStorager implements StorageListener<TaskPriorityDto> {
 				long start = System.currentTimeMillis();
 				taskPriorityService.batchInsert(copyList);
 				long cost = System.currentTimeMillis() - start;
-				logger.info(String.format("finish to insert[%s],size:%d,cost:%s", this.getClass().getSimpleName(),
+				logger.info(String.format("TaskPriorityStorager insert[%s],size:%d,cost:%s", "TaskPriorityDto",
 						copyList.size(), cost));
 
 			}

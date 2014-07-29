@@ -58,6 +58,11 @@
 			<artifactId>mina-core</artifactId>
 			<version>${mina.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>0.2.24</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>tasker</finalName>

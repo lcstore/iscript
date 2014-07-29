@@ -39,7 +39,8 @@ public class SessionStorager implements StorageListener<SessionHisDto> {
 				long start = System.currentTimeMillis();
 				sessionHisService.batchSaveSessionHisDtos(copyList);
 				long cost = System.currentTimeMillis() - start;
-				logger.info("finish to insert task:" + copyList.size() + ",cost:" + cost);
+				logger.info(String.format("SessionStorager insert[%s],size:%d,cost:%s", "SessionHisDto",
+						copyList.size(), cost));
 			}
 		});
 	}
