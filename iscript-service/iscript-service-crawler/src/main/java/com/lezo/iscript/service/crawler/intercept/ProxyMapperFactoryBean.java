@@ -19,6 +19,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 	private T targetObject;
 	private String methodName = DEFAULT_INTERCEPT_METHOD;
 	private List<String> keyList;
+
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (isIntercept(method)) {
@@ -34,14 +35,17 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 			String sqlMapper = getObjectType().getName() + ".updateOne";
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 			boolean hasParamName = !CollectionUtils.isEmpty(keyList);
+			if (hasParamName) {
+				for (int i = 1; i < keyList.size(); i++) {
+					paramMap.put(keyList.get(i), args[i]);
+				}
+			}
 			for (Object data : dataList) {
 				if (!hasParamName) {
 					sqlSession.update(sqlMapper, data);
 				} else {
 					paramMap.put(keyList.get(0), data);
-					for (int i = 1; i < keyList.size(); i++) {
-						paramMap.put(keyList.get(i), args[i]);
-					}
+					sqlSession.update(sqlMapper, paramMap);
 				}
 			}
 			sqlSession.commit();
@@ -65,7 +69,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 	@SuppressWarnings("unchecked")
 	@Override
 	public T getObject() throws Exception {
-		this.targetObject= super.getObject();
+		this.targetObject = super.getObject();
 		return (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), targetObject.getClass()
 				.getInterfaces(), this);
 	}
