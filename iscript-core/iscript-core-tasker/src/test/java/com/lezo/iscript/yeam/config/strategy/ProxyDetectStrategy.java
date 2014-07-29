@@ -20,7 +20,7 @@ import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.result.storage.StorageCaller;
+import com.lezo.iscript.yeam.storage.StorageCaller;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.writable.ResultWritable;

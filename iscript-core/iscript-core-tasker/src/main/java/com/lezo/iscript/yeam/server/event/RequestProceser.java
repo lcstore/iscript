@@ -5,13 +5,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.lezo.iscript.common.NameThreadFactory;
+
 public class RequestProceser {
 	private static RequestProceser instance;
 	private int coreSize = 2;
 	private int maxSize = 5;
 	private BlockingQueue<Runnable> taskQueue = new ArrayBlockingQueue<Runnable>(1000);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(coreSize, maxSize, 60000L, TimeUnit.MILLISECONDS,
-			taskQueue);
+			taskQueue, new NameThreadFactory("RequestProceser-"));
 
 	private RequestProceser() {
 	}

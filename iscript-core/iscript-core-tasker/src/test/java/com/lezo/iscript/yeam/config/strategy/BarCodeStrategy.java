@@ -21,7 +21,7 @@ import com.lezo.iscript.service.crawler.service.BarCodeItemService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.result.storage.StorageCaller;
+import com.lezo.iscript.yeam.storage.StorageCaller;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
@@ -253,7 +253,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 
 	@SuppressWarnings("unchecked")
 	private StorageBuffer<TaskPriorityDto> getTaskPriorityDtoBuffer() {
-		return (StorageBuffer<TaskPriorityDto>) StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class.getName());
+		return (StorageBuffer<TaskPriorityDto>) StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class);
 	}
 
 	public StorageBuffer<BarCodeItemDto> getStorageBuffer() {

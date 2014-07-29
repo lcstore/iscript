@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 public class StorageBuffer<E> {
 	private BlockingQueue<E> dataQueue;
@@ -16,25 +14,20 @@ public class StorageBuffer<E> {
 	public StorageBuffer(int capacity) {
 		super();
 		this.capacity = capacity;
-		this.dataQueue = new LinkedBlockingQueue<E>(capacity);
+		this.dataQueue = new ArrayBlockingQueue<E>(capacity);
 	}
 
-	public void add(E data) {
-		if (data == null) {
-			return;
-		}
-		dataQueue.offer(data);
+	public boolean add(E data) {
+		return dataQueue.offer(data);
 	}
 
-	public void addAll(Collection<E> dataCollection) {
-		if (CollectionUtils.isEmpty(dataCollection)) {
-			return;
-		}
+	public boolean addAll(Collection<E> dataCollection) {
 		for (E e : dataCollection) {
 			if (!dataQueue.offer(e)) {
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
 
 	public List<E> moveTo() {

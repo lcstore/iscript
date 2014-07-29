@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.result.storage;
+package com.lezo.iscript.yeam.storage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

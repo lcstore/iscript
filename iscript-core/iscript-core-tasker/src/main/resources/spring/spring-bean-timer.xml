@@ -16,14 +16,14 @@
 	</bean>
 
 	<bean id="taskPriorityStorager"
-		class="com.lezo.iscript.yeam.tasker.storage.TaskPriorityStorager">
+		class="com.lezo.iscript.yeam.storage.TaskPriorityStorager">
 	</bean>
-	<bean id="sessionStorager" class="com.lezo.iscript.yeam.tasker.storage.SessionStorager">
+	<bean id="sessionStorager" class="com.lezo.iscript.yeam.storage.SessionStorager">
 	</bean>
 	<bean id="productStatStorager"
-		class="com.lezo.iscript.yeam.tasker.storage.ProductStatStorager">
+		class="com.lezo.iscript.yeam.storage.ProductStatStorager">
 	</bean>
-	<bean id="productStorager" class="com.lezo.iscript.yeam.tasker.storage.ProductStorager">
+	<bean id="productStorager" class="com.lezo.iscript.yeam.storage.ProductStorager">
 	</bean>
 
 	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
