@@ -287,6 +287,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigYhdProduct();
 		TaskWritable task = new TaskWritable();
 		try {
+			url="http://item.yhd.com/item/31930307";
 			task.put("url", url);
 			task.put("getNexts", 1);
 			String result = parser.doParse(task);

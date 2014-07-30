@@ -97,6 +97,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			argsObject.remove("level");
 			argsObject.remove("src");
 			argsObject.remove("ctime");
+			argsObject.remove("getNexts");
 			if (taskPriorityDto.getLevel() == null) {
 				taskPriorityDto.setLevel(0);
 			}

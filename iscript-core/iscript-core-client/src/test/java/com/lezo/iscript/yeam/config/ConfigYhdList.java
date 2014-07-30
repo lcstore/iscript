@@ -5,20 +5,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.http.HttpRequestManager;
