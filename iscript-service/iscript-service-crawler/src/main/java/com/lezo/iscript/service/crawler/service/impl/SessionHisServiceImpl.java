@@ -37,7 +37,7 @@ public class SessionHisServiceImpl implements SessionHisService {
 	public void batchUpdateSessionHisDtos(List<SessionHisDto> dtoList) {
 		BatchIterator<SessionHisDto> it = new BatchIterator<SessionHisDto>(dtoList);
 		while (it.hasNext()) {
-			sessionHisDao.batchUpdate(dtoList);
+			sessionHisDao.batchUpdate(it.next());
 		}
 	}
 

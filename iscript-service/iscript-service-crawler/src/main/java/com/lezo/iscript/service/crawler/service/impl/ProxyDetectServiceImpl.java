@@ -39,7 +39,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	public void batchUpdateProxyDetectDtos(List<ProxyDetectDto> dtoList) {
 		BatchIterator<ProxyDetectDto> it = new BatchIterator<ProxyDetectDto>(dtoList);
 		while (it.hasNext()) {
-			proxyDetectDao.batchUpdate(dtoList);
+			proxyDetectDao.batchUpdate(it.next());
 		}
 	}
 

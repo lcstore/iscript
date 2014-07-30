@@ -59,11 +59,11 @@ public class AssembleTaskTimer {
 		if (strategyConfigs.isEmpty()) {
 			return;
 		}
-		StrategyBuffer configBuffer = StrategyBuffer.getInstance();
+		StrategyBuffer strategyBuffer = StrategyBuffer.getInstance();
 		StringBuilder sb = new StringBuilder();
 		for (TaskConfigDto dto : strategyConfigs) {
 			try {
-				configBuffer.addStrategy(dto);
+				strategyBuffer.addStrategy(dto);
 				if (sb.length() > 0) {
 					sb.append(",");
 				}
@@ -72,7 +72,7 @@ public class AssembleTaskTimer {
 				log.warn("can not buffer config:" + dto.getType() + "," + ExceptionUtils.getStackTrace(e));
 			}
 		}
-		log.info("update strategy[" + sb.toString() + "].size:" + strategyConfigs.size());
+		log.info("update strategy[" + sb.toString() + "].size:" + strategyConfigs.size()+",stamp:"+strategyBuffer.getStamp());
 	}
 
 	private void add2ConfigBuffer(List<TaskConfigDto> taskConfigs) {

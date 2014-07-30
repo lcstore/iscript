@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -48,7 +49,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 					sqlSession.update(sqlMapper, paramMap);
 				}
 			}
-			sqlSession.commit(true);
+			sqlSession.commit();
 		} catch (Exception ex) {
 			sqlSession.rollback();
 			throw ex;
