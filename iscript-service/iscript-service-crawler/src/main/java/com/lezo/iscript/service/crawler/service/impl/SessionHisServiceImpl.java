@@ -80,7 +80,7 @@ public class SessionHisServiceImpl implements SessionHisService {
 			if (hasDto == null) {
 				dtoMap.put(key, dto);
 			} else if (dto.getUpdateTime().after(hasDto.getUpdateTime())) {
-				dtoMap.put(key, hasDto);
+				dtoMap.put(key, dto);
 			}
 		}
 		List<String> keyList = new ArrayList<String>(dtoMap.keySet());

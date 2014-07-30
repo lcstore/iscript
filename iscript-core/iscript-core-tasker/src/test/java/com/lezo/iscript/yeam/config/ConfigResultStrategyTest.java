@@ -16,8 +16,9 @@ public class ConfigResultStrategyTest {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		ConfigResultStrategyTest strategyTest = new ConfigResultStrategyTest();
+		 strategyTest.testBarCodeStrategy();
 		// strategyTest.testProxyCollectorStrategy();
-		strategyTest.testYhdCollectorStrategy();
+//		strategyTest.testYhdCollectorStrategy();
 	}
 
 	public void testBarCodeStrategy() throws Exception {

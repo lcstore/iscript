@@ -5,11 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 
 public class StorageBufferFactory {
-//	private static final Object WRITE_LOCK = new Object();
+	// private static final Object WRITE_LOCK = new Object();
 	private static final ConcurrentHashMap<String, StorageBuffer<?>> storageMap = new ConcurrentHashMap<String, StorageBuffer<?>>();
-	private static final int capacity = 1000;
 
-	public synchronized static StorageBuffer<?> getStorageBuffer(String name) {
+	private static final int DEFAULT_CAPACITY = 10000;
+
+	public synchronized static StorageBuffer<?> getStorageBuffer(String name, int capacity) {
 		if (StringUtils.isEmpty(name)) {
 			throw new IllegalArgumentException("the name for storage buffer must not be empty...");
 		}
@@ -25,8 +26,12 @@ public class StorageBufferFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> StorageBuffer<T> getStorageBuffer(Class<T> storageClass) {
+	public static <T> StorageBuffer<T> getStorageBuffer(Class<T> storageClass, int capacity) {
 		String name = storageClass.getSimpleName();
-		return (StorageBuffer<T>) getStorageBuffer(name);
+		return (StorageBuffer<T>) getStorageBuffer(name, capacity);
+	}
+
+	public static <T> StorageBuffer<T> getStorageBuffer(Class<T> storageClass) {
+		return getStorageBuffer(storageClass, DEFAULT_CAPACITY);
 	}
 }

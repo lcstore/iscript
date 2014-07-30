@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.storage;
+package com.lezo.iscript.yeam.storage;
 
 import java.util.List;
 
@@ -12,7 +12,6 @@ import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 import com.lezo.iscript.service.crawler.service.ProductStatService;
-import com.lezo.iscript.yeam.result.storage.StorageCaller;
 
 public class ProductStatStorager implements StorageListener<ProductStatDto> {
 	private static Logger logger = LoggerFactory.getLogger(ProductStatStorager.class);

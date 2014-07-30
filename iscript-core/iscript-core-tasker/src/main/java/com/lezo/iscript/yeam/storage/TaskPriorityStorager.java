@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.storage;
+package com.lezo.iscript.yeam.storage;
 
 import java.util.List;
 
@@ -12,17 +12,17 @@ import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.TaskPriorityService;
-import com.lezo.iscript.yeam.result.storage.StorageCaller;
 
 public class TaskPriorityStorager implements StorageListener<TaskPriorityDto> {
 	private static Logger logger = LoggerFactory.getLogger(TaskPriorityStorager.class);
+	private static final int TASK_CAPACITY = 100000;
 	private StorageBuffer<TaskPriorityDto> storageBuffer;
 	@Autowired
 	private TaskPriorityService taskPriorityService;
 
 	public TaskPriorityStorager() {
 		super();
-		this.storageBuffer = StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class);
+		this.storageBuffer = StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class, TASK_CAPACITY);
 	}
 
 	@Override

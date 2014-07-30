@@ -17,11 +17,13 @@
   <dependencies/>
   <modules>
     <module>iscript-core-api</module>
+	<module>iscript-core-crawler</module>
     <module>iscript-core-client</module>
-    <module>iscript-core-crawler</module>
-    <module>iscript-core-defend</module>
     <module>iscript-core-tasker</module>
     <module>iscript-core-resulter</module>
+	<!--
+	<module>iscript-core-defend</module>
     <module>iscript-core-proxy</module>
+	-->
   </modules>
 </project>
