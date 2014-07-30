@@ -2,52 +2,43 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.SessionHisDao">
-	<resultMap type="SessionHisDto" id="RM_SessionHisDto">
+<mapper namespace="com.vipshop.crawler.match.dao.MatchTrackDao">
+	<resultMap type="MatchTrackDto" id="RM_MatchTrackDto">
 		<result column="ID" property="id"/>
-		<result column="SESSION_ID" property="sessionId"/>
-		<result column="CLIEN_NAME" property="clienName"/>
-		<result column="REQUEST_SIZE" property="requestSize"/>
-		<result column="RESPONE_SIZE" property="responeSize"/>
-		<result column="ERROR_SIZE" property="errorSize"/>
-		<result column="SUCCESS_NUM" property="successNum"/>
-		<result column="FAIL_NUM" property="failNum"/>
-		<result column="STATUS" property="status"/>
+		<result column="TASK_ID" property="taskId"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="OPPON_PRODUCT_CODE" property="opponProductCode"/>
+		<result column="IS_DELETE" property="isDelete"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="SessionHisDto-coloumn-list">
-		SESSION_ID
-		,CLIEN_NAME
-		,REQUEST_SIZE
-		,RESPONE_SIZE
-		,ERROR_SIZE
-		,SUCCESS_NUM
-		,FAIL_NUM
-		,STATUS
+	<sql id="MatchTrackDto-coloumn-list">
+		TASK_ID
+		,PRODUCT_CODE
+		,SITE_ID
+		,OPPON_PRODUCT_CODE
+		,IS_DELETE
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="SessionHisDto">
-		INSERT INTO T_SESSION_HIS(
-		<include refid="SessionHisDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="MatchTrackDto">
+		INSERT INTO T_MATCH_TRACK(
+		<include refid="MatchTrackDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.sessionId},#{item.clienName},#{item.requestSize},#{item.responeSize},#{item.errorSize},#{item.successNum},#{item.failNum},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.taskId},#{item.productCode},#{item.siteId},#{item.opponProductCode},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="SessionHisDto">
-		UPDATE T_SESSION_HIS SET
-		SESSION_ID=#{sessionId},
-		CLIEN_NAME=#{clienName},
-		REQUEST_SIZE=#{requestSize},
-		RESPONE_SIZE=#{responeSize},
-		ERROR_SIZE=#{errorSize},
-		SUCCESS_NUM=#{successNum},
-		FAIL_NUM=#{failNum},
-		STATUS=#{status},
+	<update id="updateOne" parameterType="MatchTrackDto">
+		UPDATE T_MATCH_TRACK SET
+		TASK_ID=#{taskId},
+		PRODUCT_CODE=#{productCode},
+		SITE_ID=#{siteId},
+		OPPON_PRODUCT_CODE=#{opponProductCode},
+		IS_DELETE=#{isDelete},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}

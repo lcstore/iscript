@@ -99,8 +99,7 @@ public class ProxyDetectStrategy implements ResultStrategy, StorageListener<BarC
 				// keep sync for the same storager
 				synchronized (SAVE_LOCK) {
 					ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
-					proxyDetectService.batchInsertIfAbsent(copyList);
-					logger.info("insert ProxyDetectDto:" + copyList.size());
+					proxyDetectService.batchSaveAfterDetect(copyList);
 				}
 			}
 		});
