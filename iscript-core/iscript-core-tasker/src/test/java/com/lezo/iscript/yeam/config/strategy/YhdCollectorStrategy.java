@@ -121,11 +121,12 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		}
 		getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
 
-		List<ProductDto> insertDtos = new ArrayList<ProductDto>();
-		List<ProductDto> updateDtos = new ArrayList<ProductDto>();
-		doAssort(productDtos, insertDtos, updateDtos);
-		createProductTasks(argsObject, insertDtos);
-		getStorageBuffer(ProductDto.class).addAll(insertDtos);
+//		List<ProductDto> insertDtos = new ArrayList<ProductDto>();
+//		List<ProductDto> updateDtos = new ArrayList<ProductDto>();
+//		doAssort(productDtos, insertDtos, updateDtos);
+		getStorageBuffer(ProductDto.class).addAll(productDtos);
+		
+		createProductTasks(argsObject, productDtos);
 
 	}
 
