@@ -48,7 +48,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 					sqlSession.update(sqlMapper, paramMap);
 				}
 			}
-			sqlSession.commit();
+			sqlSession.commit(true);
 		} catch (Exception ex) {
 			sqlSession.rollback();
 			throw ex;
