@@ -21,4 +21,8 @@ public interface ProxyDetectService {
 	List<ProxyDetectDto> getProxyDetectDtosFromStatus(Integer status, Date afterUpdateTime);
 
 	List<ProxyDetectDto> getProxyDetectDtoFromDomain(List<String> domainList, Integer status);
+
+	List<ProxyDetectDto> getUnionProxyDetectDtoFromDomain(List<String> domainList, Integer status, int limit);
+
+	void batchUpdateProxyStatus(List<Long> idList, Integer status);
 }

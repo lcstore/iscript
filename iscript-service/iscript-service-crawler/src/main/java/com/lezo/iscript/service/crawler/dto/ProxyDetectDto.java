@@ -5,11 +5,12 @@ import java.util.Date;
 import com.lezo.iscript.utils.InetAddressUtils;
 
 public class ProxyDetectDto {
-	// 状态,-2:禁用，-1:停用，0:重试，1:可用
+	// 状态,-2:禁用，-1:停用，0:重试，1:可用,2:工作中
 	public static final int STATUS_FORBIDDEN = -2;
 	public static final int STATUS_NONUSE = -1;
 	public static final int STATUS_RETRY = 0;
 	public static final int STATUS_USABLE = 1;
+	public static final int STATUS_WORK = 2;
 	public static final int MAX_RETRY_TIMES = 3;
 	private Long id;
 	private Long ip;

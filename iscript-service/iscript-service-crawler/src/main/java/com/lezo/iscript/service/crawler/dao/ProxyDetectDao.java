@@ -23,4 +23,9 @@ public interface ProxyDetectDao {
 
 	List<ProxyDetectDto> getProxyDetectDtoFromDomain(@Param(value = "domainList") List<String> domainList,
 			@Param(value = "status") Integer status);
+
+	List<ProxyDetectDto> getUnionProxyDetectDtoFromDomain(@Param(value = "domainList") List<String> domainList,
+			@Param(value = "status") Integer status, @Param(value = "limit") int limit);
+
+	void batchUpdateProxyStatus(@Param(value = "idList") List<Long> idList, @Param(value = "status") Integer status);
 }
