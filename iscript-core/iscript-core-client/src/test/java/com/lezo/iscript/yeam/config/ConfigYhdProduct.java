@@ -1,24 +1,15 @@
 package com.lezo.iscript.yeam.config;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.http.HttpRequestManager;
@@ -36,9 +27,17 @@ public class ConfigYhdProduct implements ConfigParser {
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
-
+		addCookie();
+		String refer = url;
+		Object bObject = task.get("bid");
+		if (bObject != null) {
+			String bString = bObject.toString();
+			if (bString.indexOf("http:") >= 0) {
+				refer = bString;
+			}
+		}
 		HttpGet get = new HttpGet(url);
-		get.addHeader("Refer", url);
+		get.addHeader("Refer", refer);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
 		Elements oHomeAs = dom.select("div.layout_wrap.crumbbox div.crumb");
@@ -107,5 +106,23 @@ public class ConfigYhdProduct implements ConfigParser {
 			e.printStackTrace();
 		}
 		return itemObject.toString();
+	}
+
+	private void addCookie() {
+		BasicClientCookie cookie = new BasicClientCookie("__utma",
+				"40580330.1541470702.1396602044.1406527175.1406603327.18");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__utmc", "193324902");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__utmz",
+				"193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("provinceId", "1");
+		client.getCookieStore().addCookie(cookie);
+		String[] uArr = UUID.randomUUID().toString().split("-");
+		cookie = new BasicClientCookie("uname", uArr[0]);
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
+		client.getCookieStore().addCookie(cookie);
 	}
 }

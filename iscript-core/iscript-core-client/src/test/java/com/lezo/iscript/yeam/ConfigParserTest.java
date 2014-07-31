@@ -224,12 +224,14 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigProxyDetector();
 		TaskWritable task = new TaskWritable();
 		try {
-			url=null;
+			url = "http://www.baidu.com/index.php?tn=19045005_6_pg";
 			long ip = 1567820005;
 			task.put("ip", "92.222.153.153");
 			task.put("port", 7808);
 			task.put("ip", ip);
 			task.put("port", 7808);
+			task.put("ip", "112.133.255.33");
+			task.put("port", 80);
 			 task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -270,11 +272,12 @@ public class ConfigParserTest {
 	@Test
 	public void testConfigYhdList() throws Exception {
 		String url = "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2";
+		url="http://www.yhd.com/ctg/s2/c33827-0//#page=8&sort=2";
 		ConfigParser parser = new ConfigYhdList();
 		TaskWritable task = new TaskWritable();
 		try {
 			task.put("url", url);
-			task.put("getNexts", 1);
+			task.put("bid", "http://www.yhd.com/ctg/s2/c33827-0//#page=4&sort=2");
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
@@ -286,7 +289,7 @@ public class ConfigParserTest {
 		String url = "http://item.yhd.com/item/6534749";
 		ConfigParser parser = new ConfigYhdProduct();
 		TaskWritable task = new TaskWritable();
-		try {
+		try {url="http://item.yhd.com/item/104794";
 			task.put("url", url);
 			task.put("getNexts", 1);
 			String result = parser.doParse(task);

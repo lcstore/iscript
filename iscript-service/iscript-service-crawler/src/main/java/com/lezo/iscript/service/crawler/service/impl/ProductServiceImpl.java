@@ -70,7 +70,8 @@ public class ProductServiceImpl implements ProductService {
 		doAssort(dtoList, insertDtos, updateDtos);
 		batchInsertProductDtos(insertDtos);
 		batchUpdateProductDtos(updateDtos);
-		logger.info("save [%s],insert:%d,update:%d,cost:", "ProductDto", insertDtos.size(), updateDtos.size());
+		logger.info(String.format("save [%s],insert:%d,update:%d,cost:", "ProductDto", insertDtos.size(),
+				updateDtos.size()));
 	}
 
 	private void doAssort(List<ProductDto> productDtos, List<ProductDto> insertDtos, List<ProductDto> updateDtos) {
@@ -78,7 +79,12 @@ public class ProductServiceImpl implements ProductService {
 		Map<String, ProductDto> dtoMap = new HashMap<String, ProductDto>();
 		for (ProductDto dto : productDtos) {
 			String key = dto.getShopId() + "-" + dto.getProductCode();
-			dtoMap.put(key, dto);
+			ProductDto hasDto = dtoMap.get(key);
+			if (hasDto == null) {
+				dtoMap.put(key, dto);
+			} else if (hasDto.getUpdateTime().before(dto.getUpdateTime())) {
+				dtoMap.put(key, dto);
+			}
 			Set<String> codeSet = shopMap.get(dto.getShopId());
 			if (codeSet == null) {
 				codeSet = new HashSet<String>();
