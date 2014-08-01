@@ -29,6 +29,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 	private static final int MAX_PROXY_PER_CLIENT = 5;
 	private static Logger logger = LoggerFactory.getLogger(ProxyEventHandler.class);
 	private static final Object OFFER_LOCK = new Object();
+	private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 
 	protected void doHandle(RequestEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
@@ -60,50 +61,90 @@ public class ProxyEventHandler extends AbstractEventHandler {
 			}
 			logger.warn("proxy error:" + eObject);
 		}
-		List<ProxyWritable> offerProxyList = new ArrayList<ProxyWritable>(remain);
-		String clientName = JSONUtils.getString(hObject, "name");
-		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
-		synchronized (OFFER_LOCK) {
-			// turn Error Proxy to RetryStatus
-			List<Long> idList = new ArrayList<Long>(proxyIdSet);
-			proxyDetectService.batchUpdateProxyStatus(idList, ProxyDetectDto.STATUS_RETRY);
+		// turn Error Proxy to RetryStatus
+		List<Long> idList = new ArrayList<Long>(proxyIdSet);
+		proxyDetectService.batchUpdateProxyStatus(idList, ProxyDetectDto.STATUS_RETRY);
 
-			List<String> domainList = new ArrayList<String>(domainSet);
-			List<ProxyDetectDto> dtoList = proxyDetectService.getUnionProxyDetectDtoFromDomain(domainList,
-					ProxyDetectDto.STATUS_USABLE, 1);
-			List<ProxyDetectDto> offerDetectDtos = new ArrayList<ProxyDetectDto>(remain);
-			for (ProxyDetectDto dto : dtoList) {
-				if (offerProxyList.size() < remain) {
-					addProxyWritable(offerProxyList, dto);
-					dto.setUpdateTime(new Date());
-					dto.setDetector(clientName);
-					dto.setStatus(ProxyDetectDto.STATUS_WORK);
-					offerDetectDtos.add(dto);
-				}
+		List<ProxyDetectDto> offerProxyList = new ArrayList<ProxyDetectDto>(remain);
+		String clientName = JSONUtils.getString(hObject, "name");
+		synchronized (OFFER_LOCK) {
+			List<ProxyDetectDto> updateList = new ArrayList<ProxyDetectDto>(remain);
+			if (domainSet.isEmpty()) {
+				// first request for proxy
+				List<ProxyDetectDto> lostWorkList = turnLost2RetryStatus(clientName);
+				updateList.addAll(lostWorkList);
+			} else {
+				List<ProxyDetectDto> offerByDomains = offerDomainProxy(domainSet, remain);
+				offerProxyList.addAll(offerByDomains);
 			}
-			proxyDetectService.batchUpdateProxyDetectDtos(offerDetectDtos);
 			int limit = remain - offerProxyList.size();
 			if (limit > 0) {
 				List<ProxyDetectDto> newDtoList = proxyDetectService.getProxyDetectDtosFromId(0L, limit,
 						ProxyDetectDto.STATUS_USABLE);
-				offerDetectDtos.clear();
-				for (ProxyDetectDto dto : newDtoList) {
-					addProxyWritable(offerProxyList, dto);
-					dto.setUpdateTime(new Date());
-					dto.setDetector(clientName);
-					dto.setStatus(ProxyDetectDto.STATUS_WORK);
-					offerDetectDtos.add(dto);
-				}
-				proxyDetectService.batchUpdateProxyDetectDtos(offerDetectDtos);
+				offerProxyList.addAll(newDtoList);
 			}
+			List<ProxyDetectDto> update2WorkList = turn2WorkDto(offerProxyList, clientName);
+			updateList.addAll(update2WorkList);
+			proxyDetectService.batchUpdateProxyDetectDtos(updateList);
 		}
-		sendProxys(event, clientName, offerProxyList, start);
+		List<ProxyWritable> proxyWritableList = getProxyWritables(offerProxyList);
+		sendProxys(event, clientName, proxyWritableList, start);
 		if (offerProxyList.size() < remain) {
 			long cost = System.currentTimeMillis() - start;
 			String msg = String.format("offer proxy[%d] for client:%s,but except[%d],cost:%s", offerProxyList.size(),
 					clientName, remain, cost);
 			logger.warn(msg);
 		}
+	}
+
+	private List<ProxyWritable> getProxyWritables(List<ProxyDetectDto> offerProxyList) {
+		List<ProxyWritable> writableList = new ArrayList<ProxyWritable>(offerProxyList.size());
+		for (ProxyDetectDto dto : offerProxyList) {
+			ProxyWritable pWritable = new ProxyWritable();
+			pWritable.setId(dto.getId());
+			pWritable.setIp(dto.getIp());
+			pWritable.setPort(dto.getPort());
+			writableList.add(pWritable);
+		}
+		return writableList;
+	}
+
+	private List<ProxyDetectDto> turn2WorkDto(List<ProxyDetectDto> offerProxyList, String clientName) {
+		Date curDate = new Date();
+		for (ProxyDetectDto dto : offerProxyList) {
+			dto.setStatus(ProxyDetectDto.STATUS_WORK);
+			dto.setDetector(clientName);
+			dto.setUpdateTime(curDate);
+		}
+		return offerProxyList;
+	}
+
+	private List<ProxyDetectDto> offerDomainProxy(Set<String> domainSet, int remain) {
+		List<String> domainList = new ArrayList<String>(domainSet);
+		List<ProxyDetectDto> dtoList = proxyDetectService.getUnionProxyDetectDtoFromDomain(domainList,
+				ProxyDetectDto.STATUS_USABLE, 1);
+		List<ProxyDetectDto> offerProxyList = new ArrayList<ProxyDetectDto>(remain);
+		for (ProxyDetectDto dto : dtoList) {
+			if (offerProxyList.size() < remain) {
+				offerProxyList.add(dto);
+			}
+		}
+		return offerProxyList;
+	}
+
+	private List<ProxyDetectDto> turnLost2RetryStatus(String clientName) {
+		List<ProxyDetectDto> workDtos = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE,
+				ProxyDetectDto.STATUS_WORK);
+		List<ProxyDetectDto> workList = new ArrayList<ProxyDetectDto>();
+		Date curDate = new Date();
+		for (ProxyDetectDto dto : workDtos) {
+			if (clientName.equals(dto.getDetector())) {
+				dto.setStatus(ProxyDetectDto.STATUS_RETRY);
+				dto.setUpdateTime(curDate);
+				workList.add(dto);
+			}
+		}
+		return workList;
 	}
 
 	private void sendProxys(RequestEvent event, String clientName, List<ProxyWritable> offerProxyList, long start) {
@@ -125,17 +166,6 @@ public class ProxyEventHandler extends AbstractEventHandler {
 					.format("offer proxy[%d] for client:%s,cost:%s", offerProxyList.size(), clientName, cost);
 			logger.info(msg);
 		}
-	}
-
-	private void addProxyWritable(List<ProxyWritable> proxyList, ProxyDetectDto dto) {
-		if (dto == null) {
-			return;
-		}
-		ProxyWritable pWritable = new ProxyWritable();
-		pWritable.setId(dto.getId());
-		pWritable.setIp(dto.getIp());
-		pWritable.setPort(dto.getPort());
-		proxyList.add(pWritable);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -162,7 +192,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 			return false;
 		}
 		Integer active = JSONUtils.getInteger(hObject, "proxyactive");
-		return active < MAX_PROXY_PER_CLIENT;
+		return active != null && active < MAX_PROXY_PER_CLIENT;
 	}
 
 }
