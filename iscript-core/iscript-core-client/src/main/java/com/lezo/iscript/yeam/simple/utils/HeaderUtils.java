@@ -24,8 +24,8 @@ public class HeaderUtils {
 		JSONUtils.put(headObject, "tsize", caller.getQueue().size());
 		JSONUtils.put(headObject, "name", CLIENT_NAME);
 		ProxyBuffer proxyBuffer = ProxyBuffer.getInstance();
-		JSONUtils.put(headObject, "proxyactive", proxyBuffer.getProxys().size());
 		if (System.currentTimeMillis() - proxyBuffer.getStamp() > PROXY_REPORT_TIME) {
+			JSONUtils.put(headObject, "proxyactive", proxyBuffer.getProxys().size());
 			JSONUtils.put(headObject, "proxyerrors", proxyBuffer.getErrors());
 			proxyBuffer.setStamp(System.currentTimeMillis());
 		}

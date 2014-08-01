@@ -196,4 +196,25 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		return dtoList;
 	}
 
+	@Override
+	public List<ProxyDetectDto> getUnionProxyDetectDtoFromDomain(List<String> domainList, Integer status, int limit) {
+		List<ProxyDetectDto> dtoList = new ArrayList<ProxyDetectDto>();
+		BatchIterator<String> it = new BatchIterator<String>(domainList);
+		while (it.hasNext()) {
+			List<ProxyDetectDto> subList = proxyDetectDao.getUnionProxyDetectDtoFromDomain(it.next(), status, limit);
+			if (CollectionUtils.isNotEmpty(subList)) {
+				dtoList.addAll(subList);
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
+	public void batchUpdateProxyStatus(List<Long> idList, Integer status) {
+		BatchIterator<Long> it = new BatchIterator<Long>(idList);
+		while (it.hasNext()) {
+			proxyDetectDao.batchUpdateProxyStatus(it.next(), status);
+		}
+	}
+
 }

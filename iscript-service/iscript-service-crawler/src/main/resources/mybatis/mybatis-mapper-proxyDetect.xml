@@ -39,6 +39,15 @@
 		RETRY_TIMES=#{retryTimes}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<update id="batchUpdateProxyStatus" parameterType="map">
+		UPDATE T_PROXY_DETECT SET
+		STATUS=#{status}
+		WHERE 1=1 AND 
+		<foreach collection="idList" item="id" open="ID IN("
+				close=")" separator=",">
+				#{id}
+		</foreach>
+	</update>
 	<select id="getProxyDetectDtos" parameterType="map"
 		resultMap="RM_ProxyDetectDto">
 		SELECT * FROM T_PROXY_DETECT
@@ -90,5 +99,12 @@
 		<if test="status!=null">
 			AND STATUS=#{status}
 		</if>
+	</select>
+	<select id="getUnionProxyDetectDtoFromDomain" parameterType="map"
+		resultMap="RM_ProxyDetectDto">
+		<foreach collection="domainList" item="domain" separator="UNION">
+			(SELECT * FROM T_PROXY_DETECT
+			WHERE  DOMAIN=#{domain} AND STATUS=#{status} LIMIT #{limit})
+		</foreach>
 	</select>
 </mapper>

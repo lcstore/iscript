@@ -45,7 +45,19 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		if (ResultWritable.RESULT_FAIL == rWritable.getStatus()) {
 			addRetry(rWritable);
 		} else if (ResultWritable.RESULT_SUCCESS == rWritable.getStatus()) {
-			if ("ConfigYhdList".equals(rWritable.getType())) {
+			if ("ConfigYhdCategoy".equals(rWritable.getType())) {
+				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
+				JSONObject argsObject = JSONUtils.get(jObject, "args");
+				String rsString = JSONUtils.getString(jObject, "rs");
+				try {
+					JSONArray rootArray = new JSONArray(rsString);
+					for (int i = 0; i < rootArray.length(); i++) {
+						addListTasks(rootArray.getJSONObject(i), argsObject);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if ("ConfigYhdList".equals(rWritable.getType())) {
 				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
 				JSONObject argsObject = JSONUtils.get(jObject, "args");
 				String rsString = JSONUtils.getString(jObject, "rs");
@@ -74,37 +86,60 @@ public class YhdCollectorStrategy implements ResultStrategy {
 
 	}
 
+	private void addListTasks(JSONObject cObject, JSONObject argsObject) throws Exception {
+		if (cObject == null) {
+			return;
+		}
+		JSONArray cArray = JSONUtils.get(cObject, "children");
+		if (cArray == null || cArray.length() < 1) {
+			String url = JSONUtils.getString(cObject, "url");
+			JSONUtils.put(argsObject, "name", JSONUtils.getString(cObject, "name"));
+			TaskPriorityDto taskDto = createPriorityDto(url, "ConfigYhdList", argsObject);
+			getTaskPriorityDtoBuffer().add(taskDto);
+		} else {
+			for (int i = 0; i < cArray.length(); i++) {
+				addListTasks(cArray.getJSONObject(i), argsObject);
+			}
+		}
+	}
+
 	private void addNextTasks(JSONObject rootObject, JSONObject argsObject) throws Exception {
 		JSONArray nextArray = JSONUtils.get(rootObject, "nexts");
 		if (nextArray == null) {
 			return;
 		}
 		List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>();
+		argsObject.remove("getNexts");
 		for (int i = 0; i < nextArray.length(); i++) {
 			String nextUrl = nextArray.getString(i);
-			TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
-			taskPriorityDto.setBatchId(JSONUtils.getString(argsObject, "bid"));
-			taskPriorityDto.setType("ConfigYhdList");
-			taskPriorityDto.setUrl(nextUrl);
-			taskPriorityDto.setLevel(JSONUtils.getInteger(argsObject, "level"));
-			taskPriorityDto.setSource(JSONUtils.getString(argsObject, "src"));
-			taskPriorityDto.setCreatTime(new Date());
-			taskPriorityDto.setUpdateTime(taskPriorityDto.getCreatTime());
-			taskPriorityDto.setStatus(TaskConstant.TASK_NEW);
-			argsObject.remove("bid");
-			argsObject.remove("type");
-			argsObject.remove("url");
-			argsObject.remove("level");
-			argsObject.remove("src");
-			argsObject.remove("ctime");
-			argsObject.remove("getNexts");
-			if (taskPriorityDto.getLevel() == null) {
-				taskPriorityDto.setLevel(0);
-			}
+			TaskPriorityDto taskPriorityDto = createPriorityDto(nextUrl, "ConfigYhdList", argsObject);
 			taskPriorityDto.setParams(argsObject.toString());
 			dtoList.add(taskPriorityDto);
 		}
 		getTaskPriorityDtoBuffer().addAll(dtoList);
+	}
+
+	private TaskPriorityDto createPriorityDto(String url, String type, JSONObject argsObject) {
+		TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
+		taskPriorityDto.setBatchId(JSONUtils.getString(argsObject, "bid"));
+		taskPriorityDto.setType(type);
+		taskPriorityDto.setUrl(url);
+		taskPriorityDto.setLevel(JSONUtils.getInteger(argsObject, "level"));
+		taskPriorityDto.setSource(JSONUtils.getString(argsObject, "src"));
+		taskPriorityDto.setCreatTime(new Date());
+		taskPriorityDto.setUpdateTime(taskPriorityDto.getCreatTime());
+		taskPriorityDto.setStatus(TaskConstant.TASK_NEW);
+		argsObject.remove("bid");
+		argsObject.remove("type");
+		argsObject.remove("url");
+		argsObject.remove("level");
+		argsObject.remove("src");
+		argsObject.remove("ctime");
+		if (taskPriorityDto.getLevel() == null) {
+			taskPriorityDto.setLevel(0);
+		}
+		taskPriorityDto.setParams(argsObject.toString());
+		return taskPriorityDto;
 	}
 
 	private void addResults(JSONObject rootObject, JSONObject argsObject) throws Exception {
@@ -121,11 +156,11 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		}
 		getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
 
-//		List<ProductDto> insertDtos = new ArrayList<ProductDto>();
-//		List<ProductDto> updateDtos = new ArrayList<ProductDto>();
-//		doAssort(productDtos, insertDtos, updateDtos);
+		// List<ProductDto> insertDtos = new ArrayList<ProductDto>();
+		// List<ProductDto> updateDtos = new ArrayList<ProductDto>();
+		// doAssort(productDtos, insertDtos, updateDtos);
 		getStorageBuffer(ProductDto.class).addAll(productDtos);
-		
+
 		createProductTasks(argsObject, productDtos);
 
 	}
