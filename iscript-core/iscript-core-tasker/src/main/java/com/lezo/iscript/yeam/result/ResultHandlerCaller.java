@@ -9,8 +9,7 @@ import com.lezo.iscript.common.NameThreadFactory;
 public class ResultHandlerCaller {
 	private static final int CORE_SIZE = 2;
 	private static final int MAX_SIZE = 3;
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(CORE_SIZE, MAX_SIZE, 60 * 1000L,
-			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+	private ThreadPoolExecutor executor;
 	private static final ResultHandlerCaller INSTANCE = new ResultHandlerCaller();
 
 	private ResultHandlerCaller() {

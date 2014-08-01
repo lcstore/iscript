@@ -72,10 +72,19 @@ public class ConfigYhdProduct implements ConfigParser {
 		JSONUtils.put(itemObject, "promotPrice", JSONUtils.get(dObject, "promPrice"));
 		JSONUtils.put(itemObject, "marketPrice", JSONUtils.get(dObject, "marketPrice"));
 		JSONUtils.put(itemObject, "stockNum", JSONUtils.get(dObject, "currentStockNum"));
-		JSONUtils.put(itemObject, "soldNum", JSONUtils.get(dObject, "soldNum"));
 		oElements = dom.select("#companyName[value]");
 		if (!oElements.isEmpty()) {
 			JSONUtils.put(itemObject, "shopName", oElements.first().attr("value"));
+		}
+		oElements = dom.select("#mod_salesvolume p strong");
+		if (!oElements.isEmpty()) {
+			Integer soldNum = JSONUtils.get(dObject, "soldNum");
+			try {
+				soldNum = Integer.valueOf(oElements.first().ownText().trim());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			JSONUtils.put(itemObject, "soldNum", soldNum);
 		}
 		oElements = dom.select("#merchantId[value]");
 		if (!oElements.isEmpty()) {

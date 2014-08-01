@@ -55,7 +55,7 @@ public class ConfigEtaoSimilar implements ConfigParser {
 		Integer port = (Integer) task.get("port");
 		String url = null;
 		JSONObject itemObject = new JSONObject();
-//		HttpGet get = new HttpGet(url);
+		// HttpGet get = new HttpGet(url);
 		long start = System.currentTimeMillis();
 		String productName = "Hahne亨利 玉米片 375g 德国进口";
 		Long productPmId = 101199L;
@@ -72,7 +72,7 @@ public class ConfigEtaoSimilar implements ConfigParser {
 		String urlHead = "http://ruyi.etao.com/ext/productSearch?q=";
 		String urlBody = "{\"url\":\"" + productUrl + "?&ali_crowd=\",\"title\":\"" + productName + "\"}";
 		try {
-			urlBody = URLEncoder.encode(new String(urlBody.getBytes("UTF-8"), "GBK"));
+			urlBody = URLEncoder.encode(new String(urlBody.getBytes("UTF-8"), "GBK"), "GBK");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

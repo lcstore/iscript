@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.jsoup.nodes.Entities;
 import org.junit.Test;
 
 import com.lezo.iscript.utils.JSONUtils;
@@ -13,6 +14,7 @@ import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
+import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.ConfigYhdProduct;
 import com.lezo.iscript.yeam.config.FDSSigner;
@@ -232,7 +234,7 @@ public class ConfigParserTest {
 			task.put("port", 7808);
 			task.put("ip", "112.133.255.33");
 			task.put("port", 80);
-			 task.put("url", url);
+			task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
@@ -272,7 +274,8 @@ public class ConfigParserTest {
 	@Test
 	public void testConfigYhdList() throws Exception {
 		String url = "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2";
-		url="http://www.yhd.com/ctg/s2/c33827-0//#page=8&sort=2";
+		// url =
+		// "http://www.yhd.com/ctg/s2/c33827-0/b/a-s2-v0-p37-price-d0-f0-m1-rt0-pid-mid0-k/";
 		ConfigParser parser = new ConfigYhdList();
 		TaskWritable task = new TaskWritable();
 		try {
@@ -284,14 +287,28 @@ public class ConfigParserTest {
 			e.printStackTrace();
 		}
 	}
+
 	@Test
 	public void testConfigYhdProduct() throws Exception {
 		String url = "http://item.yhd.com/item/6534749";
 		ConfigParser parser = new ConfigYhdProduct();
 		TaskWritable task = new TaskWritable();
-		try {url="http://item.yhd.com/item/104794";
+		try {
+			url = "http://item.yhd.com/item/31930307";
 			task.put("url", url);
 			task.put("getNexts", 1);
+			String result = parser.doParse(task);
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testConfigYhdCategory() throws Exception {
+		ConfigParser parser = new ConfigYhdCategory();
+		TaskWritable task = new TaskWritable();
+		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {

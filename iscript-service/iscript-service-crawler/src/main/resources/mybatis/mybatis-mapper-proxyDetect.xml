@@ -34,6 +34,7 @@
 	</insert>
 	<update id="updateOne" parameterType="ProxyDetectDto">
 		UPDATE T_PROXY_DETECT SET
+		DOMAIN =#{domain},URL =#{url},DETECTOR =#{detector},
 		CUR_COST=#{curCost}, MIN_COST=#{minCost}, MAX_COST=#{maxCost},
 		RETRY_TIMES=#{retryTimes}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}

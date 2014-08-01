@@ -57,6 +57,8 @@ public class ProxyDetectStrategy implements ResultStrategy, StorageListener<BarC
 				if (!dtoList.isEmpty()) {
 					getStorageBuffer().addAll(dtoList);
 				}
+				logger.info("add ProxyDetectDto to buffer,size:" + dtoList.size() + ",total:"
+						+ getStorageBuffer().size());
 			}
 		}
 
@@ -83,12 +85,14 @@ public class ProxyDetectStrategy implements ResultStrategy, StorageListener<BarC
 
 	@Override
 	public void doStorage() {
+		logger.info("start ProxyDetectDto...");
 		StorageBuffer<ProxyDetectDto> storageBuffer = getStorageBuffer();
 		final List<ProxyDetectDto> copyList = storageBuffer.moveTo();
 		if (CollectionUtils.isEmpty(copyList)) {
+			logger.info("insert ProxyDetectDto:0");
 			return;
 		}
-		logger.info("start to save dto:" + copyList.size());
+
 		StorageCaller.getInstance().execute(new Runnable() {
 			@Override
 			public void run() {

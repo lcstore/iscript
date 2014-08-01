@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -20,22 +21,20 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
-import com.lezo.iscript.yeam.client.HardConstant;
 import com.lezo.iscript.yeam.http.HttpRequestManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
+import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
 	private HttpRequestManager httpRequestManager;
 	private List<String> detectUrls;
-	private static final String DETECTOR = String.format("%s@%s", ClientPropertiesUtils.getProperty("name"),
-			HardConstant.MAC_ADDR);
 
 	public ConfigProxyDetector() {
 		httpRequestManager = new HttpRequestManager();
 		httpRequestManager.getClient().setRoutePlanner(null);
+		httpRequestManager.getClient().setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 		detectUrls = new ArrayList<String>();
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
 		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
@@ -83,7 +82,7 @@ public class ConfigProxyDetector implements ConfigParser {
 		JSONUtils.put(itemObject, "domain", URLUtils.getRootHost(url));
 		JSONUtils.put(itemObject, "cost", cost);
 		JSONUtils.put(itemObject, "status", status);
-		JSONUtils.put(itemObject, "detector", DETECTOR);
+		JSONUtils.put(itemObject, "detector", HeaderUtils.CLIENT_NAME);
 		return itemObject.toString();
 	}
 

@@ -5,20 +5,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.http.HttpRequestManager;
@@ -46,21 +40,39 @@ public class ConfigYhdList implements ConfigParser {
 		JSONUtils.put(listObject, "list", listArray);
 
 		addListArray(dom, listArray);
-		Object getNexts = task.get("getNexts");
-		if (getNexts != null) {
-			JSONArray nextArray = new JSONArray();
-			JSONUtils.put(listObject, "nexts", nextArray);
-			Elements pageCoutAs = dom.select("#pageCountPage[value]");
-			if (!pageCoutAs.isEmpty()) {
-				int count = Integer.valueOf(pageCoutAs.first().attr("value"));
-				int index = url.indexOf("#page=");
-				String listHeader = index < 0 ? url : url.substring(0, index);
-				for (int i = 2; i <= count; i++) {
-					nextArray.put(String.format("%s#page=%d&sort=2", listHeader, i));
-				}
+		addNextUrls(dom, listObject);
+		return listObject.toString();
+	}
+
+	private void addNextUrls(Document dom, JSONObject listObject) {
+		String url = dom.baseUri();
+		Elements curPageAs = dom.select("#turnPageBottom.turn_page span.page_cur");
+		if (curPageAs.isEmpty()) {
+			JSONArray logArray = new JSONArray();
+			JSONUtils.put(listObject, "logs", logArray);
+			logArray.put("Get 0 next page url...");
+			return;
+		}
+		String sCurPage = curPageAs.first().ownText();
+		Integer iCurPage = Integer.valueOf(sCurPage);
+		if (iCurPage > 1) {
+			return;
+		}
+		JSONArray nextArray = new JSONArray();
+		JSONUtils.put(listObject, "nexts", nextArray);
+		Elements pageCoutAs = dom.select("#pageCountPage[value]");
+		if (!pageCoutAs.isEmpty()) {
+			int count = Integer.valueOf(pageCoutAs.first().attr("value"));
+			int index = url.indexOf("#page=");
+			String listHeader = index < 0 ? url : url.substring(0, index);
+			listHeader = listHeader.replaceAll("[/]+$","/");
+			if (!listHeader.endsWith("/")) {
+				listHeader += "/";
+			}
+			for (int i = 2; i <= count; i++) {
+				nextArray.put(String.format("%sb/a-s2-v0-p%d-price-d0-f0-m1-rt0-pid-mid0-k/", listHeader, i));
 			}
 		}
-		return listObject.toString();
 	}
 
 	private void addListArray(Document dom, JSONArray listArray) throws Exception {
