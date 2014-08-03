@@ -17,7 +17,7 @@
 	</bean>
 	<bean id="barCodeItemStorager" class="com.lezo.iscript.yeam.storage.BarCodeItemStorager">
 	</bean>
-	<bean id="storageTimeTrigger" class="com.lezo.iscript.yeam.storage.StorageTimeTrigger">
+	<bean id="storageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
 	  <property name="listeners">
 	     <list>
 	        <ref bean="barCodeItemStorager"/>

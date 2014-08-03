@@ -16,6 +16,9 @@ public class ProductStatDto {
 	private Date createTime;
 	private Date updateTime;
 
+	private Float minPrice;
+	private Float maxPrice;
+
 	public Long getId() {
 		return id;
 	}
@@ -110,6 +113,22 @@ public class ProductStatDto {
 
 	public void setProductUrl(String productUrl) {
 		this.productUrl = productUrl;
+	}
+
+	public Float getMinPrice() {
+		return minPrice;
+	}
+
+	public void setMinPrice(Float minPrice) {
+		this.minPrice = minPrice;
+	}
+
+	public Float getMaxPrice() {
+		return maxPrice;
+	}
+
+	public void setMaxPrice(Float maxPrice) {
+		this.maxPrice = maxPrice;
 	}
 
 }

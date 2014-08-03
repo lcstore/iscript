@@ -9,6 +9,8 @@
 		<result column="PRODUCT_CODE" property="productCode"/>
 		<result column="PRODUCT_NAME" property="productName"/>
 		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="MIN_PRICE" property="minPrice"/>
+		<result column="MAX_PRICE" property="maxPrice"/>
 		<result column="PRODUCT_PRICE" property="productPrice"/>
 		<result column="MARKET_PRICE" property="marketPrice"/>
 		<result column="SOLD_NUM" property="soldNum"/>
@@ -22,6 +24,8 @@
 		,PRODUCT_CODE
 		,PRODUCT_NAME
 		,PRODUCT_URL
+		,MIN_PRICE
+		,MAX_PRICE
 		,PRODUCT_PRICE
 		,MARKET_PRICE
 		,SOLD_NUM
@@ -37,7 +41,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
@@ -46,6 +50,8 @@
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
+		MIN_PRICE=#{minPrice},
+		MAX_PRICE=#{maxPrice},
 		PRODUCT_PRICE=#{productPrice},
 		MARKET_PRICE=#{marketPrice},
 		SOLD_NUM=#{soldNum},

@@ -63,9 +63,13 @@ public class ConfigYhdList implements ConfigParser {
 		Elements pageCoutAs = dom.select("#pageCountPage[value]");
 		if (!pageCoutAs.isEmpty()) {
 			int count = Integer.valueOf(pageCoutAs.first().attr("value"));
-			int index = url.indexOf("#page=");
+			int index = url.indexOf("/b/");
 			String listHeader = index < 0 ? url : url.substring(0, index);
-			listHeader = listHeader.replaceAll("[/]+$","/");
+			index = listHeader.indexOf("?");
+			listHeader = index < 0 ? listHeader : listHeader.substring(0, index);
+			index = listHeader.indexOf("#page=");
+			listHeader = index < 0 ? listHeader : listHeader.substring(0, index);
+			listHeader = listHeader.replaceAll("[/]+$", "/");
 			if (!listHeader.endsWith("/")) {
 				listHeader += "/";
 			}
