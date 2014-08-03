@@ -97,6 +97,10 @@ public class ConfigYhdProduct implements ConfigParser {
 		if (!oElements.isEmpty()) {
 			JSONUtils.put(itemObject, "brandName", oElements.first().attr("value"));
 		}
+		oElements = dom.select("#J_tabSlider ul.imgtab_con li a img[id][src]");
+		if (!oElements.isEmpty()) {
+			JSONUtils.put(itemObject, "imgUrl", oElements.first().attr("src"));
+		}
 		String mUrl = String.format(
 				"http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
 				JSONUtils.getString(itemObject, "productCode"));

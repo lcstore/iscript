@@ -110,6 +110,11 @@ public class ConfigYhdList implements ConfigParser {
 					JSONUtils.put(itemObject, "commentNum", matcher.group());
 				}
 			}
+			Elements oImgAs = ctElements.get(i).select("a[id^=pdlink1_].search_prod_img img[src]");
+			if (!oImgAs.isEmpty()) {
+				String sImgUrl = oImgAs.first().absUrl("src");
+				JSONUtils.put(itemObject, "imgUrl", sImgUrl);
+			}
 		}
 		String bStockUrl = String
 				.format("http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=1%s&callback=jsonp%s",
