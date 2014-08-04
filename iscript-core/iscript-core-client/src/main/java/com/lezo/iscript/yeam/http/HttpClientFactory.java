@@ -1,21 +1,21 @@
-package com.lezo.iscript.crawler.utils;
+package com.lezo.iscript.yeam.http;
 
-import java.io.InputStream;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ClientConnectionRequest;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -36,7 +36,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 
 import com.lezo.iscript.crawler.http.GzipHttpRequestInterceptor;
 import com.lezo.iscript.crawler.http.GzipHttpResponseInterceptor;
@@ -44,7 +43,7 @@ import com.lezo.iscript.crawler.http.HttpParamsConstant;
 import com.lezo.iscript.crawler.http.SimpleHttpRequestRetryHandler;
 import com.lezo.iscript.crawler.http.UserAgentManager;
 
-public class HttpClientUtils {
+public class HttpClientFactory {
 	public static DefaultHttpClient createHttpClient() {
 		ClientConnectionManager conman = createClientConnManager();
 		HttpParams params = createHttpParams();
@@ -79,7 +78,7 @@ public class HttpClientUtils {
 		supportedSchemes.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		addHttpsTrustStrategy(supportedSchemes);
 		// addHttpsTrustManager(supportedSchemes);
-		ThreadSafeClientConnManager tsconnectionManager = new ThreadSafeClientConnManager(supportedSchemes);
+		ThreadSafeClientConnManager tsconnectionManager = new SimpleClientConnectionManager(supportedSchemes);
 		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		tsconnectionManager.setDefaultMaxPerRoute(HttpParamsConstant.MAX_ROUTE_CONNECTIONS);
 		return tsconnectionManager;
@@ -161,19 +160,65 @@ public class HttpClientUtils {
 		return localContext;
 	}
 
-	public static String getContent(DefaultHttpClient client, HttpUriRequest get) throws Exception {
-		return getContent(client, get, "UTF-8");
+	protected static class SimpleClientConnectionManager extends ThreadSafeClientConnManager {
+
+		public SimpleClientConnectionManager() {
+			super();
+		}
+
+		public SimpleClientConnectionManager(SchemeRegistry schreg, long connTTL, TimeUnit connTTLTimeUnit) {
+			super(schreg, connTTL, connTTLTimeUnit);
+		}
+
+		public SimpleClientConnectionManager(SchemeRegistry schreg) {
+			super(schreg);
+		}
+
+		@Override
+		public ClientConnectionRequest requestConnection(HttpRoute route, Object state) {
+			HttpClientFactory.IdleConnectionMonitorThread.ensureRunning(this, 25, 30);
+			return super.requestConnection(route, state);
+		}
 	}
 
-	public static String getContent(DefaultHttpClient client, HttpUriRequest get, String charsetName) throws Exception {
-		String html=null;
-		try {
-			HttpResponse res = client.execute(get);
-			html = EntityUtils.toString(res.getEntity(), charsetName);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			get.abort();
+	private static class IdleConnectionMonitorThread extends Thread {
+		private final HttpClientFactory.SimpleClientConnectionManager manager;
+		private final int idleTimeoutSeconds;
+		private final int checkIntervalSeconds;
+		private static IdleConnectionMonitorThread thread = null;
+
+		public IdleConnectionMonitorThread(HttpClientFactory.SimpleClientConnectionManager manager,
+				int idleTimeoutSeconds, int checkIntervalSeconds) {
+			this.manager = manager;
+			this.idleTimeoutSeconds = idleTimeoutSeconds;
+
+			this.checkIntervalSeconds = checkIntervalSeconds;
 		}
-		return html;
+
+		public static synchronized void ensureRunning(HttpClientFactory.SimpleClientConnectionManager manager,
+				int idleTimeoutSeconds, int checkIntervalSeconds) {
+			if (thread == null) {
+				thread = new IdleConnectionMonitorThread(manager, idleTimeoutSeconds, checkIntervalSeconds);
+				thread.start();
+			}
+		}
+
+		public void run() {
+			try {
+				synchronized (this) {
+					super.wait(this.checkIntervalSeconds * 1000);
+				}
+				this.manager.closeExpiredConnections();
+				this.manager.closeIdleConnections(this.idleTimeoutSeconds, TimeUnit.SECONDS);
+				synchronized (IdleConnectionMonitorThread.class) {
+					if (this.manager.getConnectionsInPool() == 0) {
+						thread = null;
+						return;
+					}
+				}
+			} catch (InterruptedException e) {
+				thread = null;
+			}
+		}
 	}
 }
