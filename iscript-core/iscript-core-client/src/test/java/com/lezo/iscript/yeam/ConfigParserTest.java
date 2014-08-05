@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam;
+﻿package com.lezo.iscript.yeam;
 
 import java.io.File;
 
@@ -293,6 +293,9 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigYhdProduct();
 		TaskWritable task = new TaskWritable();
 		try {
+			url = "http://item.yhd.com/item/31930307";
+			url = "http://item.yhd.com/item/31930307";
+			url = "http://item.yhd.com/item/12656572";
 			url = "http://item.yhd.com/item/16526962";
 			task.put("url", url);
 			task.put("getNexts", 1);
