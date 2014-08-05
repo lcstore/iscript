@@ -295,6 +295,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		try {
 			url = "http://item.yhd.com/item/31930307";
+			url = "http://item.yhd.com/item/12656572";
 			task.put("url", url);
 			task.put("getNexts", 1);
 			String result = parser.doParse(task);
