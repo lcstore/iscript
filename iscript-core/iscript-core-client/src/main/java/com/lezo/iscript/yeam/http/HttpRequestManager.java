@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.crawler.http.SimpleResponseHandler;
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 
 public class HttpRequestManager {
 	private static Logger logger = LoggerFactory.getLogger(HttpRequestManager.class);
@@ -23,7 +22,7 @@ public class HttpRequestManager {
 	private static final HttpRequestManager defaultManager = new HttpRequestManager();
 
 	public HttpRequestManager() {
-		client = HttpClientUtils.createHttpClient();
+		client = HttpClientFactory.createHttpClient();
 		SchemeRegistry schreg = client.getConnectionManager().getSchemeRegistry();
 		ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(schreg, new SimpleProxySelector());
 		client.setRoutePlanner(routePlanner);

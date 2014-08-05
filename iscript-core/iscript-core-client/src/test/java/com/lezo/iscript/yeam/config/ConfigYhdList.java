@@ -63,9 +63,13 @@ public class ConfigYhdList implements ConfigParser {
 		Elements pageCoutAs = dom.select("#pageCountPage[value]");
 		if (!pageCoutAs.isEmpty()) {
 			int count = Integer.valueOf(pageCoutAs.first().attr("value"));
-			int index = url.indexOf("#page=");
+			int index = url.indexOf("/b/");
 			String listHeader = index < 0 ? url : url.substring(0, index);
-			listHeader = listHeader.replaceAll("[/]+$","/");
+			index = listHeader.indexOf("?");
+			listHeader = index < 0 ? listHeader : listHeader.substring(0, index);
+			index = listHeader.indexOf("#page=");
+			listHeader = index < 0 ? listHeader : listHeader.substring(0, index);
+			listHeader = listHeader.replaceAll("[/]+$", "/");
 			if (!listHeader.endsWith("/")) {
 				listHeader += "/";
 			}
@@ -105,6 +109,11 @@ public class ConfigYhdList implements ConfigParser {
 				if (matcher.find()) {
 					JSONUtils.put(itemObject, "commentNum", matcher.group());
 				}
+			}
+			Elements oImgAs = ctElements.get(i).select("a[id^=pdlink1_].search_prod_img img[src]");
+			if (!oImgAs.isEmpty()) {
+				String sImgUrl = oImgAs.first().absUrl("src");
+				JSONUtils.put(itemObject, "imgUrl", sImgUrl);
 			}
 		}
 		String bStockUrl = String

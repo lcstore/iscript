@@ -108,6 +108,7 @@ public class ProductStatServiceImpl implements ProductStatService {
 				ProductStatDto newDto = dtoMap.get(key);
 				hasCodeSet.add(oldDto.getProductCode());
 				newDto.setId(oldDto.getId());
+				doPriceStatistic(newDto, oldDto);
 				updateDtos.add(newDto);
 				if (isChange(oldDto, newDto)) {
 					insertStatHisDtos.add(newDto);
@@ -119,6 +120,8 @@ public class ProductStatServiceImpl implements ProductStatService {
 				}
 				String key = entry.getKey() + "-" + code;
 				ProductStatDto newDto = dtoMap.get(key);
+				newDto.setMinPrice(newDto.getProductPrice());
+				newDto.setMaxPrice(newDto.getProductPrice());
 				insertDtos.add(newDto);
 				insertStatHisDtos.add(newDto);
 			}
@@ -127,13 +130,35 @@ public class ProductStatServiceImpl implements ProductStatService {
 
 	}
 
+	private void doPriceStatistic(ProductStatDto newDto, ProductStatDto oldDto) {
+		if (newDto.getProductPrice() == null) {
+			return;
+		}
+		if (oldDto.getMinPrice() == null) {
+			oldDto.setMinPrice(oldDto.getProductPrice());
+		}
+		if (oldDto.getMaxPrice() == null) {
+			oldDto.setMaxPrice(oldDto.getProductPrice());
+		}
+		if (newDto.getProductPrice() < oldDto.getMinPrice()) {
+			newDto.setMinPrice(newDto.getProductPrice());
+		} else {
+			newDto.setMinPrice(oldDto.getMinPrice());
+		}
+		if (newDto.getProductPrice() > oldDto.getMaxPrice()) {
+			newDto.setMaxPrice(newDto.getProductPrice());
+		} else {
+			newDto.setMaxPrice(oldDto.getMinPrice());
+		}
+	}
+
 	public boolean isChange(ProductStatDto oldDto, ProductStatDto newDto) {
 		if (!isSameObject(oldDto.getProductPrice(), newDto.getProductPrice())) {
 			return true;
 		}
-		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
-			return true;
-		}
+//		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
+//			return true;
+//		}
 		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
 			return true;
 		}
