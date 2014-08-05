@@ -7,15 +7,15 @@ public class HttpParamsConstant {
 	/**
 	 * 最大连接数
 	 */
-	public final static int MAX_TOTAL_CONNECTIONS = 800;
+	public final static int MAX_TOTAL_CONNECTIONS = 200;
 	/**
 	 * 获取连接的最大等待时间
 	 */
-	public final static int DEFAULT_TIMEOUT = 60000;
+	public final static int DEFAULT_TIMEOUT = 20000;
 	/**
 	 * 每个路由最大连接数
 	 */
-	public final static int MAX_ROUTE_CONNECTIONS = 50;
+	public final static int MAX_ROUTE_CONNECTIONS = 20;
 	/**
 	 * 连接超时时间
 	 */

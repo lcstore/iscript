@@ -9,13 +9,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdCategory implements ConfigParser {
-	private DefaultHttpClient client = HttpClientUtils.createHttpClient();
+	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 
 	@Override
 	public String getName() {

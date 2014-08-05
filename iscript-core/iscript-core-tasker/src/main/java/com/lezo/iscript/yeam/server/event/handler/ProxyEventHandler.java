@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.mina.core.future.WriteFuture;
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(ProxyEventHandler.class);
 	private static final Object OFFER_LOCK = new Object();
 	private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
+	private ConcurrentHashMap<String, Integer> clientProxyMap = new ConcurrentHashMap<String, Integer>();
 
 	protected void doHandle(RequestEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
@@ -41,6 +43,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		long start = System.currentTimeMillis();
 		Integer active = JSONUtils.getInteger(hObject, "proxyactive");
 		int remain = MAX_PROXY_PER_CLIENT - active;
+		String clientName = JSONUtils.getString(hObject, "name");
 
 		List<JSONObject> errorList = getErrorProxys(hObject);
 		Set<String> domainSet = new HashSet<String>();
@@ -59,14 +62,14 @@ public class ProxyEventHandler extends AbstractEventHandler {
 					}
 				}
 			}
-			logger.warn("proxy error:" + eObject);
+			logger.warn("client:" + clientName + ",proxy error:" + eObject);
 		}
 		// turn Error Proxy to RetryStatus
 		List<Long> idList = new ArrayList<Long>(proxyIdSet);
 		proxyDetectService.batchUpdateProxyStatus(idList, ProxyDetectDto.STATUS_RETRY);
 
 		List<ProxyDetectDto> offerProxyList = new ArrayList<ProxyDetectDto>(remain);
-		String clientName = JSONUtils.getString(hObject, "name");
+
 		synchronized (OFFER_LOCK) {
 			List<ProxyDetectDto> updateList = new ArrayList<ProxyDetectDto>(remain);
 			if (domainSet.isEmpty()) {
@@ -95,6 +98,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 					clientName, remain, cost);
 			logger.warn(msg);
 		}
+		clientProxyMap.put(clientName, active + offerProxyList.size());
 	}
 
 	private List<ProxyWritable> getProxyWritables(List<ProxyDetectDto> offerProxyList) {
@@ -189,6 +193,11 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
 		if (hObject == null) {
 			logger.warn("get an empty header..");
+			return false;
+		}
+		String clientName = JSONUtils.getString(hObject, "name");
+		Integer proxy = clientProxyMap.get(clientName);
+		if (proxy != null && proxy >= MAX_PROXY_PER_CLIENT) {
 			return false;
 		}
 		Integer active = JSONUtils.getInteger(hObject, "proxyactive");

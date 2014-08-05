@@ -17,6 +17,7 @@ import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 
 public class ProxyBuffer {
 	private static Logger logger = Logger.getLogger(ConfigParserBuffer.class);
+	private Object WRITE_LOCK = new Object();
 	private ConcurrentHashMap<Proxy, JSONObject> useMap = new ConcurrentHashMap<Proxy, JSONObject>();
 	private ConcurrentHashMap<Proxy, JSONObject> errorMap = new ConcurrentHashMap<Proxy, JSONObject>();
 	private volatile long stamp = 0;
@@ -70,7 +71,7 @@ public class ProxyBuffer {
 		if (proxyObject == null) {
 			return;
 		}
-		synchronized (proxyObject) {
+		synchronized (WRITE_LOCK) {
 			JSONArray errorArray = JSONUtils.get(proxyObject, "errors");
 			JSONObject errorObject = new JSONObject();
 			JSONUtils.put(errorObject, "url", url);

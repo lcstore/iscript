@@ -21,20 +21,19 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
-import com.lezo.iscript.yeam.http.HttpRequestManager;
+import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
-	private HttpRequestManager httpRequestManager;
+	private DefaultHttpClient client;
 	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
-		httpRequestManager = new HttpRequestManager();
-		httpRequestManager.getClient().setRoutePlanner(null);
-		httpRequestManager.getClient().setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
+		client = HttpClientFactory.createHttpClient();
+		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 		detectUrls = new ArrayList<String>();
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
 		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
@@ -51,7 +50,6 @@ public class ConfigProxyDetector implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
 		String host = getHost(task);
-		DefaultHttpClient client = httpRequestManager.getClient();
 		HttpHost proxy = new HttpHost(host, port);
 		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		JSONObject itemObject = new JSONObject();
@@ -62,7 +60,7 @@ public class ConfigProxyDetector implements ConfigParser {
 		try {
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
-			HttpResponse res = httpRequestManager.execute(get, context);
+			HttpResponse res = client.execute(get, context);
 			// HttpHost proxyHost = (HttpHost)
 			// context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
 			// JSONUtils.put(itemObject, "host", proxyHost.getHostName());

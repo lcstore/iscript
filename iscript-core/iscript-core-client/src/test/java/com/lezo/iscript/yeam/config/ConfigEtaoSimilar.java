@@ -4,40 +4,28 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.client.HardConstant;
-import com.lezo.iscript.yeam.http.HttpRequestManager;
+import com.lezo.iscript.yeam.http.HttpClientFactory;
+import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
+import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigEtaoSimilar implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigEtaoSimilar.class);
-	private HttpRequestManager httpRequestManager;
+	private DefaultHttpClient client = HttpClientManager.getProxyHttpClient();
 	private List<String> detectUrls;
-	private static final String DETECTOR = String.format("%s@%s", ClientPropertiesUtils.getProperty("name"),
-			HardConstant.MAC_ADDR);
+	private static final String DETECTOR = HeaderUtils.CLIENT_NAME;
 
 	public ConfigEtaoSimilar() {
-		httpRequestManager = new HttpRequestManager();
-		httpRequestManager.getClient().setRoutePlanner(null);
 		detectUrls = new ArrayList<String>();
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
 		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");

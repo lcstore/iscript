@@ -25,8 +25,6 @@ import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
-
 public class HttpDriver {
 	private static final HttpDriver INSTANCE = new HttpDriver();
 	private int coreSize = 3;

@@ -36,9 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.crawler.script.CommonContext;
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.sun.jndi.toolkit.ctx.Continuation;
 
 public class ScriptTest {

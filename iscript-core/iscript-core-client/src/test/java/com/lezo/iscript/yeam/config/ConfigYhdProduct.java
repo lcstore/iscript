@@ -10,14 +10,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.http.HttpRequestManager;
+import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdProduct implements ConfigParser {
-	private DefaultHttpClient client = HttpRequestManager.getDefaultManager().getClient();
+	private DefaultHttpClient client = HttpClientManager.getProxyHttpClient();
 
 	@Override
 	public String getName() {

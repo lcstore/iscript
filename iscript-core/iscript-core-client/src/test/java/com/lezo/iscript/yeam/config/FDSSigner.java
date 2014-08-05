@@ -25,10 +25,10 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.envjs.PrototypeJavaObject;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 

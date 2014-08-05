@@ -64,6 +64,6 @@
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="proxyDetectTimer" method="run"
-			cron="0 0/30 * * * ?" />
+			cron="0 0 0/1 * * ?" />
 	</task:scheduled-tasks>
 </beans>

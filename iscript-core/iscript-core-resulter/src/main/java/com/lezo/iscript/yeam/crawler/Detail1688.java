@@ -24,10 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lezo.iscript.crawler.script.CommonContext;
-import com.lezo.iscript.crawler.utils.HttpClientUtils;
 import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
 import com.lezo.iscript.service.crawler.service.BarCodeItemService;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -134,7 +134,7 @@ public class Detail1688 implements ConfigParser {
 			rsObject.remove("name");
 			rsObject.remove("品牌");
 			dto.setProductAttr(rsObject.toString());
-			if (dto.getBarCode()!=null &&dto.getBarCode().length() == 13) {
+			if (dto.getBarCode() != null && dto.getBarCode().length() == 13) {
 				dtoList.add(dto);
 			} else {
 				logger.warn("illegal barcode:" + dto.getBarCode() + ",url:" + dto.getProductUrl());

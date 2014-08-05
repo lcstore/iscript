@@ -1,6 +1,5 @@
-package com.lezo.iscript.crawler.utils;
+package com.lezo.iscript.yeam.http;
 
-import java.io.InputStream;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -9,6 +8,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.CookieStore;
@@ -165,15 +165,21 @@ public class HttpClientUtils {
 		return getContent(client, get, "UTF-8");
 	}
 
-	public static String getContent(DefaultHttpClient client, HttpUriRequest get, String charsetName) throws Exception {
-		String html=null;
+	public static String getContent(DefaultHttpClient client, HttpUriRequest request, String charsetName) throws Exception {
 		try {
-			HttpResponse res = client.execute(get);
-			html = EntityUtils.toString(res.getEntity(), charsetName);
+			HttpResponse response = client.execute(request);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				return EntityUtils.toString(response.getEntity(), charsetName);
+			}
+			return null;
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			get.abort();
+			throw ex;
+		} finally {
+			if (request != null && !request.isAborted()) {
+				request.abort();
+			}
 		}
-		return html;
+
 	}
 }
