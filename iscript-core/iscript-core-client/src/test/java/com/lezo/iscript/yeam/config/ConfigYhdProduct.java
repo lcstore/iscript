@@ -17,7 +17,7 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdProduct implements ConfigParser {
-	private DefaultHttpClient client = HttpClientManager.getProxyHttpClient();
+	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 
 	@Override
 	public String getName() {

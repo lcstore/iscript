@@ -1,4 +1,4 @@
-﻿package com.lezo.iscript.yeam;
+package com.lezo.iscript.yeam;
 
 import java.io.File;
 
