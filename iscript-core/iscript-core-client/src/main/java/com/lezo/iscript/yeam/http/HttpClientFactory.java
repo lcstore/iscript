@@ -46,6 +46,7 @@ import com.lezo.iscript.crawler.http.UserAgentManager;
 public class HttpClientFactory {
 	public static DefaultHttpClient createHttpClient() {
 		ClientConnectionManager conman = createClientConnManager();
+		
 		HttpParams params = createHttpParams();
 		DefaultHttpClient client = new DefaultHttpClient(conman, params);
 		client.setHttpRequestRetryHandler(new SimpleHttpRequestRetryHandler());

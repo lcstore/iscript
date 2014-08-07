@@ -1,10 +1,11 @@
 package com.lezo.iscript.yeam;
 
 import java.io.File;
+import java.net.InetAddress;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
-import org.jsoup.nodes.Entities;
 import org.junit.Test;
 
 import com.lezo.iscript.utils.JSONUtils;
@@ -27,6 +28,7 @@ import com.lezo.iscript.yeam.config.LatestSohuNews;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
 import com.lezo.iscript.yeam.config.StringLinker;
 import com.lezo.iscript.yeam.config.ZYueSigner;
+import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -275,7 +277,7 @@ public class ConfigParserTest {
 	public void testConfigYhdList() throws Exception {
 		String url = "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2";
 		ConfigParser parser = new ConfigYhdList();
-//		url="http://www.yhd.com/ctg/s2/c34032-0-59402/b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k/?tc=3.0.9.59402.3&tp=52.34032.100.0.3.UBdUN8";
+		// url="http://www.yhd.com/ctg/s2/c34032-0-59402/b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k/?tc=3.0.9.59402.3&tp=52.34032.100.0.3.UBdUN8";
 		TaskWritable task = new TaskWritable();
 		try {
 			task.put("url", url);
@@ -316,6 +318,20 @@ public class ConfigParserTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void testDnsCachePolicy() throws Exception {
+		DefaultHttpClient client =HttpClientFactory.createHttpClient();
+		for (InetAddress ia : InetAddress.getAllByName("www.baidu.com")) {
+			System.err.println(ia);
+		}
+		InetAddress addr1 = InetAddress.getByName("www.baidu.com");
+		System.out.println(addr1.getHostAddress());
+		// 在下一行设置断点.
+		int i = 0;
+		InetAddress addr2 = InetAddress.getByName("www.baidu.com");
+		System.out.println(addr2.getHostAddress());
 	}
 
 }

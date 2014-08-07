@@ -1,5 +1,8 @@
 package com.lezo.iscript.yeam.config;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.http.client.methods.HttpGet;
@@ -18,6 +21,13 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
+	private static Map<String, String> hostIpMap = new HashMap<String, String>();
+
+	static {
+		hostIpMap.put("item.yhd.com", "180.153.252.38");
+		hostIpMap.put("gps.yihaodian.com", "180.153.252.46");
+		hostIpMap.put("e.yhd.com", "180.153.252.36");
+	}
 
 	@Override
 	public String getName() {
@@ -36,7 +46,7 @@ public class ConfigYhdProduct implements ConfigParser {
 				refer = bString;
 			}
 		}
-		HttpGet get = new HttpGet(url);
+		HttpGet get = createHttpGetWithIp(url);
 		get.addHeader("Refer", refer);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
@@ -58,7 +68,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		String detailUrl = String.format(
 				"http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s",
 				JSONUtils.getString(itemObject, "productCode"), System.currentTimeMillis());
-		HttpGet dGet = new HttpGet(detailUrl);
+		HttpGet dGet = createHttpGetWithIp(detailUrl);
 		dGet.addHeader("Refer", url);
 		html = HttpClientUtils.getContent(client, dGet, "UTF-8");
 		int fromIndex = html.indexOf("(");
@@ -104,7 +114,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		String mUrl = String.format(
 				"http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
 				JSONUtils.getString(itemObject, "productCode"));
-		HttpGet mGet = new HttpGet(mUrl);
+		HttpGet mGet = createHttpGetWithIp(mUrl);
 		dGet.addHeader("Refer", url);
 		html = HttpClientUtils.getContent(client, mGet, "UTF-8");
 		try {
@@ -119,6 +129,19 @@ public class ConfigYhdProduct implements ConfigParser {
 			e.printStackTrace();
 		}
 		return itemObject.toString();
+	}
+
+	private HttpGet createHttpGetWithIp(String url) throws Exception {
+		URI oUri = new URI(url);
+		String host = oUri.getHost();
+		String oldUrl = oUri.toString();
+		String ip = hostIpMap.get(host);
+		if (ip != null) {
+			url = oldUrl.replace(host, ip);
+		}
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Host", oUri.getHost());
+		return get;
 	}
 
 	private void addCookie() {
