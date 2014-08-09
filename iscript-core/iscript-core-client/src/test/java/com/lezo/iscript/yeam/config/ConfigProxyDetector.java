@@ -73,7 +73,10 @@ public class ConfigProxyDetector implements ConfigParser {
 			String msg = ExceptionUtils.getStackTrace(e);
 			JSONUtils.put(itemObject, "ex", msg);
 			logger.warn(String.format("detect url:%s,cause:%s", url, msg));
-			get.abort();
+		} finally {
+			if (get != null && !get.isAborted()) {
+				get.abort();
+			}
 		}
 		long cost = System.currentTimeMillis() - start;
 		JSONUtils.put(itemObject, "url", url);

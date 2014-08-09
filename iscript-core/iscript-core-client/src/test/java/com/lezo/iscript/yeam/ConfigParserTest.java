@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -12,6 +13,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
+import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -298,7 +300,7 @@ public class ConfigParserTest {
 			url = "http://item.yhd.com/item/31930307";
 			url = "http://item.yhd.com/item/31930307";
 			url = "http://item.yhd.com/item/12656572";
-			url = "http://item.yhd.com/item/16526962";
+			url = "http://item.yhd.com/item/12656572";
 			task.put("url", url);
 			task.put("getNexts", 1);
 			String result = parser.doParse(task);
@@ -321,8 +323,21 @@ public class ConfigParserTest {
 	}
 
 	@Test
+	public void testConfigClientWake() throws Exception {
+		ConfigParser parser = new ConfigClientWake();
+		TaskWritable task = new TaskWritable();
+		try {
+			// String result = parser.doParse(task);
+			// System.out.println(result);
+			Thread.currentThread().join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
 	public void testDnsCachePolicy() throws Exception {
-		DefaultHttpClient client =HttpClientFactory.createHttpClient();
+		DefaultHttpClient client = HttpClientFactory.createHttpClient();
 		for (InetAddress ia : InetAddress.getAllByName("www.baidu.com")) {
 			System.err.println(ia);
 		}
