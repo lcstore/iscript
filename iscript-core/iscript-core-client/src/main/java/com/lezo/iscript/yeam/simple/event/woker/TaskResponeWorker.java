@@ -18,7 +18,6 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class TaskResponeWorker implements Runnable {
 	private static org.slf4j.Logger logger = LoggerFactory.getLogger(TaskResponeWorker.class);
 	private IoRespone ioRespone;
-	private static final Object WRITE_LOCK = new Object();
 
 	public TaskResponeWorker(IoRespone ioRespone) {
 		super();
@@ -36,14 +35,15 @@ public class TaskResponeWorker implements Runnable {
 			return;
 		}
 		// keep ConfigResponeWorker working in the line
-		synchronized (WRITE_LOCK) {
-			ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
-			ResultStorager storager = ResultStorager.getInstance();
-			for (TaskWritable taskWritable : taskList) {
-				Future<ResultWritable> future = caller.submit(new TaskCallable(taskWritable));
-				storager.getStorageBuffer().add(future);
-			}
+		ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
+		ResultStorager storager = ResultStorager.getInstance();
+		for (TaskWritable taskWritable : taskList) {
+			Future<ResultWritable> future = caller.submit(new TaskCallable(taskWritable));
+			storager.getStorageBuffer().add(future);
 		}
+		String msg = String.format("Get task:%d,Queue:%d,working:%d", taskList.size(), caller.getQueue().size(),
+				caller.getActiveCount());
+		logger.info(msg);
 	}
 
 	@SuppressWarnings("unchecked")

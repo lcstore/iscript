@@ -28,12 +28,9 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
-	private DefaultHttpClient client;
 	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
-		client = HttpClientFactory.createHttpClient();
-		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 		detectUrls = new ArrayList<String>();
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
 		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
@@ -50,14 +47,17 @@ public class ConfigProxyDetector implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
 		String host = getHost(task);
-		HttpHost proxy = new HttpHost(host, port);
-		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+
 		JSONObject itemObject = new JSONObject();
 		String url = getDetectUrl(task);
 		HttpGet get = new HttpGet(url);
 		long start = System.currentTimeMillis();
 		int status = 0;
+		DefaultHttpClient client = HttpClientFactory.createHttpClient();
+		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 		try {
+			HttpHost proxy = new HttpHost(host, port);
+			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
@@ -76,6 +76,9 @@ public class ConfigProxyDetector implements ConfigParser {
 		} finally {
 			if (get != null && !get.isAborted()) {
 				get.abort();
+			}
+			if (client != null) {
+				client.getConnectionManager().shutdown();
 			}
 		}
 		long cost = System.currentTimeMillis() - start;

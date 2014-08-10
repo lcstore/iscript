@@ -24,7 +24,7 @@
 	<!-- 输出到日志文件 -->
 	<appender name="rollAppender" class="org.apache.log4j.DailyRollingFileAppender">
 		<!-- 设置File参数：日志输出文件名 -->
-		<param name="File" value="${yeam_client_path}/client.log" />
+		<param name="File" value="client.log" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"

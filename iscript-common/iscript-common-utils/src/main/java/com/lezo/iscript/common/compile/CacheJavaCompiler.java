@@ -15,12 +15,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import org.apache.commons.io.IOUtils;
 
 import com.lezo.iscript.common.loader.OverrideClassLoader;
 import com.lezo.iscript.common.loader.ResourceCacheable;
@@ -53,7 +56,6 @@ public class CacheJavaCompiler {
 		ClassLoader loader = CacheJavaCompiler.class.getClassLoader();
 		StringBuilder sb = new StringBuilder();
 		if (loader instanceof URLClassLoader) {
-			@SuppressWarnings("resource")
 			URLClassLoader urlClassLoader = (URLClassLoader) loader;
 			for (URL url : urlClassLoader.getURLs()) {
 				String filePath = url.getFile();
@@ -63,14 +65,17 @@ public class CacheJavaCompiler {
 		return sb.toString();
 	}
 
-	public Class<?> doCompile(String className, String codeSource) throws ClassNotFoundException, IOException {
+	public Class<?> doCompile(String className, String codeSource) throws Exception {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		if (compiler == null) {
+			String msg = String.format("Can not get JavaCompiler.java.home[%s]", System.getProperty("java.home"));
+			throw new RuntimeException(msg);
+		}
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 		StandardJavaFileManager standardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null);
 		CacheJavaFileManager fileManager = new CacheJavaFileManager(standardJavaFileManager);
 		List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
 		jfiles.add(new InputJavaFileObject(className, codeSource));
-
 		List<String> options = new ArrayList<String>();
 		options.add("-encoding");
 		options.add("UTF-8");
@@ -79,7 +84,6 @@ public class CacheJavaCompiler {
 		JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, jfiles);
 		boolean success = task.call();
 		if (success) {
-
 			Set<Kind> kindSet = new HashSet<JavaFileObject.Kind>();
 			kindSet.add(Kind.CLASS);
 			Map<String, JavaFileObject> objMap = fileManager.getFileObjectMap();
@@ -92,7 +96,11 @@ public class CacheJavaCompiler {
 			Class<?> newClass = overrideClassLoader.loadClass(className);
 			return newClass;
 		}
-		return null;
+		StringBuffer sb = new StringBuffer();
+		for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
+			sb.append(d);
+		}
+		throw new RuntimeException(sb.toString());
 	}
 
 	private String getClassName(OutputJavaFileObject ojfObject) {
@@ -108,9 +116,16 @@ public class CacheJavaCompiler {
 	}
 
 	private void addResource(String className, OutputJavaFileObject ojfObject) throws IOException {
-		OutputStream out = ojfObject.openOutputStream();
-		ByteArrayOutputStream bos = (ByteArrayOutputStream) out;
-		resourceManager.addResource(className, bos.toByteArray());
+		ByteArrayOutputStream bos = null;
+		try {
+			OutputStream out = ojfObject.openOutputStream();
+			bos = (ByteArrayOutputStream) out;
+			resourceManager.addResource(className, bos.toByteArray());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(bos);
+		}
 	}
 
 	public String getClasspath() {

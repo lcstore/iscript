@@ -2,9 +2,7 @@ package com.lezo.iscript.yeam.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +56,7 @@ public class IoServer extends IoHandlerAdapter {
 			return;
 		}
 		addNewSession(session, message);
+		addTrackSession(session);
 		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 	}
 
@@ -88,6 +87,23 @@ public class IoServer extends IoHandlerAdapter {
 		String key = SessionHisDto.ERROR_SIZE;
 		int newValue = (Integer) session.getAttribute(key) + 1;
 		session.setAttribute(key, newValue);
+	}
+
+	private void addTrackSession(IoSession session) {
+		String key = SessionHisDto.SAVE_STAMP;
+		Long stamp = (Long) session.getAttribute(key);
+		long cost = System.currentTimeMillis() - stamp;
+		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
+			session.setAttribute(key, System.currentTimeMillis());
+			SessionHisDto trackDto = getSessionHisDto(session);
+			if (!StringUtils.isEmpty(trackDto.getClienName())) {
+				logger.info(String.format("track: %s", trackDto));
+				trackDto.setStatus(SessionHisDto.STATUS_UP);
+				StorageBufferFactory.getStorageBuffer(SessionHisDto.class).add(trackDto);
+			} else {
+				logger.warn(String.format("track session.can not found name for sessionId:%s", trackDto.getSessionId()));
+			}
+		}
 	}
 
 	public void add2Attribute(IoSession session, String key, int num) {
@@ -136,6 +152,12 @@ public class IoServer extends IoHandlerAdapter {
 		session.setAttribute(SessionHisDto.SUCCESS_NUM, 0);
 		session.setAttribute(SessionHisDto.FAIL_NUM, 0);
 		session.setAttribute(SessionHisDto.SAVE_STAMP, System.currentTimeMillis());
+	}
+
+	@Override
+	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+		// TODO Auto-generated method stub
+		super.sessionIdle(session, status);
 	}
 
 }
