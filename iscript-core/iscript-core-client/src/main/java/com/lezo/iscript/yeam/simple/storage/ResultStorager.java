@@ -1,13 +1,9 @@
 package com.lezo.iscript.yeam.simple.storage;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +16,7 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ResultStorager implements StorageListener<Future<ResultWritable>> {
 	private static Logger logger = LoggerFactory.getLogger(ResultStorager.class);
-	private static final int capacity = 200;
+	private static final int capacity = 2000;
 	private StorageBuffer<Future<ResultWritable>> storageBuffer = new StorageBuffer<Future<ResultWritable>>(capacity);
 	private static ResultStorager instance;
 

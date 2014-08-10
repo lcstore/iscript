@@ -16,7 +16,7 @@ public class ClientConstant {
 
 	public static final int GET_NONE = 3;
 
-	public static final int MAX_TASK_QUEUE_CAPACITY = 20;
+	public static final int MAX_TASK_QUEUE_CAPACITY = 20000;
 	public static final int MAX_RESULT_QUEUE_CAPACITY = 5;
 	public static final int MAX_TASK_BUFFER_SIZE = MAX_TASK_QUEUE_CAPACITY / 2;
 

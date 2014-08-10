@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.mina.core.session.IoSession;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
+import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.result.ResultHandlerCaller;
 import com.lezo.iscript.yeam.result.ResultHandlerWoker;
@@ -29,9 +31,11 @@ public class ResultEventHandler extends AbstractEventHandler {
 			add2Session(event.getSession(), rWritables);
 			// addTrackSession(event.getSession());
 			ResultHandlerCaller caller = ResultHandlerCaller.getInstance();
+			JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
 			caller.execute(new ResultHandlerWoker(rWritables));
-			String msg = String.format("add %d result to caller.active woker:%d,in Queue worker:%d", rWritables.size(),
-					caller.getExecutor().getActiveCount(), caller.getExecutor().getQueue().size());
+			String msg = String.format("add %d result.Client:%s,active:%d,Queue:%d", rWritables.size(),
+					JSONUtils.getString(hObject, "name"), caller.getExecutor().getActiveCount(), caller.getExecutor()
+							.getQueue().size());
 			logger.info(msg);
 		}
 	}
@@ -49,7 +53,6 @@ public class ResultEventHandler extends AbstractEventHandler {
 		add2Attribute(session, SessionHisDto.SUCCESS_NUM, success);
 		add2Attribute(session, SessionHisDto.FAIL_NUM, fail);
 	}
-
 
 	public void add2Attribute(IoSession session, String key, int num) {
 		int newValue = (Integer) session.getAttribute(key) + num;

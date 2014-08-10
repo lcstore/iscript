@@ -21,8 +21,8 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class TaskEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
-	private static final int PER_OFFER_SIZE = 10;
-	private static final int MIN_TASK_SIZE = 4;
+	private static final int PER_OFFER_SIZE = 50;
+	private static final int MIN_TASK_SIZE = 10;
 
 	@Override
 	protected void doHandle(RequestEvent event) {
@@ -37,7 +37,8 @@ public class TaskEventHandler extends AbstractEventHandler {
 			// shuffle type to offer task random
 			Collections.shuffle(typeList);
 			int cycle = 0;
-			int limit = 2;
+			int limit = PER_OFFER_SIZE / typeList.size();
+			limit = limit <= 1 ? 2 : limit;
 			int remain = PER_OFFER_SIZE;
 			while (remain > 0 && ++cycle <= 3) {
 				for (String type : typeList) {

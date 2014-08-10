@@ -50,8 +50,8 @@ public class AssembleTaskTimer {
 		List<TaskConfigDto> taskConfigs = new ArrayList<TaskConfigDto>(configList.size());
 		List<TaskConfigDto> strategyConfigs = new ArrayList<TaskConfigDto>(configList.size());
 		doAssort(configList, taskConfigs, strategyConfigs);
-		add2ConfigBuffer(taskConfigs);
 		add2StrategyBuffer(strategyConfigs);
+		add2ConfigBuffer(taskConfigs);
 
 	}
 

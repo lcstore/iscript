@@ -43,7 +43,7 @@ public class ConfigClientWake implements ConfigParser {
 		clientList.add("http://e2001.sturgeon.mopaas.com/");
 		clientList.add("http://e1001.sturgeon.mopaas.com/");
 		clientList.add("http://e1002.sturgeon.mopaas.com/");
-		clientList.add("http://p1001j.sturgeon.mopaas.com/");
+		clientList.add("http://p1001.sturgeon.mopaas.com/");
 		clientList.add("http://p1002.sturgeon.mopaas.com/");
 		clientList.add("http://idober.jd-app.com/");
 		clientList.add("http://iclient.jd-app.com/");

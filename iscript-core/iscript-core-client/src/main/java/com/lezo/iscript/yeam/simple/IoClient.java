@@ -18,7 +18,6 @@ import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.simple.event.ResponeProceser;
 import com.lezo.iscript.yeam.simple.event.ResponeWorkerFactory;
 import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
-import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 
 public class IoClient extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoClient.class);

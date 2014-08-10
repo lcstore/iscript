@@ -26,7 +26,7 @@ public class ProxyDetectTimer {
 
 	public ProxyDetectTimer() {
 		checkStatusList = new ArrayList<Integer>();
-		checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
+//		checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
 		checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
 		checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 	}
