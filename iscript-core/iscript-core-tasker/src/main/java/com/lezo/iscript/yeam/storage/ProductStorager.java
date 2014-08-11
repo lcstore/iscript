@@ -21,7 +21,7 @@ public class ProductStorager implements StorageListener<ProductDto> {
 
 	public ProductStorager() {
 		super();
-		this.storageBuffer = StorageBufferFactory.getStorageBuffer(ProductDto.class);
+		this.storageBuffer = StorageBufferFactory.getStorageBuffer(ProductDto.class, 100000);
 	}
 
 	@Override
@@ -37,7 +37,8 @@ public class ProductStorager implements StorageListener<ProductDto> {
 				long start = System.currentTimeMillis();
 				productService.batchSaveProductDtos(copyList);
 				long cost = System.currentTimeMillis() - start;
-				logger.info(String.format("ProductStorager insert[%s],size:%d,cost:%s", "ProductDto", copyList.size(), cost));
+				logger.info(String.format("ProductStorager insert[%s],size:%d,cost:%s", "ProductDto", copyList.size(),
+						cost));
 
 			}
 		});

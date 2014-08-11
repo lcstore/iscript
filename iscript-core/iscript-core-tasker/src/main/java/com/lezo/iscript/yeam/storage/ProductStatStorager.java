@@ -21,7 +21,7 @@ public class ProductStatStorager implements StorageListener<ProductStatDto> {
 
 	public ProductStatStorager() {
 		super();
-		this.storageBuffer = StorageBufferFactory.getStorageBuffer(ProductStatDto.class);
+		this.storageBuffer = StorageBufferFactory.getStorageBuffer(ProductStatDto.class,100000);
 	}
 
 	@Override

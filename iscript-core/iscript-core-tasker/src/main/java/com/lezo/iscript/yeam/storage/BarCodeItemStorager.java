@@ -14,14 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lezo.iscript.common.storage.StorageBuffer;
+import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
 import com.lezo.iscript.service.crawler.service.BarCodeItemService;
 
 public class BarCodeItemStorager implements StorageListener<BarCodeItemDto> {
 	private static Logger logger = LoggerFactory.getLogger(BarCodeItemStorager.class);
-	private static final int capacity = 200;
-	private StorageBuffer<BarCodeItemDto> storageBuffer = new StorageBuffer<BarCodeItemDto>(capacity);
+	private StorageBuffer<BarCodeItemDto> storageBuffer = StorageBufferFactory.getStorageBuffer(BarCodeItemDto.class);
 	@Autowired
 	private BarCodeItemService barCodeItemService;
 
