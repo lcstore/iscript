@@ -1,6 +1,7 @@
 package com.lezo.iscript.yeam.server.event.handler;
 
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.mina.core.session.IoSession;
@@ -33,9 +34,10 @@ public class ResultEventHandler extends AbstractEventHandler {
 			ResultHandlerCaller caller = ResultHandlerCaller.getInstance();
 			JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
 			caller.execute(new ResultHandlerWoker(rWritables));
-			String msg = String.format("add %d result.Client:%s,active:%d,Queue:%d", rWritables.size(),
-					JSONUtils.getString(hObject, "name"), caller.getExecutor().getActiveCount(), caller.getExecutor()
-							.getQueue().size());
+			ThreadPoolExecutor exec = caller.getExecutor();
+			String msg = String.format("add %d result.Client:%s,Result.Caller[active:%d,Largest:%d,Queue:%d]",
+					rWritables.size(), JSONUtils.getString(hObject, "name"), exec.getActiveCount(),
+					exec.getLargestPoolSize(), exec.getQueue().size());
 			logger.info(msg);
 		}
 	}

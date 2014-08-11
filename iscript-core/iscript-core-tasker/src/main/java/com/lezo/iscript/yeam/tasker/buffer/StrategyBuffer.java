@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam.tasker.buffer;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,9 @@ public class StrategyBuffer {
 	}
 
 	public ResultStrategy getStrategy(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
 		return strategyMap.get(name);
 	}
 

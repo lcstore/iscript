@@ -1,6 +1,7 @@
 package com.lezo.iscript.yeam.result;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -28,19 +29,7 @@ public class ResultHandlerWoker implements Runnable {
 		logger.info("start to handle result:" + rWritables.size());
 		if (!CollectionUtils.isEmpty(rWritables)) {
 			for (ResultWritable rWritable : rWritables) {
-				try {
-					ResultStrategy resultStrategy = getResultStrategy(rWritable);
-					if (resultStrategy == null) {
-						String msg = String.format("type:%s,rsObject:%s", rWritable.getType(), rWritable.getResult());
-						logger.info(msg);
-					} else {
-						resultStrategy.handleResult(rWritable);
-					}
-				} catch (Exception e) {
-					String msg = String.format("tid:%s,type:%s,cause:%s", rWritable.getTaskId(), rWritable.getType(),
-							ExceptionUtils.getStackTrace(e));
-					logger.warn(msg);
-				}
+				doRetryHandler(rWritable, 1);
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
@@ -48,24 +37,42 @@ public class ResultHandlerWoker implements Runnable {
 
 	}
 
-	private ResultStrategy getResultStrategy(ResultWritable rw) {
-		ResultStrategy resultStrategy = null;
+	private void doRetryHandler(ResultWritable rWritable, int execCount) {
+		try {
+			String strategyName = getStrategyName(rWritable);
+			ResultStrategy resultStrategy = StrategyBuffer.getInstance().getStrategy(strategyName);
+			if (resultStrategy == null) {
+				if (execCount <= 3) {
+					String msg = String.format("type:%s,strategy:%s,retry:%s", rWritable.getType(), strategyName,
+							execCount);
+					logger.warn(msg);
+					TimeUnit.MILLISECONDS.sleep(30000);
+					doRetryHandler(rWritable, execCount + 1);
+				} else {
+					String msg = String.format("type:%s,strategy:%s,rsObject:%s", rWritable.getType(), strategyName,
+							rWritable.getResult());
+					logger.warn(msg);
+				}
+			} else {
+				resultStrategy.handleResult(rWritable);
+			}
+		} catch (Exception e) {
+			String msg = String.format("tid:%s,type:%s,cause:%s", rWritable.getTaskId(), rWritable.getType(),
+					ExceptionUtils.getStackTrace(e));
+			logger.warn(msg);
+		}
+	}
+
+	private String getStrategyName(ResultWritable rw) {
 		JSONObject rsObject = JSONUtils.getJSONObject(rw.getResult());
 		if (rsObject == null) {
-			return resultStrategy;
+			return null;
 		}
 		JSONObject argsObject = JSONUtils.get(rsObject, "args");
 		if (argsObject == null) {
-			return resultStrategy;
+			return null;
 		}
-		String strategyName = JSONUtils.getString(argsObject, "strategy");
-		if (strategyName == null) {
-			return resultStrategy;
-		}
-		resultStrategy = StrategyBuffer.getInstance().getStrategy(strategyName);
-		if (resultStrategy == null) {
-			logger.warn("can not found strategy:" + strategyName);
-		}
-		return resultStrategy;
+		return JSONUtils.getString(argsObject, "strategy");
 	}
+
 }

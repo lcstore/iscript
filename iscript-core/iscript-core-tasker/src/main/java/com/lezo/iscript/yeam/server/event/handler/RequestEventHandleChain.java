@@ -13,7 +13,7 @@ public class RequestEventHandleChain {
 	private static final List<RequestEventHandler> EVENT_HANDLER_LIST = new ArrayList<RequestEventHandler>();
 	static {
 		EVENT_HANDLER_LIST.add(new ConfigEventHandler());
-//		EVENT_HANDLER_LIST.add(new ProxyEventHandler());
+		EVENT_HANDLER_LIST.add(new ProxyEventHandler());
 		EVENT_HANDLER_LIST.add(new TaskEventHandler());
 		EVENT_HANDLER_LIST.add(new ResultEventHandler());
 		EVENT_HANDLER_LIST.add(new EmptyEventHandler());

@@ -21,7 +21,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class TaskEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
-	private static final int PER_OFFER_SIZE = 50;
+	private static final int PER_OFFER_SIZE = 60;
 	private static final int MIN_TASK_SIZE = 30;
 
 	@Override
@@ -69,8 +69,9 @@ public class TaskEventHandler extends AbstractEventHandler {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %d task for client:%s,cost:%s", taskOffers.size(),
-				JSONUtils.getString(hObject, "name"), cost);
+		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s],cost:%s",
+				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
+				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), cost);
 		logger.info(msg);
 
 	}
