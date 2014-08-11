@@ -4,20 +4,20 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatDao">
 	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
-		<result column="ID" property="id"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="MIN_PRICE" property="minPrice"/>
-		<result column="MAX_PRICE" property="maxPrice"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="MARKET_PRICE" property="marketPrice"/>
-		<result column="SOLD_NUM" property="soldNum"/>
-		<result column="COMMENT_NUM" property="commentNum"/>
-		<result column="STOCK_NUM" property="stockNum"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="SHOP_ID" property="shopId" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="PRODUCT_URL" property="productUrl" />
+		<result column="MIN_PRICE" property="minPrice" />
+		<result column="MAX_PRICE" property="maxPrice" />
+		<result column="PRODUCT_PRICE" property="productPrice" />
+		<result column="MARKET_PRICE" property="marketPrice" />
+		<result column="SOLD_NUM" property="soldNum" />
+		<result column="COMMENT_NUM" property="commentNum" />
+		<result column="STOCK_NUM" property="stockNum" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="ProductStatDto-coloumn-list">
 		SHOP_ID
@@ -60,20 +60,75 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
-	<select id="getProductStatDtos" parameterType="map" resultMap="RM_ProductStatDto">
-	   SELECT ID,<include refid="ProductStatDto-coloumn-list"/>
-	   FROM T_PRODUCT_STAT
-	   WHERE 1=1
-	   <if test="codeList.isEmpty()">
-	     AND 1=0
-	   </if>
-	   <if test="!codeList.isEmpty()">
-		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
-		      #{code}
-		   </foreach>
-	   </if>
-	   <if test="shopId !=null">
-	     AND SHOP_ID=#{shopId}
-	   </if>
+	<select id="getProductStatDtos" parameterType="map"
+		resultMap="RM_ProductStatDto">
+		SELECT ID,
+		<include refid="ProductStatDto-coloumn-list" />
+		FROM T_PRODUCT_STAT
+		WHERE 1=1
+		<if test="codeList.isEmpty()">
+			AND 1=0
+		</if>
+		<if test="!codeList.isEmpty()">
+			<foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN("
+				close=")" separator=",">
+				#{code}
+			</foreach>
+		</if>
+		<if test="shopId !=null">
+			AND SHOP_ID=#{shopId}
+		</if>
+	</select>
+	<select id="getProductStatDtosByCommentDesc" parameterType="map"
+		resultMap="RM_ProductStatDto">
+		SELECT ID,
+		<include refid="ProductStatDto-coloumn-list" />
+		FROM T_PRODUCT_STAT
+		WHERE 1=1
+		<if test="shopId !=null">
+			AND SHOP_ID=#{shopId}
+		</if>
+		ORDER BY COMMENT_NUM DESC
+		LIMIT #{limit}
+	</select>
+	<select id="getProductStatDtosByPriceAsc" parameterType="map"
+		resultMap="RM_ProductStatDto">
+		SELECT ID,
+		<include refid="ProductStatDto-coloumn-list" />
+		FROM T_PRODUCT_STAT
+		WHERE 1=1
+		<if test="shopId !=null">
+			AND SHOP_ID=#{shopId}
+		</if>
+		ORDER BY PRODUCT_PRICE ASC
+		LIMIT #{limit}
+	</select>
+	<select id="getProductStatDtosBySoldDesc" parameterType="map"
+		resultMap="RM_ProductStatDto">
+		SELECT ID,
+		<include refid="ProductStatDto-coloumn-list" />
+		FROM T_PRODUCT_STAT
+		WHERE 1=1
+		<if test="shopId !=null">
+			AND SHOP_ID=#{shopId}
+		</if>
+		ORDER BY SOLD_NUM DESC
+		LIMIT #{limit}
+	</select>
+	<select id="getProductStatDtosLowestPrice" parameterType="map"
+		resultMap="RM_ProductStatDto">
+		SELECT ID,
+		<include refid="ProductStatDto-coloumn-list" />
+		FROM T_PRODUCT_STAT
+		WHERE 1=1
+		AND ID >=#{fromId}
+		<if test="shopId !=null">
+			AND SHOP_ID=#{shopId}
+		</if>
+		<if test="updateTime !=null">
+		   AND UPDATE_TIME >=#{updateTime}
+		</if>
+		AND MIN_PRICE < MAX_PRICE
+		LIMIT #{limit}
 	</select>
 </mapper>

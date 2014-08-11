@@ -22,7 +22,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class TaskEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
 	private static final int PER_OFFER_SIZE = 50;
-	private static final int MIN_TASK_SIZE = 10;
+	private static final int MIN_TASK_SIZE = 30;
 
 	@Override
 	protected void doHandle(RequestEvent event) {

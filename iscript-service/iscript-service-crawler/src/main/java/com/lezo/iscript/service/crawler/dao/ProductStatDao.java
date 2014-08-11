@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -13,5 +14,18 @@ public interface ProductStatDao {
 
 	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList,
 			@Param(value = "shopId") Integer shopId);
+
+	List<ProductStatDto> getProductStatDtosByCommentDesc(@Param(value = "shopId") Integer shopId,
+			@Param(value = "limit") int limit);
+
+	List<ProductStatDto> getProductStatDtosByPriceAsc(@Param(value = "shopId") Integer shopId,
+			@Param(value = "limit") int limit);
+
+	List<ProductStatDto> getProductStatDtosBySoldDesc(@Param(value = "shopId") Integer shopId,
+			@Param(value = "limit") int limit);
+
+	List<ProductStatDto> getProductStatDtosLowestPrice(@Param(value = "fromId") Long fromId,
+			@Param(value = "shopId") Integer shopId, @Param(value = "updateTime") Date updateTime,
+			@Param(value = "limit") int limit);
 
 }

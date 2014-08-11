@@ -1,6 +1,8 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -156,9 +158,10 @@ public class ProductStatServiceImpl implements ProductStatService {
 		if (!isSameObject(oldDto.getProductPrice(), newDto.getProductPrice())) {
 			return true;
 		}
-//		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
-//			return true;
-//		}
+		// if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice()))
+		// {
+		// return true;
+		// }
 		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
 			return true;
 		}
@@ -178,5 +181,31 @@ public class ProductStatServiceImpl implements ProductStatService {
 			return false;
 		}
 		return lObject.equals(rObject);
+	}
+
+	@Override
+	public List<ProductStatDto> getProductStatDtosByCommentDesc(Integer shopId, int limit) {
+		return productStatDao.getProductStatDtosByCommentDesc(shopId, limit);
+	}
+
+	@Override
+	public List<ProductStatDto> getProductStatDtosByPriceAsc(Integer shopId, int limit) {
+		return productStatDao.getProductStatDtosByPriceAsc(shopId, limit);
+	}
+
+	@Override
+	public List<ProductStatDto> getProductStatDtosBySoldDesc(Integer shopId, int limit) {
+		return productStatDao.getProductStatDtosBySoldDesc(shopId, limit);
+	}
+
+	@Override
+	public List<ProductStatDto> getProductStatDtosLowestPrice(Long fromId, Integer shopId, Date updateTime, int limit) {
+		if (limit < 1) {
+			return Collections.emptyList();
+		}
+		if (fromId == null) {
+			fromId = 0L;
+		}
+		return productStatDao.getProductStatDtosLowestPrice(fromId, shopId, updateTime, limit);
 	}
 }
