@@ -31,11 +31,12 @@ public class TaskEventHandler extends AbstractEventHandler {
 		JSONObject hObject = JSONUtils.getJSONObject(request.getHeader());
 
 		TaskCacher taskCancher = TaskCacher.getInstance();
-		List<String> typeList = taskCancher.getTypeList();
+		List<String> typeList = taskCancher.getNotEmptyTypeList();
 		List<TaskWritable> taskOffers = new ArrayList<TaskWritable>(PER_OFFER_SIZE);
 		if (!typeList.isEmpty()) {
 			// shuffle type to offer task random
 			Collections.shuffle(typeList);
+			logger.info(String.format("Ready type:%s", typeList));
 			int cycle = 0;
 			int limit = PER_OFFER_SIZE / typeList.size();
 			limit = limit <= 1 ? 2 : limit;
@@ -43,6 +44,7 @@ public class TaskEventHandler extends AbstractEventHandler {
 			while (remain > 0 && ++cycle <= 3) {
 				for (String type : typeList) {
 					TaskQueue taskQueue = taskCancher.getQueue(type);
+					limit = limit > remain ? remain : limit;
 					synchronized (taskQueue) {
 						List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
 						if (!CollectionUtils.isEmpty(taskList)) {

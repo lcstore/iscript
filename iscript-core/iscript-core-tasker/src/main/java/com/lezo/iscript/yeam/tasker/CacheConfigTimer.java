@@ -16,8 +16,8 @@ import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
 import com.lezo.iscript.yeam.tasker.buffer.StrategyBuffer;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
-public class AssembleTaskTimer {
-	private static Logger log = Logger.getLogger(AssembleTaskTimer.class);
+public class CacheConfigTimer {
+	private static Logger log = Logger.getLogger(CacheConfigTimer.class);
 	private static volatile boolean running = false;
 	private String tasker;
 	@Autowired

@@ -42,7 +42,8 @@
 	<task:scheduler id="scheduler" pool-size="20" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<task:scheduled-tasks scheduler="scheduler">
+		
+	<!-- <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheConfigTimer" method="run"
 			fixed-delay="30000" />
 	</task:scheduled-tasks>
@@ -50,14 +51,14 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
 			fixed-delay="60000" />
-	</task:scheduled-tasks>
+	</task:scheduled-tasks> -->
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="taskStorageTimeTrigger" method="doTrigger"
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
 
-	<task:scheduled-tasks scheduler="scheduler">
+<!-- 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="signTaskTimer" method="run"
 			cron="0 20 9 * * ?" />
 	</task:scheduled-tasks>
@@ -65,5 +66,5 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="proxyDetectTimer" method="run"
 			cron="0 0 0/1 * * ?" />
-	</task:scheduled-tasks>
+	</task:scheduled-tasks> -->
 </beans>
