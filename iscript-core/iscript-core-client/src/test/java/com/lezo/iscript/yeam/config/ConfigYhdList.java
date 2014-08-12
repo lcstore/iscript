@@ -31,6 +31,7 @@ public class ConfigYhdList implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		url = turnUrl(url);
+		System.err.println("url:" + url);
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		html = turnHtml(html);
@@ -61,24 +62,33 @@ public class ConfigYhdList implements ConfigParser {
 
 	private String turnUrl(String url) {
 		if (url.endsWith("|")) {
-			url = url.substring(0, url.length()-1);
+			url = url.substring(0, url.length() - 1);
 		}
-		String mark = "search.yhd.com";
-		int index = url.indexOf(mark);
-		if (index < 0) {
+		if (url.indexOf("www.yhd.com/ctg/searchPage") > 0) {
 			return url;
 		}
-		mark = "/k";
-		index = url.indexOf(mark);
-		if (index < 0) {
-			return url;
+		Pattern qReg = Pattern.compile("c[0-9]+-.*(k.*?/)?");
+		Matcher matcher = qReg.matcher(url);
+		if (matcher.find()) {
+			String query = matcher.group();
+			url = String.format("http://www.yhd.com/ctg/searchPage/%s", query);
 		}
-		int fromIndex = index;
-		int toIndex = url.indexOf("/", fromIndex + mark.length());
-		String queryString = url.substring(fromIndex + 1, toIndex);
-		return String.format(
-				"http://www.yhd.com/ctg/searchPage/c0-0/b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-%s/?callback=jsonp%s",
-				queryString, System.currentTimeMillis());
+		Pattern sReg = Pattern.compile("a-s.*?-k");
+		matcher = sReg.matcher(url);
+		if (matcher.find()) {
+			url = matcher.replaceFirst("a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k");
+		} else {
+			url = url.endsWith("/") ? url : url + "/";
+			if (url.indexOf("/k") > 0) {
+				url = url.replace("/k", "/b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k");
+			} else {
+				url += "b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k";
+			}
+		}
+		if (!url.contains("?callback=jsonp")) {
+			url += "?callback=jsonp" + System.currentTimeMillis();
+		}
+		return url;
 	}
 
 	private void addNextUrls(Document dom, JSONObject listObject) {
@@ -100,6 +110,7 @@ public class ConfigYhdList implements ConfigParser {
 		Elements pageCoutAs = dom.select("#pageCountPage[value]");
 		if (!pageCoutAs.isEmpty()) {
 			int count = Integer.valueOf(pageCoutAs.first().attr("value"));
+
 			if (url.indexOf("-p1-") > 0) {
 				int index = url.indexOf("?");
 				index = index < 0 ? url.length() : index;
@@ -110,19 +121,7 @@ public class ConfigYhdList implements ConfigParser {
 					nextArray.put(sNext);
 				}
 			} else {
-				int index = url.indexOf("/b/");
-				String listHeader = index < 0 ? url : url.substring(0, index);
-				index = listHeader.indexOf("?");
-				listHeader = index < 0 ? listHeader : listHeader.substring(0, index);
-				index = listHeader.indexOf("#page=");
-				listHeader = index < 0 ? listHeader : listHeader.substring(0, index);
-				listHeader = listHeader.replaceAll("[/]+$", "/");
-				if (!listHeader.endsWith("/")) {
-					listHeader += "/";
-				}
-				for (int i = 2; i <= count; i++) {
-					nextArray.put(String.format("%sb/a-s2-v0-p%d-price-d0-f0-m1-rt0-pid-mid0-k/", listHeader, i));
-				}
+				System.err.println("Offer next page,but url:" + url);
 			}
 		}
 	}

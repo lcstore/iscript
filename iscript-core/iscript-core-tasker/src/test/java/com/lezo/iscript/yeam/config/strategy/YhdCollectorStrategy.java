@@ -171,7 +171,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		}
 		String taskId = JSONUtils.getString(argsObject, "url");
 		List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>();
-		JSONUtils.put(argsObject, "strategy", this.getClass().getSimpleName());
+		JSONUtils.put(argsObject, "strategy", getName());
 		for (ProductDto dto : insertDtos) {
 			String nextUrl = dto.getProductUrl();
 			TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
