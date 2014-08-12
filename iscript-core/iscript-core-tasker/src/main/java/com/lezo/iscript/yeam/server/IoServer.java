@@ -41,7 +41,8 @@ public class IoServer extends IoHandlerAdapter {
 		}
 		acceptor.setHandler(this);
 		acceptor.getSessionConfig().setReadBufferSize(2048);
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+		// 读写 通道均在600 秒内无任何操作就进入空闲状态
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 600);
 		acceptor.bind(new InetSocketAddress(port));
 		this.storageBuffer = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
 		SessionHisService sessionHisService = SpringBeanUtils.getBean(SessionHisService.class);
@@ -87,6 +88,8 @@ public class IoServer extends IoHandlerAdapter {
 		String key = SessionHisDto.ERROR_SIZE;
 		int newValue = (Integer) session.getAttribute(key) + 1;
 		session.setAttribute(key, newValue);
+		SessionHisDto trackDto = getSessionHisDto(session);
+		logger.warn(String.format("%s,cause:", trackDto), cause);
 	}
 
 	private void addTrackSession(IoSession session) {
@@ -156,8 +159,11 @@ public class IoServer extends IoHandlerAdapter {
 
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-		// TODO Auto-generated method stub
-		super.sessionIdle(session, status);
+		if (session.isBothIdle()) {
+			session.close(true);
+			SessionHisDto sessionDto = getSessionHisDto(session);
+			logger.info(String.format("Close idle session:%s", sessionDto));
+		}
 	}
 
 }

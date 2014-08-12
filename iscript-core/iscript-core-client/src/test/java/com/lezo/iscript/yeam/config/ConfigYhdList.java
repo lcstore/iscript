@@ -31,7 +31,7 @@ public class ConfigYhdList implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		url = turnUrl(url);
-		System.err.println("url:" + url);
+		System.err.println(url);
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		html = turnHtml(html);
@@ -72,11 +72,26 @@ public class ConfigYhdList implements ConfigParser {
 		if (matcher.find()) {
 			String query = matcher.group();
 			url = String.format("http://www.yhd.com/ctg/searchPage/%s", query);
+		} else {
+			qReg = Pattern.compile("vc[0-9]+.*");
+			matcher = qReg.matcher(url);
+			if (matcher.find()) {
+				String query = matcher.group();
+				url = String.format("http://www.yhd.com/ctg/searchVirCateAjax/%s", query);
+				url = url.replace("/c0/", "/");
+				url = url.replace("/b/", "/c0/b/");
+			}
 		}
-		Pattern sReg = Pattern.compile("a-s.*?-k");
+		Pattern sReg = Pattern.compile("([a-zA-Z0-9]+-)+[a-zA-Z0-9]+");
 		matcher = sReg.matcher(url);
 		if (matcher.find()) {
-			url = matcher.replaceFirst("a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k");
+			Pattern nReg = Pattern.compile("-p[0-9]+-");
+			Matcher nMatcher = nReg.matcher(url);
+			String sort = "a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k";
+			if (nMatcher.find()) {
+				sort = sort.replace("-p1-", nMatcher.group());
+			}
+			url = matcher.replaceFirst(sort);
 		} else {
 			url = url.endsWith("/") ? url : url + "/";
 			if (url.indexOf("/k") > 0) {
@@ -87,6 +102,9 @@ public class ConfigYhdList implements ConfigParser {
 		}
 		if (!url.contains("?callback=jsonp")) {
 			url += "?callback=jsonp" + System.currentTimeMillis();
+		}
+		if(url.indexOf("searchVirCateAjax")>0){
+			url = url.replace("-price-d0-f0-m1-rt0-pid-mid0-k", "-price-d0-mid0-f0");
 		}
 		return url;
 	}

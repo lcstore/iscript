@@ -19,21 +19,14 @@ public class ShopCacher {
 	private static final ConcurrentHashMap<String, ShopDto> shopKeyMap = new ConcurrentHashMap<String, ShopDto>();
 	private static final ConcurrentHashMap<String, ShopDto> domainMap = new ConcurrentHashMap<String, ShopDto>();
 	private static Logger logger = LoggerFactory.getLogger(ShopCacher.class);
-	private static ShopCacher instance;
+	private static final ShopCacher INSTANCE = new ShopCacher();
 
 	public ShopCacher() {
+		loadShopMap();
 	}
 
 	public static ShopCacher getInstance() {
-		if (instance == null) {
-			synchronized (ShopCacher.class) {
-				if (instance == null) {
-					instance = new ShopCacher();
-					loadShopMap();
-				}
-			}
-		}
-		return instance;
+		return INSTANCE;
 	}
 
 	private static void loadShopMap() {

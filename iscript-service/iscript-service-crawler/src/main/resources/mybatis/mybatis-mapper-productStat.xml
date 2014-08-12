@@ -46,8 +46,6 @@
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
 		UPDATE T_PRODUCT_STAT SET
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
 		MIN_PRICE=#{minPrice},
@@ -56,8 +54,7 @@
 		MARKET_PRICE=#{marketPrice},
 		SOLD_NUM=#{soldNum},
 		COMMENT_NUM=#{commentNum},
-		STOCK_NUM=#{stockNum},
-		UPDATE_TIME=#{updateTime}
+		STOCK_NUM=#{stockNum}
 		WHERE ID=#{id}
 	</update>
 	<select id="getProductStatDtos" parameterType="map"
