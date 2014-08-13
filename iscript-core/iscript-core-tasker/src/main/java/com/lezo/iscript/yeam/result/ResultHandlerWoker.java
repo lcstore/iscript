@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -40,6 +41,9 @@ public class ResultHandlerWoker implements Runnable {
 	private void doRetryHandler(ResultWritable rWritable, int execCount) {
 		try {
 			String strategyName = getStrategyName(rWritable);
+			if (StringUtils.isEmpty(strategyName)) {
+				return;
+			}
 			ResultStrategy resultStrategy = StrategyBuffer.getInstance().getStrategy(strategyName);
 			if (resultStrategy == null) {
 				if (execCount <= 3) {

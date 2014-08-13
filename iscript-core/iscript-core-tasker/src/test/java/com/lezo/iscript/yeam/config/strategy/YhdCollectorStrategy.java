@@ -45,7 +45,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		if (ResultWritable.RESULT_FAIL == rWritable.getStatus()) {
 			addRetry(rWritable);
 		} else if (ResultWritable.RESULT_SUCCESS == rWritable.getStatus()) {
-			if ("ConfigYhdCategoy".equals(rWritable.getType())) {
+			if ("ConfigYhdCategory".equals(rWritable.getType())) {
 				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
 				JSONObject argsObject = JSONUtils.get(jObject, "args");
 				String rsString = JSONUtils.getString(jObject, "rs");

@@ -34,9 +34,9 @@ public class ConfigYhdCategory implements ConfigParser {
 		System.out.println(elements);
 		JSONArray listArray = new JSONArray();
 		for (Element e : elements) {
-			if (!e.ownText().equals("进口食品、进口牛奶")) {
-				continue;
-			}
+//			if (!e.ownText().equals("进口食品、进口牛奶")) {
+//				continue;
+//			}
 			JSONObject cObject = new JSONObject();
 			JSONUtils.put(cObject, "url", e.absUrl("href"));
 			JSONUtils.put(cObject, "name", e.ownText());

@@ -82,7 +82,7 @@ public class ConfigYhdList implements ConfigParser {
 				url = url.replace("/b/", "/c0/b/");
 			}
 		}
-		Pattern sReg = Pattern.compile("([a-zA-Z0-9]+-)+[a-zA-Z0-9]+");
+		Pattern sReg = Pattern.compile("a-([a-zA-Z0-9]+-)+[a-zA-Z0-9]+");
 		matcher = sReg.matcher(url);
 		if (matcher.find()) {
 			Pattern nReg = Pattern.compile("-p[0-9]+-");
