@@ -8,9 +8,11 @@ import java.util.UUID;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.JSONUtils;
@@ -95,6 +97,42 @@ public class ConfigYhdProduct implements ConfigParser {
 				e.printStackTrace();
 			}
 			JSONUtils.put(itemObject, "soldNum", soldNum);
+		}else {
+			oElements = dom.select("#mod_salesvolume[saleNumber]");
+			if (!oElements.isEmpty()) {
+				JSONUtils.put(itemObject, "soldNum", oElements.first().attr("saleNumber"));
+			}
+		}
+		oElements = dom.select("div.crumb a[href^=http://www.yhd.com/ctg/]");
+		if (!oElements.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (Element oEle : oElements) {
+				if (sb.length() < 1) {
+					sb.append(oEle.ownText());
+				} else {
+					sb.append(";");
+					sb.append(oEle.ownText());
+				}
+			}
+			JSONObject attrObject = JSONUtils.get(itemObject, "attrs");
+			if (attrObject == null) {
+				attrObject = new JSONObject();
+				JSONUtils.put(itemObject, "attrs", attrObject);
+			}
+			JSONUtils.put(attrObject, "categorys", sb.toString());
+		}
+		oElements = dom.select("#prodDetailCotentDiv.desitem dl.des_info dd[title]");
+		if (!oElements.isEmpty()) {
+			JSONArray descArray = new JSONArray();
+			for (Element oEle : oElements) {
+				descArray.put(oEle.attr("title"));
+			}
+			JSONObject attrObject = JSONUtils.get(itemObject, "attrs");
+			if (attrObject == null) {
+				attrObject = new JSONObject();
+				JSONUtils.put(itemObject, "attrs", attrObject);
+			}
+			JSONUtils.put(attrObject, "descriptions", descArray);
 		}
 		oElements = dom.select("#merchantId[value]");
 		if (!oElements.isEmpty()) {
@@ -109,7 +147,9 @@ public class ConfigYhdProduct implements ConfigParser {
 		}
 		oElements = dom.select("#J_tabSlider ul.imgtab_con li a img[id][src]");
 		if (!oElements.isEmpty()) {
-			JSONUtils.put(itemObject, "imgUrl", oElements.first().attr("src"));
+			String imgUrl = oElements.first().attr("src");
+			imgUrl = imgUrl.replace("_60x60.jpg", "_200x200.jpg");
+			JSONUtils.put(itemObject, "imgUrl", imgUrl);
 		}
 		String mUrl = String.format(
 				"http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",

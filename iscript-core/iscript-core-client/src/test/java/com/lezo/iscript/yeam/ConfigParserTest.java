@@ -303,9 +303,9 @@ public class ConfigParserTest {
 			url = "http://item.yhd.com/item/31930307";
 			url = "http://item.yhd.com/item/31930307";
 			url = "http://item.yhd.com/item/12656572";
-			url = "http://item.yhd.com/item/12656572";
+			url = "http://item.yhd.com/item/2099463";
+			url = "http://item.yhd.com/item/4609570";
 			task.put("url", url);
-			task.put("getNexts", 1);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {

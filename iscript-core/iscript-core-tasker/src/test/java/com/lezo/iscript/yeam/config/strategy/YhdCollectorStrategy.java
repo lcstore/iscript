@@ -292,6 +292,9 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		productDto.setProductModel(JSONUtils.getString(itemObject, "productModel"));
 		Date onsailTime = JSONUtils.get(itemObject, "onsailTime");
 		productDto.setOnsailTime(onsailTime);
+		JSONObject attrObject = JSONUtils.get(itemObject, "attrs");
+		String productAttr = attrObject == null ? null : attrObject.toString();
+		productDto.setProductAttr(productAttr);
 
 		ProductStatDto statDto = new ProductStatDto();
 		statDto.setProductCode(productDto.getProductCode());

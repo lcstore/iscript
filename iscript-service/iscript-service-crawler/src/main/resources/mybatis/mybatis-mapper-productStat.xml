@@ -118,14 +118,16 @@
 		<include refid="ProductStatDto-coloumn-list" />
 		FROM T_PRODUCT_STAT
 		WHERE 1=1
-		AND ID &lt;=#{fromId}
+		AND ID &gt;=#{fromId}
 		<if test="shopId !=null">
 			AND SHOP_ID=#{shopId}
 		</if>
 		<if test="updateTime !=null">
 		   AND UPDATE_TIME &gt;=#{updateTime}
 		</if>
+		AND MIN_PRICE = PRODUCT_PRICE
 		AND MIN_PRICE &lt; MAX_PRICE
+		ORDER BY SOLD_NUM DESC
 		LIMIT #{limit}
 	</select>
 </mapper>
