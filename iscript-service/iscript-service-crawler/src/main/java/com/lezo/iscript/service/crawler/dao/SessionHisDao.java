@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -14,4 +15,6 @@ public interface SessionHisDao {
 	List<SessionHisDto> getSessionHisDtos(@Param(value = "sessionIds") List<String> sessionIds);
 
 	void updateUpSessionToInterrupt();
+	
+	List<SessionHisDto> getSessionHisDtosByUpdateTime(@Param(value = "updateTime")Date afterCreateTime);
 }

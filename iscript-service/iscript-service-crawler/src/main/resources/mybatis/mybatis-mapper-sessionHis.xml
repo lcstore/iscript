@@ -55,4 +55,11 @@
 			AND 1=0
 		</if>
 	</select>
+	<select id="getSessionHisDtosByUpdateTime" parameterType="map" resultMap="RM_SessionHisDto">
+		SELECT * FROM T_SESSION_HIS
+		WHERE 1=1
+		<if test="updateTime!=null">
+			AND UPDATE_TIME &gt;#{updateTime}
+		</if>
+	</select>
 </mapper>
