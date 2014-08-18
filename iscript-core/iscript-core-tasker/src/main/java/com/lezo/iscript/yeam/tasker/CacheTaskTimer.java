@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,7 @@ import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class CacheTaskTimer {
-	private static final int ONE_FETCH_SIZE = 100;
+	private static final int ONE_FETCH_SIZE = 500;
 	private static Logger log = Logger.getLogger(CacheTaskTimer.class);
 	private static volatile boolean running = false;
 	private String tasker;

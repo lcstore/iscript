@@ -276,13 +276,14 @@ public class ConfigParserTest {
 
 	@Test
 	public void testConfigYhdList() throws Exception {
-		String url = "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2";
+		String url = "http://www.yhd.com/ctg/s2/c33827-0";
 		url = "http://search.yhd.com/s2/c0-0/k%25E6%259D%25BE%25E5%25A1%2594/5/";
-		url = "http://www.yhd.com/ctg/searchPage/c0-0/b/a-s2-v0-p2-price-d0-f0-m1-rt0-pid-mid0-k%25E6%259D%25BE%25E5%25A1%2594/?callback=jsonp1407776327222";
-		url = "http://www.yhd.com/ctg/s2/c33859-0-59651/b937092-5901/?tp=15.33859.107.0.1.Rz66E|";
+		url = "http://www.yhd.com/ctg/s2/vc1730/b/a-s2-v0-p25-price-d0-f0-m1-rt0-pid-mid0-k/?callback=jsonp1407857568774";
+		url="http://www.yhd.com/ctg/s2/c22882-0/";
+		url="http://www.yhd.com/ctg/searchPage/c22882-0/b/a-s2-v0-p17-price-d0-f0-m1-rt0-pid-mid0-k?callback=jsonp1407939421186";
 		ConfigParser parser = new ConfigYhdList();
-		// url="http://www.yhd.com/ctg/s2/c34032-0-59402/b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k/?tc=3.0.9.59402.3&tp=52.34032.100.0.3.UBdUN8";
 		TaskWritable task = new TaskWritable();
+//		 url="http://www.yhd.com/ctg/searchPage/c33827-0/a-s2-v0-p26-price-d0-f0-m1-rt0-pid-mid0-k/?callback=jsonp1407815117323";
 		try {
 			task.put("url", url);
 			task.put("bid", "");
@@ -302,9 +303,9 @@ public class ConfigParserTest {
 			url = "http://item.yhd.com/item/31930307";
 			url = "http://item.yhd.com/item/31930307";
 			url = "http://item.yhd.com/item/12656572";
-			url = "http://item.yhd.com/item/12656572";
+			url = "http://item.yhd.com/item/2099463";
+			url = "http://item.yhd.com/item/4609570";
 			task.put("url", url);
-			task.put("getNexts", 1);
 			String result = parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {

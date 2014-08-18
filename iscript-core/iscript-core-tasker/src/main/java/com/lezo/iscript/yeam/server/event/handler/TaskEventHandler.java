@@ -21,7 +21,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class TaskEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
-	private static final int PER_OFFER_SIZE = 60;
+	private static final int PER_OFFER_SIZE = 50;
 	private static final int MIN_TASK_SIZE = 30;
 
 	@Override
@@ -33,13 +33,13 @@ public class TaskEventHandler extends AbstractEventHandler {
 		TaskCacher taskCancher = TaskCacher.getInstance();
 		List<String> typeList = taskCancher.getNotEmptyTypeList();
 		List<TaskWritable> taskOffers = new ArrayList<TaskWritable>(PER_OFFER_SIZE);
+		int limit = 0;
 		if (!typeList.isEmpty()) {
 			// shuffle type to offer task random
 			Collections.shuffle(typeList);
 			logger.info(String.format("Ready type:%s", typeList));
 			int cycle = 0;
-			int limit = PER_OFFER_SIZE / typeList.size();
-			limit = limit <= 1 ? 2 : limit;
+			limit = getLimitSize(typeList);
 			int remain = PER_OFFER_SIZE;
 			while (remain > 0 && ++cycle <= 3) {
 				for (String type : typeList) {
@@ -69,11 +69,27 @@ public class TaskEventHandler extends AbstractEventHandler {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s],cost:%s",
+		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
 				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
-				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), cost);
+				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
 		logger.info(msg);
 
+	}
+
+	private int getLimitSize(List<String> typeList) {
+		if (typeList.size() < 3) {
+			TaskCacher taskCancher = TaskCacher.getInstance();
+			int total = 0;
+			for (String type : typeList) {
+				total += taskCancher.getQueue(type).size();
+			}
+			if (total < PER_OFFER_SIZE * 20) {
+				return 2;
+			}
+		}
+		int limit = PER_OFFER_SIZE / typeList.size();
+		limit = limit <= 1 ? 2 : limit;
+		return limit;
 	}
 
 	@Override

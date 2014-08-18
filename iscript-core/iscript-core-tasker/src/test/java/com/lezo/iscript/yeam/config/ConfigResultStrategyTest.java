@@ -60,7 +60,7 @@ public class ConfigResultStrategyTest {
 	}
 
 	public void testYhdCollectorStrategy() throws Exception {
-		String type = "ConfigYhdCategoy";
+		String type = "ConfigYhdCategory";
 		// type = "ConfigYhdProduct";
 		YhdCollectorStrategy strategy = new YhdCollectorStrategy();
 		ResultWritable rWritable = new ResultWritable();

@@ -46,8 +46,6 @@
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
 		UPDATE T_PRODUCT_STAT SET
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
 		MIN_PRICE=#{minPrice},
@@ -56,8 +54,7 @@
 		MARKET_PRICE=#{marketPrice},
 		SOLD_NUM=#{soldNum},
 		COMMENT_NUM=#{commentNum},
-		STOCK_NUM=#{stockNum},
-		UPDATE_TIME=#{updateTime}
+		STOCK_NUM=#{stockNum}
 		WHERE ID=#{id}
 	</update>
 	<select id="getProductStatDtos" parameterType="map"
@@ -121,14 +118,16 @@
 		<include refid="ProductStatDto-coloumn-list" />
 		FROM T_PRODUCT_STAT
 		WHERE 1=1
-		AND ID &lt;=#{fromId}
+		AND ID &gt;=#{fromId}
 		<if test="shopId !=null">
 			AND SHOP_ID=#{shopId}
 		</if>
 		<if test="updateTime !=null">
 		   AND UPDATE_TIME &gt;=#{updateTime}
 		</if>
+		AND MIN_PRICE = PRODUCT_PRICE
 		AND MIN_PRICE &lt; MAX_PRICE
+		ORDER BY SOLD_NUM DESC
 		LIMIT #{limit}
 	</select>
 </mapper>

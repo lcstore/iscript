@@ -2,7 +2,9 @@ package com.lezo.iscript.yeam.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
+import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
+import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.service.crawler.service.SessionHisService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
@@ -41,12 +45,30 @@ public class IoServer extends IoHandlerAdapter {
 		}
 		acceptor.setHandler(this);
 		acceptor.getSessionConfig().setReadBufferSize(2048);
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+		// 读写 通道均在600 秒内无任何操作就进入空闲状态
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 600);
 		acceptor.bind(new InetSocketAddress(port));
 		this.storageBuffer = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
+
+		resetSessions();
+		resetProxys();
+		logger.info("start to listener port:" + port + " for IoServer..");
+	}
+
+	private void resetSessions() {
 		SessionHisService sessionHisService = SpringBeanUtils.getBean(SessionHisService.class);
 		sessionHisService.updateUpSessionToInterrupt();
-		logger.info("start to listener port:" + port + " for IoServer..");
+	}
+
+	private void resetProxys() {
+		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
+		List<Long> idList = new ArrayList<Long>();
+		List<ProxyDetectDto> workList = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE,
+				ProxyDetectDto.STATUS_WORK);
+		for (ProxyDetectDto dto : workList) {
+			idList.add(dto.getId());
+		}
+		proxyDetectService.batchUpdateProxyStatus(idList, ProxyDetectDto.STATUS_RETRY);
 	}
 
 	@Override
@@ -87,6 +109,8 @@ public class IoServer extends IoHandlerAdapter {
 		String key = SessionHisDto.ERROR_SIZE;
 		int newValue = (Integer) session.getAttribute(key) + 1;
 		session.setAttribute(key, newValue);
+		SessionHisDto trackDto = getSessionHisDto(session);
+		logger.warn(String.format("%s,cause:", trackDto), cause);
 	}
 
 	private void addTrackSession(IoSession session) {
@@ -156,8 +180,11 @@ public class IoServer extends IoHandlerAdapter {
 
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-		// TODO Auto-generated method stub
-		super.sessionIdle(session, status);
+		if (session.isBothIdle()) {
+			session.close(true);
+			SessionHisDto sessionDto = getSessionHisDto(session);
+			logger.info(String.format("Close idle session:%s", sessionDto));
+		}
 	}
 
 }

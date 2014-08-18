@@ -45,7 +45,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		if (ResultWritable.RESULT_FAIL == rWritable.getStatus()) {
 			addRetry(rWritable);
 		} else if (ResultWritable.RESULT_SUCCESS == rWritable.getStatus()) {
-			if ("ConfigYhdCategoy".equals(rWritable.getType())) {
+			if ("ConfigYhdCategory".equals(rWritable.getType())) {
 				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
 				JSONObject argsObject = JSONUtils.get(jObject, "args");
 				String rsString = JSONUtils.getString(jObject, "rs");
@@ -171,7 +171,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		}
 		String taskId = JSONUtils.getString(argsObject, "url");
 		List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>();
-		JSONUtils.put(argsObject, "strategy", this.getClass().getSimpleName());
+		JSONUtils.put(argsObject, "strategy", getName());
 		for (ProductDto dto : insertDtos) {
 			String nextUrl = dto.getProductUrl();
 			TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
@@ -292,6 +292,9 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		productDto.setProductModel(JSONUtils.getString(itemObject, "productModel"));
 		Date onsailTime = JSONUtils.get(itemObject, "onsailTime");
 		productDto.setOnsailTime(onsailTime);
+		JSONObject attrObject = JSONUtils.get(itemObject, "attrs");
+		String productAttr = attrObject == null ? null : attrObject.toString();
+		productDto.setProductAttr(productAttr);
 
 		ProductStatDto statDto = new ProductStatDto();
 		statDto.setProductCode(productDto.getProductCode());
