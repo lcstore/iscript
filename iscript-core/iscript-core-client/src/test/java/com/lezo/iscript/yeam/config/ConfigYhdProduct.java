@@ -120,6 +120,7 @@ public class ConfigYhdProduct implements ConfigParser {
 				JSONUtils.put(itemObject, "attrs", attrObject);
 			}
 			JSONUtils.put(attrObject, "categorys", sb.toString());
+			JSONUtils.put(itemObject, "category_nav", sb.toString());
 		}
 		oElements = dom.select("#prodDetailCotentDiv.desitem dl.des_info dd[title]");
 		if (!oElements.isEmpty()) {

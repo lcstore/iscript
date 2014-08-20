@@ -9,6 +9,7 @@
 		<result column="PRODUCT_CODE" property="productCode" />
 		<result column="PRODUCT_NAME" property="productName" />
 		<result column="PRODUCT_URL" property="productUrl" />
+		<result column="CATEGORY_NAV" property="categoryNav" />
 		<result column="MIN_PRICE" property="minPrice" />
 		<result column="MAX_PRICE" property="maxPrice" />
 		<result column="PRODUCT_PRICE" property="productPrice" />
@@ -24,6 +25,7 @@
 		,PRODUCT_CODE
 		,PRODUCT_NAME
 		,PRODUCT_URL
+		,CATEGORY_NAV
 		,MIN_PRICE
 		,MAX_PRICE
 		,PRODUCT_PRICE
@@ -35,28 +37,27 @@
 		,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="ProductStatDto">
-		INSERT INTO T_PRODUCT_STAT_HIS(
+		INSERT INTO T_PRODUCT_STAT(
 		<include refid="ProductStatDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
-		UPDATE T_PRODUCT_STAT_HIS
-		SET
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
+		UPDATE T_PRODUCT_STAT SET
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
+		CATEGORY_NAV=#{categoryNav},
+		MIN_PRICE=#{minPrice},
+		MAX_PRICE=#{maxPrice},
 		PRODUCT_PRICE=#{productPrice},
 		MARKET_PRICE=#{marketPrice},
 		SOLD_NUM=#{soldNum},
 		COMMENT_NUM=#{commentNum},
-		STOCK_NUM=#{stockNum},
-		UPDATE_TIME=#{updateTime}
+		STOCK_NUM=#{stockNum}
 		WHERE ID=#{id}
 	</update>
 	<select id="getProductStatDtos" parameterType="map"

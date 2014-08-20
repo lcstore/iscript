@@ -1,5 +1,4 @@
 package com.lezo.iscript.yeam.config.strategy;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -40,7 +39,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
-
+	
 	@Override
 	public void handleResult(ResultWritable rWritable) {
 		if (ResultWritable.RESULT_FAIL == rWritable.getStatus()) {

@@ -309,6 +309,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		statDto.setCommentNum(JSONUtils.getInteger(itemObject, "commentNum"));
 		statDto.setStockNum(JSONUtils.getInteger(itemObject, "stockNum"));
 		statDto.setSoldNum(JSONUtils.getInteger(itemObject, "soldNum"));
+		statDto.setCategoryNav(JSONUtils.getString(itemObject, "category_nav"));
 
 		productDtos.add(productDto);
 		productStatDtos.add(statDto);

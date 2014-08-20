@@ -19,6 +19,8 @@ public class ProductStatDto {
 	private Float minPrice;
 	private Float maxPrice;
 
+	private String categoryNav;
+
 	public Long getId() {
 		return id;
 	}
@@ -129,6 +131,14 @@ public class ProductStatDto {
 
 	public void setMaxPrice(Float maxPrice) {
 		this.maxPrice = maxPrice;
+	}
+
+	public String getCategoryNav() {
+		return categoryNav;
+	}
+
+	public void setCategoryNav(String categoryNav) {
+		this.categoryNav = categoryNav;
 	}
 
 }
