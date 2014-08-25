@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+ b<?xml version="1.0" encoding="UTF-8"?>
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -44,15 +44,38 @@
 		UPDATE T_LIST_RANK SET
 		CATEGORY_NAME=#{categoryName},
 		LIST_URL=#{listUrl},
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_PRICE=#{productPrice},
 		PRODUCT_URL=#{productUrl},
 		SORT_TYPE=#{sortType},
 		SORT_RANK=#{sortRank},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getListRankDtos" parameterType="map" resultMap="RM_ListRankDto">
+	   SELECT * FROM T_LIST_RANK
+	   WHERE 1=1
+	   <if test="categoryName !=null">
+	     AND CATEGORY_NAME=#{categoryName}
+	   </if>
+	   <if test="codeList!=null &amp;&amp;!codeList.isEmpty()">
+		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
+		      #{code}
+		   </foreach>
+	   </if>
+	   <if test="shopId !=null">
+	     AND SHOP_ID=#{shopId}
+	   </if>
+	</select>
+	<delete id="deleteListRanks" parameterType="map" >
+	   DELETE FROM T_LIST_RANK
+	   WHERE 1=1
+	   AND CATEGORY_NAME=#{categoryName}
+	   <if test="codeList!=null &amp;&amp; !codeList.isEmpty()">
+		   <foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN(" close=")" separator=",">
+		      #{code}
+		   </foreach>
+	   </if>
+	   AND SHOP_ID=#{shopId}
+	</delete>
 </mapper>

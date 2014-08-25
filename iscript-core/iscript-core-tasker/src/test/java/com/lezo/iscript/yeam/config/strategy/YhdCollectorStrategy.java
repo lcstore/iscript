@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
+import com.lezo.iscript.service.crawler.dto.ListRankDto;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 import com.lezo.iscript.service.crawler.dto.ShopDto;
@@ -149,10 +150,12 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		}
 		List<ProductDto> productDtos = new ArrayList<ProductDto>();
 		List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
+		List<ListRankDto> listRankDtos = new ArrayList<ListRankDto>();
 		for (int i = 0; i < listArray.length(); i++) {
 			JSONObject itemObject = listArray.getJSONObject(i);
 			JSONUtils.put(itemObject, "productUrl", JSONUtils.getObject(itemObject, "url"));
 			handleOne(itemObject, productDtos, productStatDtos);
+			createListRankDto(itemObject, argsObject, listRankDtos);
 		}
 		getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
 
@@ -163,6 +166,28 @@ public class YhdCollectorStrategy implements ResultStrategy {
 
 		createProductTasks(argsObject, productDtos);
 
+	}
+
+	private void createListRankDto(JSONObject itemObject, JSONObject argsObject, List<ListRankDto> listRankDtos) {
+		ListRankDto listRankDto = new ListRankDto();
+		listRankDto.setProductCode(JSONUtils.getString(itemObject, "productCode"));
+		if (StringUtils.isEmpty(listRankDto.getProductCode())) {
+			return;
+		}
+		listRankDto.setProductUrl(JSONUtils.getString(itemObject, "productUrl"));
+		ShopDto dto = ShopCacher.getInstance().getDomainShopDto(listRankDto.getProductUrl());
+		if (dto != null) {
+			listRankDto.setShopId(dto.getId());
+		}
+		listRankDto.setProductName(JSONUtils.getString(itemObject, "productName"));
+		listRankDto.setCreateTime(new Date());
+		listRankDto.setUpdateTime(listRankDto.getCreateTime());
+		listRankDto.setListUrl(JSONUtils.getString(itemObject, "url"));
+		listRankDto.setCategoryName(JSONUtils.getString(itemObject, "name"));
+		listRankDto.setProductPrice(JSONUtils.getFloat(itemObject, "productPrice"));
+		listRankDto.setSortRank(JSONUtils.getInteger(itemObject, "sortRank"));
+		listRankDto.setSortType(0);
+		listRankDtos.add(listRankDto);
 	}
 
 	private void createProductTasks(JSONObject argsObject, List<ProductDto> insertDtos) {
