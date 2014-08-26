@@ -20,8 +20,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.common.storage.StorageBuffer;
-import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
@@ -31,11 +29,11 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.server.event.RequestProceser;
 import com.lezo.iscript.yeam.server.event.RequestWorker;
+import com.lezo.iscript.yeam.server.session.SessionCacher;
 
 public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
-	private StorageBuffer<SessionHisDto> storageBuffer;
 
 	public IoServer(int port) throws IOException {
 		acceptor = new NioSocketAcceptor();
@@ -48,7 +46,6 @@ public class IoServer extends IoHandlerAdapter {
 		// 读写 通道均在600 秒内无任何操作就进入空闲状态
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 600);
 		acceptor.bind(new InetSocketAddress(port));
-		this.storageBuffer = StorageBufferFactory.getStorageBuffer(SessionHisDto.class);
 
 		resetSessions();
 		resetProxys();
@@ -74,11 +71,7 @@ public class IoServer extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		add2Attribute(session, SessionHisDto.REQUEST_SIZE, 1);
-		if (message == null) {
-			return;
-		}
 		addNewSession(session, message);
-		addTrackSession(session);
 		RequestProceser.getInstance().execute(new RequestWorker(session, message));
 	}
 
@@ -97,8 +90,6 @@ public class IoServer extends IoHandlerAdapter {
 		SessionHisDto downDto = getSessionHisDto(session);
 		if (!StringUtils.isEmpty(downDto.getClienName())) {
 			logger.warn(String.format("close: %s", downDto));
-			downDto.setStatus(SessionHisDto.STATUS_DOWN);
-			this.storageBuffer.add(downDto);
 		} else {
 			logger.warn(String.format("close client,not found name for sessionId:%s", downDto.getSessionId()));
 		}
@@ -106,28 +97,9 @@ public class IoServer extends IoHandlerAdapter {
 
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-		String key = SessionHisDto.ERROR_SIZE;
-		int newValue = (Integer) session.getAttribute(key) + 1;
-		session.setAttribute(key, newValue);
+		add2Attribute(session, SessionHisDto.ERROR_SIZE, 1);
 		SessionHisDto trackDto = getSessionHisDto(session);
 		logger.warn(String.format("%s,cause:", trackDto), cause);
-	}
-
-	private void addTrackSession(IoSession session) {
-		String key = SessionHisDto.SAVE_STAMP;
-		Long stamp = (Long) session.getAttribute(key);
-		long cost = System.currentTimeMillis() - stamp;
-		if (cost >= SessionHisDto.MAX_SAVE_INTERVAL) {
-			session.setAttribute(key, System.currentTimeMillis());
-			SessionHisDto trackDto = getSessionHisDto(session);
-			if (!StringUtils.isEmpty(trackDto.getClienName())) {
-				logger.info(String.format("track: %s", trackDto));
-				trackDto.setStatus(SessionHisDto.STATUS_UP);
-				StorageBufferFactory.getStorageBuffer(SessionHisDto.class).add(trackDto);
-			} else {
-				logger.warn(String.format("track session.can not found name for sessionId:%s", trackDto.getSessionId()));
-			}
-		}
 	}
 
 	public void add2Attribute(IoSession session, String key, int num) {
@@ -137,15 +109,13 @@ public class IoServer extends IoHandlerAdapter {
 
 	private void addNewSession(IoSession session, Object message) {
 		if (message instanceof IoRequest && !session.containsAttribute(SessionHisDto.CLIEN_NAME)) {
-			IoRequest firstRequest = (IoRequest) message;
-			JSONObject hObject = JSONUtils.getJSONObject(firstRequest.getHeader());
+			IoRequest ioRequest = (IoRequest) message;
+			JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
 			String name = JSONUtils.getString(hObject, SessionHisDto.CLIEN_NAME);
 			if (!StringUtils.isEmpty(name)) {
 				logger.info(String.format("add new client:%s", name));
 				session.setAttribute(SessionHisDto.CLIEN_NAME, name);
-				SessionHisDto newDto = getSessionHisDto(session);
-				newDto.setStatus(SessionHisDto.STATUS_UP);
-				this.storageBuffer.add(newDto);
+				SessionCacher.getInstance().putIfAbsent(name, session);
 			} else {
 				logger.warn(String.format("can not found name from %s", hObject));
 			}

@@ -14,6 +14,8 @@
 	</bean>
 	<bean id="proxyDetectTimer" class="com.lezo.iscript.yeam.tasker.ProxyDetectTimer">
 	</bean>
+	<bean id="saveSessionTimer" class="com.lezo.iscript.yeam.tasker.SaveSessionTimer">
+	</bean>
 
 	<bean id="taskPriorityStorager"
 		class="com.lezo.iscript.yeam.storage.TaskPriorityStorager">
@@ -30,7 +32,6 @@
 		<property name="listeners">
 			<list>
 				<ref bean="taskPriorityStorager" />
-				<ref bean="sessionStorager" />
 				<ref bean="productStatStorager" />
 				<ref bean="productStorager" />
 			</list>
@@ -65,5 +66,9 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="proxyDetectTimer" method="run"
 			cron="0 0 0/1 * * ?" />
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="saveSessionTimer" method="run"
+			cron="0 0/5 * * * ?" />
 	</task:scheduled-tasks>
 </beans>

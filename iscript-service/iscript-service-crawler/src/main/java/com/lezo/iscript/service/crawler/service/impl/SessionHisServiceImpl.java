@@ -102,6 +102,7 @@ public class SessionHisServiceImpl implements SessionHisService {
 				continue;
 			}
 			SessionHisDto newDto = entry.getValue();
+			newDto.setStatus(SessionHisDto.STATUS_UP);
 			insertDtos.add(newDto);
 		}
 	}
