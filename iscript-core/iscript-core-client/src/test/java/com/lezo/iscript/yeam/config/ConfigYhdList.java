@@ -103,7 +103,7 @@ public class ConfigYhdList implements ConfigParser {
 		if (!url.contains("?callback=jsonp")) {
 			url += "?callback=jsonp" + System.currentTimeMillis();
 		}
-		if(url.indexOf("searchVirCateAjax")>0){
+		if (url.indexOf("searchVirCateAjax") > 0) {
 			url = url.replace("-price-d0-f0-m1-rt0-pid-mid0-k", "-price-d0-mid0-f0");
 		}
 		return url;
@@ -151,9 +151,20 @@ public class ConfigYhdList implements ConfigParser {
 		}
 		int size = ctElements.size();
 		StringBuilder sb = new StringBuilder();
+		Elements jValueEls = dom.select("#jsonValue[value]");
+		int pageRanking = 0;
+		if (!jValueEls.isEmpty()) {
+			int pageSize = 36;
+			String jValue = jValueEls.first().attr("value");
+			JSONObject jObject = JSONUtils.getJSONObject(jValue);
+			Integer currentPage = JSONUtils.getInteger(jObject, "currentPage");
+			pageRanking = (currentPage - 1) * pageSize;
+		}
 		for (int i = 0; i < size; i++) {
 			JSONObject itemObject = new JSONObject();
 			listArray.put(itemObject);
+			JSONUtils.put(itemObject, "ranking", pageRanking + listArray.length());
+			JSONUtils.put(itemObject, "sortType", 0);
 			Elements oNameUrlAs = ctElements.get(i).select("a[id^=pdlink].title[href][pmid]");
 			if (!oNameUrlAs.isEmpty()) {
 				JSONUtils.put(itemObject, "productName", oNameUrlAs.first().text());

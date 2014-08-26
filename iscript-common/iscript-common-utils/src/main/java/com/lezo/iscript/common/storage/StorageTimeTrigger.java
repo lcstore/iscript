@@ -44,4 +44,9 @@ public class StorageTimeTrigger implements StorageTrigger {
 			addListener(storageListener.getClass(), storageListener);
 		}
 	}
+
+	@Override
+	public StorageListener<?> getListener(Class<?> dataClass) {
+		return listenerMap.get(dataClass.getSimpleName());
+	}
 }

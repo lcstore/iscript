@@ -12,7 +12,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class IoServerTest {
 	public static void main(String[] args) throws IOException {
-		int port = 1111;
+		int port = 8209;
 		final ConfigWritable configWritable = new ConfigWritable();
 		String script = "var sum =args.x + args.y; return sum*100;";
 		configWritable.setContent(script.getBytes());
