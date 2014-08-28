@@ -28,11 +28,26 @@
 	<bean id="productStorager" class="com.lezo.iscript.yeam.storage.ProductStorager">
 	</bean>
 
-	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
+	<bean id="commonStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
+	</bean>
+	<bean id="taskTrigger" class="com.lezo.iscript.yeam.storage.OneStorageTimeTrigger">
 		<property name="listeners">
 			<list>
 				<ref bean="taskPriorityStorager" />
+			</list>
+		</property>
+	</bean>
+	<bean id="productStatTrigger" class="com.lezo.iscript.yeam.storage.OneStorageTimeTrigger">
+		<property name="listeners">
+			<list>
 				<ref bean="productStatStorager" />
+				<ref bean="productStorager" />
+			</list>
+		</property>
+	</bean>
+	<bean id="productTrigger" class="com.lezo.iscript.yeam.storage.OneStorageTimeTrigger">
+		<property name="listeners">
+			<list>
 				<ref bean="productStorager" />
 			</list>
 		</property>
@@ -40,7 +55,7 @@
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="5" />
-	<task:scheduler id="scheduler" pool-size="20" />
+	<task:scheduler id="scheduler" pool-size="30" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
@@ -54,8 +69,20 @@
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="taskStorageTimeTrigger" method="doTrigger"
-			fixed-delay="60000" />
+		<task:scheduled ref="commonStorageTimeTrigger" method="doTrigger"
+			fixed-delay="60000" cron="0 0/5 * * * ?"/>
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="taskTrigger" method="doTrigger"
+			fixed-delay="120000" cron="0 0/5 * * * ?"/>
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="productStatTrigger" method="doTrigger"
+			fixed-delay="10000" cron="0 0/2 * * * ?"/>
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="productTrigger" method="doTrigger"
+			fixed-delay="60000" cron="0 0/2 * * * ?"/>
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">
