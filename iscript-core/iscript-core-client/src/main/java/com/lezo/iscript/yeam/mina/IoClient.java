@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.yeam.mina.filter.ConfigIoFilter;
 import com.lezo.iscript.yeam.mina.filter.ProxyIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TaskIoFilter;
-import com.lezo.iscript.yeam.mina.filter.ToFileIoFilter;
-import com.lezo.iscript.yeam.mina.filter.ToNextTaskIoFilter;
 import com.lezo.iscript.yeam.mina.utils.ClientPropertiesUtils;
 
 public class IoClient extends IoHandlerAdapter {
@@ -49,9 +47,6 @@ public class IoClient extends IoHandlerAdapter {
 	private void configConnector() {
 		this.connector = new NioSocketConnector();
 		this.connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
-		this.connector.getFilterChain().addLast(ToFileIoFilter.class.getSimpleName(), new ToFileIoFilter());
-		this.connector.getFilterChain().addLast(ToNextTaskIoFilter.class.getSimpleName(), new ToNextTaskIoFilter());
-
 		this.connector.getFilterChain()
 				.addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
 		if (logger.isDebugEnabled()) {

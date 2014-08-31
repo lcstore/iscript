@@ -91,7 +91,6 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			} else if ("ConfigYhdList".equals(rWritable.getType())) {
 				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
 				JSONObject argsObject = JSONUtils.get(jObject, "args");
-				logger.warn("argsObject:" + argsObject);
 				String rsString = JSONUtils.getString(jObject, "rs");
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
@@ -151,7 +150,6 @@ public class YhdCollectorStrategy implements ResultStrategy {
 	}
 
 	private TaskPriorityDto createPriorityDto(String url, String type, JSONObject argsObject) {
-		logger.warn("argsObject:" + argsObject);
 		String taskId = JSONUtils.getString(argsObject, "bid");
 		taskId = taskId == null ? UUID.randomUUID().toString() : taskId;
 		TaskPriorityDto taskPriorityDto = new TaskPriorityDto();

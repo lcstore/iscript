@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.zip.ZipInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -44,6 +44,7 @@ public class PersistentWorker implements Runnable {
 				ResultWritable fileWritable = add2Disk(copyList);
 				Future<ResultWritable> data = new DoneFuture<ResultWritable>(fileWritable);
 				ResultFutureStorager.getInstance().getStorageBuffer().add(data);
+				break;
 			} catch (Exception e) {
 				retry++;
 				logger.warn("", e);
@@ -68,14 +69,16 @@ public class PersistentWorker implements Runnable {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		InputStream destStream = null;
 		try {
+			GZIPOutputStream gzos = new GZIPOutputStream(bos);
 			for (ResultWritable rWritable : rWritables) {
 				String result = rWritable.getResult();
 				result += "\n";
-				bos.write(result.getBytes(CHARSET_NAME));
+				gzos.write(result.getBytes(CHARSET_NAME));
 			}
-			bos.flush();
-			InputStream bis = new ByteArrayInputStream(bos.toByteArray());
-			destStream = new ZipInputStream(bis);
+			gzos.close();
+			byte[] bytes = bos.toByteArray();
+			destStream = new ByteArrayInputStream(bytes);
+			// destStream = new ZipInputStream(bis);
 		} finally {
 			IOUtils.closeQuietly(bos);
 		}
@@ -84,7 +87,11 @@ public class PersistentWorker implements Runnable {
 
 	private String getFilePath() {
 		Calendar c = Calendar.getInstance();
-		String toDay = "" + c.get(Calendar.YEAR) + c.get(Calendar.DAY_OF_MONTH);
+		String toDay = "" + c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH) + 1;
+		int day = c.get(Calendar.DAY_OF_MONTH);
+		toDay += month < 10 ? "0" + month : month;
+		toDay += day < 10 ? "0" + day : day;
 		StringBuilder sb = new StringBuilder();
 		sb.append(rootPath);
 		sb.append(File.separator);
@@ -93,22 +100,34 @@ public class PersistentWorker implements Runnable {
 		sb.append(type);
 		sb.append(File.separator);
 		sb.append(batchId);
-		sb.append(type + "." + toDay + "." + System.currentTimeMillis() + ".zip");
+		sb.append(File.separator);
+		sb.append(type);
+		sb.append(".");
+		sb.append(toDay);
+		sb.append(".");
+		sb.append(System.currentTimeMillis());
+		sb.append(".gz");
 		return sb.toString();
 	}
 
 	private ResultWritable getFileWritable(List<ResultWritable> rWritables, File destFile) {
 		ResultWritable rWritable = new ResultWritable();
 		rWritable.setType("FileMessage");
-		JSONObject jObject = new JSONObject();
+		JSONObject gObject = new JSONObject();
+		JSONObject rsObject = new JSONObject();
+		JSONUtils.put(gObject, "rs", rsObject);
 		JSONArray jArray = new JSONArray();
 		for (ResultWritable rw : rWritables) {
 			jArray.put(rw.getTaskId());
 		}
-		JSONUtils.put(jObject, "idList", jArray);
-		JSONUtils.put(jObject, "bid", destFile.getParentFile().getName());
-		JSONUtils.put(jObject, "type", destFile.getParentFile().getParentFile().getName());
-		rWritable.setResult(jObject.toString());
+		JSONUtils.put(rsObject, "idList", jArray);
+		JSONUtils.put(rsObject, "file", destFile);
+		
+		JSONObject argsObject = new JSONObject();
+		JSONUtils.put(gObject, "args", argsObject);
+		JSONUtils.put(argsObject, "bid", destFile.getParentFile().getName());
+		JSONUtils.put(argsObject, "type", destFile.getParentFile().getParentFile().getName());
+		rWritable.setResult(gObject.toString());
 		return rWritable;
 	}
 }

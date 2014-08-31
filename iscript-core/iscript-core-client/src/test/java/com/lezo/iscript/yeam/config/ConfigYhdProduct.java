@@ -90,7 +90,7 @@ public class ConfigYhdProduct implements ConfigParser {
 				e.printStackTrace();
 			}
 			JSONUtils.put(itemObject, "soldNum", soldNum);
-		}else {
+		} else {
 			oElements = dom.select("#mod_salesvolume[saleNumber]");
 			if (!oElements.isEmpty()) {
 				JSONUtils.put(itemObject, "soldNum", oElements.first().attr("saleNumber"));

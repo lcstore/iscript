@@ -10,10 +10,15 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.utils.BatchIterator;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.mina.SessionSender;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
+import com.lezo.iscript.yeam.result.Convert2File;
+import com.lezo.iscript.yeam.result.Convert2Retain;
+import com.lezo.iscript.yeam.result.PersistentCaller;
+import com.lezo.iscript.yeam.result.PersistentWorker;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ResultFutureClassifier implements Runnable {
@@ -30,19 +35,27 @@ public class ResultFutureClassifier implements Runnable {
 		List<ResultWritable> rWritables = new ArrayList<ResultWritable>();
 		List<Future<ResultWritable>> waitList = addDone(copyList, rWritables);
 		addWait2Done(waitList, rWritables);
-		logger.info(String.format("Classifier done:%s,future:%s", rWritables.size(),
-				copyList.size() - rWritables.size()));
-		sendRequest(rWritables);
-
+		List<PersistentWorker> workerList = new Convert2File().doConvert(rWritables);
+		for (PersistentWorker worker : workerList) {
+			PersistentCaller.getInstance().execute(worker);
+		}
+		List<ResultWritable> destList = new Convert2Retain().doConvert(rWritables);
+		sendRequest(destList);
+		logger.info(String.format("Classifier done:%s,future:%s.PersistentWorker:%s,send:%s", rWritables.size(),
+				copyList.size() - rWritables.size(), workerList.size(), destList.size()));
 	}
 
 	private void sendRequest(List<ResultWritable> rwList) {
-		JSONObject hObject = HeaderUtils.getHeader();
-		IoRequest ioRequest = new IoRequest();
-		ioRequest.setType(IoConstant.EVENT_TYPE_RESULT);
-		ioRequest.setHeader(hObject.toString());
-		ioRequest.setData(rwList);
-		SessionSender.getInstance().send(ioRequest);
+		BatchIterator<ResultWritable> it = new BatchIterator<ResultWritable>(rwList, 20);
+		while (it.hasNext()) {
+			List<ResultWritable> blockList = new ArrayList<ResultWritable>(it.next());
+			JSONObject hObject = HeaderUtils.getHeader();
+			IoRequest ioRequest = new IoRequest();
+			ioRequest.setType(IoConstant.EVENT_TYPE_RESULT);
+			ioRequest.setHeader(hObject.toString());
+			ioRequest.setData(blockList);
+			SessionSender.getInstance().send(ioRequest);
+		}
 	}
 
 	private void addWait2Done(List<Future<ResultWritable>> waitList, List<ResultWritable> rWritables) {

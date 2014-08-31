@@ -13,13 +13,6 @@
 	<name>iscript-core-crawler</name>
 	<url>http://maven.apache.org</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<rhino.version>1.7R2</rhino.version>
-		<json.version>20090211</json.version>
-		<httpclient.version>4.1.1</httpclient.version>
-		<jsoup.version>1.5.2</jsoup.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -64,7 +57,7 @@
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
+			<version>${dom4j.version}</version>
 		</dependency>
 	</dependencies>
 </project>
