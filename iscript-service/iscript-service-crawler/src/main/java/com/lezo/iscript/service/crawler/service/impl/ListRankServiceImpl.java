@@ -11,12 +11,13 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.lezo.iscript.service.crawler.dao.ListRankDao;
 import com.lezo.iscript.service.crawler.dto.ListRankDto;
 import com.lezo.iscript.service.crawler.service.ListRankService;
 import com.lezo.iscript.utils.BatchIterator;
-
+@Service
 public class ListRankServiceImpl implements ListRankService {
 	@Autowired
 	private ListRankDao listRankDao;

@@ -11,12 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.client.HardConstant;
-import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.simple.utils.ClientPropertiesUtils;
-import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigEtaoSimilar implements ConfigParser {

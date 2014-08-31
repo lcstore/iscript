@@ -41,13 +41,6 @@ public class ConfigYhdProduct implements ConfigParser {
 		String url = task.get("url").toString();
 		addCookie();
 		String refer = url;
-		Object bObject = task.get("bid");
-		if (bObject != null) {
-			String bString = bObject.toString();
-			if (bString.indexOf("http:") >= 0) {
-				refer = bString;
-			}
-		}
 		HttpGet get = createHttpGetWithIp(url);
 		get.addHeader("Refer", refer);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");

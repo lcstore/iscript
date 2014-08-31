@@ -1,6 +1,6 @@
 package com.lezo.iscript.yeam;
 
-import com.lezo.iscript.yeam.simple.ClientMain;
+import com.lezo.iscript.yeam.mina.ClientMain;
 
 public class ClientListener {
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,6 +91,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			} else if ("ConfigYhdList".equals(rWritable.getType())) {
 				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
 				JSONObject argsObject = JSONUtils.get(jObject, "args");
+				logger.warn("argsObject:" + argsObject);
 				String rsString = JSONUtils.getString(jObject, "rs");
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
@@ -143,15 +145,17 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		for (int i = 0; i < nextArray.length(); i++) {
 			String nextUrl = nextArray.getString(i);
 			TaskPriorityDto taskPriorityDto = createPriorityDto(nextUrl, "ConfigYhdList", argsObject);
-			taskPriorityDto.setParams(argsObject.toString());
 			dtoList.add(taskPriorityDto);
 		}
 		getTaskPriorityDtoBuffer().addAll(dtoList);
 	}
 
 	private TaskPriorityDto createPriorityDto(String url, String type, JSONObject argsObject) {
+		logger.warn("argsObject:" + argsObject);
+		String taskId = JSONUtils.getString(argsObject, "bid");
+		taskId = taskId == null ? UUID.randomUUID().toString() : taskId;
 		TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
-		taskPriorityDto.setBatchId(JSONUtils.getString(argsObject, "bid"));
+		taskPriorityDto.setBatchId(taskId);
 		taskPriorityDto.setType(type);
 		taskPriorityDto.setUrl(url);
 		taskPriorityDto.setLevel(JSONUtils.getInteger(argsObject, "level"));
@@ -159,16 +163,17 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		taskPriorityDto.setCreatTime(new Date());
 		taskPriorityDto.setUpdateTime(taskPriorityDto.getCreatTime());
 		taskPriorityDto.setStatus(TaskConstant.TASK_NEW);
-		argsObject.remove("bid");
-		argsObject.remove("type");
-		argsObject.remove("url");
-		argsObject.remove("level");
-		argsObject.remove("src");
-		argsObject.remove("ctime");
+		JSONObject paramObject = JSONUtils.getJSONObject(argsObject.toString());
+		paramObject.remove("bid");
+		paramObject.remove("type");
+		paramObject.remove("url");
+		paramObject.remove("level");
+		paramObject.remove("src");
+		paramObject.remove("ctime");
 		if (taskPriorityDto.getLevel() == null) {
 			taskPriorityDto.setLevel(0);
 		}
-		taskPriorityDto.setParams(argsObject.toString());
+		taskPriorityDto.setParams(paramObject.toString());
 		return taskPriorityDto;
 	}
 
@@ -224,7 +229,8 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		if (insertDtos == null) {
 			return;
 		}
-		String taskId = JSONUtils.getString(argsObject, "url");
+		String taskId = JSONUtils.getString(argsObject, "bid");
+		taskId = taskId == null ? UUID.randomUUID().toString() : taskId;
 		List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>();
 		JSONUtils.put(argsObject, "strategy", getName());
 		for (ProductDto dto : insertDtos) {
@@ -238,17 +244,18 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			taskPriorityDto.setCreatTime(new Date());
 			taskPriorityDto.setUpdateTime(taskPriorityDto.getCreatTime());
 			taskPriorityDto.setStatus(TaskConstant.TASK_NEW);
-			argsObject.remove("bid");
-			argsObject.remove("type");
-			argsObject.remove("url");
-			argsObject.remove("level");
-			argsObject.remove("src");
-			argsObject.remove("ctime");
+			JSONObject paramObject = JSONUtils.getJSONObject(argsObject.toString());
+			paramObject.remove("bid");
+			paramObject.remove("type");
+			paramObject.remove("url");
+			paramObject.remove("level");
+			paramObject.remove("src");
+			paramObject.remove("ctime");
 			if (taskPriorityDto.getLevel() == null) {
 				taskPriorityDto.setLevel(0);
 			}
-			JSONUtils.put(argsObject, "pcode", dto.getProductCode());
-			taskPriorityDto.setParams(argsObject.toString());
+			JSONUtils.put(paramObject, "pcode", dto.getProductCode());
+			taskPriorityDto.setParams(paramObject.toString());
 			dtoList.add(taskPriorityDto);
 		}
 		getTaskPriorityDtoBuffer().addAll(dtoList);
