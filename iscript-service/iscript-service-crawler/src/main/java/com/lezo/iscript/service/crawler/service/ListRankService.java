@@ -6,9 +6,6 @@ import com.lezo.iscript.common.BaseService;
 import com.lezo.iscript.service.crawler.dto.ListRankDto;
 
 public interface ListRankService extends BaseService<ListRankDto> {
-	List<ListRankDto> getListRankDtos(String categoryName,
-			List<String> codeList,Integer shopId);
+	List<ListRankDto> getListRankDtos(String listUrl, List<String> codeList, Integer shopId);
 
-	void deleteListRanks(String categoryName, List<String> codeList, Integer shopId);
 }
-

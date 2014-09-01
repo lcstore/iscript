@@ -20,8 +20,8 @@
 	<bean id="taskPriorityStorager"
 		class="com.lezo.iscript.yeam.storage.TaskPriorityStorager">
 	</bean>
-	<bean id="sessionStorager" class="com.lezo.iscript.yeam.storage.SessionStorager">
-	</bean>
+<!-- 	<bean id="sessionStorager" class="com.lezo.iscript.yeam.storage.SessionStorager">
+	</bean> -->
 	<bean id="productStatStorager"
 		class="com.lezo.iscript.yeam.storage.ProductStatStorager">
 	</bean>

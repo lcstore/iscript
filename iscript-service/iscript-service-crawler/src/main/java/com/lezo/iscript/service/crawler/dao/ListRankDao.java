@@ -9,9 +9,6 @@ import com.lezo.iscript.service.crawler.dto.ListRankDto;
 
 public interface ListRankDao extends BaseDao<ListRankDto> {
 
-	List<ListRankDto> getListRankDtos(@Param(value = "categoryName") String categoryName,
-			@Param(value = "codeList") List<String> codeList, @Param(value = "shopId") Integer shopId);
-
-	void deleteListRanks(@Param(value = "categoryName") String categoryName,
+	List<ListRankDto> getListRankDtos(@Param(value = "listUrl") String listUrl,
 			@Param(value = "codeList") List<String> codeList, @Param(value = "shopId") Integer shopId);
 }

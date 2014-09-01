@@ -139,7 +139,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			return;
 		}
 		List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>();
-		argsObject.remove("getNexts");
+		JSONUtils.put(argsObject, "fromUrl", JSONUtils.getString(argsObject, "url"));
 		for (int i = 0; i < nextArray.length(); i++) {
 			String nextUrl = nextArray.getString(i);
 			TaskPriorityDto taskPriorityDto = createPriorityDto(nextUrl, "ConfigYhdList", argsObject);
@@ -199,6 +199,10 @@ public class YhdCollectorStrategy implements ResultStrategy {
 	}
 
 	private void createListRankDto(JSONObject itemObject, JSONObject argsObject, List<ListRankDto> listRankDtos) {
+		Integer ranking = JSONUtils.getInteger(itemObject, "ranking");
+		if (ranking == null || ranking > 100) {
+			return;
+		}
 		ListRankDto listRankDto = new ListRankDto();
 		listRankDto.setProductCode(JSONUtils.getString(itemObject, "productCode"));
 		if (StringUtils.isEmpty(listRankDto.getProductCode())) {
@@ -209,13 +213,15 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		if (dto != null) {
 			listRankDto.setShopId(dto.getId());
 		}
+		String fromUrl = JSONUtils.getString(argsObject, "fromUrl");
+		fromUrl = fromUrl == null ? JSONUtils.getString(argsObject, "url") : fromUrl;
 		listRankDto.setProductName(JSONUtils.getString(itemObject, "productName"));
 		listRankDto.setCreateTime(new Date());
 		listRankDto.setUpdateTime(listRankDto.getCreateTime());
-		listRankDto.setListUrl(JSONUtils.getString(itemObject, "url"));
+		listRankDto.setListUrl(fromUrl);
 		listRankDto.setCategoryName(JSONUtils.getString(itemObject, "name"));
 		listRankDto.setProductPrice(JSONUtils.getFloat(itemObject, "productPrice"));
-		listRankDto.setSortRank(JSONUtils.getInteger(itemObject, "ranking"));
+		listRankDto.setSortRank(ranking);
 		listRankDto.setSortType(JSONUtils.getInteger(itemObject, "sortType"));
 		listRankDtos.add(listRankDto);
 	}
