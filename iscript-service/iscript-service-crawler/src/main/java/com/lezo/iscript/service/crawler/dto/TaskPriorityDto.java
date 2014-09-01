@@ -8,7 +8,7 @@ public class TaskPriorityDto {
 	private String type;
 	private String url;
 	private String params;
-	private Integer level;
+	private Integer level = 0;
 	private Integer status;
 	private String source;
 	private Date creatTime;

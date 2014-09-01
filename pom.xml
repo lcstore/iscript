@@ -69,7 +69,7 @@
 		<commons-lang3.version>3.1</commons-lang3.version>
 		<commons-collections.version>4.0</commons-collections.version>
 		<commons-io.version>1.3.2</commons-io.version>
-		<httpcomponents.version>4.2.1</httpcomponents.version>
+		<httpcomponents.version>4.1.1</httpcomponents.version>
 		<rhino.version>1.7R2</rhino.version>
 		<jsoup.version>1.6.3</jsoup.version>
 		<wrapper.version>3.5.20</wrapper.version>
@@ -88,7 +88,15 @@
 		<maven-war-plugin.version>2.2.1</maven-war-plugin.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<mina.version>2.0.7</mina.version>
-		 
+		<httpclient.version>4.2.1</httpclient.version>
+		<dom4j.version>1.6.1</dom4j.version>
+		
+		<pcs.version>android-L2-2.1.0</pcs.version>
+		<httpmime.version>4.2.1</httpmime.version>
+		<jss.version>1.1.1-SNAPSHOT</jss.version>
+		<guava.version>14.0</guava.version>
+		<jackson.version>1.9.12</jackson.version>
+		<joda-time.version>2.2</joda-time.version>
+		<qiniu.version>6.1.0</qiniu.version>
 	</properties>
-
 </project>

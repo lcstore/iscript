@@ -22,8 +22,8 @@ import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.http.HttpClientFactory;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {

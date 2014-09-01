@@ -41,13 +41,6 @@ public class ConfigYhdProduct implements ConfigParser {
 		String url = task.get("url").toString();
 		addCookie();
 		String refer = url;
-		Object bObject = task.get("bid");
-		if (bObject != null) {
-			String bString = bObject.toString();
-			if (bString.indexOf("http:") >= 0) {
-				refer = bString;
-			}
-		}
 		HttpGet get = createHttpGetWithIp(url);
 		get.addHeader("Refer", refer);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
@@ -97,7 +90,7 @@ public class ConfigYhdProduct implements ConfigParser {
 				e.printStackTrace();
 			}
 			JSONUtils.put(itemObject, "soldNum", soldNum);
-		}else {
+		} else {
 			oElements = dom.select("#mod_salesvolume[saleNumber]");
 			if (!oElements.isEmpty()) {
 				JSONUtils.put(itemObject, "soldNum", oElements.first().attr("saleNumber"));

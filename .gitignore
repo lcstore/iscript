@@ -12,4 +12,5 @@ deploy.sh
 *.o
 *.so
 jdbc.properties
+logs/
 /iscript-core-client/src/test/java/com/lezo/iscript/yeam/ConfigParserTest.java

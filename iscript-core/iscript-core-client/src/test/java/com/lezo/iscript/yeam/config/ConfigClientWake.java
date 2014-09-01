@@ -20,12 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.client.task.TaskCallable;
-import com.lezo.iscript.yeam.client.task.TasksCaller;
 import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.simple.storage.ResultStorager;
-import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
+import com.lezo.iscript.yeam.storage.ResultFutureStorager;
+import com.lezo.iscript.yeam.task.TaskWorker;
+import com.lezo.iscript.yeam.task.TasksCaller;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -56,8 +56,8 @@ public class ConfigClientWake implements ConfigParser {
 					TaskWritable taskWritable = new TaskWritable();
 					taskWritable.put("type", getName());
 					ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
-					ResultStorager storager = ResultStorager.getInstance();
-					Future<ResultWritable> future = caller.submit(new TaskCallable(taskWritable));
+					ResultFutureStorager storager = ResultFutureStorager.getInstance();
+					Future<ResultWritable> future = caller.submit(new TaskWorker(taskWritable));
 					storager.getStorageBuffer().add(future);
 				} catch (Exception e) {
 					e.printStackTrace();

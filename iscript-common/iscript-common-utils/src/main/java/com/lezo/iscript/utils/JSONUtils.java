@@ -109,4 +109,15 @@ public class JSONUtils {
 		return Long.valueOf(jObject.toString());
 	}
 
+	public static JSONObject getJSONObject(JSONObject jObj, String key) {
+		Object jObject = get(jObj, key);
+		if (jObject == null) {
+			return null;
+		}
+		if (jObject instanceof JSONObject) {
+			return (JSONObject) jObject;
+		}
+		return JSONUtils.getJSONObject(jObject.toString());
+	}
+
 }

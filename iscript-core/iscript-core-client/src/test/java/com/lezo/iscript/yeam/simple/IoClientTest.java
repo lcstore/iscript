@@ -4,7 +4,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.lezo.iscript.yeam.io.IoRequest;
-import com.lezo.iscript.yeam.simple.utils.HeaderUtils;
+import com.lezo.iscript.yeam.mina.IoClient;
+import com.lezo.iscript.yeam.mina.SessionSender;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 
 public class IoClientTest {
 	public static void main(String[] args) {

@@ -47,12 +47,11 @@ public class ConfigYhdList implements ConfigParser {
 	}
 
 	private String turnHtml(String html) {
-		if (!html.startsWith("jsonp")) {
-			return html;
+		if (html.startsWith("jsonp")) {
+			int beginIndex = html.indexOf("(");
+			int endIndex = html.lastIndexOf(")");
+			html = html.substring(beginIndex + 1, endIndex);
 		}
-		int beginIndex = html.indexOf("(");
-		int endIndex = html.lastIndexOf(")");
-		html = html.substring(beginIndex + 1, endIndex);
 		JSONObject sObject = JSONUtils.getJSONObject(html);
 		if (sObject == null) {
 			return html;
