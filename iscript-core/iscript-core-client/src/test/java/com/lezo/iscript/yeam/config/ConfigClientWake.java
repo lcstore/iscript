@@ -37,14 +37,26 @@ public class ConfigClientWake implements ConfigParser {
 
 	public ConfigClientWake() {
 		clientList = new ArrayList<String>();
-		clientList.add("http://client1001.sturgeon.mopaas.com/");
-		clientList.add("http://resulter.sturgeon.mopaas.com/");
-		clientList.add("http://e2002.sturgeon.mopaas.com/");
-		clientList.add("http://e2001.sturgeon.mopaas.com/");
+//		clientList.add("http://client1001.sturgeon.mopaas.com/");
+//		clientList.add("http://resulter.sturgeon.mopaas.com/");
+//		clientList.add("http://e2002.sturgeon.mopaas.com/");
+//		clientList.add("http://e2001.sturgeon.mopaas.com/");
+//		clientList.add("http://e1001.sturgeon.mopaas.com/");
+//		clientList.add("http://e1002.sturgeon.mopaas.com/");
+//		clientList.add("http://p1001.sturgeon.mopaas.com/");
+//		clientList.add("http://p1002.sturgeon.mopaas.com/");
+
+		
+		clientList.add("http://dl1001.sturgeon.mopaas.com/");
+		clientList.add("http://dl1002.sturgeon.mopaas.com/");
 		clientList.add("http://e1001.sturgeon.mopaas.com/");
 		clientList.add("http://e1002.sturgeon.mopaas.com/");
 		clientList.add("http://p1001.sturgeon.mopaas.com/");
 		clientList.add("http://p1002.sturgeon.mopaas.com/");
+		clientList.add("http://e2001.sturgeon.mopaas.com/");
+		clientList.add("http://e2002.sturgeon.mopaas.com/");
+		clientList.add("http://dlinked.sturgeon.mopaas.com/");
+		clientList.add("http://lcstore.sturgeon.mopaas.com/");
 		clientList.add("http://idober.jd-app.com/");
 		clientList.add("http://iclient.jd-app.com/");
 		clientList.add("http://momo.jd-app.com/");

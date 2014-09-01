@@ -16,7 +16,7 @@ import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.mina.SessionSender;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.result.Convert2File;
-import com.lezo.iscript.yeam.result.Convert2Retain;
+import com.lezo.iscript.yeam.result.Convert2CallBack;
 import com.lezo.iscript.yeam.result.PersistentCaller;
 import com.lezo.iscript.yeam.result.PersistentWorker;
 import com.lezo.iscript.yeam.writable.ResultWritable;
@@ -39,7 +39,7 @@ public class ResultFutureClassifier implements Runnable {
 		for (PersistentWorker worker : workerList) {
 			PersistentCaller.getInstance().execute(worker);
 		}
-		List<ResultWritable> destList = new Convert2Retain().doConvert(rWritables);
+		List<ResultWritable> destList = new Convert2CallBack().doConvert(rWritables);
 		sendRequest(destList);
 		logger.info(String.format("Classifier done:%s,future:%s.PersistentWorker:%s,send:%s", rWritables.size(),
 				copyList.size() - rWritables.size(), workerList.size(), destList.size()));

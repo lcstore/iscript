@@ -1,8 +1,6 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,17 +43,6 @@ public class ListRankServiceImpl implements ListRankService {
 
 	@Override
 	public void batchSaveDtos(List<ListRankDto> dtoList) {
-		Map<String, List<ListRankDto>> categoryRankMap = getCategoryRankMap(dtoList);
-		for (Entry<String, List<ListRankDto>> entry : categoryRankMap.entrySet()) {
-			// delete exist
-			Map<Integer, Set<String>> shopCodeMap = getShopCodeMap(entry.getValue());
-			for (Entry<Integer, Set<String>> sEntry : shopCodeMap.entrySet()) {
-				List<String> codeList = new ArrayList<String>(sEntry.getValue());
-				deleteListRanks(entry.getKey(), codeList, sEntry.getKey());
-			}
-			// insert new
-			batchInsertDtos(entry.getValue());
-		}
 		List<ListRankDto> insertDtos = new ArrayList<ListRankDto>();
 		List<ListRankDto> updateDtos = new ArrayList<ListRankDto>();
 		doAssort(dtoList, insertDtos, updateDtos);
@@ -66,13 +52,10 @@ public class ListRankServiceImpl implements ListRankService {
 				updateDtos.size()));
 	}
 
-	private Map<Integer, Set<String>> getShopCodeMap(List<ListRankDto> dtoList) {
-		Map<Integer, Set<String>> sMap = new HashMap<Integer, Set<String>>();
 	private void doAssort(List<ListRankDto> dtoList, List<ListRankDto> insertDtos, List<ListRankDto> updateDtos) {
 		Map<String, Map<Integer, Set<String>>> urlSiteCodeMap = new HashMap<String, Map<Integer, Set<String>>>();
 		Map<String, ListRankDto> dtoMap = new HashMap<String, ListRankDto>();
 		for (ListRankDto dto : dtoList) {
-			Set<String> codeSet = sMap.get(dto.getShopId());
 			String key = getDtoKey(dto);
 			ListRankDto hasDto = dtoMap.get(key);
 			if (hasDto == null) {
@@ -88,24 +71,10 @@ public class ListRankServiceImpl implements ListRankService {
 			Set<String> codeSet = siteCodeMap.get(dto.getShopId());
 			if (codeSet == null) {
 				codeSet = new HashSet<String>();
-				sMap.put(dto.getShopId(), codeSet);
 				siteCodeMap.put(dto.getShopId(), codeSet);
 			}
 			codeSet.add(dto.getProductCode());
 		}
-		return sMap;
-	}
-
-	private Map<String, List<ListRankDto>> getCategoryRankMap(List<ListRankDto> dtoList) {
-		if (CollectionUtils.isEmpty(dtoList)) {
-			return Collections.emptyMap();
-		}
-		Map<String, List<ListRankDto>> cMap = new HashMap<String, List<ListRankDto>>();
-		for (ListRankDto dto : dtoList) {
-			List<ListRankDto> rankDtos = cMap.get(dto.getCategoryName());
-			if (rankDtos == null) {
-				rankDtos = new ArrayList<ListRankDto>();
-				cMap.put(dto.getCategoryName(), rankDtos);
 		for (Entry<String, Map<Integer, Set<String>>> entry : urlSiteCodeMap.entrySet()) {
 			for (Entry<Integer, Set<String>> cEntry : entry.getValue().entrySet()) {
 				List<String> codeList = new ArrayList<String>(cEntry.getValue());
@@ -127,9 +96,7 @@ public class ListRankServiceImpl implements ListRankService {
 					insertDtos.add(newDto);
 				}
 			}
-			rankDtos.add(dto);
 		}
-		return cMap;
 
 	}
 
@@ -138,12 +105,7 @@ public class ListRankServiceImpl implements ListRankService {
 	}
 
 	@Override
-	public List<ListRankDto> getListRankDtos(String categoryName, List<String> codeList, Integer shopId) {
-		return listRankDao.getListRankDtos(categoryName, codeList, shopId);
 	public List<ListRankDto> getListRankDtos(String listUrl, List<String> codeList, Integer shopId) {
-		if (shopId == null) {
-			return Collections.emptyList();
-		}
 		return listRankDao.getListRankDtos(listUrl, codeList, shopId);
 	}
 
@@ -151,11 +113,4 @@ public class ListRankServiceImpl implements ListRankService {
 		this.listRankDao = listRankDao;
 	}
 
-	@Override
-	public void deleteListRanks(String categoryName, List<String> codeList, Integer shopId) {
-		BatchIterator<String> it = new BatchIterator<String>(codeList, 500);
-		while (it.hasNext()) {
-			listRankDao.deleteListRanks(categoryName, it.next(), shopId);
-		}
-	}
 }

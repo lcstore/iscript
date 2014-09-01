@@ -8,7 +8,7 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class Convert2Retain implements Convertable<List<ResultWritable>> {
+public class Convert2CallBack implements Convertable<List<ResultWritable>> {
 
 	public List<ResultWritable> doConvert(List<ResultWritable> rsList) {
 		List<ResultWritable> successList = new ArrayList<ResultWritable>();
@@ -45,6 +45,7 @@ public class Convert2Retain implements Convertable<List<ResultWritable>> {
 			} else {
 				String retain = null;
 				try {
+					taskWritable.put("ResultWritable", rw);
 					retain = calllBackDecider.doParse(taskWritable);
 				} catch (Exception e) {
 					e.printStackTrace();

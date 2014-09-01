@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.common.storage.StorageTimeTrigger;
 import com.lezo.iscript.yeam.storage.ResultFutureStorager;
-import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ClientMain {
 
