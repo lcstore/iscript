@@ -64,7 +64,7 @@ public class Config360Uploader implements ConfigParser {
 		multipartEntity.addPart("token",
 				new StringBody("1883258080.2.dc85ef61.74604949.1409669803", Charset.forName("UTF-8")));
 		multipartEntity.addPart("v", new StringBody("1.0.1", Charset.forName("UTF-8")));
-		multipartEntity.addPart("filename", new StringBody("en123bcore.txt", Charset.forName("UTF-8")));
+		multipartEntity.addPart("filename", new StringBody("ebcore.txt", Charset.forName("UTF-8")));
 		multipartEntity.addPart("path", new StringBody("/god/", Charset.forName("UTF-8")));
 		multipartEntity.addPart("devtype", new StringBody("web", Charset.forName("UTF-8")));
 		multipartEntity.addPart("pid", new StringBody("ajax", Charset.forName("UTF-8")));
@@ -87,10 +87,17 @@ public class Config360Uploader implements ConfigParser {
 		tkString = JSONUtils.getString(dObject, "tk");
 		String etkString = JSONUtils.getString(dObject, "etk");
 		post = new HttpPost("http://c2.yunpan.360.cn/upload/addfile/");
-		post.addHeader("Accept-Encoding", "gzip, deflate");
+		post.addHeader("Accept-Encoding", "gzip,deflate,sdch");
 		post.addHeader("Content-Type", "application/x-www-form-urlencoded UTF-8");
 		post.addHeader("Referer", "http://c2.yunpan.360.cn/my/index/");
-		post.setEntity(new StringEntity("tk=" + tkString + "&etk=" + etkString + "&ajax=1"));
+		post.setEntity(new StringEntity("tk=" + tkString + "&etk=" + etkString + "&ajax=1","UTF-8"));
+
+		BasicClientCookie cookie = null;
+		domain = ".360.cn";
+		cookie = new BasicClientCookie("is_allow_visit", "1");
+		cookie.setDomain(domain);
+		client.getCookieStore().addCookie(cookie);
+
 		html = HttpClientUtils.getContent(client, post);
 		System.err.println("html:" + html);
 
@@ -131,10 +138,9 @@ public class Config360Uploader implements ConfigParser {
 
 		BasicClientCookie cookie = null;
 		String domain = ".360.cn";
-		 cookie =new BasicClientCookie("__guid",
-		 "3537848.3280060191646009000.1409669781709.4595");
-		 cookie.setDomain(domain);
-		 client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__guid", "3537848.3280060191646009000.1409669781709.4595");
+		cookie.setDomain(domain);
+		client.getCookieStore().addCookie(cookie);
 		// cookie =new BasicClientCookie("__huid",
 		// "10PS4LJlGLU+jYRmO84H+1wrwb2rrCt2JCri6kOcwDIe8=");
 		// cookie.setDomain(domain);
@@ -191,9 +197,9 @@ public class Config360Uploader implements ConfigParser {
 		cookie = new BasicClientCookie("token", "1883258080.2.dc85ef61.74604949.1409669803");
 		cookie.setDomain(domain);
 		client.getCookieStore().addCookie(cookie);
-		// cookie =new BasicClientCookie("YUNPAN_USER", "lcstore");
-		// cookie.setDomain(domain);
-		// client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("YUNPAN_USER", "lcstore");
+		cookie.setDomain(domain);
+		client.getCookieStore().addCookie(cookie);
 
 		String html = HttpClientUtils.getContent(client, post);
 		System.err.println("html:" + html);
