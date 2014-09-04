@@ -34,13 +34,29 @@
 	</insert>
 	<update id="updateOne" parameterType="MessageDto">
 		UPDATE T_MESSAGE SET
-		TYPE=#{type},
 		MESSAGE=#{message},
 		SOURCE=#{source},
 		HANDLER=#{handler},
 		STATUS=#{status},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<update id="batchUpdateStatus" parameterType="map">
+		UPDATE T_MESSAGE SET
+		HANDLER=#{handler},
+		STATUS=#{status}
+		WHERE 1=1
+		<foreach collection="idList" item="id" open="AND ID IN(" close=")" separator=",">
+		   #{id}
+		</foreach>
+	</update>
+	<select id="getMessageDtos" parameterType="map" resultMap="RM_MessageDto">
+	   SELECT ID,<include refid="MessageDto-coloumn-list"/>
+	   FROM T_MESSAGE
+	   WHERE TYPE=#{type}
+	   <if test="status != null">
+	      AND STATUS=#{status}
+	   </if>
+	   LIMIT #{limit}
+	</select>
 </mapper>

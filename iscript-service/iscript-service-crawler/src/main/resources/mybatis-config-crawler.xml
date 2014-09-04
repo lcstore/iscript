@@ -17,5 +17,6 @@
 		<mapper resource="mybatis/mybatis-mapper-proxyDetect.xml" />
 		<mapper resource="mybatis/mybatis-mapper-sessionHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-listRank.xml" />
+		<mapper resource="mybatis/mybatis-mapper-message.xml" />
 	</mappers>
 </configuration>
