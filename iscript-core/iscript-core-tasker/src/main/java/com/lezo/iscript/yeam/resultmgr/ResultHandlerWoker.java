@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.result;
+package com.lezo.iscript.yeam.resultmgr;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

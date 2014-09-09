@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.result;
+package com.lezo.iscript.yeam.resultmgr;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
