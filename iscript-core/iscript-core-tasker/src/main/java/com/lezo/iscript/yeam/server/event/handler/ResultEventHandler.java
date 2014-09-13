@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
-import com.lezo.iscript.yeam.result.ResultHandlerCaller;
-import com.lezo.iscript.yeam.result.ResultHandlerWoker;
+import com.lezo.iscript.yeam.resultmgr.ResultHandlerCaller;
+import com.lezo.iscript.yeam.resultmgr.ResultHandlerWoker;
 import com.lezo.iscript.yeam.server.event.RequestEvent;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 

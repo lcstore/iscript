@@ -41,8 +41,10 @@ public class DaoConfigUtilsTest {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "DM_XUANPIN_BRAND_NAME_INFO";
-		String daoQualifyName = "com.vipshop.dp.vipshopinterface.dao.VipBrandInfoDao";
+		String tableName = "T_LIST_RANK";
+		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.ListRankDao";
+		String tableName = "T_MESSAGE";
+		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.MessageDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);
