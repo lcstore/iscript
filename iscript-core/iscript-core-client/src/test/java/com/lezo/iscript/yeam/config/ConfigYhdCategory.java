@@ -34,9 +34,9 @@ public class ConfigYhdCategory implements ConfigParser {
 		System.out.println(elements);
 		JSONArray listArray = new JSONArray();
 		for (Element e : elements) {
-//			if (!e.ownText().equals("进口食品、进口牛奶")) {
-//				continue;
-//			}
+			// if (!e.ownText().equals("进口食品、进口牛奶")) {
+			// continue;
+			// }
 			JSONObject cObject = new JSONObject();
 			JSONUtils.put(cObject, "url", e.absUrl("href"));
 			JSONUtils.put(cObject, "name", e.ownText());
@@ -49,7 +49,8 @@ public class ConfigYhdCategory implements ConfigParser {
 			JSONUtils.put(cObject, "children", cArray);
 			for (Element ct2Element : ct2Elements) {
 				JSONObject c2Object = new JSONObject();
-				JSONUtils.put(c2Object, "url", ct2Element.absUrl("href"));
+				String sUrl = ct2Element.absUrl("href");
+				JSONUtils.put(c2Object, "url", unifyUrl(sUrl));
 				JSONUtils.put(c2Object, "name", ct2Element.ownText());
 				cArray.put(c2Object);
 				Elements ct3Elements = ct2Element.parent().parent().select("dd em span a[href]");
@@ -60,7 +61,7 @@ public class ConfigYhdCategory implements ConfigParser {
 				JSONUtils.put(c2Object, "children", c3Array);
 				for (Element e3 : ct3Elements) {
 					JSONObject c3Object = new JSONObject();
-					JSONUtils.put(c3Object, "url", e3.absUrl("href"));
+					JSONUtils.put(c3Object, "url", unifyUrl(e3.absUrl("href")));
 					JSONUtils.put(c3Object, "name", e3.ownText());
 					c3Array.put(c3Object);
 				}
@@ -69,18 +70,7 @@ public class ConfigYhdCategory implements ConfigParser {
 		return listArray.toString();
 	}
 
-	private void addListArray(Document dom, JSONArray listArray) {
-		Elements ctElements = dom
-				.select("li[id^=offer] h2.sm-offerShopwindow-title a.sm-offerShopwindow-titleLink[href]");
-		if (ctElements.isEmpty()) {
-			return;
-		}
-		int size = ctElements.size();
-		for (int i = 0; i < size; i++) {
-			JSONObject itemObject = new JSONObject();
-			JSONUtils.put(itemObject, "name", ctElements.get(i).text());
-			JSONUtils.put(itemObject, "url", ctElements.get(i).absUrl("href"));
-			listArray.put(itemObject);
-		}
+	private String unifyUrl(String sUrl) {
+		return sUrl = sUrl.replace("|/", "");
 	}
 }

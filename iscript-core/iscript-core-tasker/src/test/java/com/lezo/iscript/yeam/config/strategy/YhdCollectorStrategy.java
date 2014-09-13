@@ -94,24 +94,24 @@ public class YhdCollectorStrategy implements ResultStrategy {
 				String rsString = JSONUtils.getString(jObject, "rs");
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
-					addResults(rootObject, argsObject);
+					//addResults(rootObject, argsObject);
 					addNextTasks(rootObject, argsObject);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else if ("ConfigYhdProduct".equals(rWritable.getType())) {
-				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
-				String rsString = JSONUtils.getString(jObject, "rs");
-				try {
-					JSONObject rootObject = new JSONObject(rsString);
-					List<ProductDto> productDtos = new ArrayList<ProductDto>();
-					List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
-					handleOne(rootObject, productDtos, productStatDtos);
-					getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
-					getStorageBuffer(ProductDto.class).addAll(productDtos);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+//				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
+//				String rsString = JSONUtils.getString(jObject, "rs");
+//				try {
+//					JSONObject rootObject = new JSONObject(rsString);
+//					List<ProductDto> productDtos = new ArrayList<ProductDto>();
+//					List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
+//					handleOne(rootObject, productDtos, productStatDtos);
+//					getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
+//					getStorageBuffer(ProductDto.class).addAll(productDtos);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
 			}
 		}
 

@@ -63,6 +63,7 @@ public class ConfigYhdList implements ConfigParser {
 		if (url.endsWith("|")) {
 			url = url.substring(0, url.length() - 1);
 		}
+		url = url.replace("|/?", "?");
 		if (url.indexOf("www.yhd.com/ctg/searchPage") > 0) {
 			return url;
 		}
@@ -105,6 +106,7 @@ public class ConfigYhdList implements ConfigParser {
 		if (url.indexOf("searchVirCateAjax") > 0) {
 			url = url.replace("-price-d0-f0-m1-rt0-pid-mid0-k", "-price-d0-mid0-f0");
 		}
+		url = url.replace("|/?", "?");
 		return url;
 	}
 

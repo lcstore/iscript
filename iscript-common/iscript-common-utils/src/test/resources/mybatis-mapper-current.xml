@@ -2,57 +2,335 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ListRankDao">
-	<resultMap type="ListRankDto" id="RM_ListRankDto">
-		<result column="ID" property="id"/>
-		<result column="CATEGORY_NAME" property="categoryName"/>
-		<result column="LIST_URL" property="listUrl"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="SORT_TYPE" property="sortType"/>
-		<result column="SORT_RANK" property="sortRank"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+<mapper namespace="com.vipshop.dp.vipshopinterface.dao.VipBrandInfoDao">
+	<resultMap type="VipBrandInfoDto" id="RM_VipBrandInfoDto">
+		<result column="stat_date" property="statDate"/>
+		<result column="brand_name" property="brandName"/>
+		<result column="sell_date_start" property="sellDateStart"/>
+		<result column="sell_date_end" property="sellDateEnd"/>
+		<result column="sell_days" property="sellDays"/>
+		<result column="pt_brand_id" property="ptBrandId"/>
+		<result column="pt_brand_name" property="ptBrandName"/>
+		<result column="brand_category" property="brandCategory"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="first_department_id" property="firstDepartmentId"/>
+		<result column="first_department_name" property="firstDepartmentName"/>
+		<result column="department_id" property="departmentId"/>
+		<result column="department_name" property="departmentName"/>
+		<result column="division_team_id" property="divisionTeamId"/>
+		<result column="division_team_name" property="divisionTeamName"/>
+		<result column="sale_to" property="saleTo"/>
+		<result column="sale_style" property="saleStyle"/>
+		<result column="goods_code_repeat_num_last_90days" property="goodsCodeRepeatNumLast90days"/>
+		<result column="is_rdc" property="isRdc"/>
+		<result column="active_name" property="activeName"/>
+		<result column="purchase_num" property="purchaseNum"/>
+		<result column="purchase_sales_amount" property="purchaseSalesAmount"/>
+		<result column="purchase_sku_num" property="purchaseSkuNum"/>
+		<result column="sales_price" property="salesPrice"/>
+		<result column="sales_sku_num" property="salesSkuNum"/>
+		<result column="sales_num_sku_sold_out" property="salesNumSkuSoldOut"/>
+		<result column="sales_amount_sku_sold_out" property="salesAmountSkuSoldOut"/>
+		<result column="purchase_goods_code_num" property="purchaseGoodsCodeNum"/>
+		<result column="sales_goods_code_num" property="salesGoodsCodeNum"/>
+		<result column="browse_goods_code_num" property="browseGoodsCodeNum"/>
+		<result column="sales_num_goods_code_sold_out" property="salesNumGoodsCodeSoldOut"/>
+		<result column="sales_num" property="salesNum"/>
+		<result column="sales_amount" property="salesAmount"/>
+		<result column="sales_num_vaild" property="salesNumVaild"/>
+		<result column="sales_amount_vaild" property="salesAmountVaild"/>
+		<result column="sales_cost_amount_vaild" property="salesCostAmountVaild"/>
+		<result column="sales_amount_dis" property="salesAmountDis"/>
+		<result column="sales_amount_no_cut" property="salesAmountNoCut"/>
+		<result column="purchase_goods_code_num_new_style" property="purchaseGoodsCodeNumNewStyle"/>
+		<result column="purchase_goods_code_num_old_style" property="purchaseGoodsCodeNumOldStyle"/>
+		<result column="purchase_num_new_style" property="purchaseNumNewStyle"/>
+		<result column="purchase_num_old_style" property="purchaseNumOldStyle"/>
+		<result column="purchase_amount_new_style" property="purchaseAmountNewStyle"/>
+		<result column="purchase_amount_old_style" property="purchaseAmountOldStyle"/>
+		<result column="sales_num_new_style" property="salesNumNewStyle"/>
+		<result column="sales_num_old_style" property="salesNumOldStyle"/>
+		<result column="sales_amount_new_style" property="salesAmountNewStyle"/>
+		<result column="sales_amount_old_style" property="salesAmountOldStyle"/>
+		<result column="return_num" property="returnNum"/>
+		<result column="return_amount" property="returnAmount"/>
+		<result column="reject_num" property="rejectNum"/>
+		<result column="reject_amount" property="rejectAmount"/>
+		<result column="return_reject_rate" property="returnRejectRate"/>
+		<result column="sales_num_per" property="salesNumPer"/>
+		<result column="sales_amount_per" property="salesAmountPer"/>
+		<result column="sales_sku_per" property="salesSkuPer"/>
+		<result column="sales_sku_sold_out_per" property="salesSkuSoldOutPer"/>
+		<result column="sales_sku_contribute_rate" property="salesSkuContributeRate"/>
+		<result column="selection_variance_rate" property="selectionVarianceRate"/>
+		<result column="sales_goods_code_per" property="salesGoodsCodePer"/>
+		<result column="sales_goods_code_sold_out_per" property="salesGoodsCodeSoldOutPer"/>
+		<result column="pv" property="pv"/>
+		<result column="uv" property="uv"/>
+		<result column="pv_pc" property="pvPc"/>
+		<result column="uv_pc" property="uvPc"/>
+		<result column="pv_wap" property="pvWap"/>
+		<result column="uv_wap" property="uvWap"/>
+		<result column="pv_app" property="pvApp"/>
+		<result column="uv_app" property="uvApp"/>
+		<result column="pv_avg" property="pvAvg"/>
+		<result column="uv_rate" property="uvRate"/>
+		<result column="user_num" property="userNum"/>
+		<result column="user_num_vaild" property="userNumVaild"/>
+		<result column="user_num_pc" property="userNumPc"/>
+		<result column="user_num_vaild_pc" property="userNumVaildPc"/>
+		<result column="user_num_mobile" property="userNumMobile"/>
+		<result column="user_num_vaild_mobile" property="userNumVaildMobile"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="order_price_avg" property="orderPriceAvg"/>
+		<result column="goods_price_avg" property="goodsPriceAvg"/>
+		<result column="return_amount_rate" property="returnAmountRate"/>
+		<result column="reject_amount_rate" property="rejectAmountRate"/>
+		<result column="goods_price_avg_mobile" property="goodsPriceAvgMobile"/>
+		<result column="sales_num_mobile" property="salesNumMobile"/>
+		<result column="sales_amount_mobile" property="salesAmountMobile"/>
+		<result column="sales_amount_dis_mobile" property="salesAmountDisMobile"/>
+		<result column="sales_amount_no_cut_mobile" property="salesAmountNoCutMobile"/>
+		<result column="return_num_mobile" property="returnNumMobile"/>
+		<result column="return_amount_mobile" property="returnAmountMobile"/>
+		<result column="reject_num_mobile" property="rejectNumMobile"/>
+		<result column="reject_amount_mobile" property="rejectAmountMobile"/>
+		<result column="rtn_reason1" property="rtnReason1"/>
+		<result column="rtn_reason2" property="rtnReason2"/>
+		<result column="rtn_reason3" property="rtnReason3"/>
+		<result column="rtn_reason4" property="rtnReason4"/>
+		<result column="rtn_reason5" property="rtnReason5"/>
+		<result column="rtn_reason6" property="rtnReason6"/>
+		<result column="rtn_reason7" property="rtnReason7"/>
+		<result column="rtn_reason8" property="rtnReason8"/>
+		<result column="rtn_reason9" property="rtnReason9"/>
+		<result column="rtn_reason10" property="rtnReason10"/>
+		<result column="rtn_reason_all" property="rtnReasonAll"/>
+		<result column="dt" property="dt"/>
 	</resultMap>
-	<sql id="ListRankDto-coloumn-list">
-		CATEGORY_NAME
-		,LIST_URL
-		,SHOP_ID
-		,PRODUCT_CODE
-		,PRODUCT_NAME
-		,PRODUCT_PRICE
-		,PRODUCT_URL
-		,SORT_TYPE
-		,SORT_RANK
-		,CREATE_TIME
-		,UPDATE_TIME
+	<sql id="VipBrandInfoDto-coloumn-list">
+		stat_date
+		,brand_name
+		,sell_date_start
+		,sell_date_end
+		,sell_days
+		,pt_brand_id
+		,pt_brand_name
+		,brand_category
+		,company_id
+		,company_name
+		,first_department_id
+		,first_department_name
+		,department_id
+		,department_name
+		,division_team_id
+		,division_team_name
+		,sale_to
+		,sale_style
+		,goods_code_repeat_num_last_90days
+		,is_rdc
+		,active_name
+		,purchase_num
+		,purchase_sales_amount
+		,purchase_sku_num
+		,sales_price
+		,sales_sku_num
+		,sales_num_sku_sold_out
+		,sales_amount_sku_sold_out
+		,purchase_goods_code_num
+		,sales_goods_code_num
+		,browse_goods_code_num
+		,sales_num_goods_code_sold_out
+		,sales_num
+		,sales_amount
+		,sales_num_vaild
+		,sales_amount_vaild
+		,sales_cost_amount_vaild
+		,sales_amount_dis
+		,sales_amount_no_cut
+		,purchase_goods_code_num_new_style
+		,purchase_goods_code_num_old_style
+		,purchase_num_new_style
+		,purchase_num_old_style
+		,purchase_amount_new_style
+		,purchase_amount_old_style
+		,sales_num_new_style
+		,sales_num_old_style
+		,sales_amount_new_style
+		,sales_amount_old_style
+		,return_num
+		,return_amount
+		,reject_num
+		,reject_amount
+		,return_reject_rate
+		,sales_num_per
+		,sales_amount_per
+		,sales_sku_per
+		,sales_sku_sold_out_per
+		,sales_sku_contribute_rate
+		,selection_variance_rate
+		,sales_goods_code_per
+		,sales_goods_code_sold_out_per
+		,pv
+		,uv
+		,pv_pc
+		,uv_pc
+		,pv_wap
+		,uv_wap
+		,pv_app
+		,uv_app
+		,pv_avg
+		,uv_rate
+		,user_num
+		,user_num_vaild
+		,user_num_pc
+		,user_num_vaild_pc
+		,user_num_mobile
+		,user_num_vaild_mobile
+		,order_num
+		,order_price_avg
+		,goods_price_avg
+		,return_amount_rate
+		,reject_amount_rate
+		,goods_price_avg_mobile
+		,sales_num_mobile
+		,sales_amount_mobile
+		,sales_amount_dis_mobile
+		,sales_amount_no_cut_mobile
+		,return_num_mobile
+		,return_amount_mobile
+		,reject_num_mobile
+		,reject_amount_mobile
+		,rtn_reason1
+		,rtn_reason2
+		,rtn_reason3
+		,rtn_reason4
+		,rtn_reason5
+		,rtn_reason6
+		,rtn_reason7
+		,rtn_reason8
+		,rtn_reason9
+		,rtn_reason10
+		,rtn_reason_all
+		,dt
 	</sql>
-	<insert id="batchInsert" parameterType="ListRankDto">
-		INSERT INTO T_LIST_RANK(
-		<include refid="ListRankDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="VipBrandInfoDto">
+		INSERT INTO DM_XUANPIN_BRAND_NAME_INFO(
+		<include refid="VipBrandInfoDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.categoryName},#{item.listUrl},#{item.shopId},#{item.productCode},#{item.productName},#{item.productPrice},#{item.productUrl},#{item.sortType},#{item.sortRank},#{item.createTime},#{item.updateTime})
+			(#{item.statDate},#{item.brandName},#{item.sellDateStart},#{item.sellDateEnd},#{item.sellDays},#{item.ptBrandId},#{item.ptBrandName},#{item.brandCategory},#{item.companyId},#{item.companyName},#{item.firstDepartmentId},#{item.firstDepartmentName},#{item.departmentId},#{item.departmentName},#{item.divisionTeamId},#{item.divisionTeamName},#{item.saleTo},#{item.saleStyle},#{item.goodsCodeRepeatNumLast90days},#{item.isRdc},#{item.activeName},#{item.purchaseNum},#{item.purchaseSalesAmount},#{item.purchaseSkuNum},#{item.salesPrice},#{item.salesSkuNum},#{item.salesNumSkuSoldOut},#{item.salesAmountSkuSoldOut},#{item.purchaseGoodsCodeNum},#{item.salesGoodsCodeNum},#{item.browseGoodsCodeNum},#{item.salesNumGoodsCodeSoldOut},#{item.salesNum},#{item.salesAmount},#{item.salesNumVaild},#{item.salesAmountVaild},#{item.salesCostAmountVaild},#{item.salesAmountDis},#{item.salesAmountNoCut},#{item.purchaseGoodsCodeNumNewStyle},#{item.purchaseGoodsCodeNumOldStyle},#{item.purchaseNumNewStyle},#{item.purchaseNumOldStyle},#{item.purchaseAmountNewStyle},#{item.purchaseAmountOldStyle},#{item.salesNumNewStyle},#{item.salesNumOldStyle},#{item.salesAmountNewStyle},#{item.salesAmountOldStyle},#{item.returnNum},#{item.returnAmount},#{item.rejectNum},#{item.rejectAmount},#{item.returnRejectRate},#{item.salesNumPer},#{item.salesAmountPer},#{item.salesSkuPer},#{item.salesSkuSoldOutPer},#{item.salesSkuContributeRate},#{item.selectionVarianceRate},#{item.salesGoodsCodePer},#{item.salesGoodsCodeSoldOutPer},#{item.pv},#{item.uv},#{item.pvPc},#{item.uvPc},#{item.pvWap},#{item.uvWap},#{item.pvApp},#{item.uvApp},#{item.pvAvg},#{item.uvRate},#{item.userNum},#{item.userNumVaild},#{item.userNumPc},#{item.userNumVaildPc},#{item.userNumMobile},#{item.userNumVaildMobile},#{item.orderNum},#{item.orderPriceAvg},#{item.goodsPriceAvg},#{item.returnAmountRate},#{item.rejectAmountRate},#{item.goodsPriceAvgMobile},#{item.salesNumMobile},#{item.salesAmountMobile},#{item.salesAmountDisMobile},#{item.salesAmountNoCutMobile},#{item.returnNumMobile},#{item.returnAmountMobile},#{item.rejectNumMobile},#{item.rejectAmountMobile},#{item.rtnReason1},#{item.rtnReason2},#{item.rtnReason3},#{item.rtnReason4},#{item.rtnReason5},#{item.rtnReason6},#{item.rtnReason7},#{item.rtnReason8},#{item.rtnReason9},#{item.rtnReason10},#{item.rtnReasonAll},#{item.dt})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ListRankDto">
-		UPDATE T_LIST_RANK SET
-		CATEGORY_NAME=#{categoryName},
-		LIST_URL=#{listUrl},
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
-		PRODUCT_NAME=#{productName},
-		PRODUCT_PRICE=#{productPrice},
-		PRODUCT_URL=#{productUrl},
-		SORT_TYPE=#{sortType},
-		SORT_RANK=#{sortRank},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+	<update id="updateOne" parameterType="VipBrandInfoDto">
+		UPDATE DM_XUANPIN_BRAND_NAME_INFO SET
+		stat_date=#{statDate},
+		brand_name=#{brandName},
+		sell_date_start=#{sellDateStart},
+		sell_date_end=#{sellDateEnd},
+		sell_days=#{sellDays},
+		pt_brand_id=#{ptBrandId},
+		pt_brand_name=#{ptBrandName},
+		brand_category=#{brandCategory},
+		company_id=#{companyId},
+		company_name=#{companyName},
+		first_department_id=#{firstDepartmentId},
+		first_department_name=#{firstDepartmentName},
+		department_id=#{departmentId},
+		department_name=#{departmentName},
+		division_team_id=#{divisionTeamId},
+		division_team_name=#{divisionTeamName},
+		sale_to=#{saleTo},
+		sale_style=#{saleStyle},
+		goods_code_repeat_num_last_90days=#{goodsCodeRepeatNumLast90days},
+		is_rdc=#{isRdc},
+		active_name=#{activeName},
+		purchase_num=#{purchaseNum},
+		purchase_sales_amount=#{purchaseSalesAmount},
+		purchase_sku_num=#{purchaseSkuNum},
+		sales_price=#{salesPrice},
+		sales_sku_num=#{salesSkuNum},
+		sales_num_sku_sold_out=#{salesNumSkuSoldOut},
+		sales_amount_sku_sold_out=#{salesAmountSkuSoldOut},
+		purchase_goods_code_num=#{purchaseGoodsCodeNum},
+		sales_goods_code_num=#{salesGoodsCodeNum},
+		browse_goods_code_num=#{browseGoodsCodeNum},
+		sales_num_goods_code_sold_out=#{salesNumGoodsCodeSoldOut},
+		sales_num=#{salesNum},
+		sales_amount=#{salesAmount},
+		sales_num_vaild=#{salesNumVaild},
+		sales_amount_vaild=#{salesAmountVaild},
+		sales_cost_amount_vaild=#{salesCostAmountVaild},
+		sales_amount_dis=#{salesAmountDis},
+		sales_amount_no_cut=#{salesAmountNoCut},
+		purchase_goods_code_num_new_style=#{purchaseGoodsCodeNumNewStyle},
+		purchase_goods_code_num_old_style=#{purchaseGoodsCodeNumOldStyle},
+		purchase_num_new_style=#{purchaseNumNewStyle},
+		purchase_num_old_style=#{purchaseNumOldStyle},
+		purchase_amount_new_style=#{purchaseAmountNewStyle},
+		purchase_amount_old_style=#{purchaseAmountOldStyle},
+		sales_num_new_style=#{salesNumNewStyle},
+		sales_num_old_style=#{salesNumOldStyle},
+		sales_amount_new_style=#{salesAmountNewStyle},
+		sales_amount_old_style=#{salesAmountOldStyle},
+		return_num=#{returnNum},
+		return_amount=#{returnAmount},
+		reject_num=#{rejectNum},
+		reject_amount=#{rejectAmount},
+		return_reject_rate=#{returnRejectRate},
+		sales_num_per=#{salesNumPer},
+		sales_amount_per=#{salesAmountPer},
+		sales_sku_per=#{salesSkuPer},
+		sales_sku_sold_out_per=#{salesSkuSoldOutPer},
+		sales_sku_contribute_rate=#{salesSkuContributeRate},
+		selection_variance_rate=#{selectionVarianceRate},
+		sales_goods_code_per=#{salesGoodsCodePer},
+		sales_goods_code_sold_out_per=#{salesGoodsCodeSoldOutPer},
+		pv=#{pv},
+		uv=#{uv},
+		pv_pc=#{pvPc},
+		uv_pc=#{uvPc},
+		pv_wap=#{pvWap},
+		uv_wap=#{uvWap},
+		pv_app=#{pvApp},
+		uv_app=#{uvApp},
+		pv_avg=#{pvAvg},
+		uv_rate=#{uvRate},
+		user_num=#{userNum},
+		user_num_vaild=#{userNumVaild},
+		user_num_pc=#{userNumPc},
+		user_num_vaild_pc=#{userNumVaildPc},
+		user_num_mobile=#{userNumMobile},
+		user_num_vaild_mobile=#{userNumVaildMobile},
+		order_num=#{orderNum},
+		order_price_avg=#{orderPriceAvg},
+		goods_price_avg=#{goodsPriceAvg},
+		return_amount_rate=#{returnAmountRate},
+		reject_amount_rate=#{rejectAmountRate},
+		goods_price_avg_mobile=#{goodsPriceAvgMobile},
+		sales_num_mobile=#{salesNumMobile},
+		sales_amount_mobile=#{salesAmountMobile},
+		sales_amount_dis_mobile=#{salesAmountDisMobile},
+		sales_amount_no_cut_mobile=#{salesAmountNoCutMobile},
+		return_num_mobile=#{returnNumMobile},
+		return_amount_mobile=#{returnAmountMobile},
+		reject_num_mobile=#{rejectNumMobile},
+		reject_amount_mobile=#{rejectAmountMobile},
+		rtn_reason1=#{rtnReason1},
+		rtn_reason2=#{rtnReason2},
+		rtn_reason3=#{rtnReason3},
+		rtn_reason4=#{rtnReason4},
+		rtn_reason5=#{rtnReason5},
+		rtn_reason6=#{rtnReason6},
+		rtn_reason7=#{rtnReason7},
+		rtn_reason8=#{rtnReason8},
+		rtn_reason9=#{rtnReason9},
+		rtn_reason10=#{rtnReason10},
+		rtn_reason_all=#{rtnReasonAll},
+		dt=#{dt}
 		WHERE ID=#{id}
 	</update>
 </mapper>
