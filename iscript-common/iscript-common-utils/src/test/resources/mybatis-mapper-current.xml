@@ -2,248 +2,28 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ListRankDao">
-	<resultMap type="ListRankDto" id="RM_ListRankDto">
-		<result column="ID" property="id"/>
-		<result column="CATEGORY_NAME" property="categoryName"/>
-		<result column="LIST_URL" property="listUrl"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="SORT_TYPE" property="sortType"/>
-		<result column="SORT_RANK" property="sortRank"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
 <mapper namespace="com.lezo.iscript.service.crawler.dao.MessageDao">
 	<resultMap type="MessageDto" id="RM_MessageDto">
 		<result column="ID" property="id"/>
-		<result column="TYPE" property="type"/>
+		<result column="NAME" property="name"/>
 		<result column="MESSAGE" property="message"/>
 		<result column="SOURCE" property="source"/>
-		<result column="HANDLER" property="handler"/>
+		<result column="REMARK" property="remark"/>
 		<result column="STATUS" property="status"/>
+		<result column="SORT_CODE" property="sortCode"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	</resultMap>
-	<sql id="ListRankDto-coloumn-list">
-		CATEGORY_NAME
-		,LIST_URL
-		,SHOP_ID
-		,PRODUCT_CODE
-		,PRODUCT_NAME
-		,PRODUCT_PRICE
-		,PRODUCT_URL
-		,SORT_TYPE
-		,SORT_RANK
-		,CREATE_TIME
-		,UPDATE_TIME
 	<sql id="MessageDto-coloumn-list">
-		TYPE
+		NAME
 		,MESSAGE
 		,SOURCE
-		,HANDLER
+		,REMARK
 		,STATUS
+		,SORT_CODE
 		,CREATE_TIME
 		,UPDATE_TIME
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	</sql>
-	<insert id="batchInsert" parameterType="ListRankDto">
-		INSERT INTO T_LIST_RANK(
-		<include refid="ListRankDto-coloumn-list" />
 	<insert id="batchInsert" parameterType="MessageDto">
 		INSERT INTO T_MESSAGE(
 		<include refid="MessageDto-coloumn-list" />
@@ -251,129 +31,19 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.categoryName},#{item.listUrl},#{item.shopId},#{item.productCode},#{item.productName},#{item.productPrice},#{item.productUrl},#{item.sortType},#{item.sortRank},#{item.createTime},#{item.updateTime})
-			(#{item.type},#{item.message},#{item.source},#{item.handler},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.name},#{item.message},#{item.source},#{item.remark},#{item.status},#{item.sortCode},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ListRankDto">
-		UPDATE T_LIST_RANK SET
-		CATEGORY_NAME=#{categoryName},
-		LIST_URL=#{listUrl},
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
-		PRODUCT_NAME=#{productName},
-		PRODUCT_PRICE=#{productPrice},
-		PRODUCT_URL=#{productUrl},
-		SORT_TYPE=#{sortType},
-		SORT_RANK=#{sortRank},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
 	<update id="updateOne" parameterType="MessageDto">
 		UPDATE T_MESSAGE SET
-		TYPE=#{type},
+		NAME=#{name},
 		MESSAGE=#{message},
 		SOURCE=#{source},
-		HANDLER=#{handler},
+		REMARK=#{remark},
 		STATUS=#{status},
+		SORT_CODE=#{sortCode},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		WHERE ID=#{id}
 	</update>
 </mapper>

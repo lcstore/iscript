@@ -5,11 +5,12 @@ import java.util.Date;
 public class MessageDto {
 	public static final int NEW_MESSGE = 0;
 	private Long id;
-	private String type;
+	private String name;
 	private String message;
 	private String source;
-	private String handler;
+	private String remark;
 	private Integer status;
+	private Integer sortCode;
 	private Date createTime;
 	private Date updateTime;
 
@@ -21,12 +22,12 @@ public class MessageDto {
 		this.id = id;
 	}
 
-	public String getType() {
-		return type;
+	public String getName() {
+		return name;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getMessage() {
@@ -45,12 +46,12 @@ public class MessageDto {
 		this.source = source;
 	}
 
-	public String getHandler() {
-		return handler;
+	public String getRemark() {
+		return remark;
 	}
 
-	public void setHandler(String handler) {
-		this.handler = handler;
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public Integer getStatus() {
@@ -59,6 +60,14 @@ public class MessageDto {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public Integer getSortCode() {
+		return sortCode;
+	}
+
+	public void setSortCode(Integer sortCode) {
+		this.sortCode = sortCode;
 	}
 
 	public Date getCreateTime() {

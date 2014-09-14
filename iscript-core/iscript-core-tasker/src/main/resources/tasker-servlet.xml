@@ -3,7 +3,7 @@
 
 <beans>
 
-	<bean id="taskerExporter"
+<!-- 	<bean id="taskerExporter"
 		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service">
 			<ref bean="tasker" />
@@ -22,9 +22,9 @@
 	
 	
 
-	<!-- Most controllers will use the ControllerClassNameHandlerMapping above, 
+	Most controllers will use the ControllerClassNameHandlerMapping above, 
 		but for the index controller we are using ParameterizableViewController, 
-		so we must define an explicit mapping for it. -->
+		so we must define an explicit mapping for it.
 	<bean id="urlMapping"
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
@@ -33,5 +33,5 @@
 				<prop key="/taskRemoteService">taskRemoteServiceExporter</prop>
 			</props>
 		</property>
-	</bean>
+	</bean> -->
 </beans>

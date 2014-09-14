@@ -22,10 +22,11 @@ public class RetryListener implements IResultListener {
 		JSONObject gObject = JSONUtils.getJSONObject(result.getResult());
 		JSONObject argsObject = JSONUtils.get(gObject, "args");
 		JSONObject exObject = JSONUtils.get(gObject, "ex");
-		logger.warn(String.format("type:%s,taskId:%s,args:%s,cause:%s.", result.getType(),result.getTaskId(),argsObject,exObject));
+		logger.warn(String.format("type:%s,taskId:%s,args:%s,cause:%s.", result.getType(), result.getTaskId(),
+				argsObject, exObject));
 		Integer retry = JSONUtils.getInteger(argsObject, "retry");
 		if (retry == null) {
-			retry = 0;
+			return;
 		} else if (retry >= 3) {
 			return;
 		}
@@ -37,7 +38,7 @@ public class RetryListener implements IResultListener {
 			tWritable.put(key, JSONUtils.getObject(argsObject, key));
 		}
 		tWritable.put("retry", retry + 1);
-		logger.warn(String.format("type:%s,taskId:%s,retry:%s...", result.getType(),result.getTaskId(),retry));
+		logger.warn(String.format("type:%s,taskId:%s,retry:%s...", result.getType(), result.getTaskId(), retry));
 		Integer level = JSONUtils.getInteger(argsObject, "level");
 		level = level == null ? 0 : level;
 		TaskCacher.getInstance().getQueue(result.getType()).offer(tWritable, level);

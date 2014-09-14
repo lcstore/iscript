@@ -5,20 +5,22 @@
 <mapper namespace="com.lezo.iscript.service.crawler.dao.MessageDao">
 	<resultMap type="MessageDto" id="RM_MessageDto">
 		<result column="ID" property="id"/>
-		<result column="TYPE" property="type"/>
+		<result column="NAME" property="name"/>
 		<result column="MESSAGE" property="message"/>
 		<result column="SOURCE" property="source"/>
-		<result column="HANDLER" property="handler"/>
+		<result column="REMARK" property="remark"/>
 		<result column="STATUS" property="status"/>
+		<result column="SORT_CODE" property="sortCode"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="MessageDto-coloumn-list">
-		TYPE
+		NAME
 		,MESSAGE
 		,SOURCE
-		,HANDLER
+		,REMARK
 		,STATUS
+		,SORT_CODE
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
@@ -29,21 +31,24 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.message},#{item.source},#{item.handler},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.name},#{item.message},#{item.source},#{item.remark},#{item.status},#{item.sortCode},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="MessageDto">
 		UPDATE T_MESSAGE SET
+		NAME=#{name},
 		MESSAGE=#{message},
 		SOURCE=#{source},
-		HANDLER=#{handler},
+		REMARK=#{remark},
 		STATUS=#{status},
+		SORT_CODE=#{sortCode},
+		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 	<update id="batchUpdateStatus" parameterType="map">
 		UPDATE T_MESSAGE SET
-		HANDLER=#{handler},
+		REMARK=#{remark},
 		STATUS=#{status}
 		WHERE 1=1
 		<foreach collection="idList" item="id" open="AND ID IN(" close=")" separator=",">

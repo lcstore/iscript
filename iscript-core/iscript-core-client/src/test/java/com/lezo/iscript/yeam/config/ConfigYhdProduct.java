@@ -1,7 +1,9 @@
 package com.lezo.iscript.yeam.config;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,15 +18,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private static Map<String, String> hostIpMap = new HashMap<String, String>();
-
+	private static final String EMTPY_RESULT = new JSONObject().toString();
 	static {
 		hostIpMap.put("item.yhd.com", "180.153.252.38");
 		hostIpMap.put("gps.yihaodian.com", "180.153.252.46");
@@ -38,8 +42,25 @@ public class ConfigYhdProduct implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		String url = task.get("url").toString();
 		addCookie();
+		JSONObject itemObject = getItemObject(task);
+		doCollect(itemObject,task);
+		return EMTPY_RESULT;
+	}
+
+	private void doCollect(JSONObject itemObject, TaskWritable task) {
+		JSONObject gObject = new JSONObject();
+		JSONObject argsObject = new JSONObject(task.getArgs());
+		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+		JSONUtils.put(gObject, "rs", itemObject.toString());
+		JSONUtils.put(gObject, "args", argsObject);
+		List<JSONObject> dataList = new ArrayList<JSONObject>();
+		dataList.add(gObject);
+		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+	}
+
+	private JSONObject getItemObject(TaskWritable task) throws Exception {
+		String url = task.get("url").toString();
 		String refer = url;
 		HttpGet get = createHttpGetWithIp(url);
 		get.addHeader("Refer", refer);
@@ -49,7 +70,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		JSONObject itemObject = new JSONObject();
 		if (oHomeAs.isEmpty()) {
 			JSONUtils.put(itemObject, "stockNum", -1);
-			return itemObject.toString();
+			return itemObject;
 		}
 		JSONUtils.put(itemObject, "productUrl", url);
 		Elements oElements = dom.select("div.main_info_con div[class^=pd] h2,#productMainName");
@@ -162,7 +183,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return itemObject.toString();
+		return itemObject;
 	}
 
 	private HttpGet createHttpGetWithIp(String url) throws Exception {

@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.result;
+package com.lezo.iscript.yeam.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -7,18 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.rest.RestUtils;
-import com.lezo.iscript.yeam.storage.ResultFutureStorager;
-import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.qiniu.api.io.PutRet;
 
 public class PersistentWorker implements Runnable {
@@ -27,9 +21,9 @@ public class PersistentWorker implements Runnable {
 	private String rootPath = "iscript";
 	private String type;
 	private String batchId;
-	private List<ResultWritable> copyList;
+	private List<String> copyList;
 
-	public PersistentWorker(String type, String batchId, List<ResultWritable> copyList) {
+	public PersistentWorker(String type, String batchId, List<String> copyList) {
 		super();
 		this.type = type;
 		this.batchId = batchId;
@@ -41,9 +35,7 @@ public class PersistentWorker implements Runnable {
 		int retry = 0;
 		while (retry < 3) {
 			try {
-				ResultWritable fileWritable = add2Disk(copyList);
-				Future<ResultWritable> data = new DoneFuture<ResultWritable>(fileWritable);
-				ResultFutureStorager.getInstance().getStorageBuffer().add(data);
+				add2Disk(copyList);
 				break;
 			} catch (Exception e) {
 				retry++;
@@ -52,26 +44,24 @@ public class PersistentWorker implements Runnable {
 		}
 	}
 
-	private ResultWritable add2Disk(List<ResultWritable> rWritables) throws Exception {
+	private void add2Disk(List<String> rWritables) throws Exception {
 		String path = getFilePath();
 		InputStream reader = toInputStream(rWritables);
 		File destFile = new File(path);
 		PutRet ret = (PutRet) RestUtils.doRestCallBack(destFile, reader, RestUtils.QINIU_CALL_BACK);
 		if (ret.ok()) {
 			logger.info(String.format("Succss to add:%s", path));
-			ResultWritable fileWritable = getFileWritable(rWritables, destFile);
-			return fileWritable;
+		}else {
+			throw new IOException(ret.response, ret.exception);
 		}
-		throw new IOException(ret.response, ret.exception);
 	}
 
-	private InputStream toInputStream(List<ResultWritable> rWritables) throws IOException {
+	private InputStream toInputStream(List<String> rWritables) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		InputStream destStream = null;
 		try {
 			GZIPOutputStream gzos = new GZIPOutputStream(bos);
-			for (ResultWritable rWritable : rWritables) {
-				String result = rWritable.getResult();
+			for (String result : rWritables) {
 				result += "\n";
 				gzos.write(result.getBytes(CHARSET_NAME));
 			}
@@ -108,26 +98,5 @@ public class PersistentWorker implements Runnable {
 		sb.append(System.currentTimeMillis());
 		sb.append(".gz");
 		return sb.toString();
-	}
-
-	private ResultWritable getFileWritable(List<ResultWritable> rWritables, File destFile) {
-		ResultWritable rWritable = new ResultWritable();
-		rWritable.setType("FileMessage");
-		JSONObject gObject = new JSONObject();
-		JSONObject rsObject = new JSONObject();
-		JSONUtils.put(gObject, "rs", rsObject);
-		JSONArray jArray = new JSONArray();
-		for (ResultWritable rw : rWritables) {
-			jArray.put(rw.getTaskId());
-		}
-		JSONUtils.put(rsObject, "idList", jArray);
-		JSONUtils.put(rsObject, "file", destFile);
-		
-		JSONObject argsObject = new JSONObject();
-		JSONUtils.put(gObject, "args", argsObject);
-		JSONUtils.put(argsObject, "bid", destFile.getParentFile().getName());
-		JSONUtils.put(argsObject, "type", destFile.getParentFile().getParentFile().getName());
-		rWritable.setResult(gObject.toString());
-		return rWritable;
 	}
 }

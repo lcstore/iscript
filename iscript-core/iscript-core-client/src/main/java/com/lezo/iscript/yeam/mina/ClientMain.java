@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.common.storage.StorageTimeTrigger;
+import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.storage.ResultFutureStorager;
 
 public class ClientMain {
@@ -28,5 +29,11 @@ public class ClientMain {
 				timeTrigger.doTrigger();
 			}
 		}, delay, period);
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				PersistentCollector.getInstance().getBufferWriter().flush();
+			}
+		}, 60000L, 300000L);
 	}
 }

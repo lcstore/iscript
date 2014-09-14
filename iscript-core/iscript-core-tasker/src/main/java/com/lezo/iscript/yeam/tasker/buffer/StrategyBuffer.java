@@ -1,9 +1,9 @@
 package com.lezo.iscript.yeam.tasker.buffer;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,27 @@ public class StrategyBuffer {
 		if (StringUtils.isEmpty(name)) {
 			return null;
 		}
+		ensureBuffered();
 		return strategyMap.get(name);
+	}
+
+	private void ensureBuffered() {
+		if (stamp > 0) {
+			return;
+		}
+		synchronized (this) {
+			if (stamp == 0) {
+				try {
+					long timeout = 60000L;
+					logger.info("Wait to buffer strategy {}ms", timeout);
+					TimeUnit.MILLISECONDS.sleep(timeout);
+				} catch (InterruptedException e) {
+					logger.info("", e);
+				}
+			}
+
+		}
+
 	}
 
 	public synchronized void addStrategy(TaskConfigDto dto) throws Exception {
