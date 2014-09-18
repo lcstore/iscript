@@ -2,7 +2,7 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-public class MessageDto {
+public class MessageDto implements Cloneable {
 	public static final int NEW_MESSGE = 0;
 	private Long id;
 	private String name;
@@ -84,6 +84,17 @@ public class MessageDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	@Override
+	public MessageDto clone() {
+		MessageDto cloneDto = null;
+		try {
+			cloneDto = (MessageDto) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return cloneDto;
 	}
 
 }
