@@ -99,41 +99,43 @@
 			<version>2.2.1-b03</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<!-- 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.1.22</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jsp-2.1-jetty</artifactId>
-			<version>6.1.22</version>
-			<scope>provided</scope>
-		</dependency> -->
+
+		<!-- <dependency> <groupId>org.mortbay.jetty</groupId> <artifactId>jetty</artifactId> 
+			<version>6.1.22</version> <scope>provided</scope> </dependency> <dependency> 
+			<groupId>org.mortbay.jetty</groupId> <artifactId>jsp-2.1-jetty</artifactId> 
+			<version>6.1.22</version> <scope>provided</scope> </dependency> -->
 	</dependencies>
 	<build>
 		<finalName>resulter</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-				<version>6.1.26</version>
+				<artifactId>jetty-maven-plugin</artifactId>
 				<configuration>
-					<webAppSourceDirectory>src/main/webapp</webAppSourceDirectory>
-					<scanIntervalSeconds>6</scanIntervalSeconds>
-					<contextPath>/</contextPath>
-					<webDefaultXml>jetty.xml</webDefaultXml>
-					<jettyEnvXml>jetty-env.xml</jettyEnvXml>
+					<webApp>
+						<contextPath>/</contextPath>
+					</webApp>
+					<stopKey>webx</stopKey>
+					<stopPort>8999</stopPort>
 					<connectors>
-						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>10000</port>
-							<headerBufferSize>80000</headerBufferSize>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>80</port>
+							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
-					<stopKey>stop</stopKey>
-					<stopPort>8999</stopPort>
+					<requestLog implementation="org.eclipse.jetty.server.NCSARequestLog">
+						<filename>target/access.log</filename>
+						<retainDays>90</retainDays>
+						<append>false</append>
+						<extended>false</extended>
+						<logTimeZone>GMT+8:00</logTimeZone>
+					</requestLog>
+					<systemProperties>
+						<systemProperty>
+							<name>productionMode</name>
+							<value>${productionMode}</value>
+						</systemProperty>
+					</systemProperties>
 				</configuration>
 			</plugin>
 		</plugins>

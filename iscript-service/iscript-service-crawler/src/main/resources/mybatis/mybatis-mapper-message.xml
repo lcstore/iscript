@@ -4,15 +4,15 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.MessageDao">
 	<resultMap type="MessageDto" id="RM_MessageDto">
-		<result column="ID" property="id"/>
-		<result column="NAME" property="name"/>
-		<result column="MESSAGE" property="message"/>
-		<result column="SOURCE" property="source"/>
-		<result column="REMARK" property="remark"/>
-		<result column="STATUS" property="status"/>
-		<result column="SORT_CODE" property="sortCode"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="NAME" property="name" />
+		<result column="MESSAGE" property="message" />
+		<result column="SOURCE" property="source" />
+		<result column="REMARK" property="remark" />
+		<result column="STATUS" property="status" />
+		<result column="SORT_CODE" property="sortCode" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="MessageDto-coloumn-list">
 		NAME
@@ -51,17 +51,28 @@
 		REMARK=#{remark},
 		STATUS=#{status}
 		WHERE 1=1
-		<foreach collection="idList" item="id" open="AND ID IN(" close=")" separator=",">
-		   #{id}
+		<foreach collection="idList" item="id" open="AND ID IN("
+			close=")" separator=",">
+			#{id}
 		</foreach>
 	</update>
 	<select id="getMessageDtos" parameterType="map" resultMap="RM_MessageDto">
-	   SELECT ID,<include refid="MessageDto-coloumn-list"/>
-	   FROM T_MESSAGE
-	   WHERE TYPE=#{type}
-	   <if test="status != null">
-	      AND STATUS=#{status}
-	   </if>
-	   LIMIT #{limit}
+		SELECT ID,
+		<include refid="MessageDto-coloumn-list" />
+		FROM T_MESSAGE
+		WHERE 1=1
+		<if test="nameList==null || nameList.isEmpty()">
+			AND 1=0
+		</if>
+		<if test="nameList !=null &amp;&amp; !nameList.isEmpty()">
+			<foreach collection="nameList" item="name" open="AND NAME IN("
+				separator="," close=")">
+				#{name}
+			</foreach>
+		</if>
+		<if test="status != null">
+			AND STATUS=#{status}
+		</if>
+		LIMIT #{limit}
 	</select>
 </mapper>

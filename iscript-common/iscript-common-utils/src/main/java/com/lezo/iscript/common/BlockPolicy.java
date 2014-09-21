@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
 
-public class PutPolicy implements RejectedExecutionHandler {
-	private Logger logger = org.slf4j.LoggerFactory.getLogger(PutPolicy.class);
+public class BlockPolicy implements RejectedExecutionHandler {
+	private Logger logger = org.slf4j.LoggerFactory.getLogger(BlockPolicy.class);
 
 	@Override
 	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {

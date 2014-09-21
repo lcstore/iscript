@@ -94,7 +94,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 				String rsString = JSONUtils.getString(jObject, "rs");
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
-					//addResults(rootObject, argsObject);
+					addResults(rootObject, argsObject);
 					addNextTasks(rootObject, argsObject);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -189,13 +189,10 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			handleOne(itemObject, productDtos, productStatDtos);
 			createListRankDto(itemObject, argsObject, listRankDtos);
 		}
-		getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
+		//getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
 		getStorageBuffer(ListRankDto.class).addAll(listRankDtos);
 
-		// List<ProductDto> insertDtos = new ArrayList<ProductDto>();
-		// List<ProductDto> updateDtos = new ArrayList<ProductDto>();
-		// doAssort(productDtos, insertDtos, updateDtos);
-		getStorageBuffer(ProductDto.class).addAll(productDtos);
+		//getStorageBuffer(ProductDto.class).addAll(productDtos);
 
 		createProductTasks(argsObject, productDtos);
 

@@ -3,6 +3,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +39,11 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<MessageDto> getMessageDtos(String type, Integer status, Integer limit) {
-		if (null == type || (limit != null && limit < 1)) {
+	public List<MessageDto> getMessageDtos(List<String> nameList, Integer status, Integer limit) {
+		if (CollectionUtils.isEmpty(nameList) || (limit != null && limit < 1)) {
 			return Collections.emptyList();
 		}
-		return messageDao.getMessageDtos(type, status, limit);
+		return messageDao.getMessageDtos(nameList, status, limit);
 	}
 
 	public void setMessageDao(MessageDao messageDao) {
@@ -50,10 +51,10 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public void batchUpdateStatus(List<Long> idList, Integer status, String handler) {
+	public void batchUpdateStatus(List<Long> idList, Integer status, String remark) {
 		BatchIterator<Long> it = new BatchIterator<Long>(idList, 500);
 		while (it.hasNext()) {
-			messageDao.batchUpdateStatus(it.next(), status, handler);
+			messageDao.batchUpdateStatus(it.next(), status, remark);
 		}
 	}
 

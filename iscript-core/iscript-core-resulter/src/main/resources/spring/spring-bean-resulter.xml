@@ -4,36 +4,31 @@
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
 
-	<bean id="pcsClient" class="com.baidu.pcs.BaiduPCSClient">
-		<constructor-arg index="0" name="accessToken" value="${baidu_pcs_token}">
-		</constructor-arg>
+	<bean name="blockPolicy" class="com.lezo.iscript.common.BlockPolicy" />
+
+	<bean id="dataProduceExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
+		<constructor-arg name="corePoolSize" value="0" />
+		<constructor-arg name="maximumPoolSize" value="2" />
+		<constructor-arg name="keepAliveTime" value="60000" />
+		<constructor-arg name="capacity" value="50" />
+		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
-	<bean id="pcsResultHandler" class="com.lezo.iscript.yeam.resulter.handle.PcsResultHandler">
-		<property name="pcsClient" ref="pcsClient"></property>
-		<property name="pcsPath" value="${baidu_pcs_path}"></property>
-		<property name="tempDir" value="${temp_mopaas_dir}"></property>
-	</bean>
-	<bean id="mac" class="com.qiniu.api.auth.digest.Mac">
-		<constructor-arg index="0" name="accessKey" value="${qiniu_accessKey}">
-		</constructor-arg>
-		<constructor-arg index="1" name="secretKey" value="${qiniu_secretKey}">
-		</constructor-arg>
-	</bean>
-	<bean id="qiniuResultHandler"
-		class="com.lezo.iscript.yeam.resulter.handle.QiniuResultHandler">
-		<property name="mac" ref="mac"></property>
-		<property name="tempDir" value="${temp_mopaas_dir}"></property>
-		<property name="taskRemoteService" ref="taskRemoteService"></property>
+	<bean id="dataConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
+		<constructor-arg name="corePoolSize" value="0" />
+		<constructor-arg name="maximumPoolSize" value="2" />
+		<constructor-arg name="keepAliveTime" value="60000" />
+		<constructor-arg name="capacity" value="100" />
+		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
 
-	<bean id="taskRemoteService"
-		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-		<property name="serviceUrl">
-			<value>${yeam_thost}/taskservlet/taskRemoteService</value>
-		</property>
-		<property name="serviceInterface">
-			<value>com.lezo.iscript.yeam.service.TaskRemoteService</value>
-		</property>
+	<bean name="threadPoolManager" class="com.lezo.iscript.common.ThreadPoolManager">
+		<constructor-arg>
+			<map>
+				<entry key="dataProducer">
+					<ref bean="dataProduceExecutor" />
+				</entry>
+			</map>
+		</constructor-arg>
 	</bean>
-	
+
 </beans>

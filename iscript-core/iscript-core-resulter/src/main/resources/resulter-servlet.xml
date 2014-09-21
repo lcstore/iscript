@@ -3,7 +3,7 @@
 
 <beans>
 
-	<bean id="resultManager"
+	<!-- <bean id="resultManager"
 		class="com.lezo.iscript.yeam.resulter.ResultManager">
 	</bean>	
 	<bean id="resulterService"
@@ -21,9 +21,9 @@
 	
 	
 
-	<!-- Most controllers will use the ControllerClassNameHandlerMapping above, 
+	Most controllers will use the ControllerClassNameHandlerMapping above, 
 		but for the index controller we are using ParameterizableViewController, 
-		so we must define an explicit mapping for it. -->
+		so we must define an explicit mapping for it.
 	<bean id="urlMapping"
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
@@ -32,5 +32,5 @@
 			</props>
 		</property>
 	</bean>
-	
+	 -->
 </beans>

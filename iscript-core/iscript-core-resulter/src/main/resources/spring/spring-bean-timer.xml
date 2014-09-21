@@ -12,17 +12,32 @@
 	</bean>
 	<bean id="BarCodeSimilarSearcher" class="com.lezo.iscript.yeam.crawler.BarCodeSimilarSearcher">
 	</bean>
-	<bean id="haole9BarCodeGetter" class="com.lezo.iscript.yeam.crawler.Haole9BarCodeGetter" init-method="init">
-	  <property name="barCodeItemStorager" ref="barCodeItemStorager"></property>
+	<bean id="haole9BarCodeGetter" class="com.lezo.iscript.yeam.crawler.Haole9BarCodeGetter"
+		init-method="init">
+		<property name="barCodeItemStorager" ref="barCodeItemStorager"></property>
 	</bean>
 	<bean id="barCodeItemStorager" class="com.lezo.iscript.yeam.storage.BarCodeItemStorager">
 	</bean>
 	<bean id="storageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
-	  <property name="listeners">
-	     <list>
-	        <ref bean="barCodeItemStorager"/>
-	     </list>
-	  </property>
+		<property name="listeners">
+			<list>
+				<ref bean="barCodeItemStorager" />
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id="qiniuMac" class="com.qiniu.api.auth.digest.Mac">
+		<constructor-arg name="accessKey" value="${qiniu_accessKey}" />
+		<constructor-arg name="secretKey" value="${qiniu_secretKey}" />
+	</bean>
+	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
+		<property name="limit" value="1" />
+		<property name="nameList">
+			<list>
+				<value>ConfigYhdProduct</value>
+			</list>
+		</property>
 	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
@@ -30,16 +45,16 @@
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
+	<!-- <task:scheduled-tasks scheduler="scheduler"> <task:scheduled ref="pullJdListTimer" 
+		method="run" cron="0 0 0/2 * * ?" fixed-delay="60000" /> <task:scheduled 
+		ref="wccSimilarSearchTimer" method="run" cron="0 0 0/5 * * ?" fixed-delay="60000" 
+		/> <task:scheduled ref="HuihuiSimilarSearcher" method="run" cron="0 0 0/5 
+		* * ?" fixed-delay="60000" /> <task:scheduled ref="BarCodeSimilarSearcher" 
+		method="run" cron="0 0 0/5 * * ?" fixed-delay="60000" /> <task:scheduled 
+		ref="storageTimeTrigger" method="doTrigger" fixed-delay="60000" /> </task:scheduled-tasks> -->
+
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="pullJdListTimer" method="run"
-			cron="0 0 0/2 * * ?" fixed-delay="60000" />
-		<task:scheduled ref="wccSimilarSearchTimer" method="run"
-			cron="0 0 0/5 * * ?" fixed-delay="60000" />
-		<task:scheduled ref="HuihuiSimilarSearcher" method="run"
-			cron="0 0 0/5 * * ?" fixed-delay="60000" />
-		<task:scheduled ref="BarCodeSimilarSearcher" method="run"
-			cron="0 0 0/5 * * ?" fixed-delay="60000" />
-		<task:scheduled ref="storageTimeTrigger" method="doTrigger"
-			 fixed-delay="60000" />
+		<task:scheduled ref="dataMessageHandler" method="run"
+			cron="0 0/1 * * * ?" fixed-delay="1000" />
 	</task:scheduled-tasks>
 </beans>

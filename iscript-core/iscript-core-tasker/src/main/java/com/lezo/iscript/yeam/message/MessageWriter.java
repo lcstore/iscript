@@ -21,6 +21,7 @@ import com.lezo.iscript.utils.JSONUtils;
 
 public class MessageWriter implements ObjectWriter<MessageDto> {
 	private static Logger logger = LoggerFactory.getLogger(MessageWriter.class);
+	private static final int MAX_MSG_LEN = 2000;
 
 	@Override
 	public void write(List<MessageDto> dataList) {
@@ -43,43 +44,81 @@ public class MessageWriter implements ObjectWriter<MessageDto> {
 			for (MessageDto mDto : entry.getValue()) {
 				JSONObject mObject = JSONUtils.getJSONObject(mDto.getMessage());
 				String key = JSONUtils.getString(mObject, "bid");
-				key = key == null ? "" : key;
+				key = key == null ? "-" : key;
 				StringBuilder sb = bidMap.get(key);
 				if (sb == null) {
 					sb = new StringBuilder();
 					bidMap.put(key, sb);
 					typeDto = mDto;
 				}
-				if (sb.length() > 0) {
-					sb.append(",");
-				}
-				sb.append(JSONUtils.getObject(mObject, "tid"));
-			}
-			JSONObject newObject = new JSONObject();
-			int len = 0;
-			for (Entry<String, StringBuilder> bEntry : bidMap.entrySet()) {
-				String msg = bEntry.getValue().toString();
-				try {
-					JSONUtils.put(newObject, bEntry.getKey(), new JSONArray("[" + msg + "]"));
-					len += msg.length();
-				} catch (JSONException e) {
-					logger.warn(String.format("type:%s,bid:%s,idArray:%s", entry.getKey(), bEntry.getKey(), msg), e);
-				}
-				if (len >= 1200) {
-					MessageDto cloneDto = typeDto.clone();
-					cloneDto.setMessage(newObject.toString());
+				Object tObject = JSONUtils.getObject(mObject, "tid");
+				tObject = tObject == null ? "" : tObject;
+				int mLen = sb.length() + tObject.toString().length() + key.length() + 10;
+				if (mLen > MAX_MSG_LEN) {
+					JSONObject newObject = new JSONObject();
+					MessageDto cloneDto = newMessage(typeDto, newObject, key, sb);
+					sb = new StringBuilder();
+					bidMap.put(key, sb);
+					sb.append(tObject);
 					mergeList.add(cloneDto);
-					newObject = new JSONObject();
-					len = 0;
+				} else {
+					if (sb.length() > 0) {
+						sb.append(",");
+					}
+					sb.append(tObject);
 				}
 			}
-			if (len > 0) {
+			mergeMsg(mergeList, bidMap, typeDto);
+		}
+		SpringBeanUtils.getBean(MessageService.class).batchSaveDtos(mergeList);
+	}
+
+	private void mergeMsg(List<MessageDto> mergeList, Map<String, StringBuilder> bidMap, MessageDto typeDto) {
+		JSONObject newObject = new JSONObject();
+		int len = 0;
+		for (Entry<String, StringBuilder> bEntry : bidMap.entrySet()) {
+			String msg = bEntry.getValue().toString();
+			int addNew = msg.length() + bEntry.getKey().length() + 10;
+			len += addNew;
+			if (len > MAX_MSG_LEN) {
 				MessageDto cloneDto = typeDto.clone();
 				cloneDto.setMessage(newObject.toString());
 				mergeList.add(cloneDto);
+				newObject = new JSONObject();
+				len = 0;
+			} else {
+				JSONArray mArray = null;
+				try {
+					mArray = newArrayObject(msg);
+				} catch (JSONException e) {
+					logger.warn(String.format("type:%s,bid:%s,idArray:%s", typeDto.getName(), bEntry.getKey(), msg), e);
+				}
+				JSONUtils.put(newObject, bEntry.getKey(), mArray);
 			}
+
 		}
-		SpringBeanUtils.getBean(MessageService.class).batchSaveDtos(mergeList);
+		if (len > 0) {
+			MessageDto cloneDto = typeDto.clone();
+			cloneDto.setMessage(newObject.toString());
+			mergeList.add(cloneDto);
+		}
+	}
+
+	private MessageDto newMessage(MessageDto typeDto, JSONObject mObject, String key, StringBuilder sb) {
+		JSONArray mArray = null;
+		try {
+			mArray = newArrayObject(sb.toString());
+		} catch (JSONException e) {
+			logger.warn(String.format("type:%s,bid:%s,idArray:%s", typeDto.getName(), key, sb), e);
+		}
+		JSONUtils.put(mObject, key, mArray);
+		MessageDto cloneDto = typeDto.clone();
+		cloneDto.setMessage(mObject.toString());
+		return cloneDto;
+	}
+
+	private JSONArray newArrayObject(String data) throws JSONException {
+		return new JSONArray("[" + data + "]");
 	}
 
 	@Override

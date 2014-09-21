@@ -2,14 +2,14 @@ package com.lezo.iscript.yeam.resultmgr;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-public class ValidKey {
+public class CacheObject {
 	private String key;
-	private String attribute;
+	private Object value;
 	private Long creation;
 	private Long timeTo;
 	private Long stamp = 0L;
 
-	public ValidKey(String key, Long timeTo) {
+	public CacheObject(String key, Long timeTo) {
 		this.key = key;
 		this.timeTo = timeTo;
 		this.creation = System.currentTimeMillis();
@@ -21,14 +21,6 @@ public class ValidKey {
 
 	public void setKey(String key) {
 		this.key = key;
-	}
-
-	public String getAttribute() {
-		return attribute;
-	}
-
-	public void setAttribute(String attribute) {
-		this.attribute = attribute;
 	}
 
 	public Long getStamp() {
@@ -52,7 +44,7 @@ public class ValidKey {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ValidKey other = (ValidKey) obj;
+		CacheObject other = (CacheObject) obj;
 		return new EqualsBuilder().append(key, other.getKey()).isEquals();
 	}
 
@@ -66,5 +58,13 @@ public class ValidKey {
 
 	public boolean isTimeOut() {
 		return System.currentTimeMillis() >= this.timeTo;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public synchronized void setValue(Object value) {
+		this.value = value;
 	}
 }
