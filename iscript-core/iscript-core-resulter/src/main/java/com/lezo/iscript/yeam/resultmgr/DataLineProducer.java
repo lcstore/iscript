@@ -136,7 +136,7 @@ public class DataLineProducer implements Runnable {
 	}
 
 	private List<String> toDataList(InputStream inStream) throws Exception {
-		if (inStream == null || inStream.available() < 1) {
+		if (inStream == null) {
 			return Collections.emptyList();
 		}
 		GZIPInputStream gis = new GZIPInputStream(inStream);

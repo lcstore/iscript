@@ -22,4 +22,18 @@ public class JSONUtilsTest {
 		}
 		System.out.println("nokey=" + JSONUtils.getObject(jObject, "nokey"));
 	}
+
+	@Test
+	public void testCopy() throws Exception {
+		SampleDto dto = new SampleDto();
+		JSONObject jObject = new JSONObject();
+		JSONUtils.put(jObject, "name", "lezo");
+		JSONUtils.put(jObject, "age", 18);
+		JSONUtils.put(jObject, "bMan", true);
+		JSONUtils.put(jObject, "isMan", false);
+		Object target = ObjectUtils.newObject(SampleDto.class);
+		ObjectUtils.copyObject(jObject, target);
+		System.out.println(dto);
+		System.out.println(target);
+	}
 }
