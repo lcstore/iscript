@@ -12,5 +12,6 @@ public class ObjectUtilsTest {
 		Integer intValue = ObjectUtils.newObject(Integer.class, 10);
 		Assert.assertNotNull(target);
 		Assert.assertNotNull(intValue);
+		Assert.assertEquals(new Integer(10), intValue);
 	}
 }
