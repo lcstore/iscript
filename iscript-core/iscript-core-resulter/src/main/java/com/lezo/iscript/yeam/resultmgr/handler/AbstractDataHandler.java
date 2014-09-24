@@ -10,32 +10,30 @@ public abstract class AbstractDataHandler implements DataHandler {
 	private static Logger logger = LoggerFactory.getLogger(AbstractDataHandler.class);
 
 	@Override
-	public void handle(String type, String data) {
+	public void handle(String type, JSONObject gObject) {
 		long start = System.currentTimeMillis();
-		JSONObject dataObject = null;
 		try {
-			dataObject = new JSONObject(data);
-			doVerify(type, dataObject);
-			beforeHandle(type, dataObject);
-			doHanlde(type, dataObject);
-			afterHandle(type, dataObject, null);
+			doVerify(type, gObject);
+			beforeHandle(type, gObject);
+			doHanlde(type, gObject);
+			afterHandle(type, gObject, null);
 		} catch (Exception e) {
-			afterHandle(type, dataObject, e);
+			afterHandle(type, gObject, e);
 		} finally {
-			finalCall(type, dataObject, start);
+			finalCall(type, gObject, start);
 		}
 	}
 
-	protected abstract void doHanlde(String type, JSONObject dataObject) throws Exception;
+	protected abstract void doHanlde(String type, JSONObject gObject) throws Exception;
 
-	protected void doVerify(String type, JSONObject dataObject) {
+	protected void doVerify(String type, JSONObject gObject) {
 
 	}
 
-	protected void beforeHandle(String type, JSONObject dataObject) {
+	protected void beforeHandle(String type, JSONObject gObject) {
 	}
 
-	protected void afterHandle(String type, JSONObject dataObject, Throwable ex) {
+	protected void afterHandle(String type, JSONObject gObject, Throwable ex) {
 		if (ex != null) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("[");
@@ -47,10 +45,10 @@ public abstract class AbstractDataHandler implements DataHandler {
 		}
 	}
 
-	protected void finalCall(String type, JSONObject dataObject, long start) {
+	protected void finalCall(String type, JSONObject gObject, long start) {
 		long cost = System.currentTimeMillis() - start;
 		if (cost >= 1000) {
-			JSONObject argsObject = JSONUtils.get(dataObject, "args");
+			JSONObject argsObject = JSONUtils.get(gObject, "args");
 			String argsString = argsObject == null ? "" : argsObject.toString();
 			logger.warn("type:{},args:{},cost:{}", type, argsString, cost);
 		}
