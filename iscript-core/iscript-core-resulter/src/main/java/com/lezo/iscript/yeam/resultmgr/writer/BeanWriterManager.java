@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.lezo.iscript.yeam.resultmgr.listener.ConsumeListener;
+import com.lezo.iscript.common.ObjectWriter;
 
 public class BeanWriterManager {
-	private ConcurrentHashMap<String, ConsumeListener> listenerMap = new ConcurrentHashMap<String, ConsumeListener>();
+	private ConcurrentHashMap<String, ObjectWriter<Object>> writerMap = new ConcurrentHashMap<String, ObjectWriter<Object>>();
 
 	static class InstanceHolder {
 		private static final BeanWriterManager INSTANCE = new BeanWriterManager();
@@ -20,15 +20,15 @@ public class BeanWriterManager {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public void addListener(ConsumeListener listener) {
-		listenerMap.put(listener.toString(), listener);
+	public void addWriter(ObjectWriter<Object> writer) {
+		writerMap.put(writer.toString(), writer);
 	}
 
-	public ConsumeListener getListener(String name) {
-		return listenerMap.get(name);
+	public ObjectWriter<Object> getWriter(String name) {
+		return writerMap.get(name);
 	}
 
-	public Iterator<Entry<String, ConsumeListener>> iterator() {
-		return listenerMap.entrySet().iterator();
+	public Iterator<Entry<String, ObjectWriter<Object>>> iterator() {
+		return writerMap.entrySet().iterator();
 	}
 }

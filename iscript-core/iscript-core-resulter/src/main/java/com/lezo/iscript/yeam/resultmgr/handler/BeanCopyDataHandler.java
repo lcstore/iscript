@@ -1,9 +1,14 @@
 package com.lezo.iscript.yeam.resultmgr.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
+import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.ObjectUtils;
+import com.lezo.iscript.yeam.resultmgr.writer.BeanWriterManager;
 
 public class BeanCopyDataHandler extends AbstractDataHandler {
 
@@ -24,13 +29,18 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			return;
 		}
 		Object dtoObject = ObjectUtils.newObject(dtoClass);
+		if (dtoObject == null) {
+			return;
+		}
 		ObjectUtils.copyObject(dataObject, dtoObject);
-		// XXX send to dest writer..
+		ObjectWriter<Object> writer = BeanWriterManager.getInstance().getWriter(dtoObject.getClass().getSimpleName());
+		List<Object> dataList = new ArrayList<Object>(1);
+		dataList.add(dtoObject);
+		writer.write(dataList);
 	}
 
-	private Class<?> getDtoClass(String clsName) {
-		// TODO Auto-generated method stub
-		return null;
+	private Class<?> getDtoClass(String name) throws ClassNotFoundException {
+		return Thread.currentThread().getContextClassLoader().loadClass(name);
 	}
 
 }
