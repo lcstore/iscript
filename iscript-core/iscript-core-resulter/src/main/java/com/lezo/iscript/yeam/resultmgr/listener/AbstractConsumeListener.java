@@ -16,6 +16,7 @@ public abstract class AbstractConsumeListener implements ConsumeListener {
 		if (!isAccept(type, gObject)) {
 			return;
 		}
+		getHandler().handle(type, gObject);
 	}
 
 	protected JSONObject doVerify(String type, String data) {

@@ -12,6 +12,7 @@ public class ConsumeListenerManager {
 	}
 
 	private ConsumeListenerManager() {
+		addListener(new BeanCopyListener());
 	}
 
 	public static ConsumeListenerManager getInstance() {

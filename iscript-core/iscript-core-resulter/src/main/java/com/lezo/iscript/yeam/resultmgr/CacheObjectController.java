@@ -36,7 +36,7 @@ public class CacheObjectController {
 		return System.currentTimeMillis() > timeOut;
 	}
 
-	private long getNextTimeOut() {
+	public long getNextTimeOut() {
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR, 0);
 		c.set(Calendar.MINUTE, 0);

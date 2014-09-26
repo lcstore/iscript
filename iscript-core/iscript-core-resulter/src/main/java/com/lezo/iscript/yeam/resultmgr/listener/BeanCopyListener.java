@@ -23,15 +23,11 @@ public class BeanCopyListener extends AbstractConsumeListener {
 		if (gObject == null) {
 			return false;
 		}
-		JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
-		if (rsObject == null) {
+		JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
+		if (argsObject == null) {
 			return false;
 		}
-		JSONObject tObject = JSONUtils.getJSONObject(rsObject, "target");
-		if (tObject == null) {
-			return false;
-		}
-		String handler = JSONUtils.getString(tObject, "handler");
+		String handler = JSONUtils.getString(argsObject, "handler");
 		return StringUtils.isEmpty(handler);
 	}
 

@@ -3,7 +3,6 @@ package com.lezo.iscript.yeam.resultmgr;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -167,21 +166,12 @@ public class DataLineProducer implements Runnable {
 		CacheObject cacheObject = controller.getValidValue(dataPath);
 		if (cacheObject == null) {
 			synchronized (controller) {
-				cacheObject = new CacheObject(dataPath, getNextTimeOut());
+				cacheObject = new CacheObject(dataPath, controller.getNextTimeOut());
 				cacheObject.setValue("");
 				controller.addValidValue(dataPath, cacheObject);
 			}
 		}
 		return cacheObject;
-	}
-
-	private long getNextTimeOut() {
-		Calendar c = Calendar.getInstance();
-		c.set(Calendar.HOUR, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		c.add(Calendar.DAY_OF_MONTH, 1);
-		return c.getTimeInMillis();
 	}
 
 	public String getDomain() {
