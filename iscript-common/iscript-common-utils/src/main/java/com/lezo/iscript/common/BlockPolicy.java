@@ -18,7 +18,7 @@ public class BlockPolicy implements RejectedExecutionHandler {
 			try {
 				wQueue.put(r);
 				long cost = System.currentTimeMillis() - start;
-				logger.info("{}.Finish to put task,cost:{},total:", executor, cost);
+				logger.info("{}.Finish to put task,cost:{}", executor, cost);
 			} catch (InterruptedException e) {
 				long cost = System.currentTimeMillis() - start;
 				logger.warn(executor + ".put task:" + r + ",cost:" + cost + ",cause:", e);

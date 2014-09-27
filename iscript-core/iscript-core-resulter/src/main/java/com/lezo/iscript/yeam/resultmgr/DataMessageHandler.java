@@ -35,7 +35,7 @@ public class DataMessageHandler {
 
 	private List<String> nameList;
 	private Integer limit = 50;
-	private Integer maxPathCount = 1;
+	private Integer maxPathCount = 100;
 
 	public void run() {
 		if (running.get()) {
@@ -52,9 +52,6 @@ public class DataMessageHandler {
 				List<MessageDto> dtoList = messageService.getMessageDtos(nameList, 0, limit);
 				logger.info("Query.name:{},limit:{},query:{},size:{},last.path:{}.", nameList, limit, ++query,
 						dtoList.size(), pathSet.size());
-				if (dtoList.size() < limit) {
-					break;
-				}
 				Set<Long> idSet = new HashSet<Long>(dtoList.size());
 				for (MessageDto dto : dtoList) {
 					idSet.add(dto.getId());
@@ -76,6 +73,9 @@ public class DataMessageHandler {
 				}
 				messageService.batchUpdateStatus(new ArrayList<Long>(idSet), -1, "size:" + idSet.size());
 				if (pathSet.size() >= maxPathCount) {
+					break;
+				}
+				if (dtoList.size() < limit) {
 					break;
 				}
 			}

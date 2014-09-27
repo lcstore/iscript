@@ -59,6 +59,7 @@ public class DataLineProducer implements Runnable {
 			ret = client.listPrifix("istore", key, marker, limit);
 			if (ret.statusCode >= 200 && ret.statusCode < 300) {
 				marker = ret.marker;
+				addAccepts(ret.results, cacheObject, itemList);
 				if (!CollectionUtils.isEmpty(ret.results)) {
 					itemList.addAll(ret.results);
 				}
@@ -82,6 +83,23 @@ public class DataLineProducer implements Runnable {
 			cacheObject.setValue(marker);
 		}
 		downDataToCumsume(type, itemList);
+	}
+
+	private void addAccepts(List<ListItem> results, CacheObject cacheObject, List<ListItem> itemList) {
+		if (CollectionUtils.isEmpty(results)) {
+			return;
+		}
+		long maxStamp = cacheObject.getStamp();
+		for (ListItem rs : results) {
+
+			if (maxStamp < rs.putTime) {
+				itemList.add(rs);
+				maxStamp = rs.putTime;
+			}
+		}
+		if (cacheObject.getStamp() != maxStamp) {
+			cacheObject.setStamp(maxStamp);
+		}
 	}
 
 	private String getTypeFromPath(String dataPath) {

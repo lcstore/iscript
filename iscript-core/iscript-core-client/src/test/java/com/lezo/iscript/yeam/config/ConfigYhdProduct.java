@@ -44,7 +44,7 @@ public class ConfigYhdProduct implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		addCookie();
 		JSONObject itemObject = getItemObject(task);
-		doCollect(itemObject,task);
+		doCollect(itemObject, task);
 		return EMTPY_RESULT;
 	}
 
@@ -52,8 +52,19 @@ public class ConfigYhdProduct implements ConfigParser {
 		JSONObject gObject = new JSONObject();
 		JSONObject argsObject = new JSONObject(task.getArgs());
 		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
-		JSONUtils.put(gObject, "rs", itemObject.toString());
+
 		JSONUtils.put(gObject, "args", argsObject);
+
+		// {"target":[],"data":{},"nexts":[]}
+		JSONObject dataObject = new JSONObject();
+		JSONArray tArray = new JSONArray();
+		tArray.put("ProductDto");
+		tArray.put("ProductStatDto");
+		JSONUtils.put(dataObject, "target", tArray);
+		JSONUtils.put(dataObject, "data", itemObject);
+
+		JSONUtils.put(gObject, "rs", dataObject.toString());
+
 		List<JSONObject> dataList = new ArrayList<JSONObject>();
 		dataList.add(gObject);
 		PersistentCollector.getInstance().getBufferWriter().write(dataList);
@@ -93,11 +104,11 @@ public class ConfigYhdProduct implements ConfigParser {
 		toIndex = toIndex < 0 ? 0 : html.length();
 		html = html.substring(fromIndex + 1, toIndex);
 		JSONObject dObject = new JSONObject(html);
-		JSONUtils.put(itemObject, "productPrice", JSONUtils.get(dObject, "currentPrice"));
-		JSONUtils.put(itemObject, "yhdPrice", JSONUtils.get(dObject, "yhdPrice"));
-		JSONUtils.put(itemObject, "promotPrice", JSONUtils.get(dObject, "promPrice"));
-		JSONUtils.put(itemObject, "marketPrice", JSONUtils.get(dObject, "marketPrice"));
-		JSONUtils.put(itemObject, "stockNum", JSONUtils.get(dObject, "currentStockNum"));
+		JSONUtils.put(itemObject, "productPrice", JSONUtils.getFloat(dObject, "currentPrice"));
+		JSONUtils.put(itemObject, "yhdPrice", JSONUtils.getFloat(dObject, "yhdPrice"));
+		JSONUtils.put(itemObject, "promotPrice", JSONUtils.getFloat(dObject, "promPrice"));
+		JSONUtils.put(itemObject, "marketPrice", JSONUtils.getFloat(dObject, "marketPrice"));
+		JSONUtils.put(itemObject, "stockNum", JSONUtils.getInteger(dObject, "currentStockNum"));
 		oElements = dom.select("#companyName[value]");
 		if (!oElements.isEmpty()) {
 			JSONUtils.put(itemObject, "shopName", oElements.first().attr("value"));
@@ -114,7 +125,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		} else {
 			oElements = dom.select("#mod_salesvolume[saleNumber]");
 			if (!oElements.isEmpty()) {
-				JSONUtils.put(itemObject, "soldNum", oElements.first().attr("saleNumber"));
+				JSONUtils.put(itemObject, "soldNum", Integer.valueOf(oElements.first().attr("saleNumber")));
 			}
 		}
 		oElements = dom.select("div.crumb a[href^=http://www.yhd.com/ctg/]");
@@ -179,7 +190,7 @@ public class ConfigYhdProduct implements ConfigParser {
 			toIndex = toIndex < 0 ? 0 : html.length();
 			html = html.substring(fromIndex + 1, toIndex);
 			JSONObject mObject = new JSONObject(html);
-			JSONUtils.put(itemObject, "commentNum", JSONUtils.get(mObject, "experienceNum"));
+			JSONUtils.put(itemObject, "commentNum", JSONUtils.getInteger(mObject, "experienceNum"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

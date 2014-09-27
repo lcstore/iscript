@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.resultmgr;
 
+import java.util.Calendar;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 public class CacheObject {
@@ -13,6 +15,9 @@ public class CacheObject {
 		this.key = key;
 		this.timeTo = timeTo;
 		this.creation = System.currentTimeMillis();
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.HOUR, -1);
+		this.stamp = c.getTimeInMillis();
 	}
 
 	public String getKey() {

@@ -20,7 +20,7 @@ public class ConsumeListenerManager {
 	}
 
 	public void addListener(ConsumeListener listener) {
-		listenerMap.put(listener.toString(), listener);
+		listenerMap.put(listener.getClass().getSimpleName(), listener);
 	}
 
 	public ConsumeListener getListener(String name) {

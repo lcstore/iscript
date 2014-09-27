@@ -17,16 +17,16 @@ public class BeanWriterManager {
 	}
 
 	private BeanWriterManager() {
-		addWriter(new BufferObjectWriter<ProductDto>(new ProductWriter(), 200));
-		addWriter(new BufferObjectWriter<ProductStatDto>(new ProductStatWriter(), 200));
+		addWriter("ProductDto", new BufferObjectWriter<ProductDto>(new ProductWriter(), 200));
+		addWriter("ProductStatDto", new BufferObjectWriter<ProductStatDto>(new ProductStatWriter(), 200));
 	}
 
 	public static BeanWriterManager getInstance() {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public void addWriter(ObjectWriter<?> writer) {
-		writerMap.put(writer.toString(), writer);
+	public void addWriter(String name, ObjectWriter<?> writer) {
+		writerMap.put(name, writer);
 	}
 
 	@SuppressWarnings("unchecked")

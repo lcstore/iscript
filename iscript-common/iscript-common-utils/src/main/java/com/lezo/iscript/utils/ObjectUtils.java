@@ -78,7 +78,8 @@ public class ObjectUtils {
 			if (!vGetter.hasKey(pd.getName())) {
 				continue;
 			}
-			writeMethod.invoke(target, vGetter.getValue(pd.getName(), source));
+			Object valueObject = vGetter.getValue(pd.getName(), source);
+			copyField(writeMethod, target, valueObject);
 		}
 		return target;
 	}
@@ -114,4 +115,43 @@ public class ObjectUtils {
 		}, target);
 	}
 
+	public static <T> T copyField(String fieldName, T target, Object... args) throws Exception {
+		Class<?> cls = target.getClass();
+		Method md = MethodUtils.getWriteMethod(fieldName, cls, args);
+		return copyField(md, target, args);
+	}
+
+	public static <T> T copyField(Method writeMethod, T target, Object... args) throws Exception {
+		if (writeMethod == null) {
+			return target;
+		}
+		Class<?>[] paramArray = writeMethod.getParameterTypes();
+		if (paramArray.length != 1) {
+			writeMethod.invoke(target, args);
+			return target;
+		}
+		Class<?> paramClass = paramArray[0];
+		Object valueObject = args[0];
+		if (valueObject == null) {
+			writeMethod.invoke(target, valueObject);
+			return target;
+		}
+		if (valueObject.getClass().isAssignableFrom(paramClass)) {
+			writeMethod.invoke(target, valueObject);
+			return target;
+		}
+		Method valueOfMd = paramClass.getMethod("valueOf", String.class);
+		if (valueOfMd != null) {
+			valueObject = valueOfMd.invoke(paramClass, valueObject.toString());
+			writeMethod.invoke(target, valueObject);
+		} else {
+			try {
+				writeMethod.invoke(target, valueObject);
+			} catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException("invoke field:" + writeMethod.getName() + ",destParams:"
+						+ paramClass + ",srcParam:" + valueObject.getClass() + ",cause:", e);
+			}
+		}
+		return target;
+	}
 }

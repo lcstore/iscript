@@ -41,15 +41,15 @@ public class LsdBarCodeGetter implements ConfigParser {
 	private Timer saveTimer;
 
 	public LsdBarCodeGetter() {
-		saveTimer = new Timer(true);
-		saveTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				log.info("@@start to save....");
-				addSaver();
-				log.info("@@end to save....");
-			}
-		}, 60 * 1000);
+//		saveTimer = new Timer(true);
+//		saveTimer.schedule(new TimerTask() {
+//			@Override
+//			public void run() {
+//				log.info("@@start to save....");
+//				addSaver();
+//				log.info("@@end to save....");
+//			}
+//		}, 60 * 1000);
 	}
 
 	public String getName() {

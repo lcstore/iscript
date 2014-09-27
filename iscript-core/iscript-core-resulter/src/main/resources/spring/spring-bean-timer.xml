@@ -25,20 +25,23 @@
 			</list>
 		</property>
 	</bean>
-	
-	
+
+
 	<bean id="qiniuMac" class="com.qiniu.api.auth.digest.Mac">
 		<constructor-arg name="accessKey" value="${qiniu_accessKey}" />
 		<constructor-arg name="secretKey" value="${qiniu_secretKey}" />
 	</bean>
 	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
-		<property name="limit" value="1" />
+		<property name="limit" value="100" />
+		<property name="maxPathCount" value="100" />
 		<property name="nameList">
 			<list>
 				<value>ConfigYhdProduct</value>
 			</list>
 		</property>
 	</bean>
+
+	<bean id="flushWriterTimer" class="com.lezo.iscript.yeam.resultmgr.writer.FlushWriterTimer"></bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="3" />
@@ -55,6 +58,10 @@
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
-			cron="0 0/1 * * * ?" fixed-delay="1000" />
+			cron="0 0/1 * * * ?" />
+	</task:scheduled-tasks>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="flushWriterTimer" method="run"
+			cron="0 0/5 * * * ?" />
 	</task:scheduled-tasks>
 </beans>

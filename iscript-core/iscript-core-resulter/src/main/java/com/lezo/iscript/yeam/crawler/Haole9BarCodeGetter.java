@@ -33,10 +33,10 @@ public class Haole9BarCodeGetter implements ConfigParser {
 	}
 
 	public void init() throws Exception {
-		String url = "http://www.haole9.com/search.php?keywords=&category=0&brand=0&sort=last_update&order=DESC&min_price=0&max_price=0&action=&intro=&goods_type=0&sc_ds=0&outstock=0&page=93";
-		TaskWritable task = new TaskWritable();
-		task.put("url", url);
-		doParse(task);
+//		String url = "http://www.haole9.com/search.php?keywords=&category=0&brand=0&sort=last_update&order=DESC&min_price=0&max_price=0&action=&intro=&goods_type=0&sc_ds=0&outstock=0&page=93";
+//		TaskWritable task = new TaskWritable();
+//		task.put("url", url);
+//		doParse(task);
 	}
 
 	@Override
