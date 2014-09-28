@@ -55,13 +55,15 @@ public class ConfigYhdProduct implements ConfigParser {
 
 		JSONUtils.put(gObject, "args", argsObject);
 
-		// {"target":[],"data":{},"nexts":[]}
+		// {"target":[],"data":[],"nexts":[]}
 		JSONObject dataObject = new JSONObject();
 		JSONArray tArray = new JSONArray();
 		tArray.put("ProductDto");
 		tArray.put("ProductStatDto");
 		JSONUtils.put(dataObject, "target", tArray);
-		JSONUtils.put(dataObject, "data", itemObject);
+		JSONArray dArray = new JSONArray();
+		dArray.put(itemObject);
+		JSONUtils.put(dataObject, "data", dArray);
 
 		JSONUtils.put(gObject, "rs", dataObject.toString());
 

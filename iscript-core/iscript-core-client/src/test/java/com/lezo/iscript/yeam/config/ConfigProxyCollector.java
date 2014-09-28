@@ -86,7 +86,9 @@ public class ConfigProxyCollector implements ConfigParser {
 		JSONArray tArray = new JSONArray();
 		tArray.put("com.lezo.iscript.service.crawler.dto.ProxyDetectDto");
 		JSONUtils.put(dataObject, "target", tArray);
-		JSONUtils.put(dataObject, "data", itemObject);
+
+		JSONArray dArray = JSONUtils.get(itemObject, "proxys");
+		JSONUtils.put(dataObject, "data", dArray);
 		JSONUtils.put(dataObject, "nexts", nextArray);
 
 		JSONUtils.put(gObject, "rs", dataObject.toString());

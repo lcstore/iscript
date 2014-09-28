@@ -24,20 +24,27 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"target":[],"data":{},"nexts":[]}
+	 * data struct: {"target":[],"data":[],"nexts":[]}
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
 
 		JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
 		rsObject = rsObject == null ? JSONUtils.getJSONObject(gObject, "dataString") : rsObject;
-		JSONArray tArray = JSONUtils.get(rsObject, "target");
+		Object tObject = JSONUtils.get(rsObject, "target");
+		JSONArray tArray = null;
+		if (tObject instanceof JSONArray) {
+			tArray = (JSONArray) tObject;
+		} else if (tObject instanceof JSONObject) {
+			tArray = new JSONArray();
+			tArray.put(tObject);
+		}
 		if (tArray == null) {
 			logger.warn("no target.type:{},data:{}", type, gObject);
 			return;
 		}
-		JSONObject dataObject = JSONUtils.getJSONObject(rsObject, "data");
-		if (dataObject == null) {
+		JSONArray dataArray = JSONUtils.get(rsObject, "data");
+		if (dataArray == null) {
 			logger.warn("no data.type:{},data:{}", type, gObject);
 			return;
 		}
@@ -45,7 +52,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		int len = tArray.length();
 		for (int i = 0; i < len; i++) {
 			try {
-				addDestObject(type, tArray.getString(i), dataObject, argsObject);
+				addDestObject(type, tArray.getString(i), dataArray, argsObject);
 			} catch (Exception e) {
 				String msg = String.format("type:%s,class:%s,cause:", type, tArray.getString(i));
 				logger.warn(msg, e);
@@ -53,22 +60,27 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		}
 	}
 
-	private void addDestObject(String type, String clsName, JSONObject dataObject, JSONObject argsObject)
+	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject)
 			throws Exception {
 		Class<?> dtoClass = getDtoClass(clsName);
-		if (dataObject == null) {
-			return;
-		}
 		Object destObject = ObjectUtils.newObject(dtoClass);
 		ObjectWriter<Object> writer = BeanWriterManager.getInstance().getWriter(destObject.getClass().getSimpleName());
 		if (writer == null) {
 			logger.warn("type:{},can not found writer:{}", type, destObject.getClass().getSimpleName());
 			return;
 		}
-		ObjectUtils.copyObject(dataObject, destObject);
-		addProperties(destObject, dataObject, argsObject);
-		List<Object> dataList = new ArrayList<Object>(1);
-		dataList.add(destObject);
+		int len = dataArray.length();
+		List<Object> dataList = new ArrayList<Object>(len);
+		for (int i = 0; i < len; i++) {
+			JSONObject rObject = dataArray.getJSONObject(i);
+			ObjectUtils.copyObject(rObject, destObject);
+			try {
+				addProperties(destObject, rObject, argsObject);
+				dataList.add(destObject);
+			} catch (Exception e) {
+				logger.warn("add data fail.cause:", e);
+			}
+		}
 		writer.write(dataList);
 	}
 
@@ -141,6 +153,11 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 					writeMd.invoke(destObject, shopDto.getId());
 				}
 			}
+		}
+		sidObject = readMd.invoke(destObject);
+		if (sidObject == null) {
+			String msg = String.format("can not set shopId.args:%s,data:%s", argsObject, dataObject);
+			throw new IllegalAccessException(msg);
 		}
 	}
 
