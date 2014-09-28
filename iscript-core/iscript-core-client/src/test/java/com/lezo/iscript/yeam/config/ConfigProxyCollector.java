@@ -15,10 +15,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
+import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -64,8 +67,35 @@ public class ConfigProxyCollector implements ConfigParser {
 				nextArray.put(nextUrl);
 			}
 		}
-		JSONUtils.put(jObject, "nexts", nextArray);
-		return jObject.toString();
+		doCollect(jObject, nextArray, task);
+
+		JSONObject taskObject = new JSONObject();
+		JSONUtils.put(taskObject, "nexts", nextArray);
+		return taskObject.toString();
+	}
+
+	private void doCollect(JSONObject itemObject, JSONArray nextArray, TaskWritable task) {
+		JSONObject gObject = new JSONObject();
+		JSONObject argsObject = new JSONObject(task.getArgs());
+		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+
+		JSONUtils.put(gObject, "args", argsObject);
+
+		// {"target":[],"data":{},"nexts":[]}
+		JSONObject dataObject = new JSONObject();
+		JSONArray tArray = new JSONArray();
+		tArray.put("com.lezo.iscript.service.crawler.dto.ProxyDetectDto");
+		JSONUtils.put(dataObject, "target", tArray);
+		JSONUtils.put(dataObject, "data", itemObject);
+		JSONUtils.put(dataObject, "nexts", nextArray);
+
+		JSONUtils.put(gObject, "rs", dataObject.toString());
+
+		System.out.println("file.content:" + gObject);
+
+		List<JSONObject> dataList = new ArrayList<JSONObject>();
+		dataList.add(gObject);
+		PersistentCollector.getInstance().getBufferWriter().write(dataList);
 	}
 
 	private List<String> handleUrl(String url, JSONObject jObject, DefaultHttpClient client) throws Exception {
@@ -83,8 +113,9 @@ public class ConfigProxyCollector implements ConfigParser {
 		}
 		while (matcher.find()) {
 			JSONObject ipObject = new JSONObject();
-			JSONUtils.put(ipObject, "ip", matcher.group(1));
-			JSONUtils.put(ipObject, "port", matcher.group(2));
+			String ipString = matcher.group(1);
+			JSONUtils.put(ipObject, "ip", InetAddressUtils.inet_aton(ipString));
+			JSONUtils.put(ipObject, "port", Integer.valueOf(matcher.group(2)));
 			proxyArray.put(ipObject);
 			System.out.println(matcher.group(1) + ":" + matcher.group(2));
 		}
