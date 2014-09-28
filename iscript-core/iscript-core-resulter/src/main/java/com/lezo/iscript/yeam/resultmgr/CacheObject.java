@@ -16,7 +16,7 @@ public class CacheObject {
 		this.timeTo = timeTo;
 		this.creation = System.currentTimeMillis();
 		Calendar c = Calendar.getInstance();
-		c.add(Calendar.HOUR, -1);
+		c.add(Calendar.MINUTE, -30);
 		this.stamp = c.getTimeInMillis();
 	}
 

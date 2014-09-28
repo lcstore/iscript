@@ -47,10 +47,10 @@ public abstract class AbstractDataHandler implements DataHandler {
 
 	protected void finalCall(String type, JSONObject gObject, long start) {
 		long cost = System.currentTimeMillis() - start;
-		if (cost >= 1000) {
+		if (cost >= 30000) {
 			JSONObject argsObject = JSONUtils.get(gObject, "args");
 			String argsString = argsObject == null ? "" : argsObject.toString();
-			logger.warn("type:{},args:{},cost:{}", type, argsString, cost);
+			logger.warn("cost too long time.type:{},args:{},cost:{}", type, argsString, cost);
 		}
 	}
 }
