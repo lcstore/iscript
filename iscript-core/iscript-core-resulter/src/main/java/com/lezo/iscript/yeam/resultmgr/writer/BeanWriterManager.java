@@ -2,7 +2,7 @@ package com.lezo.iscript.yeam.resultmgr.writer;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 
 import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.common.ObjectWriter;
@@ -10,7 +10,7 @@ import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 
 public class BeanWriterManager {
-	private ConcurrentHashMap<String, ObjectWriter<?>> writerMap = new ConcurrentHashMap<String, ObjectWriter<?>>();
+	private WeakHashMap<String, ObjectWriter<?>> writerMap = new WeakHashMap<String, ObjectWriter<?>>();
 
 	static class InstanceHolder {
 		private static final BeanWriterManager INSTANCE = new BeanWriterManager();
@@ -25,7 +25,7 @@ public class BeanWriterManager {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public void addWriter(String name, ObjectWriter<?> writer) {
+	public synchronized void addWriter(String name, ObjectWriter<?> writer) {
 		writerMap.put(name, writer);
 	}
 
