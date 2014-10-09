@@ -81,7 +81,7 @@ public class MessageWriter implements ObjectWriter<MessageDto> {
 			int addNew = msg.length() + bEntry.getKey().length() + 10;
 			len += addNew;
 			if (len > MAX_MSG_LEN) {
-				MessageDto cloneDto = typeDto.clone();
+				MessageDto cloneDto = (MessageDto) typeDto.clone();
 				cloneDto.setMessage(newObject.toString());
 				mergeList.add(cloneDto);
 				newObject = new JSONObject();
@@ -98,7 +98,7 @@ public class MessageWriter implements ObjectWriter<MessageDto> {
 
 		}
 		if (len > 0) {
-			MessageDto cloneDto = typeDto.clone();
+			MessageDto cloneDto = (MessageDto) typeDto.clone();
 			cloneDto.setMessage(newObject.toString());
 			mergeList.add(cloneDto);
 		}
@@ -112,7 +112,7 @@ public class MessageWriter implements ObjectWriter<MessageDto> {
 			logger.warn(String.format("type:%s,bid:%s,idArray:%s", typeDto.getName(), key, sb), e);
 		}
 		JSONUtils.put(mObject, key, mArray);
-		MessageDto cloneDto = typeDto.clone();
+		MessageDto cloneDto = (MessageDto) typeDto.clone();
 		cloneDto.setMessage(mObject.toString());
 		return cloneDto;
 	}

@@ -13,7 +13,7 @@ public class FlushWriterTimer {
 
 	public void run() {
 		long start = System.currentTimeMillis();
-		Iterator<Entry<String, ObjectWriter<?>>> it = BeanWriterManager.getInstance().iterator();
+		Iterator<Entry<String, ObjectWriter<?>>> it = BufferWriterManager.getInstance().iterator();
 		int size = 0;
 		logger.info("start to flush writer...");
 		while (it.hasNext()) {

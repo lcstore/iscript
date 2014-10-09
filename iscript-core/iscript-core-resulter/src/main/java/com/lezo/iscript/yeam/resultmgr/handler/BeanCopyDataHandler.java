@@ -17,7 +17,7 @@ import com.lezo.iscript.service.crawler.utils.ShopCacher;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.MethodUtils;
 import com.lezo.iscript.utils.ObjectUtils;
-import com.lezo.iscript.yeam.resultmgr.writer.BeanWriterManager;
+import com.lezo.iscript.yeam.resultmgr.writer.BufferWriterManager;
 
 @Component
 public class BeanCopyDataHandler extends AbstractDataHandler {
@@ -67,7 +67,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			throws Exception {
 		Class<?> dtoClass = getDtoClass(clsName);
 		Object destObject = ObjectUtils.newObject(dtoClass);
-		ObjectWriter<Object> writer = BeanWriterManager.getInstance().getWriter(destObject.getClass().getSimpleName());
+		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());
 		if (writer == null) {
 			logger.warn("type:{},can not found writer:{}", type, destObject.getClass().getSimpleName());
 			return;
