@@ -18,5 +18,6 @@
 		<mapper resource="mybatis/mybatis-mapper-sessionHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-listRank.xml" />
 		<mapper resource="mybatis/mybatis-mapper-message.xml" />
+		<mapper resource="mybatis/mybatis-mapper-promotionMap.xml" />
 	</mappers>
 </configuration>
