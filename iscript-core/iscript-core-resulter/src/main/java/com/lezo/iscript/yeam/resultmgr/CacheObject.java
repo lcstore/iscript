@@ -12,9 +12,15 @@ public class CacheObject {
 	private Long stamp = 0L;
 
 	public CacheObject(String key, Long timeTo) {
+		this(key, "", System.currentTimeMillis(), timeTo);
+	}
+
+	public CacheObject(String key, Object value, Long creation, Long timeTo) {
+		super();
 		this.key = key;
+		this.value = value;
+		this.creation = creation;
 		this.timeTo = timeTo;
-		this.creation = System.currentTimeMillis();
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.MINUTE, -30);
 		this.stamp = c.getTimeInMillis();

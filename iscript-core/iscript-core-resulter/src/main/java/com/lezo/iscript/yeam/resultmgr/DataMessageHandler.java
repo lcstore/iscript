@@ -3,9 +3,12 @@ package com.lezo.iscript.yeam.resultmgr;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,11 +50,11 @@ public class DataMessageHandler {
 		try {
 			logger.info("start to do DataMessageHandler ..");
 			running.set(true);
-			Set<String> pathSet = new HashSet<String>();
+			Map<String, Date> dirMap = new HashMap<String, Date>();
 			while (true) {
 				List<MessageDto> dtoList = messageService.getMessageDtos(nameList, 0, limit);
 				logger.info("Query.name:{},limit:{},query:{},size:{},last.path:{}.", nameList, limit, ++query,
-						dtoList.size(), pathSet.size());
+						dtoList.size(), dirMap.size());
 				Set<Long> idSet = new HashSet<Long>(dtoList.size());
 				for (MessageDto dto : dtoList) {
 					idSet.add(dto.getId());
@@ -68,21 +71,25 @@ public class DataMessageHandler {
 						sb.append(dto.getName());
 						sb.append(DIR_SEPARATOR);
 						sb.append(it.next().toString());
-						pathSet.add(sb.toString());
+						String key = sb.toString();
+						Date dirStamp = dirMap.get(key);
+						if (dirStamp == null || dirStamp.after(dto.getCreateTime())) {
+							dirMap.put(key, dto.getCreateTime());
+						}
 					}
 				}
 				messageService.batchUpdateStatus(new ArrayList<Long>(idSet), -1, "size:" + idSet.size());
-				if (pathSet.size() >= maxPathCount) {
+				if (dirMap.size() >= maxPathCount) {
 					break;
 				}
 				if (dtoList.size() < limit) {
 					break;
 				}
 			}
-			buildeProducer(pathSet);
+			buildeProducer(dirMap);
 			long cost = System.currentTimeMillis() - start;
 			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,dir:%s,cost:%s.", nameList, limit,
-					query, pathSet.size(), cost);
+					query, dirMap.size(), cost);
 			logger.info(msg);
 		} catch (Exception e) {
 			long cost = System.currentTimeMillis() - start;
@@ -94,9 +101,9 @@ public class DataMessageHandler {
 		}
 	}
 
-	private void buildeProducer(Set<String> dirSet) {
-		for (String dir : dirSet) {
-			executor.execute(new DataLineProducer(dir));
+	private void buildeProducer(Map<String, Date> dirMap) {
+		for (Entry<String, Date> entry : dirMap.entrySet()) {
+			executor.execute(new DataLineProducer(entry.getKey(), entry.getValue()));
 		}
 	}
 
