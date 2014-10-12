@@ -1,1242 +1,766 @@
- 
-/*! bcore.min.js 2014-05-08 17:47:55 */
-!function(a) {
-    function b(a) {
-        this.instance_id = this["static"].index, this.pool = [], this["static"].index++, b.instances[this.instance_id] = this, "function" == typeof a && (this.ready = a, this["static"].pageReady ? this.readyHook() : d(this))
-    }
-    b.prototype.instance_id = null, b.instances = [], b.prototype.callbacks = [], b.prototype["static"] = {index: 0,pageReady: !1,req_over: !1}, b.prototype.options = {}, b.prototype.readyFun = [], b.prototype.ready = function() {
-    }, b.prototype.readyHook = function() {
-        this.ready()
-    }, b.prototype.constFun = function(a) {
-        "function" == typeof a && a()
-    }, b.prototype.isLoaded = !1;
-    var c = function(a) {
-        a.isLoaded || (a.isLoaded = !0, a["static"].pageReady = !0, a.readyHook())
-    }, d = function(b) {
-        var d = b;
-        if ("complete" === document.readyState)
-            return setTimeout(function() {
-                c(d)
-            }, 0);
-        if (document.addEventListener)
-            document.addEventListener("DOMContentLoaded", function() {
-                document.removeEventListener("DOMContentLoaded", arguments.callee, !1), function() {
-                    return document.body ? void setTimeout(function() {
-                        c(d)
-                    }, 0) : setTimeout(arguments.callee, 1)
-                }()
-            }, !1), a.addEventListener("load", function() {
-                document.removeEventListener("load", arguments.callee, !1), setTimeout(function() {
-                    c(d)
-                }, 0)
-            }, !1);
-        else if (document.attachEvent) {
-            document.attachEvent("onreadystatechange", function() {
-                "complete" === document.readyState && (document.detachEvent("onreadystatechange", arguments.callee), setTimeout(function() {
-                    c(d)
-                }, 0))
-            }), a.attachEvent("onload", function() {
-                document.detachEvent("onload", arguments.callee), setTimeout(function() {
-                    c(d)
-                }, 0)
-            });
-            var e = !1;
-            try {
-                e = null == a.frameElement
-            } catch (f) {
-            }
-            document.documentElement.doScroll && e && !function() {
-                try {
-                    document.documentElement.doScroll("left")
-                } catch (a) {
-                    return setTimeout(arguments.callee, 1)
-                }
-                setTimeout(function() {
-                    c(d)
-                }, 0)
-            }()
-        }
-    };
-    b.prototype.jsonp = function(b) {
-        var c = a.location.href;
-        0 == c.indexOf("https://") && (b = b.replace("http://", "https://")), b += -1 === b.indexOf("?") ? "?random=" + (new Date).getTime() : "&random=" + (new Date).getTime();
-        var d = document.createElement("script");
-        d.setAttribute("src", b), d.setAttribute("charset", "utf-8"), document.getElementsByTagName("head")[0].appendChild(d)
-    }, b.prototype.send = function(a, c, d) {
-        var d = d || this;
-        return d["static"].req_over ? (d.options.gid || (d.options.gid = BFDSubCookie.getCookiePart("bfd_g") || ""), void setTimeout(function() {
-            var e = d.callbacks.length;
-            if ("undefined" == typeof c && (c = function() {
-            }), !(!a instanceof b.Request)) {
-                d.callbacks.push(function(a) {
-                    c(a), d.callbacks[e] = null, c = null
-                });
-                var f = a.query(), g = function() {
-                    var a = [];
-                    for (var c in d.options)
-                        "string" == typeof d.options[c] && a.push(c + "=" + b.Request.prototype.combineStr(d.options[c]));
-                    return a.join("&")
-                }(), h = [];
-                f && h.push(f), g && h.push(g), h.push("callback=BCore.instances[" + d.instance_id + "].callbacks[" + e + "]"), d.jsonp(a.getUrl() + (-1 === a.getUrl().indexOf("?") ? "?" : "&") + h.join("&"))
-            }
-        }, 100)) : setTimeout(function() {
-            b.prototype.send(a, c, d)
-        }, 200)
-    }, b.prototype.extend = function(a, c) {
-        var d = function(a, c) {
-            b.call(this, a, c)
-        };
-        "undefined" != typeof a && (d = a), d.prototype = this, d.prototype._super = b;
-        for (var e in c)
-            "prototype" != e && (d[e] = c[e]);
-        return d
-    }, b.Request = function(a) {
-        "undefined" != typeof a && (this.getUrl = function() {
-            return a
-        })
-    }, b.Request.prototype.getUrl = function() {
-        return ""
-    }, b.Request.prototype.query = function() {
-        var a = new Array;
-        for (var b in this)
-            "function" != typeof this[b] && 0 !== b.indexOf("__") && a.push(new Array(b, "=", this.combineStr(this[b])).join(""));
-        return a.join("&")
-    }, b.Request.prototype.combineStr = function(a, b) {
-        function c(a) {
-            return a = a.replace(new RegExp("^\\s*", "g"), ""), a = a.replace(new RegExp("\\s*$", "g"), "")
-        }
-        if ("undefined" == typeof a)
-            return "undefined";
-        if (null == a)
-            return "null";
-        (void 0 === b || null === b) && (b = "|");
-        var d = "";
-        switch (Object.prototype.toString.apply(a)) {
-            case "[object Boolean]":
-                d = a ? "true" : "false";
-                break;
-            case "[object Number]":
-                d = a;
-                break;
-            case "[object String]":
-                a = c(a), d = encodeURIComponent(a);
-                break;
-            case "[object Array]":
-                for (var e = new Array, f = 0; f < a.length; ++f)
-                    "object" != typeof a[f] && e.push(this.combineStr(a[f]));
-                d = e.join(b);
-                break;
-            case "[object Object]":
-                var e = new Array;
-                for (var g in a)
-                    "function" != typeof a[g] && "object" != typeof a[g] && e.push(this.combineStr(g) + ":" + this.combineStr(a[g]));
-                d = e.join(b)
-        }
-        return d
-    }, a.BCore = a.$Core = a.BCore || b
-}(window), function(a) {
-    var b = function() {
-    };
-    b.prototype = {$: function() {
-            for (var a = 0; a < arguments.length; a++) {
-                var b = argument[a];
-                return "string" == typeof arguments[0] && (b = document.getElementById(arguments[0])), 1 == arguments.length ? b : "not support"
-            }
-        },jsonp: function(b, c) {
-            var d = a.location.href;
-            0 == d.indexOf("https://") && (b = b.replace("http://", "https://")), c || (b += -1 === b.indexOf("?") ? "?random=" + (new Date).getTime() : "&random=" + (new Date).getTime());
-            var e = document.createElement("script");
-            e.setAttribute("src", b), e.setAttribute("charset", "utf-8");
-            var f = document.getElementsByTagName("head")[0];
-            f.insertBefore(e, f.lastChild)
-        },getChildByClass: function(a, b) {
-            for (var c = new Array, d = 0; d < a.childNodes.length; d++) {
-                var e = a.childNodes.item(d);
-                if (1 == e.nodeType && e.className == b && c.push(e), e.hasChildNodes()) {
-                    var f = this.getChildByClass(e, b);
-                    0 != f.length && (c = c.concat(f))
-                }
-            }
-            return c
-        },getCookie: function(a) {
-            return this.cookie(a)
-        },cookie: function(a) {
-            var b = void 0;
-            arguments.length >= 2 && (b = arguments[1]);
-            var c = new Date;
-            if (c.setDate(c.getDate() + 1), exp = c, arguments.length >= 3) {
-                var c = new Date;
-                c.setDate(c.getDate() + parseInt(arguments[2])), exp = c
-            }
-            if ("undefined" == typeof b) {
-                if (a) {
-                    var d = document.cookie.match(new RegExp("(^| )" + a + "=([^;]*)(;|$)"));
-                    return null != d ? decodeURI(d[2]) : null
-                }
-                return document.cookie
-            }
-            document.cookie = null !== b ? a + "=" + b + ";expires=" + exp + ";path=/;" : a + "=;expires=-1;path=/;"
-        },setCookie: function(a, b, c, d, e) {
-            var f = new Date, g = "";
-            d ? f.setTime(f.getTime() + Number(c)) : f.setDate(f.getDate() + Number(c)), e || (g = "domain=" + this.getTopDomain() + ";"), document.cookie = a + "=" + encodeURI(b) + ";expires=" + f.toUTCString() + ";path=/;" + g
-        },getRootDomain: function(a) {
-            a = a.replace(/\/$/gi, ""), a = a.replace(/^(http|ftp|https|ssh):\/\//gi, ""), a = a.replace(/(.com|.info|.net|.net.cn|.org|.me|.mobi|.hk|.us|.biz|.xxx|.ca|.mx|.tv|.ws|.com.ag|.net.ag|.org.ag|.ag|.am|.asia|.at|.be|.com.br|.net.br|.com.bz|.net.bz|.bz|.cc|.com.co|.net.co|.com.co|.co|.de|.com.es|.nom.es|.org.es|.es|.eu|.fm|.fr|.gs|.co.in|.firm.in|.gen.in|.ind.in|.net.in|.org.in|.in|.it|.jobs|.jp|.ms|.com.mx|.nl|.nu|.co.nz|.net.nz|.org.nz|.se|.tc|.tk|.com.tw|.idv.tw|.org.tw|.tw|.co.uk|.me.uk|.org.uk|.vg|.com.cn|.gov|.gov.cn|.cn|.ha.cn)$/gi, "%divide%$1");
-            var b = a.split("%divide%")[1];
-            "undefined" == typeof b && (b = ""), a = a.split("%divide%")[0];
-            var c = a.split(".");
-            return "." + c[c.length - 1] + b
-        },getDomain: function() {
-            var b = a.location.href;
-            return b = b.replace(/^(http|ftp|https|ssh):\/\//gi, ""), b = b.split("/")[0], b = b.replace(/\:\d+$/gi, "")
-        },getTopDomain: function() {
-            var a = (location.hostname + "/").match(/[\w-]+\.(com|info|net|org|me|mobi|hk|us|biz|xxx|ca|mx|tv|ws|am|asia|at|be|bz|cc|co|de|nom|es|eu|fm|fr|gs|firm|gen|ind|in|it|jobs|jp|ms|nl|nu|se|tc|tk|idv|tw|vg|gov|cn|ha)(\.(cn|hk|jp|tw|kr|mo|uk|ag|es|co|nz|in|br|bz|mx))*\//gi);
-            return a ? 0 < a.length ? a[0].substr(0, a[0].length - 1) : void 0 : document.domain
-        },childElements: function(a) {
-            var b = a.firstChild, c = [];
-            for (b && 1 === b.nodeType && c.push(b); b; b = b.nextSibling)
-                1 === b.nodeType && c.push(b);
-            return c
-        },siblings: function(a) {
-            for (var b = a.parentNode.firstChild, c = []; b; b = b.nextSibling)
-                1 === b.nodeType && b !== a && c.push(b);
-            return c
-        },prevAll: function(a) {
-            for (var b = [], c = a.previousSibling; c && 9 !== c.nodeType && 1 !== c.nodeType; )
-                b.push(c), c = c.previousSibling;
-            return b
-        },preSameTagAll: function(a) {
-            for (var b = [], c = a.previousSibling; c; )
-                1 == c.nodeType && c.nodeName == a.nodeName && b.push(c), c = c.previousSibling;
-            return b
-        },preSameTagsAll: function(a, b) {
-            var c = [];
-            cur = a;
-            for (var d = 0; cur; )
-                1 == cur.nodeType && cur.nodeName.toLowerCase() == b && (d++, c.push(cur)), cur = cur.nextSibling;
-            return c
-        },toNumber: function(a) {
-            return a ? (a = a.toString(), a = a.replace(/<(S*?)[^>]*>.*?|<.*?\/>/gi, ""), a = a.replace(/[^\d\.]/gi, ""), parseFloat(a)) : 0
-        },fillPath: function(a, b) {
-            if (/^(https|http|ftp|sftp|ssh)/.test(a))
-                return a;
-            var c = location.host, d = location.href, d = d.replace(/^(http:\/\/|https:\/\/)/, ""), e = b || "http://";
-            if (0 === a.indexOf("/")) {
-                var f = e + c + a;
-                return f
-            }
-            if (0 === a.indexOf("./")) {
-                a = a.replace(/^.\//, "");
-                var g = d.split("/"), h = g[0];
-                g.pop(), g.shift();
-                var f = e + h + "/" + g.join("/") + "/" + a;
-                return f
-            }
-            if (0 === a.indexOf("../")) {
-                for (; 0 === a.indexOf("../"); )
-                    a = a.replace(/^..\//, "");
-                var g = d.split("/"), h = g[0];
-                g.pop(), g.shift();
-                var f = e + h + "/" + g.join("/") + "/" + a;
-                return f
-            }
-            var g = d.split("/"), h = g[0], f = e + h + "/" + a;
-            return f
-        },trim: function() {
-            return arguments[0] && "string" == typeof arguments[0] ? arguments[0].replace(/(^\s*)|(\s*$)/g, "") : null
-        },ltrim: function() {
-            return arguments[0] && "string" == typeof arguments[0] ? arguments[0].replace(/(^\s*)/g, "") : null
-        },rtrim: function() {
-            return arguments[0] && "string" == typeof arguments[0] ? arguments[0].replace(/(\s*$)/g, "") : null
-        },show: function(a, b) {
-            return (a = $(a)) ? void (a.style.display = b || "") : !1
-        },hide: function(a) {
-            return (a = $(a)) ? void (a.style.display = "none") : !1
-        },toggle: function(a) {
-            return (a = $(a)) ? void (a.style.display = "none" != a.style.display ? "none" : value || "") : !1
-        },bind: function(a, b, c) {
-            return a.addEventListener ? (a.addEventListener(b, c, !1), !0) : a.attachEvent ? (a.attachEvent("on" + b, c), !0) : !1
-        },rmbind: function(a, b, c) {
-            a.removeEventListener ? a.removeEventListener(b, c, !1) : a.detachEvent ? a.detachEvent("on" + b, c) : a["on" + b] = null
-        },removeRepeatArr: function(a) {
-            for (var b = {}, c = [], d = 0; d < a.length; d++)
-                b[a[d]] || ("" != a[d] && c.push(a[d]), b[a[d]] = 1);
-            return c
-        },mergeRepeat: function(a) {
-            for (var b = [], c = a.length, d = 0; c > d; d++) {
-                for (var e = d + 1; c > e; e++)
-                    if (a[d][0] === a[e][0]) {
-                        var f = parseInt(a[d][2]), g = parseFloat(a[d][1]), h = parseInt(a[e][2]), i = parseFloat(a[e][1]), j = ((f * g + h * i) / (f + h)).toFixed(2), k = f + h;
-                        a[e] = [a[e][0], j, k], e = ++d
-                    }
-                b.push(a[d])
-            }
-            return b
-        },getReqId: function(a) {
-            var b = "req_id=", c = a.indexOf(b), d = a.slice(c + b.length), e = /[a-zA-Z0-9]+/;
-            return d.match(e)
-        },isFromRecommend: function(a) {
-            return -1 == a.indexOf("req_id=") ? !1 : !0
-        },getByteLen: function(a, b) {
-            if (!a)
-                return "";
-            for (var c = "", d = 0, e = 0; e < a.length && (d += null != a.charAt(e).match(/[^\x00-\xff]/gi) ? 2 : 1, c += a.charAt(e), !(d > b)); e++)
-                ;
-            return c
-        },getElByBFDPath: function(a) {
-            if ("" == a || "string" != typeof a)
-                return null;
-            for (var c, d = a.split("/"), e = 1; e < d.length; e++)
-                e + 1 < d.length && (1 == e && (c = document.getElementsByTagName("body")[0]), c = function(a, c) {
-                    if (a && (narr = c.split("@"), "" != narr[4])) {
-                        var d = b.prototype.preSameTagsAll(a.firstChild, narr[0]);
-                        return d[narr[4]]
-                    }
-                }(c, d[e + 1]));
-            return c
-        },getSource: function(b) {
-            for (var c, d = 0; d < b.length; d++) {
-                var e = b[d].img;
-                if (e) {
-                    c = a.XMLHttpRequest ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP"), c.open("GET", e, !1), c.send(null);
-                    var f = c.status;
-                    404 == f && (b.splice(d, 1), d--), c = null
-                } else
-                    b.splice(d, 1), d--
-            }
-        },filterData: function(a, b) {
-            if (a instanceof Array && b instanceof Array) {
-                for (var c = 0; c < a.length; c++)
-                    for (var d = c + 1; d < a.length; d++) {
-                        for (var e = !1, f = 0; f < b.length; f++) {
-                            var g = b[f];
-                            if (void 0 === a[c][g] || a[c][g] !== a[d][g]) {
-                                e = !1;
-                                break
-                            }
-                            e = !0
-                        }
-                        e && (a.splice(d, 1), d--)
-                    }
-                this.getSource(a)
-            }
-        },getPath: function(a, b) {
-            return b || (b = "@"), "HTML" == a.nodeName ? a.nodeName : this.getPath(a.parentNode, b) + b + a.nodeName
-        },IsEmpty: function(a) {
-            return void 0 == a || "-" == a || "" == a
-        },Hash: function(a) {
-            var b, c = 1, d = 0;
-            if (!this.IsEmpty(a))
-                for (c = 0, b = a.length - 1; b >= 0; b--)
-                    d = a.charCodeAt(b), c = (c << 6 & 268435455) + d + (d << 14), d = 266338304 & c, c = 0 != d ? c ^ d >> 21 : c;
-            return c
-        },loadScript: function(a, b, c) {
-            if (null == document.getElementById(b)) {
-                var d = this, e = document.createElement("script");
-                e.setAttribute("id", b), e.setAttribute("src", a), e.setAttribute("charset", "utf-8"), e.readyState ? d.bind(e, "readystatechange", function() {
-                    ("loaded" === e.readyState || "complete" === e.readyState) && (c && c(), d.rmbind(e, "readystatechange", arguments.callee))
-                }) : d.bind(e, "load", function() {
-                    c && c(), d.rmbind(e, "load", arguments.callee)
-                });
-                var f = document.getElementsByTagName("head")[0];
-                f.insertBefore(e, f.lastChild)
-            }
-        }};
-    var c = function() {
-        this.obj = {}, this.obj.o = {}, this.obj.a = {}
-    };
-    c.prototype.dedup = function(a) {
-        var b = [];
-        if (void 0 == a[0].iid)
-            for (var c = 0; c < a.length; c++)
-                this.obj.a[a[c]] || (b.push(a[c]), this.obj.a[a[c]] = !0);
-        else
-            for (var c = 0; c < a.length; c++)
-                this.obj.o[a[c].iid] || (b.push(a[c]), this.obj.o[a[c].iid] = !0);
-        return b
-    };
-    var d = {hname: function() {
-            return b.prototype.getTopDomain() ? b.prototype.getTopDomain() : "localStatus"
-        },isLocalStorage: function() {
-            return a.localStorage ? !0 : !1
-        },dataDom: null,initDom: function() {
-            if (!this.dataDom)
-                try {
-                    this.dataDom = document.createElement("input"), this.dataDom.type = "hidden", this.dataDom.style.display = "none", this.dataDom.addBehavior("#default#userData");
-                    var a = document.body;
-                    a.insertBefore(this.dataDom, a.firstChild);
-                    var b = new Date;
-                    b.setDate(b.getDate() + 365), this.dataDom.expires = b.toUTCString()
-                } catch (c) {
-                    return !1
-                }
-            return !0
-        },set: function(b, c) {
-            try {
-                this.isLocalStorage() ? a.localStorage.setItem(b, c) : this.initDom() && (this.dataDom.load(this.hname()), this.dataDom.setAttribute(b, c), this.dataDom.save(this.hname()))
-            } catch (d) {
-            }
-        },get: function(b) {
-            try {
-                if (this.isLocalStorage())
-                    return a.localStorage.getItem(b);
-                if (this.initDom())
-                    return this.dataDom.load(this.hname()), this.dataDom.getAttribute(b)
-            } catch (c) {
-            }
-        },remove: function(a) {
-            try {
-                this.isLocalStorage() ? localStorage.removeItem(a) : this.initDom() && (this.dataDom.load(this.hname()), this.dataDom.removeAttribute(a), this.dataDom.save(this.hname()))
-            } catch (b) {
-            }
-        }};
-    BCore.tools = {}, BCore.tools.Tools = new b, BCore.tools.Repeat = c, BCore.tools.Tools.localData = d
-}(window), function(a) {
-    var b = {getDomain: function() {
-            return BCore.tools.Tools.getTopDomain()
-        },subCookieParts: {},setCookiePart: function(a, b) {
-            if (b)
-                try {
-                    this.subCookieParts = this.getAllSubCookies(), a = a.toString(), b = b.toString(), this.subCookieParts[encodeURIComponent(a)] = encodeURIComponent(b), this.setSubCookieValue()
-                } catch (c) {
-                }
-        },getCookiePart: function(a) {
-            try {
-                var b = "bfd_session_id=", c = document.cookie.indexOf(b), d = null, e = "";
-                if (!(c > -1))
-                    return null;
-                if (d = document.cookie.indexOf(";", c), -1 == d && (d = document.cookie.length), d = document.cookie.substring(c + b.length, d), 0 < d.length) {
-                    for (b = d.split("&"), c = 0, d = b.length; d > c; c++) {
-                        var f = b[c].split("=");
-                        if (decodeURIComponent(f[0]) == a) {
-                            e = decodeURIComponent(f[1]);
-                            break
-                        }
-                    }
-                    return e
-                }
-            } catch (g) {
-                return null
-            }
-        },getAllSubCookies: function() {
-            var a = "bfd_session_id=", b = document.cookie.indexOf(a), c = null, d = {};
-            if (b > -1) {
-                if (c = document.cookie.indexOf(";", b), -1 == c && (c = document.cookie.length), c = document.cookie.substring(b + a.length, c), 0 < c.length)
-                    for (a = c.split("&"), b = 0, c = a.length; c > b; b++) {
-                        var e = a[b].split("=");
-                        d[decodeURIComponent(e[0])] = decodeURIComponent(e[1])
-                    }
-                return d
-            }
-            return {}
-        },setSubCookieValue: function() {
-            var a = "bfd_session_id=", b = [];
-            this.bfddate = new Date, this.now = parseInt(this.bfddate.getTime()), this.bfddate.setTime(this.now + 36e5);
-            for (var c in this.subCookieParts)
-                c && "function" != typeof this.subCookieParts[c] && b.push(c + "=" + this.subCookieParts[c]);
-            0 < b.length ? (a += b.join("&"), a += "; expires=" + this.bfddate.toUTCString(), a += "; path=/; domain=" + this.getDomain() + ";") : a += "; expires=" + new Date(0).toUTCString(), document.cookie = a, this.subCookieParts = {}
-        }};
-    a.BFDSubCookie = b
-}(window), function(a) {
-    function b(a) {
-        try {
-            return document.getElementById(a).contentDocument || document.frames[a].document
-        } catch (b) {
-            return void 0
-        }
-    }
-    var c = BCore.tools.Tools, d = {stop_frame: !1,stop_all: !1};
-    if ("undefined" != typeof BCORE_CHECK_CONFIG && BCORE_CHECK_CONFIG.CHECK)
-        for (var e in BCORE_CHECK_CONFIG.CHECK)
-            d[e] = BCORE_CHECK_CONFIG.CHECK[e];
-    var f = BCore.prototype;
-    if (f["static"].req_over = !1, BFDSubCookie.getCookiePart("bfd_g"))
-        f["static"].req_over = !0;
-    else {
-        var g = "";
-        try {
-            (-[1] || window.XMLHttpRequest) && (g = c.localData.get("_BGID_VAL") || "")
-        } catch (h) {
-        }
-        c.IsEmpty(g) ? setTimeout(function() {
-            var a = window.location.href, b = "http://ds.api.baifendian.com/2.0/StdID.do?bfdid=1";
-            0 == a.indexOf("https://") && (b = b.replace("http://", "https://")), c.loadScript(b, "bfd_cache_id", function() {
-                var a = BCore.prototype.options.gid;
-                BFDSubCookie && BFDSubCookie.setCookiePart("bfd_g", a), f["static"].req_over = !0
-            })
-        }, 1) : (BFDSubCookie.setCookiePart("bfd_g", g), f["static"].req_over = !0)
-    }
-    !f["static"].checkload && f["static"].req_over && (setTimeout(function() {
-        k(j)
-    }, 1), f["static"].checkload = !0), f["static"].req_over || setTimeout(function() {
-        f["static"].req_over = !0
-    }, 5e3);
-    var i = !1, j = function() {
-        if (d.stop_all)
-            return void function(a) {
-                setTimeout(function() {
-                    var b = a.BFDSubCookie ? a.BFDSubCookie.getCookiePart("bfd_g") : "";
-                    if (null != b && b.toString().length > 5)
-                        return setTimeout(arguments.callee, 1e3);
-                    try {
-                        return b = a.BCore.prototype.options.gid, a.BFDSubCookie && a.BFDSubCookie.setCookiePart("bfd_g", b), setTimeout(arguments.callee, 1e3)
-                    } catch (c) {
-                    }
-                }, 1e3)
-            }(window);
-        var c = "https:" == a.location.protocol ? "https://" : "http://", e = c.indexOf("https") > -1 ? c + "ssl-" : c, f = e + "static.baifendian.com/api/check/index.js";
-        if (window.ActiveXObject) {
-            var g = document.createElement("script");
-            return g.src = f, void document.getElementsByTagName("head")[0].appendChild(g)
-        }
-        var h = a.getElementById("add_speed_bfd");
-        if (!h || null == h) {
-            try {
-                h = a.createElement('<iframe name="add_speed_bfd">')
-            } catch (j) {
-                h = a.createElement("iframe")
-            }
-            if (h.setAttribute("allowTransparency", "true"), h.setAttribute("id", "add_speed_bfd"), h.setAttribute("frameBorder", "0"), h.setAttribute("scrolling", "no"), h.style.cssText = "height:0px;width:0px;float:none;position:absolute;overflow:hidden;z-index:333333;margin:0;padding:0;border:0 none;background:none;", /msie/i.test(navigator.userAgent))
-                try {
-                    h.contentWindow.document
-                } catch (k) {
-                    h.src = "javascript:void((function(){document.open();document.domain='" + document.domain + "';document.write('baifendian');document.close()})())"
-                }
-            a.body.appendChild(h)
-        }
-        if ("object" == typeof h.contentWindow.document && window.ActiveXObject && (i = !0, h.doc = h.contentWindow.document), "complete" != h.readyState && "undefined" != typeof h.readyState)
-            return setTimeout(arguments.callee, 1);
-        var l = window.ActiveXObject ? 100 : 1;
-        setTimeout(function() {
-            try {
-                if (h.doc || (h.doc = b("add_speed_bfd")), h.doc || (h.doc = h.contentDocument), h.doc || (h.doc = h.contentWindow.document), !h.doc)
-                    throw new Error("no d.doc");
-                var a = e + "static.baifendian.com/api/check/index.js", f = c + "ds.api.baifendian.com/2.0/speed.html", g = navigator.userAgent.indexOf("Firefox") > -1 ? !0 : !1;
-                if (g)
-                    h.onload = function() {
-                        try {
-                            var b = h.doc, c = document.createElement("script");
-                            if (c.src = a, document.getElementsByTagName("head")[0].appendChild(c), !d.stop_frame) {
-                                var e = b.createElement("iframe");
-                                e.src = f, b.body.appendChild(e)
-                            }
-                        } catch (g) {
-                        }
-                    };
-                else if (i && !g) {
-                    var j = h.doc, k = document.createElement("script");
-                    k.src = a;
-                    var l = document.body;
-                    if (l.insertBefore(k, l.firstChild), !d.stop_frame) {
-                        var m = j.createElement("iframe");
-                        m.src = f, j.body.appendChild(m)
-                    }
-                } else {
-                    var n = "<body onload=\"var d = document;d.getElementsByTagName('head')[0].appendChild(d.createElement('script')).src='" + a + "';";
-                    d.stop_frame || (n += "var f=d.createElement('iframe');f.src='" + f + "';d.body.appendChild(f);"), n += '">', h.doc.open().write(n), h.doc.close()
-                }
-            } catch (o) {
-                var k = document.createElement("script");
-                k.src = a, document.getElementsByTagName("head")[0].appendChild(k)
-            }
-        }, l)
-    }, k = function(b) {
-        var c = function() {
-            if (!window.ActiveXObject && a && a.getElementsByTagName && a.getElementById && a.body)
-                b();
-            else
-                try {
-                    document.documentElement.doScroll("left"), b()
-                } catch (d) {
-                    return void setTimeout(c, 10)
-                }
-        };
-        c()
-    }
-}(document), function() {
-    function a(a) {
-        G.call(this, this.__surl + a + ".do")
-    }
-    function b(b) {
-        a.call(this, b)
-    }
-    function c(b, c) {
-        a.call(this, b), null !== c && void 0 !== c && (this.iid = c)
-    }
-    function d() {
-    }
-    function e(a) {
-        b.call(this, "AddItem"), this.iid = a
-    }
-    function f(a) {
-        b.call(this, "RmItem"), this.iid = a
-    }
-    function g(a) {
-        b.call(this, "AddCat"), this.cat = a
-    }
-    function h(a) {
-        b.call(this, "RmCat"), this.cat = a
-    }
-    function i(a) {
-        b.call(this, "AddUser"), void 0 !== a && (this.uid = a)
-    }
-    function j(a) {
-        b.call(this, "RmUser"), void 0 !== a && (this.uid = a)
-    }
-    function k(a, c, d) {
-        b.call(this, "Commit"), this.ord = a, this.ci = c, this.ici = d
-    }
-    function l(a) {
-        c.call(this, "Visit", a)
-    }
-    function m(a) {
-        c.call(this, "Review", a)
-    }
-    function n(a) {
-        c.call(this, "VisitCat", null), this.cat = a
-    }
-    function o() {
-        c.call(this, "AddCart", null)
-    }
-    function p(a) {
-        c.call(this, "RmCart", a)
-    }
-    function q(a) {
-        c.call(this, "AddFav", a)
-    }
-    function r(a) {
-        c.call(this, "RmFav", a)
-    }
-    function s(a, b) {
-        "undefined" == typeof b && (b = "rec"), c.call(this, "FeedBack", null), this.rid = a, this.app = b
-    }
-    function t(a) {
-        c.call(this, "Search", null), this.qstr = a
-    }
-    function u(a) {
-        c.call(this, "Order", null), this.ord = a
-    }
-    function v(a) {
-        c.call(this, "Pay", null), this.ord = a
-    }
-    function w(a, b) {
-        c.call(this, "VisitTag", null), this.tid = a, this.tval = b
-    }
-    function x(a) {
-        c.call(this, "MouseClick", null), this.pth = a
-    }
-    function y() {
-        c.call(this, "Register", null)
-    }
-    function z() {
-        c.call(this, "Login", null)
-    }
-    function A(a) {
-        c.call(this, "Scroll", null), this.per = a
-    }
-    function B(a) {
-        c.call(this, "FootPrint", null), this.pt = a
-    }
-    function C() {
-        c.call(this, "BannerPD", null)
-    }
-    function D() {
-        c.call(this, "StayTime", null)
-    }
-    function E(a) {
-        b.call(this, "AddNews"), this.iid = a
-    }
-    function F(a) {
-        b.call(this, "RmNews"), this.iid = a
-    }
-    {
-        var G = BCore.Request;
-        BCore.tools.Tools
-    }
-    BCore.inputs = {}, a.prototype = new G, a.prototype.__surl = "http://ds.api.baifendian.com/2.0/", b.prototype = new a, c.prototype = new a, d.prototype.toString = function(a) {
-        "undefined" == typeof a && (a = this);
-        var b = "";
-        switch (Object.prototype.toString.apply(a)) {
-            case "[object Boolean]":
-                b = a ? "true" : "false";
-                break;
-            case "[object Number]":
-                b = a.toString();
-                break;
-            case "[object String]":
-                b = 0 === a.indexOf("$") ? a : '"' + a + '"';
-                break;
-            case "[object Array]":
-                for (var c = new Array, d = 0; d < a.length; ++d)
-                    c.push(this.toString(a[d]));
-                b = "[" + c.join(",") + "]";
-                break;
-            case "[object Object]":
-                var c = new Array;
-                for (var e in a)
-                    "function" != typeof a[e] && c.push('"' + e + '":' + this.toString(a[e]));
-                b = "{" + c.join(",") + "}"
-        }
-        return b
-    }, e.prototype = new b, f.prototype = new b, g.prototype = new b, h.prototype = new b, i.prototype = new b, j.prototype = new b, k.prototype = new b, l.prototype = new c, m.prototype = new c, n.prototype = new c, o.prototype = new c, o.prototype.push = function(a) {
-        "undefined" == typeof this.__pool_arr && (this.__pool_arr = []), this.__pool_arr.push(a), this.lst = (new d).toString(this.__pool_arr)
-    }, p.prototype = new c, q.prototype = new c, r.prototype = new c, s.prototype = new c, t.prototype = new c, u.prototype = new c, u.prototype.push = function(a) {
-        "undefined" == typeof this.__pool_arr && (this.__pool_arr = []), this.__pool_arr.push(a), this.lst = (new d).toString(this.__pool_arr)
-    }, v.prototype = new c, v.prototype.push = function(a) {
-        "undefined" == typeof this.__pool_arr && (this.__pool_arr = []), this.__pool_arr.push(a), this.lst = (new d).toString(this.__pool_arr)
-    }, w.prototype = new c, x.prototype = new c, y.prototype = new c, z.prototype = new c, A.prototype = new c, B.prototype = new c, C.prototype = new c, D.prototype = new c, E.prototype = new b, F.prototype = new b, BCore.inputs.Input = a, BCore.inputs.UserAction = c, BCore.inputs.Resources = b, BCore.inputs.JObject = d, BCore.inputs.AddItem = e, BCore.inputs.RmItem = f, BCore.inputs.AddCat = g, BCore.inputs.RmCat = h, BCore.inputs.AddUser = i, BCore.inputs.RmUser = j, BCore.inputs.Commit = k, BCore.inputs.Visit = l, BCore.inputs.Review = m, BCore.inputs.AddCart = o, BCore.inputs.RmCart = p, BCore.inputs.AddFav = q, BCore.inputs.RmFav = r, BCore.inputs.FeedBack = s, BCore.inputs.Search = t, BCore.inputs.Pay = v, BCore.inputs.Order = u, BCore.inputs.VisitCat = n, BCore.inputs.VisitTag = w, BCore.inputs.MouseClick = x, BCore.inputs.Login = z, BCore.inputs.Register = y, BCore.inputs.Scroll = A, BCore.inputs.FootPrint = B, BCore.inputs.BannerPD = C, BCore.inputs.StayTime = D, BCore.inputs.AddNews = E, BCore.inputs.RmNews = F
-}(window), function() {
-    function a(a) {
-        c.call(this, BCore.prototype.options.surl + "GetUserVH.do"), this.num = a
-    }
-    function b(a) {
-        c.call(this, BCore.prototype.options.surl + "GetUserBH.do"), this.num = a
-    }
-    var c = BCore.Request;
-    a.prototype = new c, b.prototype = new c, BCore.netuser = {}, BCore.netuser.GetUserVH = a, BCore.netuser.GetUserBH = b
-}(window), function() {
-    function a(a, b, c) {
-        this.name = a, this.operator = b.toUpperCase(), this.value = c
-    }
-    function b(a, b, c) {
-        return "( " + a.toString() + " ) " + b.toLowerCase() + " ( " + c.toString() + " )"
-    }
-    function c(a, b) {
-        C.call(this, this.__surl + a + ".do"), "number" != typeof b || (this.num = b)
-    }
-    function d(a, b) {
-        c.call(this, "RecFBT", b), this.iid = a
-    }
-    function e(a, b) {
-        c.call(this, "RecVUB", b), this.iid = a
-    }
-    function f(a, b) {
-        c.call(this, "RecVAV", b), this.iid = a
-    }
-    function g(a, b) {
-        c.call(this, "RecBAB", b), this.iid = a
-    }
-    function h(a, b) {
-        c.call(this, "RecCAC", b), this.iid = a
-    }
-    function i(a, b) {
-        c.call(this, "RecFAF", b), this.iid = a
-    }
-    function j(a) {
-        c.call(this, "RecByVH", a)
-    }
-    function k(a) {
-        c.call(this, "RecByBH", a)
-    }
-    function l(a) {
-        c.call(this, "RecByAH", a)
-    }
-    function m(a) {
-        c.call(this, "HotBuy", a)
-    }
-    function n(a) {
-        c.call(this, "RecForUser", a)
-    }
-    function o(a) {
-        c.call(this, "RecCrossSite", a)
-    }
-    function p(a, b) {
-        c.call(this, "RecSimiI", b), this.typ = "SIMI", this.iid = a
-    }
-    function q(a, b) {
-        c.call(this, "RecSimiI", b), this.iid = a
-    }
-    function r(a) {
-        c.call(this, "HotVisit", a)
-    }
-    function s(a, b) {
-        if (this.p_bid = a, b && "[object object]" == Object.prototype.toString.call(b).toLowerCase())
-            for (var d in b)
-                b[d] && (this[d] = b[d]);
-        c.call(this, "rec_" + a)
-    }
-    function t(a) {
-        if ("string" == typeof a)
-            this.iid = a;
-        else if ("[object Array]" === Object.prototype.toString.apply(a))
-            2 == a.length ? (this.iid = a[0], this.salesnum = a[1]) : (this.iid = a[0], this.name = a[1], this.url = a[2], this.img = a[3], this.price = a[4], this.weight = a[5]);
-        else
-            for (var b in a)
-                this[b] = a[b]
-    }
-    function u(a) {
-        if ("[object Object]" === Object.prototype.toString.apply(a) && "number" == typeof a.code)
-            this.code = a.code, this.msg = a.msg, this.reqId = a.reqId, this.recs = a.recs;
-        else if (this.code = a[0], this.msg = a[1], a[2] && (this.reqId = a[2]), a[3])
-            if ("[object Array]" === Object.prototype.toString.apply(a[3])) {
-                this.recs = new Array;
-                for (var b = 0; b < a[3].length; ++b)
-                    this.recs.push(new t(a[3][b]))
-            } else
-                this.recs = a[3]
-    }
-    function v(a) {
-        var b = 1, c = a.substr(40, a.length);
-        switch (c) {
-            case "VAV":
-                b = .5;
-                break;
-            case "BAB":
-                b = .8;
-                break;
-            case "FBT":
-                b = .8;
-                break;
-            case "VUB":
-                b = .8;
-                break;
-            case "HotVisit":
-                b = .5;
-                break;
-            case "HotBuy":
-                b = .6;
-                break;
-            case "SimiI":
-                b = .8;
-                break;
-            case "ForUser":
-                b = .7
-        }
-        return b
-    }
-    function w(a) {
-        var b = a.substr(0, 56) + "MERGE";
-        return b
-    }
-    function x(a, b) {
-        a = new u(a), b = new u(b);
-        var c = "", d = -1, e = "", f = new Array;
-        if (0 === a.code) {
-            d = 0, e = "OK", "" === c && (c = w(a.reqId));
-            for (var g = 0; g < a.recs.length; g++)
-                "undefined" == typeof a.recs[g].weight && (f[g].weight = 1), a.recs[g].weight *= v(a.reqId);
-            f = f.concat(a.recs)
-        }
-        if (0 === b.code) {
-            d = 0, e = "OK", "" === c && (c = w(b.reqId));
-            for (var g = 0; g < b.recs.length; g++)
-                "undefined" == typeof b.recs[g].weight && (f[g].weight = 1), b.recs[g].weight *= v(b.reqId);
-            f = f.concat(b.recs)
-        }
-        for (var h, i = new Array, j = {}, g = 0; null != (h = f[g]); g++)
-            j[h.iid] || (i.push(f[g]), j[h.iid] = !0);
-        f = i, f.sort(function(a, b) {
-            return b.weight - a.weight
+var Promotions = {
+    init: function (sku) {
+        this.sku = sku || pageConfig.product.skuid;
+        this.ipLoc = readCookie('ipLoc-djd') || '1_0';
+        this.get();
+    },
+    get: function () {
+        var _this = this;
+        $.ajax({
+            url: 'http://pi.3.cn/promoinfo/get',
+            data: {
+                id: this.sku,
+                area: this.ipLoc.replace(/-/g, '_'),
+                origin: 1,
+                callback: 'Promotions.set'
+            },
+            //url: 'http://jprice.360buy.com/pageadword/' + _this.sku + '-1-1-' + this.ipLoc.replace(/-/g, '_') + '.html?callback=Promotions.set',
+            dataType: "script",
+            cache: true,
+            scriptCharset: "utf-8"
         });
-        var k = new Object;
-        return 0 === d ? (k.code = d, k.msg = e, k.reqId = c, k.recs = f) : (k.code = d, k.msg = "mergeError:have not available parm!"), new u(k)
-    }
-    function y(a, b) {
-        c.call(this, "MRecVAV", b), this.iid = a
-    }
-    function z(a) {
-        c.call(this, "MHotVisit", a)
-    }
-    function A(a) {
-        c.call(this, "MRecByContent", a)
-    }
-    function B(a) {
-        c.call(this, "RecFavourite", a)
-    }
-    {
-        var C = BCore.Request;
-        BCore.tools.Tools
-    }
-    BCore.recommends = {}, BCore.responses = {}, a.prototype.toString = function() {
-        function a(a, b) {
-            return "function" == typeof d.value ? "" : ("undefined" != typeof b ? b + " " : "") + d.name + " " + a + " " + ("string" == typeof d.value[0] ? '["' + d.value.join('","') + '"]' : "[" + d.value.join(",") + "]")
-        }
-        function b(a, b) {
-            return "function" == typeof d.value ? "" : ("undefined" != typeof b ? b + " " : "") + d.name + " " + a + " " + d.value
-        }
-        function c(a, b) {
-            return "string" == typeof d.value ? ("undefined" != typeof b ? b + " " : "") + d.name + " " + a + " '" + d.value + "'" : "number" == typeof d.value ? ("undefined" != typeof b ? b + " " : "") + d.name + " " + a + " " + d.value : ""
-        }
-        var d = this;
-        return "EQ" === this.operator || "==" === this.operator ? c("eq") : "NE" === this.operator || "!=" === this.operator ? c("eq", "not") : "GE" === this.operator || ">=" === this.operator ? c("ge") : "GT" === this.operator || ">" === this.operator ? c("gt") : "LE" === this.operator || "<=" === this.operator ? c("le") : "LT" === this.operator || "<" === this.operator ? c("lt") : "IN" === this.operator ? a("in") : "NI" === this.operator ? a("in", "not") : "LIKE" === this.operator ? b("like") : "NL" === this.operator ? b("like", "not") : void 0
-    }, c.prototype = new C, c.prototype.__surl = "http://rec.api.baifendian.com/2.0/", d.prototype = new c, e.prototype = new c, f.prototype = new c, g.prototype = new c, h.prototype = new c, i.prototype = new c, j.prototype = new c, k.prototype = new c, l.prototype = new c, m.prototype = new c, n.prototype = new c, o.prototype = new c, p.prototype = new c, q.prototype = new c, r.prototype = new c, s.prototype = new c, y.prototype = new c, z.prototype = new c, A.prototype = new c, B.prototype = new c, BCore.recommends.Recommend = c, BCore.recommends.RecFBT = d, BCore.recommends.RecVUB = e, BCore.recommends.RecVAV = f, BCore.recommends.RecCAC = h, BCore.recommends.RecFAF = i, BCore.recommends.RecByVH = j, BCore.recommends.RecByBH = k, BCore.recommends.RecByAH = l, BCore.recommends.RecByCart = p, BCore.recommends.RecBAB = g, BCore.recommends.HotBuy = m, BCore.recommends.RecSimiI = q, BCore.recommends.RecForUser = n, BCore.recommends.RecCrossSite = o, BCore.recommends.HotVisit = r, BCore.recommends.RecCommon = s, BCore.recommends.Filter = a, BCore.recommends.connectFilter = b, BCore.recommends.MRecVAV = y, BCore.recommends.MHotVisit = z, BCore.recommends.MRecByContent = A, BCore.recommends.RecFavourite = B, BCore.responses.Response = u, BCore.responses.mergeResponse = x
-}(window), function() {
-    function a() {
-        return b.Hash(b.getTopDomain()) + "." + parseInt(99999999 * Math.random()) + "." + c
-    }
-    var b = BCore.tools.Tools, c = (new Date).getTime();
-    BFDSubCookie.getCookiePart("bfd_s") ? BFDSubCookie.setCookiePart("bfd_s", BFDSubCookie.getCookiePart("bfd_s")) : BFDSubCookie.setCookiePart("bfd_s", a(), 36e5, !0), $Core = BCore = (new BCore).extend(function(b, c) {
-        (null == this.options.sid || void 0 == this.options.sid || "" == this.options.sid) && (this.options.sid = BFDSubCookie.getCookiePart("bfd_s")), (null == this.options.sid || void 0 == this.options.sid || "" == this.options.sid) && (this.options.sid = a()), this._super.call(this, b, c)
-    }, BCore)
-}(window), function(a) {
-    var b = BCore.tools.Tools, c = function() {
-    };
-    c.prototype = {options: {init: !1,security: "1",hook: "bfd_hook"},begin: function(c, d) {
-            if (1 != this.options.init) {
-                this.options.init = !0, c && (this.options.security = c), d && (this.options.hook = d);
-                var e = this;
-                b.bind(document, "mousedown", function(c) {
-                    try {
-                        var d = c || a.event, f = d.target || d.srcElement;
-                        switch (Number(e.options.security)) {
-                            case 0:
-                                if ("undefined" == typeof e.options.hook || "" == e.options.hook)
-                                    return;
-                                var g = f.getAttribute(e.options.hook);
-                                if (void 0 == g || null == g)
-                                    return;
+    },
+    set: function (result) {
+        var promotionsDiv = $('#summary-promotion .dd'),
+            promotionsExtraDiv = $('#summary-promotion-extra .dd'),
+            giftsDiv = $('#summary-gifts .dd'),
+            tips = $('#summary-tips .dd');
+
+        var promotionsItems = [],
+            promotionsItemsExtra = [],
+            promoType10 = [],
+            giftsItems = [],
+            tipsItems = [];
+
+        var infoList = result.promotionInfoList;
+        var skuId = result.skuId;
+        var str_len = (pageConfig.wideVersion && pageConfig.compatible) ? 35 : 25;
+        var gift_TPL = '{for item in adwordGiftSkuList}{if item.giftType==2}'
+            + '<div class="li-img">'
+            + '<a target="_blank" href="http://item.jd.com/${item.skuId}.html">{if item.imagePath !== ""}<img src="${pageConfig.FN_GetImageDomain(item.skuId)}n5/${item.imagePath}" width="25" height="25" />{else}<img src="http://misc.360buyimg.com/product/skin/2012/i/gift.png" width="25" height="25" />{/if}'
+            + '{if item.name.length > ' + str_len + '}${item.name.substring(0,'+(str_len-1)+')+"..."}{else}${item.name}{/if}</a>'
+            + '<em class="hl_red"> × ${item.number}</em>'
+            + '</div>'
+            + '{/if}{/for}';
+
+        // 京豆优惠购活动链接
+        var jBeanDetailATag = '<a href="http://vip.jd.com/purchase.html" target="_blank">  更多 <s class="s-arrow">>></s></a>';
+        // 会员特价活动链接
+        var vipTeXiangDetailATag = '<a href="http://vip.jd.com/price.html" target="_blank">  更多 <s class="s-arrow">>></s></a>';
+        // 企业会员活动链接
+        var companyTeXiangDetailATag = '<a href="http://b.jd.com" target="_blank">  更多 <s class="s-arrow">>></s></a>';
+        if (infoList !== null && infoList.length > 0) {
+            for (var i = 0; i < infoList.length; i++) {
+                var levelText = G.getNewUserLevel(infoList[i].userLevel);
+                var coupon = infoList[i].adwordCouponList;
+                var limText = '';
+                var buyNum = '';
+                if (infoList[i].minNum > 0 || infoList[i].maxNum > 0) {
+                    if (infoList[i].minNum > 0 && infoList[i].maxNum == 0) {
+                        limText = '购买至少' + infoList[i].minNum + '件时享受优惠';
+                        buyNum = '购买' + infoList[i].minNum + '件及以上';
+                    } else if (infoList[i].minNum == 0 && infoList[i].maxNum > 0) {
+                        limText = '购买最多' + infoList[i].maxNum + '件时享受优惠';
+                        buyNum = '购买' + infoList[i].maxNum + '件及以下';
+                    } else if (infoList[i].minNum < infoList[i].maxNum) {
+                        limText = '购买' + infoList[i].minNum + '-' + infoList[i].maxNum + '件时享受优惠';
+                        buyNum = '购买' + infoList[i].minNum + '-' + infoList[i].maxNum + '件';
+                    } else if (infoList[i].minNum == infoList[i].maxNum) {
+                        limText = '购买' + infoList[i].minNum + '件时享受优惠';
+                        buyNum = '购买' + infoList[i].minNum + '件';
+                    }
+                }
+                // 会员特享
+                var huiyuantexiang = infoList[i].userLevel > 50 && infoList[i].minNum == 0 && infoList[i].maxNum == 0 && infoList[i].needJBeanNum <= 0;
+                // 会员特享 限购
+                var huiyuantexiang_xianguo = infoList[i].userLevel > 50 && (infoList[i].minNum > 0 || infoList[i].maxNum > 0) && infoList[i].needJBeanNum <= 0;
+                // 只有限购
+                var xiangou = (infoList[i].minNum > 0 || infoList[i].maxNum > 0) && infoList[i].userLevel <= 50 && infoList[i].needJBeanNum <= 0;
+                // 非会员非限购
+                var normal = infoList[i].userLevel <= 50 && infoList[i].minNum == 0 && infoList[i].maxNum == 0 && infoList[i].needJBeanNum <= 0;
+                //京豆优惠购
+                var jBean = infoList[i].userLevel <= 50 && infoList[i].needJBeanNum > 0;
+                //单品是否和套装叠加
+                var notOverlySuitTxt = '';
+                var promoFlags = infoList[i].promoFlags;
+                if (promoFlags != null && promoFlags.length > 0) {
+                    for (var k = 0; k < promoFlags.length; k++) {
+                        if (promoFlags[k] == 6) { //单品不和套装叠加
+                            notOverlySuitTxt = '，且不与套装优惠同时享受';
+                        }
+                    }
+                }
+                // 获取券信息
+                function setCoupon(coupon) {
+                    if (coupon != null && coupon.length > 0) {
+                        $.each(coupon, function (name, value) {
+                            if (value.type == 1) {
+                                var xianpinlei = value.key != null && value.key != "";
+                                //var xianpinleiTxt = xianpinlei ? '限品类' : '';
+                                var xianpinleiTxt = "";
+                                // 限品类券广告词
+                                var xianpinleiguanggao = value.adWord != null && value.adWord.length > 0 ? '（' + value.adWord + ')' : '';
+                                // 券会员特享
+                                if (huiyuantexiang) {
+                                    promotionsItems.push('<em class="hl_red_bg">赠券</em><em class="hl_red">' + levelText + '及以上会员赠' + value.couponQouta + '元' + xianpinleiTxt + '京券' + xianpinleiguanggao + notOverlySuitTxt + '</em>');
+                                }
+                                // 券会员特享 限购
+                                if (huiyuantexiang_xianguo) {
+                                    promotionsItems.push('<em class="hl_red_bg">赠券</em><em class="hl_red">' + levelText + '及以上会员赠' + value.couponQouta + '元' + xianpinleiTxt + '京券' + xianpinleiguanggao + '，且' + limText + notOverlySuitTxt + '</em>');
+                                }
+                                // 券限购
+                                if (xiangou) {
+                                    promotionsItems.push('<em class="hl_red_bg">赠券</em><em class="hl_red">赠' + value.couponQouta + '元' + xianpinleiTxt + '京券' + xianpinleiguanggao + '，且' + limText + notOverlySuitTxt + '</em>');
+                                }
+                                // 普通赠券
+                                if (normal) {
+                                    promotionsItems.push('<em class="hl_red_bg">赠券</em><em class="hl_red">赠' + value.couponQouta + '元' + xianpinleiTxt + '京券' + xianpinleiguanggao + notOverlySuitTxt + '</em>');
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // 获取京豆
+                function setScore(score) {
+                    if (score > 0) {
+                        // 京豆会员特享
+                        if (huiyuantexiang) {
+                            promotionsItems.push('<em class="hl_red_bg">赠京豆</em><em class="hl_red">' + levelText + '及以上会员赠' + score + '京豆' + notOverlySuitTxt + '</em>');
+                        }
+                        // 京豆会员特享 限购
+                        if (huiyuantexiang_xianguo) {
+                            promotionsItems.push('<em class="hl_red_bg">赠京豆</em><em class="hl_red">' + levelText + '及以上会员赠' + score + '京豆，且' + limText + notOverlySuitTxt + '</em>');
+                        }
+                        // 京豆限购
+                        if (xiangou) {
+                            promotionsItems.push('<em class="hl_red_bg">赠京豆</em><em class="hl_red">赠' + score + '京豆，且' + limText + notOverlySuitTxt + '</em>');
+                        }
+                        // 普通赠京豆
+                        if (normal) {
+                            promotionsItems.push('<em class="hl_red_bg">赠京豆</em><em class="hl_red">赠' + score + '京豆' + notOverlySuitTxt + '</em>');
+                        }
+                    }
+                }
+
+                //单品促销
+                if (infoList[i].promoType == 1) {
+                    // 会员特享
+                    if (infoList[i].price > 0) {
+                        var vipTeXiangItem = null;
+                        if (infoList[i].userLevel == 90) {
+                            vipTeXiangDetailATag = companyTeXiangDetailATag;
+                        }
+                        if (huiyuantexiang) {
+                            vipTeXiangItem = '<em class="hl_red_bg">会员特价</em><em class="hl_red">' + levelText + '及以上会员价：￥' + infoList[i].price + notOverlySuitTxt + '</em>' + vipTeXiangDetailATag;
+                            promotionsItems.push(vipTeXiangItem);
+                        }
+                        if (huiyuantexiang_xianguo) {
+                            vipTeXiangItem = '<em class="hl_red_bg">会员特价</em><em class="hl_red">' + levelText + '及以上会员价：￥' + infoList[i].price + '，且' + limText + notOverlySuitTxt + '</em>' + vipTeXiangDetailATag;
+                            promotionsItems.push(vipTeXiangItem);
+                        }
+                    }
+                    // 普通直降
+                    if (infoList[i].discount > 0 && normal) {
+                        promotionsItems.push('<em class="hl_red_bg">直降</em><em class="hl_red">已优惠￥' + infoList[i].discount + notOverlySuitTxt + '</em>');
+                    }
+                    // 限购
+                    if (infoList[i].discount > 0 && xiangou) {
+                        if (infoList[i].minNum <= 1) {
+                            //promotionsItems.push('<em class="hl_red_bg">限购</em><em class="hl_red">已优惠￥' + infoList[i].discount + '，且' + limText + '</em>');
+                            promotionsItems.push('<em class="hl_red_bg">限购</em><em class="hl_red">' + limText + notOverlySuitTxt + '</em>');
+                        } else if (infoList[i].price > 0) {
+                            promotionsItems.push('<em class="hl_red_bg">限购</em><em class="hl_red">每件可享受优惠价￥' + infoList[i].price + '，且' + limText + notOverlySuitTxt + '</em>');
+                        }
+                    }
+                    //京豆优惠购
+                    if (jBean && infoList[i].price > 0) {
+                        var jBeanCondition = '';
+                        if (buyNum != '' && buyNum != null) {
+                            jBeanCondition = '（条件：' + buyNum + '）';
+                        }
+                        var jBeanItem = '<em class="hl_red_bg">京豆优惠购</em><em class="hl_red">使用'
+                            + infoList[i].needJBeanNum + '京豆可享受优惠价'
+                            + infoList[i].price + '元' + jBeanCondition + '</em>'
+                            + jBeanDetailATag;
+                        promotionsItems.push(jBeanItem);
+                    }
+                    setCoupon(infoList[i].adwordCouponList);
+                    setScore(infoList[i].score);
+                    var tuanTag = '',
+                        orginServiceText = $('#summary-service .dd').html();
+                    if (infoList[i].  == 8) {
+                        tuanTag = '闪团';
+                        $('#summary-service .dd').html(orginServiceText.replace('，支持货到付款', ''));
+                        if ($('#tuan-shouhou').length < 1) {
+                            $('#product-detail-5 .item-detail').html('<div id="tuan-shouhou"><p>如您购买闪团商品，即表明您认可下述约定并同意受其约束：</p> <ul> <li>1、闪团商品一经售出，如无质量问题，恕不退换。</li> <li>2、用户收到商品后十五日内（以快递公司送货单上的签收日期为准）如商品存在质量问题，可通过我的京东-返修/退换货页面申请办理退货手续；依据国家质量监 督检验检疫总局颁布的相关规定实施“三包”的商品，可依据相关规定通过本网站或联系京东商城客服人员办理退货手续；因闪团商品为限量商品，用户认可前述情形下仅办理退货手续。</li> <li>3、实施国家“三包”的商品，用户在收到商品后十五日内商品出现质量问题（以快递公司送货单上的签收日期为准）或三包有效期内商品经两次维修仍不能正常使用的，如销售方不能提供同型号同规格商品或不低于原商品性能的同品牌产品时，用户认可仅选择修理或者办理退货处理。</li> </ul> <p><strong>特别提示：</strong></p> <ul> <li>1）质量问题是指国家相关规定中列明的性能故障或不符合国家有关法规、强制性质量标准对产品适用、安全和其他特性的要求，因用户个人原因导致的性能故障或依据相关规定不能享受“三包”服务的情形除外。用户办理退货时须提供权威机构出具的产品存在质量问题的检测报告。</li> <li>2）用户办理退货手续时请务必将原装产品及配件、赠品、*屏蔽的关键字*、三包凭证、附属资料等全部寄回，否则无法办理退货。</li> <li>3）用户在接收快递时，应查看包裹外包装是否有明显的破损、拆封等异常，如有异常用户可拒收，并由快递人员做异常处理；如果接收时包裹外包装完好，则用户 可与快递人员当场查验包裹内商品及配件是否与购买商品一致、是否有缺失、破损或与网站描述不一致等异常情况，如有异常则用户可拒收，并由快递人员做异常处 理。请用户将快递标注异常的证明及商品异常的情况拍照留存。闪团商品一经签收，即表明用户完全认可并接受商品。如无相反证据，用户不得以货物流损、缺件或 商品描述与网站不符等原因要求退货。</li> <li>用户接受上述售后服务的约定作为其参与购买闪团商品时向本网站发出要约不可分割的组成部分。上述约定与本网站公示的售后服务政策冲突的，以上述约定为准，未约定事项仍按照网站公示的内容执行。</li> </ul></div>');
+                        }
+                    } else if (infoList[i].extType == 4) {
+                        tuanTag = '团购';
+                    }
+                    if (infoList[i].extType == 8 || infoList[i].extType == 4) {
+                        if (promotionsItems.length) {
+                            promotionsItems[0] = promotionsItems[0].replace(/hl_red_bg">[\u4e00-\u9fa5]+</, 'hl_red_bg">' + tuanTag + '<');
+                        }
+
+                        if ($('#tuan-tag').length > 0) {
+                            $('#tuan-tag').html('[' + tuanTag + '] ');
+                        } else {
+                            $('#name h1').prepend('<span class="hl_red" id="tuan-tag">[' + tuanTag + '] </span>');
+                        }
+                    }
+                }
+                //赠品条件
+                var giftCondition = '';
+                if (huiyuantexiang_xianguo || xiangou) {
+                    giftCondition = huiyuantexiang_xianguo ? '（条件：' + buyNum + '、' + levelText + '及以上会员）' : '（条件：' + buyNum + '）';
+                }
+                if (huiyuantexiang) {
+                    giftCondition = '（条件：' + levelText + '及以上会员）';
+                }
+
+                //买多赠多
+                if (infoList[i].promoType == 2 && infoList[i].minNum > 1) {
+                    // promotionsItems.push('<em class="hl_red_bg">满赠</em>购买' + infoList[i].minNum + '件即得下方赠品');
+                    var giftList = infoList[i].adwordGiftSkuList;
+                    if (giftList.length > 0 & giftList !== null) {
+                        promotionsItems.push('<em class="hl_red_bg">赠品</em><em class="hl_red">赠下方的热销商品，赠完即止' + giftCondition + '</em>');
+                        var res = gift_TPL.process(infoList[i]);
+                        if (res !== '') {
+                            giftsItems.push(res);
+                        }
+                    }
+                }
+                // 封顶促销
+                if (infoList[i].promoType == 15 && infoList[i].rebate > 0) {
+                    var rebate = infoList[i].rebate;
+                    var bookTopAdword = '<em class="hl_red_bg">封顶</em><em class="hl_red">本商品参与' + (rebate * 10).toFixed(1) + '折封顶活动</em>';
+                    if (xiangou) {
+                        bookTopAdword = '<em class="hl_red_bg">封顶</em><em class="hl_red">本商品参与' + (rebate * 10).toFixed(1) + '折封顶活动,且' + limText + '</em>';
+                    }
+                    var adwordLink = infoList[i].adwordUrl;
+                    if (adwordLink != null && adwordLink.length > 0) {
+                        bookTopAdword += '<a href="' + adwordLink + '" target="_blank">  详情 <s class="s-arrow">>></s></a>';
+                    }
+                    promotionsItems.push(bookTopAdword);
+                }
+                // 赠品促销
+                if (infoList[i].promoType == 4) {
+                    var giftList = infoList[i].adwordGiftSkuList;
+                    if (giftList.length > 0 & giftList !== null) {
+                        for (var k = 0; k < giftList.length; k++) {
+                            if (giftList[k].giftType == 2) {
+                                promotionsItems.push('<em class="hl_red_bg">赠品</em><em class="hl_red">赠下方的热销商品，赠完即止' + giftCondition + '</em>');
                                 break;
-                            case 1:
-                                if ("undefined" != typeof e.options.hook && "" != e.options.hook)
-                                    var g = f.getAttribute(e.options.hook);
-                                break;
-                            default:
-                                return
+                            }
                         }
-                        var h = document.body.scrollTop || document.documentElement.scrollTop, i = (document.documentElement.offsetWidth, document.documentElement.clientHeight, d.clientX), j = d.clientY + h, k = "|", l = b.getPath(f, k);
-                        l.indexOf(k) > -1 && new BCore(function() {
-                            var a = new BCore.inputs.UserAction("MouseClick");
-                            a.pth = l, a.lt = i, a.tp = j, g && (a.hook = g), this.send(a)
-                        })
-                    } catch (c) {
-                    }
-                })
-            }
-        }};
-    var d = function() {
-    };
-    d.prototype = {save: function(a) {
-            if (a && !(!a instanceof BCore.Request)) {
-                var c = a.getUrl();
-                if (!d.last || d.last != c + a.query()) {
-                    d.last = c + a.query(), setTimeout(function() {
-                        "" == d.last
-                    }, 3e3);
-                    var e = BCore.prototype;
-                    !function() {
-                        for (var b in e.options)
-                            "string" == typeof e.options[b] && (a[b] || (a[b] = e.options[b]))
-                    }();
-                    var f = c + (-1 === c.indexOf("?") ? "?" : "&") + a.query(), g = b.cookie("tmc") || "";
-                    g && "null" != g || (f = f.replace("&tmc=&", "&tmc=" + d._tmc + "&"));
-                    var h = b.cookie("tma") || "";
-                    h && "null" != h || (f = f.replace("&tma=&", "&tma=" + d._tma + "&"));
-                    var i = b.cookie("tmd") || "";
-                    i && "null" != i || (f = f.replace("&tmd=&", "&tmd=" + d._tmd + "&"));
-                    var j = decodeURI(b.cookie("request_temp_url")) || "";
-                    j && "null" != j && (f += "#" + j), b.setCookie("request_temp_url", f, 1)
-                }
-            }
-        },send: function(a) {
-            d._tmc = b.cookie("tmc") || "", d._tma = b.cookie("tma") || "", d._tmd = b.cookie("tmd") || "";
-            var c = decodeURI(b.cookie("request_temp_url")) || "";
-            if (c && "null" != c) {
-                b.setCookie("request_temp_url", "", -1);
-                for (var e = c.split("#"), f = 0, g = e.length; g > f; f++)
-                    if ("" != e[f] && -1 != e[f].indexOf("http")) {
-                        var h = e[f];
-                        (new BCore).jsonp(h)
-                    }
-            }
-        }}, setTimeout(function() {
-        d.prototype.send()
-    }, 2e3);
-    var e = function(a) {
-        for (var b in a)
-            this.options[b] = a[b]
-    };
-    e.prototype = {elems: [],options: {autotime: 500,posH: 50,posV: 30},isInDocument: function(a) {
-            for (var b = document.body.parentNode; a; ) {
-                if (a === b)
-                    return !0;
-                a = a.parentNode
-            }
-            return !1
-        },clear: function() {
-            var a, b, c = this.elems;
-            for (b = c.length - 1; b >= 0; b--)
-                a = c[b].dom, this.isInDocument(a) || c.splice(b--, 1)
-        },push: function(a, b, c) {
-            if (!a || !b)
-                return !1;
-            if ("object" == typeof a) {
-                this.clear();
-                var d = new Object;
-                d.dom = a, d.bid = b, c && (d.percent = c), this.elems.push(d), 1 == this.elems.length && this.loader()
-            }
-        },getOffsetTop: function(a) {
-            for (var b = a.offsetTop, c = a.offsetParent; c; )
-                b += c.offsetTop, c = c.offsetParent;
-            return b
-        },getDocSize: function(a) {
-            return {w: a.offsetWidth,h: a.offsetHeight}
-        },loader: function() {
-            var a = this.options, b = "getOffsetTop", c = "scrollTop", d = "getDocSize", f = document.documentElement.clientHeight, g = function(a, b) {
-                0 >= a - b && (b = a);
-                var d = document.body[c] || document.documentElement[c];
-                return a - b >= d && d >= a - f
-            }, h = function() {
-                e.prototype.loader()
-            };
-            elems = this.elems;
-            for (var i, j, k, l, m = "tmpH", n = elems.length - 1; n >= 0; n--)
-                if (i = !1, l = elems[n].dom, null != l) {
-                    if (k = l.getAttribute(m), null === k || 0 == k) {
-                        var o = this[d](l);
-                        if (o.h < 50)
-                            continue;
-                        k = parseInt(elems[n].percent ? o.h * elems[n].percent : o.w > o.h ? o.h * a.posH : o.h * a.posV), l.setAttribute(m, parseInt(k / 100))
-                    }
-                    if (j = this[b](l), null !== j && 0 != j && (i = g(j, -k))) {
-                        var p = new BCore.inputs.UserAction("DFeedBack");
-                        p.hook = "show", p.p_bid = elems[n].bid, BCore.prototype.send(p), l.removeAttribute(m), elems.splice(n--, 1)
-                    }
-                }
-            elems.length ? setTimeout(h, a.autotime) : elems = null
-        }}, BCore.exts = {}, BCore.exts.MouseClick = c, BCore.exts.RequestSave = d, BCore.exts.BannerShow = e
-}(window), function(window) {
-    function i_(b) {
-        return a.getElementByTagName(b) || null
-    }
-    function f() {
-        this._BrowserDetect = {init: function() {
-                this.browser = this.searchString(this.dataBrowser) || "None", this.version = this.searchVersion(navigator.userAgent) || this.searchVersion(navigator.appVersion) || "an unknown version", this.OS = this.searchString(this.dataOS) || "None"
-            },searchString: function(a) {
-                for (var b = 0; b < a.length; b++) {
-                    var c = a[b].string, d = a[b].prop;
-                    if (this.versionSearchString = a[b].versionSearch || a[b].identity, c) {
-                        if (-1 != c.toLowerCase().indexOf(a[b].subString.toLowerCase()))
-                            return a[b].identity
-                    } else if (d)
-                        return a[b].identity
-                }
-            },searchVersion: function(a) {
-                var b = a.indexOf(this.versionSearchString);
-                if (-1 != b)
-                    return parseFloat(a.substring(b + this.versionSearchString.length + 1))
-            },dataBrowser: [{string: navigator.userAgent,subString: "Maxthon",identity: "MaxThon"}, {string: navigator.userAgent,subString: "360se",identity: "360SE"}, {string: navigator.userAgent,subString: "theworld",identity: "TheWorld"}, {string: navigator.userAgent,subString: "MetaSr",identity: "Sogou"}, {string: navigator.userAgent,subString: "TencentTraveler",identity: "QQTT "}, {string: navigator.userAgent,subString: "MQQBrowser",identity: "MQQBrowser"}, {string: navigator.userAgent,subString: "QQBrowser",identity: "QQBrowser"}, {string: navigator.userAgent,subString: "UCWEB",identity: "UC"}, {string: navigator.userAgent,subString: "UC AppleWebKit",identity: "UC"}, {string: navigator.userAgent,subString: "Chrome",identity: "Chrome"}, {string: navigator.userAgent,subString: "OmniWeb",versionSearch: "OmniWeb/",identity: "OmniWeb"}, {string: navigator.vendor ? navigator.vendor : "",subString: "Apple",identity: "Safari",versionSearch: "Version"}, {prop: window.opera ? window.opera : "",identity: "Opera",versionSearch: "Version"}, {string: navigator.vendor ? navigator.vendor : "",subString: "iCab",identity: "iCab"}, {string: navigator.vendor ? navigator.vendor : "",subString: "KDE",identity: "Konqueror"}, {string: navigator.userAgent,subString: "BlackBerry",identity: "BlackBerry",versionSearch: "Version"}, {string: navigator.userAgent,subString: "Firefox",identity: "Firefox"}, {string: navigator.vendor ? navigator.vendor : "",subString: "Camino",identity: "Camino"}, {string: navigator.userAgent,subString: "Netscape",identity: "Netscape"}, {string: navigator.userAgent,subString: "MSIE",identity: "IE",versionSearch: "MSIE"}, {string: navigator.userAgent,subString: "Gecko",identity: "Mozilla",versionSearch: "rv"}, {string: navigator.userAgent,subString: "Mozilla",identity: "Netscape",versionSearch: "Mozilla"}],dataOS: [{string: navigator.userAgent,subString: "Windows NT 5.0",identity: "Win2000"}, {string: navigator.userAgent,subString: "Windows NT 5.1",identity: "WinXP"}, {string: navigator.userAgent,subString: "Windows NT 5.2",identity: "Win2003"}, {string: navigator.userAgent,subString: "Windows NT 6.0",identity: "WinVista"}, {string: navigator.userAgent,subString: "Windows NT 6.1",identity: "Win7"}, {string: navigator.userAgent,subString: "Windows Phone",identity: "WinPhone"}, {string: navigator.platform,subString: "Mac",identity: "Mac"}, {string: navigator.userAgent,subString: "iPhone",identity: "iPod"}, {string: navigator.userAgent,subString: "iPod",identity: "iPod"}, {string: navigator.userAgent,subString: "iPad",identity: "iPad"}, {string: navigator.userAgent,subString: "Android 1.0",identity: "Android 1.0"}, {string: navigator.userAgent,subString: "Android 1.1",identity: "Android 1.1"}, {string: navigator.userAgent,subString: "Android 2.0",identity: "Android 2.0"}, {string: navigator.userAgent,subString: "Android 2.1",identity: "Android 2.1"}, {string: navigator.userAgent,subString: "Android 2.2",identity: "Android 2.2"}, {string: navigator.userAgent,subString: "Android 2.3",identity: "Android 2.3"}, {string: navigator.userAgent,subString: "Android 3.0",identity: "Android 3.0"}, {string: navigator.userAgent,subString: "Android 3.1",identity: "Android 3.1"}, {string: navigator.userAgent,subString: "Android 4.0",identity: "Android 4.0"}, {string: navigator.userAgent,subString: "Android 4.1",identity: "Android 4.1"}, {string: navigator.userAgent,subString: "Android",identity: "Android"}, {string: navigator.userAgent,subString: "Linux",identity: "Linux"}]}, this._BrowserDetect.init.call(this._BrowserDetect), this.tag = {lo: ""}
-    }
-    function PageView() {
-        UserAction.call(this, "PageView")
-    }
-    var bf = {sengin: ["baidu.com", "baidu.com", "google.com", "google.cn", "google.com.hk", "sogou.com", "zhongsou.com", "search.yahoo.com", "one.cn.yahoo.com", "soso.com", "114search.118114.cn", "search.live.com", "youdao.com", "gougou.com", "bing.com", "so.360.cn", "so.com"],sword: ["word", "wd", "q", "q", "q", "query", "w", "p", "p", "w", "kw", "q", "q", "search", "q", "q", "q"],_n: (new Date).getTime(),_t: ["rs=", "ja=", "oc=", "ln=", "lk=", "ep=", "ct=", "bt=", "ot=", "fv="],_s: 30}, BAE_CONFIG = {stop: !1,subCookie: !1}, a = document, h = a.location, d = window, g = navigator, orderArray = orderArray || [], j = encodeURIComponent, Tools = BCore.tools.Tools;
-    f.prototype = {_ln: "",getFl: function() {
-            this.tag.fl = d.screen.width > d.screen.height ? d.screen.width + "x" + d.screen.height : d.screen.height + "x" + d.screen.width
-        },getJa: function() {
-            this.tag.ja = g.javaEnabled() ? "1" : "0"
-        },getDs: function() {
-            var a;
-            a = g.systemLanguage ? g.systemLanguage : g.browserLanguage ? g.browserLanguage : g.language ? g.language : g.userLanguage ? g.userLanguage : "", this.tag.ds = a.toLowerCase()
-        },getLn: function() {
-            var b = a.referrer || this._ln;
-            this.tag.ln = b ? j(b) : ""
-        },splitDir: function(a, b) {
-            return a.replace("//", "/").split(b)
-        },samDom: function(a, b) {
-            if ("" == a || null == a)
-                return !1;
-            for (var c = this.splitDir(a, "/")[1], d = b.length, e = 0; d > e; e++) {
-                var f = b[e], g = c.indexOf(f);
-                if (g > -1)
-                    return this.tag.ref = c, !0
-            }
-            return !1
-        },getLo: function(a) {
-            if ("" == a || null == a)
-                return void (this.tag.lo = "");
-            if (a.indexOf("?") >= 0) {
-                var b = this.splitDir(a, "?");
-                if (b.length > 0) {
-                    for (var c = 0; c < b.length; c++)
-                        if (b[c].indexOf("&") >= 0) {
-                            for (var d = b[c].split("&"), e = 0; e < d.length; e++)
-                                for (var f = d[e].split("="), g = 0; g < bf.sword.length; g++)
-                                    if (f[0].toLowerCase() == bf.sword[g] && a.indexOf(bf.sengin[g]) >= 0)
-                                        return void (this.tag.lo = f[1])
-                        } else if (b[c].indexOf("=") >= 0)
-                            for (var f = b[c].split("="), g = 0; g < bf.sword.length; g++)
-                                if (f[0].toLowerCase() == bf.sword[g] && a.indexOf(bf.sengin[g]) >= 0)
-                                    return void (this.tag.lo = f[1])
-                } else
-                    this.tag.lo = ""
-            } else
-                this.tag.lo = ""
-        },getEp: function() {
-            this.tag.ep = j(a.URL)
-        },getPc: function() {
-            var a = document.characterSet ? document.characterSet : document.charset;
-            a = a.toLowerCase(), this.tag.ct = j(a)
-        },getEt: function() {
-            var b = a.title;
-            if (null == b) {
-                var c = i_("title");
-                b = null != c && c.length > 0 ? c[0] : ""
-            }
-            this.tag.et = j(b.substr(0, 100))
-        },getAgent: function() {
-            return g.userAgent.toLowerCase()
-        },getCp: function() {
-            this.tag.cs = document.charset, this.tag.cp = "IE" === this._BrowserDetect.browser ? this._BrowserDetect.browser + " " + this._BrowserDetect.version : this._BrowserDetect.browser
-        },getCw: function() {
-            this.tag.cw = this._BrowserDetect.OS
-        },getFs: function() {
-            var f = "-";
-            if (g.plugins && g.plugins.length) {
-                for (var ii = 0; ii < g.plugins.length; ii++)
-                    if (-1 != g.plugins[ii].name.indexOf("Shockwave Flash")) {
-                        f = g.plugins[ii].description.split("Shockwave Flash ")[1];
-                        break
-                    }
-            } else if (window.ActiveXObject)
-                for (var ii = 10; ii >= 2; ii--)
-                    try {
-                        var fl = eval("new ActiveXObject('ShockwaveFlash.ShockwaveFlash." + ii + "');");
-                        if (fl) {
-                            f = ii + ".0";
-                            break
+
+                        var res = gift_TPL.process(infoList[i]);
+                        if (res !== '') {
+                            giftsItems.push(res);
                         }
-                    } catch (e) {
                     }
-            this.tag.fs = f
-        },getProtocol: function() {
-            return "https:" == h.protocol ? "https://" : "http://"
-        },getAcc: function() {
-            this.tag.cf = BAE_CONFIG.subCookie ? document.domain : Tools.getTopDomain()
-        },isRandom: function() {
-            return Math.ceil(1e8 * Math.random())
-        },getS_d: function(a) {
-            var b = new Date(a), c = b.getMonth() + 1, d = b.getDate();
-            return 10 > c && (c = "0" + c), 10 > d && (d = "0" + d), b.getFullYear() + c + d
-        },setSessiontimeout: function(a) {
-            bf._s = a
-        },getSessiontimeout: function() {
-            return bf._s
-        },IsEmpty: function(a) {
-            return void 0 == a || "-" == a || "" == a
-        },isCookie: function() {
-            var a = [], b = "tma", c = "tmc", d = "tmd", e = Tools.Hash(this.tag.cf) + "." + this.isRandom() + "." + bf._n, f = bf._n, g = this.getSessiontimeout();
-            if (k = 60 * g * 1e3, null == Tools.getCookie(c) || "" == Tools.getCookie(c))
-                Tools.setCookie(c, "1." + e + "." + f + "." + f, k, 1, BAE_CONFIG.subCookie);
-            else {
-                var h = Tools.getCookie(c), i = h.split(".");
-                try {
-                    i[0] = parseInt(i[0]) + 1 + "", __n = (new Date).getTime(), i[4] = i[5], i[5] = __n
-                } catch (j) {
-                    Tools.setCookie(c, "0." + e + "." + f + "." + f, k, 1, BAE_CONFIG.subCookie)
+                    setCoupon(infoList[i].adwordCouponList);
+                    setScore(infoList[i].score);
                 }
-                Tools.setCookie(c, i.join("."), k, 1, BAE_CONFIG.subCookie)
-            }
-            var k = 62208e6;
-            if (null == Tools.getCookie(b) || "" == Tools.getCookie(b))
-                Tools.setCookie(b, e + "." + bf._n + "." + bf._n + ".1", k, 1, BAE_CONFIG.subCookie);
-            else {
-                var h = Tools.getCookie(b), i = h.split(".");
-                if (6 == i.length) {
-                    __n = (new Date).getTime();
-                    try {
-                        this.getS_d(parseInt(i[4])) < this.getS_d(parseInt(__n)) && (i[5] = parseInt(i[5]) + 1, i[3] = i[4], i[4] = __n)
-                    } catch (j) {
-                        Tools.setCookie(b, e + "." + bf._n + "." + bf._n + ".1", k, 1, BAE_CONFIG.subCookie)
-                    }
-                    Tools.setCookie(b, i.join("."), k, 1, BAE_CONFIG.subCookie)
-                } else
-                    Tools.setCookie(b, e + "." + bf._n + "." + bf._n + ".1", k, 1, BAE_CONFIG.subCookie)
-            }
-            k = 15552e6;
-            var l = "0." + e;
-            ("" == Tools.getCookie(d) || null == Tools.getCookie(d)) && Tools.setCookie(d, "0." + e + ".", k, 1, BAE_CONFIG.subCookie);
-            var m = decodeURIComponent(this.tag.ln), n = document.URL || "";
-            if ("" != m && n.indexOf("?") >= 0 && m.indexOf(this.tag.cf) < 0 && n.indexOf(this.tag.cf) >= 0) {
-                var o = n.substring(n.indexOf("?") + 1, n.length), h = Tools.getCookie(d), i = h.split(".");
-                if (o.indexOf("&") >= 0) {
-                    for (var p = o.split("&"), q = 0; q < p.length; q++)
-                        if (p[q].indexOf("t__") >= 0) {
-                            var r = "";
-                            i[i.length - 1] != r && Tools.setCookie(d, l + "." + r, k, 1, BAE_CONFIG.subCookie)
+                //附件
+                if (infoList[i].adwordGiftSkuList !== null && infoList[i].adwordGiftSkuList.length > 0) {
+                    var gift_list = infoList[i].adwordGiftSkuList;
+                    if ($('#product-fj').length < 1) {
+                        $('#product-detail-3').append('<div id="product-fj"></div>');
+                        for (var k = 0; k < gift_list.length; k++) {
+                            if (gift_list[k].giftType == 1) {
+                                $('#product-fj').append('<div id="product-fj">' + gift_list[k].name + ' × ' + gift_list[k].number + '</div>')
+                            }
                         }
+                    }
+                }
+                //满返满赠促销
+                if (infoList[i].promoType == 10) {
+                    //满 赠、返
+                    var FULL_REFUND = 1;
+                    //每满赠、返
+                    var FULL_REFUND_PER = 2;
+                    //加价购
+                    var EXTRA_PRICE = 4;
+                    //阶梯满减
+                    var FULL_LADDER = 6;
+                    //满返百分比
+                    var PERCENT = 8;
+                    // M元买N件
+                    var FULLREFUND_MPRICE_NNUM = 13;
+                    // 满M件赠
+                    var FULLREFUND_MNUN_ZENG = 14;
+                    // 满M件N折
+                    var FULLNUM_MNUM_NREBATE = 15;
+                    // 满返满赠叠加促销
+                    var FULLPRICE_MFMZ = 16;
+                    // 满M件N折和满赠叠加促销
+                    var FULLNUM_REBATE_MFMZ = 17;
+                    //满减池促销
+                    var FULL_POOL = 20;
+                    //满返满赠促销子类型
+                    var fullRefundType = infoList[i].fullRefundType;
+                    var reward = infoList[i].reward;
+                    var needMoney = infoList[i].needMondey;
+                    var mzNeedMoney = infoList[i].mzNeedMoney;
+                    var mzNeedNum = infoList[i].mzNeedNum;
+                    var needNum = infoList[i].needNum;
+                    var addMoney = infoList[i].addMoney;
+                    var topMoney = infoList[i].topMoney;
+                    var percent = infoList[i].percent;
+                    var rebate = infoList[i].rebate;
+                    var deliverNum = infoList[i].deliverNum;
+                    var score = infoList[i].score;
+                    var couponList = infoList[i].adwordCouponList;
+                    var haveGifts = infoList[i].haveFullRefundGifts;
+                    var jq = 0;
+                    var fullLadderList = infoList[i].fullLadderDiscountList;
+                    var adwordLink = infoList[i].adwordUrl;
+                    var mfmzExtType = infoList[i].mfmzExtType;
+                    //拼接满返满赠信息
+                    var fullRefundInfo = "";
+                    if (couponList != null && couponList.length > 0) {
+                        $.each(couponList, function (z, couponValue) {
+                            if (couponValue.type == 1) {
+                                jq = jq + coupon.couponQouta;
+                            }
+                        });
+                    }
+                    if (fullRefundType == FULL_REFUND) {
+                        if (fullLadderList != null && fullLadderList.length > 0) {
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                var fNeedMoney = fullLadderValue.needMoney;
+                                var fRewardMoney = fullLadderValue.rewardMoney;
+                                var fAddMoney = fullLadderValue.addMoney;
+                                if (fNeedMoney > 0 && fRewardMoney > 0 && !haveGifts) {
+                                    var isFirstSign = z == 0 ? '' : '，';
+                                    var tipsHtml = z == 0 ? '<em class="hl_red_bg">满减</em>' : '';
+                                    fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '减' + fRewardMoney + '</em>');
+                                }
+                                if (haveGifts) {
+                                    var isFirstSign = z == 0 ? '' : '；';
+                                    if (fNeedMoney > 0 && fRewardMoney > 0 && fAddMoney > 0) {
+                                        var tipsHtml = z == 0 ? '<em class="hl_red_bg">满送</em>' : '';
+                                        fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '元减' + fRewardMoney + '元以折扣价购买热销商品</em>');
+                                    } else if (fNeedMoney > 0 && fRewardMoney > 0 && fAddMoney <= 0) { //满减赠
+                                        var tipsHtml = z == 0 ? '<em class="hl_red_bg">满送</em>' : '';
+                                        fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '元减' + fRewardMoney + '元、得赠品（赠完即止）</em>');
+                                    } else if (fNeedMoney > 0 && fRewardMoney <= 0 && fAddMoney > 0) {
+                                        var tipsHtml = z == 0 ? '<em class="hl_red_bg">加价购</em>' : '';
+                                        fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '元以折扣价购买热销商品</em>');
+                                    } else {
+                                        var tipsHtml = z == 0 ? '<em class="hl_red_bg">满赠</em>' : '';
+                                        fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '元即赠热销商品，赠完即止</em>');
+                                    }
+                                }
+                                if (jq > 0 && fNeedMoney > 0) {
+                                    var isFirstSign = z == 0 ? '' : '；';
+                                    var tipsHtml = z == 0 ? '<em class="hl_red_bg">满赠</em>' : '';
+                                    fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '元，赠' + jq + '元京券</em>');
+                                }
+                                if (fNeedMoney > 0 && percent > 0) {
+                                    var isFirstSign = z == 0 ? '' : '；';
+                                    var tipsHtml = z == 0 ? '<em class="hl_red_bg">满减</em>' : '';
+                                    percent = percent * 100;
+                                    fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fNeedMoney + '元，可减' + percent + '%</em>');
+                                }
+                            });
+                        }
+                    } else if (fullRefundType == FULL_REFUND_PER) {
+                        if (needMoney > 0 && reward > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满减</em><em class="hl_red">每满' + needMoney + '元，可减' + reward + '元现金</em>';
+                            if (topMoney > 0) {
+                                fullRefundInfo += '<em class="hl_red">，最多可减' + topMoney + '元</em>';
+                            }
+                        } else {
+                            if (haveGifts) {
+                                fullRefundInfo = '<em class="hl_red_bg">满赠</em><em class="hl_red">每满' + needMoney + '元即赠，赠完即止</em>';
+                            } else if (jq > 0) {
+                                fullRefundInfo = '<em class="hl_red_bg">满赠</em><em class="hl_red">每满' + needMoney + '元，即赠' + jq + '元京券</em>';
+                            }
+                        }
+                    } else if (fullRefundType == EXTRA_PRICE) {
+                        if (needMoney > 0 && addMoney > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">加价购</em><em class="hl_red">满' + needMoney + '元另加' + addMoney + '元即可购买热销商品</em>';
+                        }
+                    } else if (fullRefundType == PERCENT) {
+                        if (needMoney > 0 && percent > 0) {
+                            percent = percent * 100;
+                            fullRefundInfo = '<em class="hl_red_bg">满减</em><em class="hl_red">满' + needMoney + '元，可减' + percent + '%</em>';
+                        }
+                    } else if (fullRefundType == FULL_LADDER) {
+                        if (fullLadderList != null && fullLadderList.length > 0) {
+                            //fullRefundInfo = '<em class="hl_red_bg">满减</em>该商品参加阶梯满减活动，购买活动商品<br/>';
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                var tipsHtml = z == 0 ? '<em class="hl_red_bg">满减</em>' : '',
+                                    isFirstSign = z == 0 ? '' : '，';
+                                if (fullLadderValue.needMoney > 0 && fullLadderValue.rewardMoney > 0) {
+                                    fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fullLadderValue.needMoney + '减' + fullLadderValue.rewardMoney + '</em>');
+                                }
+                            });
+                            //fullRefundInfo = fullRefundInfo.substring(0, fullRefundInfo.length - 1)
+                        }
+                    } else if (fullRefundType == 11) {
+                        // 满返满赠促销大类型
+                        var moreLink = infoList[i].adwordUrl ? ' <a href="' + infoList[i].adwordUrl + '" target="_blank">详情»</a>' : '';
+                        var tipsHTML = '<em class="hl_red"><em class="hl_red_bg">多买优惠</em>满' + infoList[i].needNum + '件，立减最低' + infoList[i].deliverNum + '件商品价格</em>' + moreLink;
+                        if (tipsHTML !== '') {
+                            promoType10.push(tipsHTML);
+                        }
+                    } else if (fullRefundType == FULL_POOL) {
+                        // 跨品类满减促销
+                        var list = infoList[i].fullLadderDiscountList,
+                            len = list.length, f, resText = [], resLink = infoList[i].adwordUrl;
+                        for (f = 0; f < len && len > 0; f++) {
+                            if (list[f].rebate > 0) {
+                                resText.push(list[f].minPoolNum + '类且满' + parseInt(list[f].needMoney) + '元打' + (list[f].rebate * 10).toFixed(1) + '折');
+                            } else {
+                                resText.push(list[f].minPoolNum + '类且满' + parseInt(list[f].needMoney) + '元减' + parseInt(list[f].rewardMoney) + '元');
+                            }
+                        }
+                        if (len > 0) {
+                            var conditionTxt = '';
+                            if (list[0].maxSkuNumInPool > 0) {
+                                conditionTxt += '每类商品最多购买' + list[0].maxSkuNumInPool + '件';
+                            }
+                            if (list[0].minTotalSkuNum > 1) {
+                                conditionTxt += '总件数至少' + list[0].minTotalSkuNum + '件';
+                            }
+
+                            if (list[0].poolSkuUnique > 0) {
+                                if (list[0].maxSkuNumInPool > 0 || list[0].minTotalSkuNum > 1) {
+                                    conditionTxt += '且型号不同';
+                                } else {
+                                    conditionTxt += '须型号不同';
+                                }
+                            }
+
+                            if (conditionTxt.length > 0) {
+                                conditionTxt = '，' + conditionTxt;
+                            }
+
+                            promoType10.push('<em class="hl_red_bg">满减</em><em class="hl_red">' + '购买' + resText.join('，') + conditionTxt + '</em> <a href="' + resLink + '" target="_blank">详情<s class="s-arrow">>></s></a>');
+                        }
+                    } else if (fullRefundType == FULLREFUND_MPRICE_NNUM) {
+                        if (needMoney > 0 && deliverNum > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满减</em><em class="hl_red">满' + needMoney + '元买' + deliverNum + '件</em>';
+                        }
+                    } else if (fullRefundType == FULLREFUND_MNUN_ZENG) {
+                        if (haveGifts && needNum > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满赠</em><em class="hl_red">满' + needNum + '件即赠热销商品，赠完即止</em>';
+                        }
+                        if (needNum > 0 && rebate > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">多买优惠</em><em class="hl_red">满' + needNum + '件，总价打' + (rebate * 10).toFixed(1) + '折</em>';
+                        }
+
+                    } else if (fullRefundType == FULLNUM_MNUM_NREBATE) {
+                        if (fullLadderList != null && fullLadderList.length > 0) {
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                var tipsHtml = z == 0 ? '<em class="hl_red_bg">多买优惠</em>' : '',
+                                    isFirstSign = z == 0 ? '' : '；';
+                                if (fullLadderValue.needNum > 0) {
+                                    fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fullLadderValue.needNum + '件');
+                                    if (fullLadderValue.rebate > 0) {
+                                        fullRefundInfo += '，总价打' + (fullLadderValue.rebate * 10).toFixed(1) + '折';
+                                    }
+                                    if (fullLadderValue.addMoney > 0) {
+                                        fullRefundInfo += '，每加' + fullLadderValue.addMoney + '元即可购买热销商品';
+                                    }
+                                    fullRefundInfo += "</em>";
+                                }
+
+                            });
+                        } else {
+                            if (needNum > 0) {
+                                fullRefundInfo = '<em class="hl_red_bg">多买优惠</em><em class="hl_red">满' + needNum + '件';
+                                if (rebate > 0) {
+                                    fullRefundInfo += '，总价打' + (rebate * 10).toFixed(1) + '折';
+                                }
+                                if (addMoney > 0) {
+                                    fullRefundInfo += '，每加' + addMoney + '元即可购买热销商品'
+                                }
+                                fullRefundInfo += "</em>";
+                            }
+
+                        }
+                    } else if (fullRefundType == FULLPRICE_MFMZ) {
+                        var mfmzExtTypeMF = 1;
+                        var mfmzExtTypeMZ = 2;
+                        var mfmzExtTypeMFJT = 3;
+                        var mfmzExtTypeMZJT = 4;
+                        var mfmzExtTypeMFMZ = 5;
+                        if (mfmzExtType === mfmzExtTypeMF) {
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                if (fullLadderValue.needMoney > 0 && fullLadderValue.rewardMoney > 0) {
+                                    fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + fullLadderValue.needMoney + '立减' + fullLadderValue.rewardMoney + '</em>';
+                                }
+                            });
+                        }
+                        if (mfmzExtType === mfmzExtTypeMZ) {
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                if (fullLadderValue.rewardMoney <= 0 && fullLadderValue.needMoney > 0 && fullLadderValue.addMoney <= 0) {
+                                    fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + fullLadderValue.needMoney + '元即赠热销商品，赠完即止</em>';
+                                }
+                                if (fullLadderValue.rewardMoney <= 0 && fullLadderValue.needMoney > 0 && fullLadderValue.addMoney > 0) {
+                                    fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + fullLadderValue.needMoney + '元另加' + fullLadderValue.addMoney + '元即赠热销商品，赠完即止</em>';
+                                }
+                            });
+                        }
+                        if (mfmzExtType === mfmzExtTypeMFJT) {
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                var tipsHtml = z == 0 ? '<em class="hl_red_bg">满送</em>' : '',
+                                    isFirstSign = z == 0 ? '' : '，';
+                                if (fullLadderValue.needMoney > 0 && fullLadderValue.rewardMoney > 0) {
+                                    fullRefundInfo = (fullRefundInfo + tipsHtml + '<em class="hl_red">' + isFirstSign + '满' + fullLadderValue.needMoney + '减' + fullLadderValue.rewardMoney + '</em>');
+                                }
+                            });
+                        }
+                        if (mfmzExtType === mfmzExtTypeMZJT) {
+                            if (addMoney <= 0) {
+                                $.each(fullLadderList, function (z, fullLadderValue) {
+                                    var tipsHtml = z == 0 ? '<em class="hl_red_bg">满赠</em><em class="hl_red">' : '',
+                                        isFirstSign = z == 0 ? '' : '，或';
+                                    if (fullLadderValue.needMoney > 0) {
+                                        fullRefundInfo = (fullRefundInfo + tipsHtml + isFirstSign + '满' + fullLadderValue.needMoney + '得赠品');
+                                    }
+                                });
+                                fullRefundInfo += '，赠完即止</em>';
+                            }
+                            if (addMoney > 0) {
+                                $.each(fullLadderList, function (z, fullLadderValue) {
+                                    var tipsHtml = z == 0 ? '<em class="hl_red_bg">加价购</em><em class="hl_red">' : '',
+                                        isFirstSign = z == 0 ? '' : '，或';
+                                    if (fullLadderValue.needMoney > 0) {
+                                        fullRefundInfo = (fullRefundInfo + tipsHtml + isFirstSign + '满' + fullLadderValue.needMoney + '另加' + fullLadderValue.addMoney + '元' );
+                                    }
+                                });
+                                fullRefundInfo += '，即可购买热销商品</em>';
+                            }
+                        }
+                        if (mfmzExtType === mfmzExtTypeMFMZ) {
+                            $.each(fullLadderList, function (z, fullLadderValue) {
+                                var tipsHtml = z == 0 ? '<em class="hl_red_bg">满送</em>' : '';
+                                var fullRefundInfo1 = '';
+                                var fullRefundInfo2 = '';
+                                fullRefundInfo += tipsHtml;
+                                if (fullLadderValue.mfmzTag == 1) {
+                                    fullRefundInfo1 += '<em class="hl_red">满' + fullLadderValue.needMoney + '立减' + fullLadderValue.rewardMoney + '</em>';
+                                }
+                                if (fullLadderValue.mfmzTag == 2 && fullLadderValue.addMoney <= 0) {
+                                    fullRefundInfo2 += '，减后满' + fullLadderValue.needMoney + '元即可购买热销商品</em>';
+                                }
+                                if (fullLadderValue.mfmzTag == 2 && fullLadderValue.addMoney > 0) {
+                                    fullRefundInfo2 += '，减后满' + fullLadderValue.needMoney + '元另加' + fullLadderValue.addMoney + '元即可购买热销商品</em>';
+                                }
+                                fullRefundInfo += fullRefundInfo1 + fullRefundInfo2;
+                            });
+                        }
+                        // if ( needMoney > 0 && reward > 0 && mzNeedMoney <=0 ) {
+                        // fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + needMoney + '立减' + reward + '</em>';
+                        // }
+                        // if (reward <= 0 && mzNeedMoney > 0 && addMoney <= 0 ) {
+                        // fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + mzNeedMoney + '元即赠热销商品，赠完即止</em>';
+                        // }
+                        // if (reward <= 0 && mzNeedMoney > 0 && addMoney > 0 ) {
+                        // fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + mzNeedMoney + '元另加' + addMoney + '元即赠热销商品，赠完即止</em>';
+                        // }
+                        // if ( needMoney > 0 && reward > 0 && mzNeedMoney > 0 && addMoney <= 0 ) {
+                        // fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + needMoney + '立减' + reward + '，减后满' + mzNeedMoney + '元即可购买热销商品</em>';
+                        // }
+                        // if ( needMoney > 0 && reward > 0 && mzNeedMoney > 0 && addMoney > 0 ) {
+                        // fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + needMoney + '立减' + reward + '，减后满' + mzNeedMoney + '元另加' + addMoney + '元即可购买热销商品</em>';
+                        // }
+                    } else if (fullRefundType == FULLNUM_REBATE_MFMZ) {
+                        if (needNum > 0 && rebate > 0 && addMoney <= 0 && mzNeedNum > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + needNum + '件，总价打' + (rebate * 10).toFixed(1) + '折，且赠热销商品，赠完即止</em>';
+                        }
+                        if (needNum > 0 && rebate > 0 && addMoney > 0 && mzNeedNum > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + needNum + '件，总价打' + (rebate * 10).toFixed(1) + '折，再加' + addMoney + '元赠热销商品，赠完即止</em>';
+                        }
+                        if (mzNeedNum <= 0 && needNum > 0 && rebate > 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + needNum + '件，总价打' + (rebate * 10).toFixed(1) + '折</em>';
+                        }
+                        if (mzNeedNum > 0 && addMoney <= 0 && rebate <= 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + mzNeedNum + '件赠热销商品，赠完即止</em>';
+                        }
+                        if (mzNeedNum > 0 && addMoney > 0 && rebate <= 0) {
+                            fullRefundInfo = '<em class="hl_red_bg">满送</em><em class="hl_red">满' + mzNeedNum + '件，再加' + addMoney + '元赠热销商品，赠完即止</em>';
+                        }
+                    }
+                    var fullRefundTotalInfo = "";
+                    if (fullRefundInfo != "") {
+                        if (adwordLink != null && adwordLink.length > 0) {
+                            fullRefundInfo = fullRefundInfo + '<a href="' + adwordLink + '" target="_blank">  详情 <s class="s-arrow">>></s></a>';
+                            //"<a target=\"_blank\" style='color:#CE0000' xx='oo' href=\"" + adwordLink + "\">" + + "</a>";
+                        }
+                        fullRefundTotalInfo = fullRefundInfo;
+                    }
+                    if (fullRefundTotalInfo !== '') {
+                        promoType10.push(fullRefundTotalInfo);
+                    }
+                }
+
+                // 是否限时打折
+                if (infoList[i].limitTimePromo == 1) {
+                    if ($('#a-tips').length < 1) {
+                        $('#summary-price strong').after('<em id="a-tips"> 促销即将结束 </em>');
+                    }
+                }
+            }
+        }
+        // 节能补贴
+        // if ( !!result.subsidyMoney == true && pageConfig.product.cat[1] !== 794 ) {
+        if (false) {
+            var isBr = tipsItems.length > 0 ? '<br/>' : '';
+            $('#choose-btn-append').addClass('choose-btn-append-lite');
+            tipsItems.push(isBr + '<em class="hl_red_bg">节能补贴</em>参加节能补贴，下单立减￥' + parseFloat(result.subsidyMoney).toFixed(2) + '  <a href="http://help.360buy.com/help/question-91.html" target="_blank">查看更多细则</a><br>');
+            if ($('#choose-btn-subsidy').length <= 0) {
+                $('#choose-btn-append').before('<div id="choose-btn-subsidy" class="btn"><a class="btn-subsidies" clstag="shangpin|keycount|product|jieneng" href="http://jd2008.360buy.com/purchase/orderinfo_elePow.aspx?pid=' + pageConfig.product.skuid + '&pcount=' + $('#buy-num').val() + '&ptype=1">参加节能补贴<b></b></a></div>');
+                setAmount.targetLink = $('#choose-btn-subsidy .btn-subsidies,#choose-btn-append .btn-append');
+            }
+        } else {
+            $('#choose-btn-subsidy').remove();
+        }
+        (function () {
+            var txtPerfix = '本商品不能使用',
+                txtDq = '',
+                txtJq = '',
+                txtTips = '',
+                infoList = result.infoList;
+            if (!infoList || infoList.length < 1) {
+                return;
+            }
+            for (var m = 0; m < infoList.length; m++) {
+                if (infoList[m] === 1) {
+                    txtDq += ' 东券';
+                }
+                if (infoList[m] === 2) {
+                    txtJq += ' 京券';
+                }
+                if (infoList[m] === 3) {
+                    txtTips += '<a class="hl_red" href="http://help.360buy.com/help/question-97.html" target="_blank" title="售后到家（仅针对京东指定商品）：自商品售出一年内，如出现质量问题，京东将提供免费上门取送及原厂授权维修服务。">赠送一年期京东售后到家服务（上门取送维修）</a><br/>'
+                }
+            }
+            if (txtDq === '' && txtJq === '') {
+                tipsItems.push(txtTips);
+            } else {
+                tipsItems.push('<em class="hl_red">' + txtPerfix + txtDq + txtJq + '</em><br>');
+                tipsItems.push(txtTips);
+            }
+        })();
+
+        if (typeof MBuy !== 'undefined') {
+            MBuy.setProm(result.mpt);
+        }
+
+        // 奢侈品
+        if (pageConfig.product.tips == true) {
+            var strPerfix = tipsItems.length > 0 ? '<br/>' : '';
+            tipsItems.push(strPerfix + '此商品尊享7天无忧退换货服务');
+        }
+        // 赠品提示
+        if (giftsItems.length > 0) {
+            giftsDiv.parent().show();
+            giftsDiv.html('<div id="product-gifts">' + giftsItems.join('') + '</div>');
+        } else {
+            giftsDiv.parent().hide();
+        }
+        // 促销信息
+        if (promotionsItems.length > 0 || promoType10.length > 0) {
+            promotionsDiv.parent().show();
+            var resPromoType10 = [];
+            var tipsForCart = '以下促销，可在购物车任选其一';
+
+            if (pageConfig.product.specialAttrs && pageConfig.product.isLOC) {
+                tipsForCart = '以下促销，只可享受其中一种';
+            }
+
+            if (promoType10.length > 1) {
+                if (promotionsItems.length > 0) {
+                    resPromoType10 = ['<br />' + tipsForCart].concat(promoType10);
                 } else {
-                    var r = "";
-                    i[i.length - 1] != r && Tools.setCookie(d, l + "." + r, k, 1, BAE_CONFIG.subCookie)
+                    resPromoType10 = [tipsForCart].concat(promoType10);
                 }
-            }
-            if (Tools.getCookie(d)) {
-                var h = Tools.getCookie(d), i = h.split(".");
-                try {
-                    i[0] = parseInt(i[0]) + 1 + ""
-                } catch (j) {
+            } else {
+                if (promotionsItems.length > 0 && promoType10[0]) {
+                    promoType10[0] = '<br />' + promoType10[0];
                 }
-                Tools.setCookie(d, i.join("."), k, 1, BAE_CONFIG.subCookie)
+                resPromoType10 = promoType10;
             }
-            return a.push(b + "=" + Tools.getCookie(b)), a.push(c + "=" + Tools.getCookie(c)), a.push(d + "=" + Tools.getCookie(d)), a.join("&")
-        },init: function() {
-            this.initLn(), this.getFl(), this.getJa(), this.getDs(), this.getLn(), this.getLo(this.samDom(a.referrer, bf.sengin) ? a.referrer : ""), this.getEp(), this.getEt(), this.getCp(), this.getCw(), this.getFs(), this.getPc(), this.getAcc()
-        },initBridge: function() {
-            return this.init(), bf._t[0] + this.tag.fl + "&" + bf._t[1] + this.tag.ja + "&" + bf._t[2] + this.tag.ds + "&" + bf._t[3] + this.tag.ln + "&" + bf._t[4] + this.tag.lo + "&" + bf._t[5] + this.tag.ep + "&" + bf._t[6] + this.tag.ct + "&" + bf._t[7] + this.tag.cp + "&" + bf._t[8] + this.tag.cw + "&" + bf._t[9] + this.tag.fs + "&"
-        },initLn: function() {
-            var b = this;
-            if (!b._initLn) {
-                if (!a.referrer) {
-                    if (!document.body)
-                        return setTimeout(arguments.callee, 1);
-                    if (f.prototype._ln = Tools.getCookie("bfd_referrer") || "", this._BrowserDetect && "Sogou" === this._BrowserDetect.browser) {
-                        Tools.bind(document.body, "mousedown", function() {
-                            Tools.setCookie("bfd_referrer", h, 3e4, 1)
-                        })
-                    }
-                }
-                Tools.getCookie("bfd_referrer") && Tools.setCookie("bfd_referrer", "", -1), f.prototype._initLn = !0
+
+            if ($('#product-promotions').length > 0) {
+                $('#product-promotions').html(promotionsItems.join('<br />') + resPromoType10.join('<br />'));
+            } else {
+                promotionsDiv.prepend('<div id="product-promotions">' + promotionsItems.join('<br />') + resPromoType10.join('<br />') + '</div>');
             }
-        },_initLn: !1}, $Core = BCore = (new BCore).extend(function(a, b) {
-        this._super.call(this, a, b)
-    }, BCore);
-    var _super = BCore.prototype;
-    if ("undefined" != typeof BCORE_CHECK_CONFIG && BCORE_CHECK_CONFIG.BAE)
-        for (var i in BCORE_CHECK_CONFIG.BAE)
-            BAE_CONFIG[i] = BCORE_CHECK_CONFIG.BAE[i];
-    if (!BAE_CONFIG.stop && !_super["static"].baeload) {
-        var _f = new f;
-        _f.init(), _f.isCookie(), _super["static"].baeload = !0
-    }
-    var Request = BCore.Request, UserAction = BCore.inputs.UserAction, oldquery = UserAction.prototype.query;
-    UserAction.prototype.query = function() {
-        var a = oldquery.call(this);
-        return [a, BCore.inputs.getCookie()].join("&")
-    };
-    var Recommend = BCore.recommends.Recommend;
-    Recommend.prototype.query = function() {
-        var a = oldquery.call(this);
-        return [a, BCore.inputs.getCookie()].join("&")
-    }, PageView.prototype = new UserAction, PageView.prototype.query = function() {
-        var a = UserAction.prototype.query.call(this);
-        return [a, BCore.inputs.getParamter()].join("&")
-    }, BCore.inputs.getCookie = function() {
-        if (!BAE_CONFIG.stop) {
-            if (null == Tools.getCookie("tma") || null == Tools.getCookie("tmc") || null == Tools.getCookie("tmd")) {
-                var a = new f;
-                a.init(), a.isCookie()
+
+        } else {
+
+            $('#product-promotions').remove();
+            if (promotionsDiv.html() == '') {
+                promotionsDiv.parent().hide();
             }
-            return "tma=" + Tools.getCookie("tma") + "&tmc=" + Tools.getCookie("tmc") + "&tmd=" + Tools.getCookie("tmd")
         }
-        return ""
-    }, BCore.inputs.getParamter = function() {
-        var a = new f;
-        return "undefined" != typeof BCore.inputs.t && a.setSessiontimeout(BCore.inputs.t), a.initBridge()
-    }, BCore.inputs.getLk = function() {
-        var b = new f;
-        return b.getLo(b.samDom(a.referrer, bf.sengin) ? a.referrer : ""), decodeURI(b.tag.lo)
-    }, BCore.inputs.setSessiontimeout = function(a) {
-        BCore.inputs.t = a
-    }, BCore.inputs.PageView = PageView
-}(window), function() {
-    var a = navigator.userAgent.toLowerCase();
-    if (/macintosh|mac os x/i.test(a) && "ipad" == a.match(/ipad/i)) {
-        var b = BCore.prototype.send;
-        BCore.prototype.send = function(a, c, d) {
-            var d = d || this;
-            if (a.getUrl().indexOf("/FeedBack.do") > -1) {
-                var e = new BCore.exts.RequestSave;
-                e.save(a)
-            } else
-                b(a, c, d)
+
+        // 促销信息 extra
+        if (promotionsItemsExtra.length > 0) {
+            promotionsExtraDiv.parent().show();
+            promotionsExtraDiv.html('<div id="product-prom-ext">' + promotionsItemsExtra.join('    ') + '</div>');
+        } else {
+            promotionsExtraDiv.parent().hide();
         }
+        // 温馨提示
+        if (tipsItems.length > 0) {
+            var productTipsEl = $('#product-tips');
+            if (productTipsEl.length > 0) {
+                productTipsEl.html(tipsItems.join(' '));
+            } else {
+                tips.append('<div id="product-tips">' + tipsItems.join(' ') + '</div>');
+            }
+            tips.parent().show();
+        } else if (tips.html() == '') {
+            tips.parent().hide();
+        }
+        // 附加[返券]促销信息
+        if (!!pageConfig.product) {
+            this.getExtraPromotions(pageConfig.product.skuid, G.cat[2]);
+        }
+    },
+    clear: function () {
+        $('#product-gifts,#product-promotions,#product-prom-ext,#product-tips').remove();
+        $('#summary-promotion,#summary-promotion-extra,#summary-gifts,#summary-tips').hide();
+    },
+    getExtraPromotions: function (sku, catId) {
+        var sku = sku,
+            catId = catId,
+            holder = $('#summary-promotion .dd');
+
+        $.ajax({
+            url: 'http://bank.market.360buy.com/bank/show_index.action?',
+            data: {
+                sku: sku,
+                csId: catId
+            },
+            dataType: 'jsonp',
+            success: function (r) {
+                var text = ' <a href="{href}" target="_blank">详情 <s class="s-arrow">>></s></a>';
+                if (!r && !r.title) {
+                    return;
+                }
+                text = !!r.actUrl ? text.replace('{href}', r.actUrl) : '';
+
+                if ($('#extra-promotions').length > 0) {
+                    $('#extra-promotions').html('<em class="hl_red_bg">满额返券</em><em class="hl_red">' + unescape(r.title.replace(/\\/g, '%')) + '</em>' + text);
+                } else {
+                    holder.append('<div id="extra-promotions"><em class="hl_red_bg">满额返券</em><em class="hl_red">' + unescape(r.title.replace(/\\/g, '%')) + '</em>' + text + ' </div>');
+                }
+                $('#summary-promotion').show();
+            }
+        });
     }
-}(window);
+};
+
+if (typeof G !== 'undefined' && !pageConfig.promotionInited) {
+    Promotions.init(G.sku);
+}

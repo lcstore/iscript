@@ -79,7 +79,7 @@ public class JosRestClientTest {
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.ware.promotionInfo.get";
 		JSONObject argsObject = new JSONObject();
-		argsObject.put("skuId", "986951");
+		argsObject.put("skuId", "1178714");
 		argsObject.put("webSite", "1");
 		argsObject.put("origin", "1");
 		String result = client.execute(method, argsObject.toString());
@@ -93,7 +93,7 @@ public class JosRestClientTest {
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.ware.product.detail.search.list.get";
 		JSONObject argsObject = new JSONObject();
-		argsObject.put("skuId", "317652");
+		argsObject.put("skuId", "925982");
 		argsObject.put("isLoadWareScore", "true");
 		argsObject.put("client", "m");
 		String result = client.execute(method, argsObject.toString());
