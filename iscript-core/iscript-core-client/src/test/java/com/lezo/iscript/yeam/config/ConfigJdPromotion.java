@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -104,13 +105,13 @@ public class ConfigJdPromotion implements ConfigParser {
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html);
 		try {
+//			 dom.select("").before(html)
 			String source = FileUtils.readFileToString(new File("src/test/resources/bcore.js"), "UTF-8");
-
 			String argsString = "args=" + JSONUtils.getJSONObject(task.getArgs());
 			Context cx = Context.enter();
 			ScriptableObject scope = cx.initStandardObjects();
 			cx.evaluateString(scope, argsString, "<args>", 0, null);
-			ScriptableObject.putProperty(scope, "src", dom.select("body").first());
+			ScriptableObject.putProperty(scope, "$document", dom);
 			ScriptableObject.putProperty(scope, "http", new HttpDirector(client));
 			cx.evaluateString(scope, source, "<cmd>", 0, null);
 		} finally {

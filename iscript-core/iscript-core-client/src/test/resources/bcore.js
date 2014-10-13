@@ -1,3 +1,6 @@
+// common function
+var Jsoup = org.jsoup.Jsoup;
+
 var debug = {};
 debug.log = function(msg) {
 	if (msg) {
@@ -5,48 +8,128 @@ debug.log = function(msg) {
 	} else {
 		java.lang.System.out.println("NULL OR Undefine.");
 	}
-}
-var Jsoup = org.jsoup.Jsoup;
-var pageConfig = {
-	compatible : true,
-	product : {
-		skuid : 1124365,
-		name : '\u534e\u4e3a\u0020\u0041\u0073\u0063\u0065\u006e\u0064\u0020\u0050\u0037\u002d\u004c\u0030\u0039\u0020\u0034\u0047\u624b\u673a\uff08\u767d\u8272\uff09\u0054\u0044\u002d\u004c\u0054\u0045\u002f\u0043\u0044\u004d\u0041\u0032\u0030\u0030\u0030\u002f\u0047\u0053\u004d\u0020\u53cc\u5361\u53cc\u5f85\u53cc\u901a',
-		skuidkey : '83E3F0A161EBAA6E0C1B7FF46CDD0FC9',
-		href : 'http://item.jd.com/1124365.html',
-		src : 'g16/M00/00/0E/rBEbRVNp5sMIAAAAAAErsXXbgr8AAAFmANdhqYAASvJ802.jpg',
-		cat : [ 9987, 653, 655 ],
-		brand : 8557,
-		nBrand : 8557,
-		tips : false,
-		type : 1,
-		venderId : 0,
-		shopId : '0',
-		TJ : '0',
-		specialAttrs : [ "HYKHSP-0", "isHaveYB", "isSelfService-0",
-				"isWeChatStock-0", "isCanUseJQ", "isOverseaPurchase-0",
-				"packType", "IsNewGoods", "isCanUseDQ", "is7ToReturn-1",
-				"isCanVAT" ],
-		videoPath : '7170a1a199',
-		HM : '0'
+};
+// make property of object to global
+function toGlobal(oParam) {
+	if (!oParam) {
+		return;
+	}
+	for ( var key in oParam) {
+		org.mozilla.javascript.ScriptableObject.putProperty(this, key,
+				oParam[key]);
 	}
 };
+// iQuery
 var iQuery = function(selector, context) {
-	if (!selector) {
-		return this;
-	}
-	return new iQuery.fn.init(selector, context, rootjQuery);
+	return new iQuery.fn.init(selector, context);
 };
 iQuery.fn = iQuery.prototype = {
 	constructor : iQuery,
 	init : function(selector, context) {
-		context = context || src;
-		this.elements = context.select(selector);
+		if (!selector) {
+			return;
+		}
+		context = context || $document;
+		this.selector = selector;
+		this.set(context.select(selector));
+	},
+	set : function(elements) {
+		this.elements = elements;
+		this.length = elements == null ? 0 : this.elements.size();
+	},
+	ajax : function(oParam) {
+		iQuery.ajax(oParam);
+	},
+	remove : function() {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			this.elements.get(i).remove();
+		}
+
+	},
+	parent : function() {
+		var pElements = new org.jsoup.select.Elements();
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			var ele = this.elements.get(i).parent();
+			if (ele) {
+				pElements.add(ele);
+			}
+		}
+		var newQuery = iQuery();
+		newQuery.set(pElements);
+		return newQuery;
+	},
+	show : function() {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			var ele = this.elements.get(i);
+			debug.log('@show:' + ele.tag() + "#" + ele.id());
+		}
+	},
+	hide : function() {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			var ele = this.elements.get(i);
+			debug.log('@hide:' + ele.tag() + "#" + ele.id());
+		}
+	},
+	html : function(html) {
+		if (this.elements.isEmpty()) {
+			return;
+		}
+		if (!html) {
+			return this.elements.get(0).html();
+		} else {
+			return this.elements.get(0).html(html);
+		}
+	},
+	prepend : function(html) {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			this.elements.get(i).prepend(html);
+		}
+	},
+	append : function(html) {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			this.elements.get(i).append(html);
+		}
+	},
+	before : function(html) {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			this.elements.get(i).before(html);
+		}
+	},
+	after : function(html) {
+		var size = this.elements.size();
+		for (var i = 0; i < size; i++) {
+			this.elements.get(i).after(html);
+		}
+	},
+	each : function(objArray, funName) {
+		iQuery.each(objArray, funName);
+	},
+	size : function() {
+		return this.elements.size();
+	},
+	get : function(index) {
+		return this.elements.get(index);
+	},
+	eq : function(index) {
+		return this.elements.eq(index);
+	},
+	add : function(element) {
+		return this.elements.add(element);
+	},
+	attr : function(key) {
+		return this.elements.attr(key);
+	},
+	attr : function(key,value) {
+		return this.elements.attr(key,value);
 	}
 };
-iQuery.init = function(elements) {
-	this.elements = elements;
-}
 iQuery.ajax = function(oParam) {
 	var sUrl;
 	for ( var key in oParam.data) {
@@ -56,16 +139,46 @@ iQuery.ajax = function(oParam) {
 			sUrl = key + '=' + oParam.data[key];
 		}
 	}
-	sUrl = oParam.url + '?' + sUrl;
+	if (oParam.url.indexOf('?') < 0) {
+		sUrl = oParam.url + '?' + sUrl;
+	} else {
+		sUrl = oParam.url + sUrl;
+	}
 	debug.log(sUrl);
-	var html = http.get(sUrl);
-	debug.log(html);
-	eval('' + html);
-}
+	try {
+		var html = http.get(sUrl);
+		if (oParam.success && typeof oParam.success == 'Function') {
+			oParam.success(html);
+		} else {
+			eval('' + html);
+		}
+	} catch (ex) {
+		debug.log('#error:[' + sUrl + "]:" + ex);
+	}
 
+};
+iQuery.each = function(objArray, funName) {
+	for (var i = 0; i < objArray.length; i++) {
+		funName(i, objArray[i]);
+	}
+};
+iQuery.fn.init.prototype = iQuery.fn;
 var $ = iQuery;
+// ======iQuery end==============
 
+window = {};
+var oEles = $('head script');
+var len = oEles.length;
+for (var i = 0; i < len; i++) {
+	var script = oEles.get(i).html();
+	if (script.indexOf('window.pageConfig') >= 0) {
+		eval('' + script);
+		break;
+	}
+}
+toGlobal(window);
 var G = {};
+G.cat = pageConfig.product.cat;
 G.getNewUserLevel = function(t) {
 	switch (t) {
 	case 50:
@@ -129,7 +242,8 @@ try {
 					} else {
 						res += item.name;
 					}
-					res += '</a>\n';
+					res += '</a><em class="hl_red"> ×' + item.number
+							+ '</em></div>\n';
 				}
 			}
 		}
@@ -139,6 +253,7 @@ try {
 	}
 } catch (e) {
 }
+
 
 // -----------------------
 var Promotions = {
@@ -1188,6 +1303,7 @@ var Promotions = {
 			var strPerfix = tipsItems.length > 0 ? '<br/>' : '';
 			tipsItems.push(strPerfix + '此商品尊享7天无忧退换货服务');
 		}
+		debug.log('giftsItems:' + giftsItems);
 		// 赠品提示
 		if (giftsItems.length > 0) {
 			giftsDiv.parent().show();
@@ -1313,4 +1429,7 @@ var Promotions = {
 
 if (typeof G !== 'undefined' && !pageConfig.promotionInited) {
 	Promotions.init(G.sku);
+	debug.log('################');
+	debug.log($('#summary-promotion').html());
+	debug.log($('#summary-gifts').html());
 }
