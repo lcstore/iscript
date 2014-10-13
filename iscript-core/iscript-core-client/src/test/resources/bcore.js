@@ -35,7 +35,7 @@ var iQuery = function(selector, context) {
 	if (!selector) {
 		return this;
 	}
-	return new iQuery.fn.init(selector, context);
+	return new iQuery.fn.init(selector, context, rootjQuery);
 };
 iQuery.fn = iQuery.prototype = {
 	constructor : iQuery,

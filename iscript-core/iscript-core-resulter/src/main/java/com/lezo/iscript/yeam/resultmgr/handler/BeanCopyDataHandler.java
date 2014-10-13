@@ -24,14 +24,16 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"target":[],"data":[],"nexts":[]}
+	 * data struct: {"data":[],"nexts":[]}, args:
+	 * {"target":[]}|{"target":"Class"}
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
 
 		JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
 		rsObject = rsObject == null ? JSONUtils.getJSONObject(gObject, "dataString") : rsObject;
-		JSONArray tArray = JSONUtils.get(rsObject, "target");
+		JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
+		JSONArray tArray = getTargetArray(rsObject, argsObject);
 		if (tArray == null) {
 			logger.warn("no target.type:{},data:{}", type, gObject);
 			return;
@@ -51,7 +53,6 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		if (dataArray.length() < 1) {
 			return;
 		}
-		JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
 		int len = tArray.length();
 		for (int i = 0; i < len; i++) {
 			try {
@@ -61,6 +62,21 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 				logger.warn(msg, e);
 			}
 		}
+	}
+
+	private JSONArray getTargetArray(JSONObject rsObject, JSONObject argsObject) {
+		Object tObject = JSONUtils.get(argsObject, "target");
+		tObject = tObject == null ? JSONUtils.get(rsObject, "target") : tObject;
+		JSONArray dataArray = null;
+		if (tObject instanceof JSONArray) {
+			dataArray = (JSONArray) tObject;
+		} else if (tObject instanceof String) {
+			dataArray = new JSONArray();
+			dataArray.put(tObject.toString());
+		} else {
+			dataArray = new JSONArray();
+		}
+		return dataArray;
 	}
 
 	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject)

@@ -23,6 +23,13 @@ import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
+/**
+ * {"data":[],"nexts":[]}
+ * 
+ * @param task
+ * @return
+ * @throws Exception
+ */
 public class ConfigJdPromotList implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 
