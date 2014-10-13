@@ -85,6 +85,7 @@ public class JosRestClientTest {
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);
 	}
+
 	@Test
 	public void testDetail() throws Exception {
 		String accessToken = "";
@@ -99,6 +100,7 @@ public class JosRestClientTest {
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);
 	}
+
 	@Test
 	public void testStock() throws Exception {
 		String accessToken = "";
@@ -113,6 +115,7 @@ public class JosRestClientTest {
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);
 	}
+
 	@Test
 	public void testSearch() throws Exception {
 		String accessToken = "";
@@ -123,7 +126,7 @@ public class JosRestClientTest {
 		JSONObject argsObject = new JSONObject();
 		argsObject.put("isLoadAverageScore", "true");
 		argsObject.put("isLoadPromotion", "true");
-		argsObject.put("sort", "1");//1:销量排序 2:价格降序 3:价格升序 4:好评度 6:评论数
+		argsObject.put("sort", "1");// 1:销量排序 2:价格降序 3:价格升序 4:好评度 6:评论数
 		argsObject.put("page", "1");
 		argsObject.put("pageSize", "50");
 		argsObject.put("keyword", "巧克力");
@@ -131,6 +134,7 @@ public class JosRestClientTest {
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);
 	}
+
 	@Test
 	public void testProvince() throws Exception {
 		String accessToken = "";

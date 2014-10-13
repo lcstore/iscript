@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -38,10 +39,12 @@ public class DataLineProducer implements Runnable {
 	private ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("dataConsumeExecutor");
 	private String domain = "istore.qiniudn.com";
 	private final String dataPath;
+	private final Date stamp;
 
-	public DataLineProducer(String dataPath) {
+	public DataLineProducer(String dataPath, Date stamp) {
 		super();
 		this.dataPath = dataPath;
+		this.stamp = stamp;
 	}
 
 	@Override
@@ -184,8 +187,7 @@ public class DataLineProducer implements Runnable {
 		CacheObject cacheObject = controller.getValidValue(dataPath);
 		if (cacheObject == null) {
 			synchronized (controller) {
-				cacheObject = new CacheObject(dataPath, controller.getNextTimeOut());
-				cacheObject.setValue("");
+				cacheObject = new CacheObject(dataPath, "", this.stamp.getTime(), controller.getNextTimeOut());
 				controller.addValidValue(dataPath, cacheObject);
 			}
 		}
