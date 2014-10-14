@@ -12,6 +12,7 @@
 		<result column="PROMOTE_DETAIL" property="promoteDetail"/>
 		<result column="PROMOTE_NUMS" property="promoteNums"/>
 		<result column="PROMOTE_URL" property="promoteUrl"/>
+		<result column="PROMOTE_EXTRA" property="promoteExtra"/>
 		<result column="PROMOTE_TYPE" property="promoteType"/>
 		<result column="PROMOTE_STATUS" property="promoteStatus"/>
 		<result column="IS_DELETE" property="isDelete"/>
@@ -25,6 +26,7 @@
 		,PROMOTE_NAME
 		,PROMOTE_DETAIL
 		,PROMOTE_NUMS
+		,PROMOTE_EXTRA
 		,PROMOTE_URL
 		,PROMOTE_TYPE
 		,PROMOTE_STATUS
@@ -39,7 +41,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.productCode},#{item.promoteCode},#{item.promoteName},#{item.promoteDetail},#{item.promoteNums},#{item.promoteUrl},#{item.promoteType},#{item.promoteStatus},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.productCode},#{item.promoteCode},#{item.promoteName},#{item.promoteDetail},#{item.promoteNums},#{item.promoteUrl},#{item.promoteExtra},#{item.promoteType},#{item.promoteStatus},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="PromotionMapDto">
@@ -49,6 +51,7 @@
 		PROMOTE_DETAIL=#{promoteDetail},
 		PROMOTE_NUMS=#{promoteNums},
 		PROMOTE_URL=#{promoteUrl},
+		PROMOTE_EXTRA=#{promoteExtra},
 		PROMOTE_TYPE=#{promoteType},
 		PROMOTE_STATUS=#{promoteStatus},
 		IS_DELETE=#{isDelete}

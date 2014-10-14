@@ -18,7 +18,7 @@ public class PromotionMapDto {
 	public static final int PROMOTE_TYPE_FULL_SUB = 0;
 	public static final int PROMOTE_TYPE_FULL_GIFT = 1;
 	public static final int PROMOTE_TYPE_FULL_REBATE = 2;
-	
+
 	private Long id;
 	private Integer siteId;
 	private String productCode;
@@ -27,6 +27,7 @@ public class PromotionMapDto {
 	private String promoteDetail;
 	private String promoteNums;
 	private String promoteUrl;
+	private String promoteExtra;
 	private Integer promoteType = PROMOTE_STATUS_START;
 	private Integer promoteStatus = PROMOTE_STATUS_START;
 	private Integer isDelete = DELETE_FALSE;
@@ -135,6 +136,14 @@ public class PromotionMapDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getPromoteExtra() {
+		return promoteExtra;
+	}
+
+	public void setPromoteExtra(String promoteExtra) {
+		this.promoteExtra = promoteExtra;
 	}
 
 }
