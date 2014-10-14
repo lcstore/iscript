@@ -61,10 +61,11 @@
 			cron="0 20 9 * * ?" />
 	</task:scheduled-tasks>
 
-	<task:scheduled-tasks scheduler="scheduler">
+	<!-- <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="proxyDetectTimer" method="run"
 			cron="0 0 0/1 * * ?" />
-	</task:scheduled-tasks>
+	</task:scheduled-tasks> -->
+	
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="saveSessionTimer" method="run"
 			cron="0 0/5 * * * ?" />

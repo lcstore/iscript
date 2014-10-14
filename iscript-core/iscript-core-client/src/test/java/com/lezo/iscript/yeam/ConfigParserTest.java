@@ -15,6 +15,7 @@ import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
+import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -41,17 +42,19 @@ public class ConfigParserTest {
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotion();
+//		parser = new ConfigJdPromotList();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1217833.html";
 		url = "http://item.jd.com/1058157.html";
 		url = "http://item.jd.com/1038556.html";
 		url = "http://item.jd.com/325655.html";
+//		url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
 		try {
 			String result = parser.doParse(task);
-			System.out.println(result);
+			System.out.println("result:"+result);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

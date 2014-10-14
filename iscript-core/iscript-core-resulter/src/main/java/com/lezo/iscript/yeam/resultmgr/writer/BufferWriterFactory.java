@@ -7,6 +7,7 @@ import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
+import com.lezo.iscript.service.crawler.dto.PromotionMapDto;
 import com.lezo.iscript.utils.ObjectUtils;
 
 public class BufferWriterFactory {
@@ -15,6 +16,7 @@ public class BufferWriterFactory {
 	static {
 		addWriter(ProductDto.class, new ProductWriter(), 200);
 		addWriter(ProductStatDto.class, new ProductStatWriter(), 200);
+		addWriter(PromotionMapDto.class, new PromotionMapWriter(), 200);
 	}
 
 	public static <T> void addWriter(Class<T> beanClass, ObjectWriter<T> objectWriter, int bufferSize) {
