@@ -43,6 +43,10 @@ public class ConfigParserTest {
 		parser = new ConfigJdPromotion();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
+		url = "http://item.jd.com/1217833.html";
+		url = "http://item.jd.com/1058157.html";
+		url = "http://item.jd.com/1038556.html";
+		url = "http://item.jd.com/325655.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
 		try {

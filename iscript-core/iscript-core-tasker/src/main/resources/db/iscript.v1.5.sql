@@ -24,6 +24,7 @@ CREATE TABLE `T_PROMOTION_MAP` (
   `PROMOTE_DETAIL` varchar(1500) COMMENT '促销内容',
   `PROMOTE_NUMS` varchar(1000) COMMENT '促销数值',
   `PROMOTE_URL` varchar(1000) COMMENT '促销链接',
+  `PROMOTE_EXTRA` varchar(1500) COMMENT '附加信息',
   `PROMOTE_TYPE` tinyint NOT NULL default '0' COMMENT '促销类型，0-满减,1-满赠，2-满折',
   `PROMOTE_STATUS` tinyint NOT NULL default '0' COMMENT '状态，-1-促销未开始,0-促销中，1-促销结束',
   `IS_DELETE` tinyint NOT NULL default '0' COMMENT '0-未删除,1-删除',

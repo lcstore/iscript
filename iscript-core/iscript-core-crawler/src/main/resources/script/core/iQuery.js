@@ -2,7 +2,11 @@
 var Jsoup = org.jsoup.Jsoup;
 
 var debug = {};
+debug.canDebug = true;
 debug.log = function(msg) {
+	if (!this.canDebug) {
+		return;
+	}
 	if (msg) {
 		java.lang.System.out.println(msg);
 	} else {
