@@ -74,6 +74,9 @@ public class ConfigJdProduct implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html, url);
+		if(isHome(dom)){
+			return itemObject;
+		}
 		Elements scriptAs = dom.select("script[type]");
 		TargetBean tBean = new TargetBean();
 		if (!scriptAs.isEmpty()) {
@@ -112,6 +115,10 @@ public class ConfigJdProduct implements ConfigParser {
 		mapper.writeValue(writer, tBean);
 		System.out.println(writer);
 		return itemObject;
+	}
+
+	private boolean isHome(Document dom) {
+		return !dom.select("li#nav-home.curr a:contains(首页)").isEmpty();
 	}
 
 	private void addPromotions(TargetBean tBean, Document dom, TaskWritable task) throws Exception {
@@ -266,6 +273,7 @@ public class ConfigJdProduct implements ConfigParser {
 	}
 
 	class TargetBean {
+		private Integer shopId=1001;
 		// productStat
 		private String productCode;
 		private String productName;
@@ -413,6 +421,14 @@ public class ConfigJdProduct implements ConfigParser {
 
 		public void setPromotionList(List<PromotionBean> promotionList) {
 			this.promotionList = promotionList;
+		}
+
+		public Integer getShopId() {
+			return shopId;
+		}
+
+		public void setShopId(Integer shopId) {
+			this.shopId = shopId;
 		}
 
 	}

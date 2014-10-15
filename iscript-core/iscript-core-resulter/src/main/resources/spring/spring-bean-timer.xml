@@ -37,6 +37,8 @@
 		<property name="nameList">
 			<list>
 				<value>ConfigYhdProduct</value>
+				<value>ConfigJdProduct</value>
+				<value>ConfigJdPromotion</value>
 			</list>
 		</property>
 	</bean>

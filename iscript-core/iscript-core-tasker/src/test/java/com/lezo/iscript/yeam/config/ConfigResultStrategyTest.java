@@ -1,13 +1,16 @@
 package com.lezo.iscript.yeam.config;
 
 import org.json.JSONObject;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.strategy.BarCodeStrategy;
+import com.lezo.iscript.yeam.config.strategy.PromotionStrategy;
 import com.lezo.iscript.yeam.config.strategy.ProxyCollectorStrategy;
 import com.lezo.iscript.yeam.config.strategy.YhdCollectorStrategy;
+import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ConfigResultStrategyTest {
@@ -72,6 +75,26 @@ public class ConfigResultStrategyTest {
 		JSONObject rsObject = new JSONObject();
 		JSONObject argsObject = new JSONObject();
 		JSONUtils.put(argsObject, "url", "http://www.yhd.com/ctg/s2/c33827-0//#page=1&sort=2");
+		JSONUtils.put(argsObject, "level", 0);
+		JSONUtils.put(argsObject, "type", type);
+		JSONUtils.put(argsObject, "strategy", strategy.getName());
+		JSONUtils.put(rsObject, "rs", result);
+		JSONUtils.put(rsObject, "args", argsObject);
+		rWritable.setResult(rsObject.toString());
+		rWritable.setType(type);
+		strategy.handleResult(rWritable);
+	}
+
+	@Test
+	public void testStrategy() throws Exception {
+		String type = "ConfigJdPromotList";
+		ResultStrategy strategy = new PromotionStrategy();
+		ResultWritable rWritable = new ResultWritable();
+		rWritable.setStatus(ResultWritable.RESULT_SUCCESS);
+		String result = "{\"data\":[\"http://item.jd.com/182282.html\",\"http://item.jd.com/954227.html\",\"http://item.jd.com/810286.html\",\"http://item.jd.com/1026319.html\",\"http://item.jd.com/1031249.html\",\"http://item.jd.com/888214.html\",\"http://item.jd.com/867615.html\",\"http://item.jd.com/235440.html\",\"http://item.jd.com/1015634.html\",\"http://item.jd.com/953879.html\",\"http://item.jd.com/782199.html\",\"http://item.jd.com/726667.html\",\"http://item.jd.com/1136193.html\",\"http://item.jd.com/611648.html\",\"http://item.jd.com/318139.html\",\"http://item.jd.com/767466.html\",\"http://item.jd.com/947694.html\"],\"nexts\":[\"http://sale.jd.com/act/odFZ4qHOERbA70.html\",\"http://sale.jd.com/act/K4WxosIimTBQRq8.html\",\"http://xuan.jd.com/youhui/1-0-0-2-1.html\",\"http://xuan.jd.com/youhui/1-0-0-3-1.html\",\"http://xuan.jd.com/youhui/1-0-0-4-1.html\",\"http://xuan.jd.com/youhui/1-0-0-5-1.html\",\"http://xuan.jd.com/youhui/1-0-0-6-1.html\",\"http://xuan.jd.com/youhui/1-0-0-7-1.html\",\"http://xuan.jd.com/youhui/1-0-0-8-1.html\",\"http://xuan.jd.com/youhui/1-0-0-9-1.html\",\"http://xuan.jd.com/youhui/1-0-0-10-1.html\",\"http://xuan.jd.com/youhui/1-0-0-11-1.html\",\"http://xuan.jd.com/youhui/1-0-0-12-1.html\",\"http://xuan.jd.com/youhui/1-0-0-13-1.html\",\"http://xuan.jd.com/youhui/1-0-0-14-1.html\",\"http://xuan.jd.com/youhui/1-0-0-15-1.html\"]}";
+		JSONObject rsObject = new JSONObject();
+		JSONObject argsObject = new JSONObject();
+		JSONUtils.put(argsObject, "url", "http://xuan.jd.com/youhui/1-0-0-0-1.html");
 		JSONUtils.put(argsObject, "level", 0);
 		JSONUtils.put(argsObject, "type", type);
 		JSONUtils.put(argsObject, "strategy", strategy.getName());
