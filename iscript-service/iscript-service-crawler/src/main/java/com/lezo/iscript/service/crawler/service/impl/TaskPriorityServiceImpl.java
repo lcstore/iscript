@@ -21,17 +21,17 @@ public class TaskPriorityServiceImpl implements TaskPriorityService {
 	@Override
 	public void batchInsert(List<TaskPriorityDto> dtoList) {
 		BatchIterator<TaskPriorityDto> it = new BatchIterator<TaskPriorityDto>(dtoList);
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			taskPriorityDao.batchInsert(it.next());
 		}
 	}
 
 	@Override
 	public int batchUpdate(List<Long> taskIds, int status) {
-		int affect=0;
+		int affect = 0;
 		BatchIterator<Long> it = new BatchIterator<Long>(taskIds);
-		while(it.hasNext()){
-			affect+=taskPriorityDao.batchUpdate(it.next(),status);
+		while (it.hasNext()) {
+			affect += taskPriorityDao.batchUpdateStatusByIds(it.next(), status);
 		}
 		return affect;
 	}
@@ -41,7 +41,7 @@ public class TaskPriorityServiceImpl implements TaskPriorityService {
 		if (StringUtils.isEmpty(type) || limit < 1) {
 			return Collections.emptyList();
 		}
-		return taskPriorityDao.getTaskPriorityDtos(type, level, status, limit);
+		return taskPriorityDao.getTaskPriorityDtosByType(type, level, status, limit);
 	}
 
 	@Override
@@ -54,6 +54,14 @@ public class TaskPriorityServiceImpl implements TaskPriorityService {
 
 	public void setTaskPriorityDao(TaskPriorityDao taskPriorityDao) {
 		this.taskPriorityDao = taskPriorityDao;
+	}
+
+	@Override
+	public Integer deleteTaskPriorityDtos(String type, int status) {
+		if (type == null) {
+			return 0;
+		}
+		return this.taskPriorityDao.deleteTaskPriorityDtos(type, status);
 	}
 
 }

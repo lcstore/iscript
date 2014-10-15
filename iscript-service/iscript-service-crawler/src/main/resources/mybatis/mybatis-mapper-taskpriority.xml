@@ -19,17 +19,17 @@
 		BATCH_ID ,TYPE ,URL ,PARAMS ,LEVEL ,STATUS ,SOURCE
 		,CREAT_TIME ,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert-TaskPriorityDto" parameterType="TaskPriorityDto">
+	<insert id="batchInsert" parameterType="map">
 		INSERT INTO T_TASK_PRIORITY(
 		<include refid="TaskPriorityDto-coloumn-list" />
 		)
 		VALUES
-		<foreach collection="list" item="item" index="index"
+		<foreach collection="dtoList" item="item" index="index"
 			separator=",">
 			(#{item.batchId},#{item.type},#{item.url},#{item.params},#{item.level},#{item.status},#{item.source},#{item.creatTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="update-tasks-status" parameterType="map">
+	<update id="batchUpdateStatusByIds" parameterType="map">
 		UPDATE T_TASK_PRIORITY SET
 		STATUS=#{status}
 		<foreach collection="taskIds" item="taskId" separator=","
@@ -37,7 +37,7 @@
 			#{taskId}
 		</foreach>
 	</update>
-	<select id="select-by-type_level_status_limit" parameterType="map"
+	<select id="getTaskPriorityDtosByType" parameterType="map"
 		resultMap="RM_TaskPriorityDto">
 		SELECT * FROM T_TASK_PRIORITY
 		WHERE TYPE=#{type}
@@ -46,7 +46,7 @@
 		AND STATUS=#{status}
 		LIMIT #{limit}
 	</select>
-	<select id="select-typeLevel-by-status" parameterType="map"
+	<select id="getTaskTypeLevels" parameterType="map"
 		resultMap="RM_TaskPriorityDto">
 		SELECT * FROM T_TASK_PRIORITY
 		WHERE 1=1
@@ -60,4 +60,8 @@
 		GROUP BY
 		TYPE ASC,LEVEL DESC
 	</select>
+	<delete id="deleteTaskPriorityDtos" parameterType="map">
+	   DELETE FROM T_TASK_PRIORITY
+	   WHERE TYPE=#{type} AND STATUS=#{status}
+	</delete>
 </mapper>

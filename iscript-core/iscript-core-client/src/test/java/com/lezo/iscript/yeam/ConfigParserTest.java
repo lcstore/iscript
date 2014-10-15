@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.sql.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -48,7 +49,8 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1058157.html";
 		url = "http://item.jd.com/1038556.html";
 		url = "http://item.jd.com/325655.html";
-		url = "http://item.jd.com/926512.html";
+		url = "http://item.jd.com/527895.html";
+//		url = "http://item.jd.com/926512.html";
 //		url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
@@ -59,6 +61,8 @@ public class ConfigParserTest {
 			e.printStackTrace();
 			throw e;
 		}
+		Date dat = new Date(1440385616000L);
+		System.err.println(dat);
 	}
 
 	@Test

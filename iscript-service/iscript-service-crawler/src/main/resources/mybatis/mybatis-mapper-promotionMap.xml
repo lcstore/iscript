@@ -26,8 +26,8 @@
 		,PROMOTE_NAME
 		,PROMOTE_DETAIL
 		,PROMOTE_NUMS
-		,PROMOTE_EXTRA
 		,PROMOTE_URL
+		,PROMOTE_EXTRA
 		,PROMOTE_TYPE
 		,PROMOTE_STATUS
 		,IS_DELETE
@@ -69,7 +69,8 @@
 	</update>
 	
 	<select id="getPromotionMapDtosByProductCodes" parameterType="map" resultMap="RM_PromotionMapDto">
-	  SELECT *　FROM T_PROMOTION_MAP
+	  SELECT ID,<include refid="PromotionMapDto-coloumn-list"/>
+	  FROM T_PROMOTION_MAP
 	  WHERE SITE_ID=#{siteId}
 	  <foreach collection="productCodes" item="pCode" open="AND PRODUCT_CODE IN("
 			close=")" separator=",">
@@ -86,7 +87,8 @@
 	  </if>
 	</select>
 	<select id="getPromotionMapDtosByPromotCodes" parameterType="map" resultMap="RM_PromotionMapDto">
-	  SELECT *　FROM T_PROMOTION_MAP
+	  SELECT ID,<include refid="PromotionMapDto-coloumn-list"/>
+	  FROM T_PROMOTION_MAP
 	  WHERE SITE_ID=#{siteId}
 	  <foreach collection="promotCodes" item="mCode" open="AND PROMOTE_CODE IN("
 			close=")" separator=",">

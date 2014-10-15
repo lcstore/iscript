@@ -24,8 +24,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"data":[],"nexts":[]}, args:
-	 * {"target":[]}|{"target":"Class"}
+	 * data struct: {"data":[],"nexts":[]}, args: {"target":[]}|{"target":"Class"}
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
@@ -116,10 +115,6 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		if (readMd == null) {
 			return;
 		}
-		Object sidObject = readMd.invoke(destObject);
-		if (sidObject != null) {
-			return;
-		}
 		Method writeMd = MethodUtils.getWriteMethod(fieldName, destObject.getClass(), Date.class);
 		if (writeMd == null) {
 			return;
@@ -131,10 +126,6 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		String fieldName = "createTime";
 		Method readMd = MethodUtils.getReadMethod(fieldName, destObject.getClass());
 		if (readMd == null) {
-			return;
-		}
-		Object sidObject = readMd.invoke(destObject);
-		if (sidObject != null) {
 			return;
 		}
 		Method writeMd = MethodUtils.getWriteMethod(fieldName, destObject.getClass(), Date.class);

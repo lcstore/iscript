@@ -7,6 +7,9 @@
 	<bean id="cacheTaskTimer" class="com.lezo.iscript.yeam.tasker.CacheTaskTimer">
 		<property name="tasker" value="tasker" />
 	</bean>
+	<bean id="clearTaskTimer" class="com.lezo.iscript.yeam.tasker.ClearTaskTimer">
+		<property name="tasker" value="tasker" />
+	</bean>
 	<bean id="cacheConfigTimer" class="com.lezo.iscript.yeam.tasker.CacheConfigTimer">
 		<property name="tasker" value="tasker" />
 	</bean>
@@ -28,7 +31,7 @@
 	<bean id="productStorager" class="com.lezo.iscript.yeam.storage.ProductStorager">
 	</bean> -->
 
-	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
+	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.yeam.tasker.ClearTaskTimer">
 		<property name="listeners">
 			<list>
 				<ref bean="taskPriorityStorager" />
@@ -56,15 +59,15 @@
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
 
-	<task:scheduled-tasks scheduler="scheduler">
+<!-- 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="signTaskTimer" method="run"
 			cron="0 20 9 * * ?" />
-	</task:scheduled-tasks>
-
-	<!-- <task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="proxyDetectTimer" method="run"
-			cron="0 0 0/1 * * ?" />
 	</task:scheduled-tasks> -->
+
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="clearTaskTimer" method="run"
+			cron="0 0 0/5 * * ?" />
+	</task:scheduled-tasks>
 	
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="saveSessionTimer" method="run"
