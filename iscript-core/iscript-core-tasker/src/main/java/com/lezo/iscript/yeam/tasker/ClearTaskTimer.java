@@ -37,18 +37,20 @@ public class ClearTaskTimer {
 			running = true;
 			for (TypeConfigDto typeConfigDto : typeConfigList) {
 				long start = System.currentTimeMillis();
-				Integer count = this.taskPriorityService.deleteTaskPriorityDtos(typeConfigDto.getType(), TaskConstant.TASK_CACHER);
+				Integer count = this.taskPriorityService.deleteTaskPriorityDtos(typeConfigDto.getType(),
+						TaskConstant.TASK_CACHER);
 				if (count > 0) {
 					clearTypeCount++;
 				}
 				long cost = System.currentTimeMillis() - start;
-				logger.info("delect type:{},status:{},count:{},cost:{}", typeConfigDto.getType(), TaskConstant.TASK_CACHER, count, cost);
+				logger.info("delect type:{},status:{},count:{},cost:{}", typeConfigDto.getType(),
+						TaskConstant.TASK_CACHER, count, cost);
 			}
 		} finally {
 			running = false;
 			long cost = System.currentTimeMillis() - fromTimeMillis;
-			logger.info("ClearTaskTimer is done,totalType:{},clearType:{},cost:{}", typeConfigList.size(), clearTypeCount, cost);
-			return;
+			logger.info("ClearTaskTimer is done,totalType:{},clearType:{},cost:{}", typeConfigList.size(),
+					clearTypeCount, cost);
 		}
 
 	}
