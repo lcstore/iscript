@@ -12,4 +12,6 @@ public interface TaskPriorityService {
 	List<TaskPriorityDto> getTaskPriorityDtos(String type, int level, int status, int limit);
 
 	List<TaskPriorityDto> getTaskTypeLevels(List<String> typeList, int status);
+
+	void deleteTaskPriorityDtos(String type, int status);
 }

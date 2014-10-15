@@ -15,10 +15,12 @@
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 
-	<bean id="taskPriorityDao"
-		class="com.lezo.iscript.service.crawler.dao.impl.TaskPriorityDaoImpl">
-		<property name="sqlSessionTemplate" ref="sqlSessionTemplate" />
+	<bean id="taskPriorityDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.TaskPriorityDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	
 	<bean id="proxyAddrDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxyAddrDao" />

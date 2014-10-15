@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -158,19 +158,19 @@ public class ProductStatServiceImpl implements ProductStatService {
 		if (!isSameObject(oldDto.getProductPrice(), newDto.getProductPrice())) {
 			return true;
 		}
-		// if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice()))
-		// {
-		// return true;
-		// }
-		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
-			return true;
-		}
 		if (!isSameObject(oldDto.getStockNum(), newDto.getStockNum())) {
 			return true;
 		}
-		if (!isSameObject(oldDto.getCommentNum(), newDto.getCommentNum())) {
-			return true;
-		}
+//		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
+//			return true;
+//		}
+//		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
+//			return true;
+//		}
+//
+//		if (!isSameObject(oldDto.getCommentNum(), newDto.getCommentNum())) {
+//			return true;
+//		}
 		return false;
 	}
 

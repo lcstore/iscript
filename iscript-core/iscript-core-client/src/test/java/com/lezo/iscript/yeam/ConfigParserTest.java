@@ -48,7 +48,8 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1058157.html";
 		url = "http://item.jd.com/1038556.html";
 		url = "http://item.jd.com/325655.html";
-		url = "http://item.jd.com/926512.html";
+		url = "http://item.jd.com/527895.html";
+//		url = "http://item.jd.com/926512.html";
 //		url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);

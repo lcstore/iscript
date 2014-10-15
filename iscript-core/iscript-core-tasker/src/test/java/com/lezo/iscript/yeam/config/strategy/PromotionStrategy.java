@@ -37,7 +37,7 @@ public class PromotionStrategy implements ResultStrategy {
 			JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
 			JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
 			try {
-				argsObject.remove("strategy");
+				argsObject.remove("name@client");
 				addOthers(rsObject, argsObject);
 				addNextTasks(rsObject, argsObject);
 			} catch (Exception e) {
@@ -56,6 +56,7 @@ public class PromotionStrategy implements ResultStrategy {
 		List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>(len * 2);
 		JSONObject oParamObject = JSONUtils.getJSONObject(argsObject.toString());
 		String url = JSONUtils.getString(argsObject, "url");
+		oParamObject.remove("strategy");
 		JSONUtils.put(oParamObject, "fromUrl", url);
 		for (int i = 0; i < len; i++) {
 			String sUrl = dataArray.getString(i);
