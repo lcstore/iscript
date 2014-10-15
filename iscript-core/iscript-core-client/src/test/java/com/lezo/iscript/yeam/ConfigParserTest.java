@@ -16,6 +16,7 @@ import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
+import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -42,6 +43,7 @@ public class ConfigParserTest {
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotion();
+		parser = new ConfigJdProduct();
 //		parser = new ConfigJdPromotList();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
@@ -49,7 +51,8 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1058157.html";
 		url = "http://item.jd.com/1038556.html";
 		url = "http://item.jd.com/325655.html";
-		url = "http://item.jd.com/527895.html";
+		url = "http://item.jd.com/158018.html";
+//		url = "http://item.jd.com/527895.html";
 //		url = "http://item.jd.com/926512.html";
 //		url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		TaskWritable task = new TaskWritable();
@@ -61,7 +64,7 @@ public class ConfigParserTest {
 			e.printStackTrace();
 			throw e;
 		}
-		Date dat = new Date(1440385616000L);
+		Date dat = new Date(1418616643000L);
 		System.err.println(dat);
 	}
 

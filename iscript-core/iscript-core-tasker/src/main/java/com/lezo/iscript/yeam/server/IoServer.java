@@ -99,7 +99,9 @@ public class IoServer extends IoHandlerAdapter {
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
 		add2Attribute(session, SessionHisDto.ERROR_SIZE, 1);
 		SessionHisDto trackDto = getSessionHisDto(session);
-		logger.warn(String.format("%s,cause:", trackDto), cause);
+		logger.warn(
+				String.format("%s,remote:%s,local:%s,cause:", trackDto, session.getRemoteAddress(),
+						session.getLocalAddress()), cause);
 	}
 
 	public void add2Attribute(IoSession session, String key, int num) {

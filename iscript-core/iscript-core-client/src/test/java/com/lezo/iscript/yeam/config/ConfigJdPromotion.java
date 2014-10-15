@@ -124,13 +124,12 @@ public class ConfigJdPromotion implements ConfigParser {
 			Element promot = promotAs.first();
 			int size = promot.children().size();
 			PromotionBean bean = new PromotionBean();
-			bean.setProductCode(skuid);
 			for (int i = 0; i < size; i++) {
 				Element child = promot.child(i);
 				if ("br".equals(child.tagName())) {
+					bean.setProductCode(skuid);
 					promotionList.add(bean);
 					bean = new PromotionBean();
-					bean.setProductCode(skuid);
 				} else if ("em".equals(child.tagName()) && child.hasClass("hl_red_bg")) {
 					bean.setPromoteName(child.ownText().trim());
 				} else if ("em".equals(child.tagName()) && child.hasClass("hl_red")) {
@@ -148,22 +147,40 @@ public class ConfigJdPromotion implements ConfigParser {
 					}
 				}
 			}
+			bean.setProductCode(skuid);
 			promotionList.add(bean);
-			fillPromotion(promotionList, promotArray);
+			promotionList = toItemBeans(skuid, promotionList, promotArray);
+			fillPromotions(promotionList, promotArray);
+		} else {
+			PromotionBean bean = new PromotionBean();
+			bean.setProductCode(skuid);
+			bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
+			promotionList.add(bean);
 		}
 		return promotionList;
 	}
 
-	private void fillPromotion(List<PromotionBean> promotionList, JSONArray promotArray) throws Exception {
-		int beanSize = promotionList.size();
-		int dataSize = promotArray.length();
-		if (beanSize == dataSize) {
-			for (int i = 0; i < beanSize; i++) {
-				JSONObject itemObject = promotArray.getJSONObject(i);
-				PromotionBean bean = promotionList.get(i);
-				addPromote(bean, itemObject);
+	private List<PromotionBean> toItemBeans(String skuid, List<PromotionBean> promotionList, JSONArray promotArray) {
+		int addCount = promotArray.length() - promotionList.size();
+		if (addCount > 0) {
+			List<PromotionBean> resultList = new ArrayList<ConfigJdPromotion.PromotionBean>(addCount
+					+ promotionList.size());
+			for (int i = 0; i < addCount; i++) {
+				PromotionBean bean = new PromotionBean();
+				bean.setProductCode(skuid);
+				resultList.add(bean);
 			}
-		} else if (beanSize < dataSize) {
+			resultList.addAll(promotionList);
+			return resultList;
+		}
+		return promotionList;
+	}
+
+	private void fillPromotions(List<PromotionBean> promotionList, JSONArray promotArray) throws Exception {
+		for (int i = 0; i < promotArray.length(); i++) {
+			JSONObject itemObject = promotArray.getJSONObject(i);
+			PromotionBean bean = promotionList.get(i);
+			fillPromotion(bean, itemObject);
 		}
 	}
 
@@ -171,8 +188,7 @@ public class ConfigJdPromotion implements ConfigParser {
 		return !dom.select("li#nav-home.curr a:contains(首页)").isEmpty();
 	}
 
-	private void addPromote(PromotionBean bean, JSONObject itemObject)
-			throws Exception {
+	private void fillPromotion(PromotionBean bean, JSONObject itemObject) throws Exception {
 		Long endTimeMillis = JSONUtils.getLong(itemObject, "promoEndTime");
 		if (endTimeMillis != null && endTimeMillis > 0 && endTimeMillis <= System.currentTimeMillis()) {
 			bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);

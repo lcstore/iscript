@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +44,9 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 		if (CollectionUtils.isEmpty(dtoList)) {
 			return;
 		}
+		Map<String, PromotionMapDto> keyMap = convert2KeyMap(dtoList);
 		Map<Integer, Map<String, List<PromotionMapDto>>> siteCodeDtosMap = new HashMap<Integer, Map<String, List<PromotionMapDto>>>();
-		for (PromotionMapDto dto : dtoList) {
+		for (PromotionMapDto dto : keyMap.values()) {
 			Map<String, List<PromotionMapDto>> codeDtosMap = siteCodeDtosMap.get(dto.getSiteId());
 			if (codeDtosMap == null) {
 				codeDtosMap = new HashMap<String, List<PromotionMapDto>>();
@@ -57,7 +59,6 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 			}
 			promoteList.add(dto);
 		}
-		Map<String, PromotionMapDto> keyMap = convert2KeyMap(dtoList);
 		for (Entry<Integer, Map<String, List<PromotionMapDto>>> entry : siteCodeDtosMap.entrySet()) {
 			List<String> productCodes = new ArrayList<String>(entry.getValue().keySet());
 			List<PromotionMapDto> hasDtos = getPromotionMapDtosByProductCodes(entry.getKey(), productCodes, null, null,
@@ -101,7 +102,9 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 				if (hasKeySet.contains(key)) {
 					continue;
 				}
-				insertList.add(dto);
+				if (!StringUtils.isEmpty(dto.getPromoteCode())) {
+					insertList.add(dto);
+				}
 			}
 		}
 

@@ -1,6 +1,5 @@
 package com.lezo.iscript.yeam.config;
 
-import java.io.File;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,17 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.utils.JSONUtils;
@@ -52,6 +50,10 @@ public class ConfigJdProduct implements ConfigParser {
 		JSONObject argsObject = new JSONObject(task.getArgs());
 		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
 
+		JSONArray tArray = new JSONArray();
+		tArray.put("ProductDto");
+		tArray.put("ProductStatDto");
+		JSONUtils.put(argsObject, "target", tArray);
 		JSONUtils.put(gObject, "args", argsObject);
 
 		JSONUtils.put(gObject, "rs", dataObject.toString());
@@ -74,7 +76,7 @@ public class ConfigJdProduct implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html, url);
-		if(isHome(dom)){
+		if (isHome(dom)) {
 			return itemObject;
 		}
 		Elements scriptAs = dom.select("script[type]");
@@ -105,9 +107,8 @@ public class ConfigJdProduct implements ConfigParser {
 				tBean.setProductUrl(url);
 				addPrice(tBean, dom);
 				addAttributes(tBean, dom);
-				// addComment(tBean, dom);
-				// addStock(tBean, dom, task);
-				addPromotions(tBean, dom, task);
+				addComment(tBean, dom);
+				addStock(tBean, dom, task);
 			}
 		}
 		ObjectMapper mapper = new ObjectMapper();
@@ -119,48 +120,6 @@ public class ConfigJdProduct implements ConfigParser {
 
 	private boolean isHome(Document dom) {
 		return !dom.select("li#nav-home.curr a:contains(首页)").isEmpty();
-	}
-
-	private void addPromotions(TargetBean tBean, Document dom, TaskWritable task) throws Exception {
-		// http://pi.3.cn/promoinfo/get?id=1095329&area=1_0&origin=1&callback=Promotions.set
-		String mUrl = String.format("http://pi.3.cn/promoinfo/get?id=%s&area=1_0&origin=1&callback=Promotions.set", tBean.getProductCode());
-		HttpGet get = new HttpGet(mUrl);
-		String html = HttpClientUtils.getContent(client, get);
-		html = html.replace("Promotions.set", "var oPromotList= callback");
-		html = "function callback(data){return data.promotionInfoList;}; " + html;
-		evaluateString(html, new ScopeCallBack() {
-			@Override
-			public void doCallBack(ScriptableObject scope, Object targetObject) {
-				TargetBean tBean = (TargetBean) targetObject;
-				Scriptable oPromotArray = (Scriptable) ScriptableObject.getProperty(scope, "oPromotList");
-				int index = 0;
-				List<PromotionBean> promotionList = tBean.getPromotionList();
-				while (oPromotArray.has(index, oPromotArray)) {
-					Scriptable oPromot = (Scriptable) oPromotArray.get(index, oPromotArray);
-					PromotionBean promote = new PromotionBean();
-					promote.setPromoteCode(Context.toString(ScriptableObject.getProperty(oPromot, "promoId")));
-					promote.setPromoteUrl(Context.toString(ScriptableObject.getProperty(oPromot, "adwordUrl")));
-					promotionList.add(promote);
-					index++;
-				}
-			}
-		}, tBean);
-		Elements scriptAs = dom.select("div.breadcrumb > script");
-
-		String source = FileUtils.readFileToString(new File("src/test/resources/jd.js"));
-		try {
-			String argsString = "args=" + JSONUtils.getJSONObject(task.getArgs());
-			Context cx = Context.enter();
-			ScriptableObject scope = cx.initStandardObjects();
-			cx.evaluateString(scope, argsString, "<args>", 0, null);
-			ScriptableObject.putProperty(scope, "src", dom.select("body").first());
-			ScriptableObject.putProperty(scope, "http", new HttpDirector(client));
-			cx.evaluateString(scope, source, "<cmd>", 0, null);
-			Object stockObject = ScriptableObject.getProperty(scope, "promotionInfo");
-		} finally {
-			Context.exit();
-		}
-
 	}
 
 	private void addStock(TargetBean tBean, Document dom, TaskWritable task) throws Exception {
@@ -185,7 +144,9 @@ public class ConfigJdProduct implements ConfigParser {
 
 	private void addComment(TargetBean tBean, Document dom) throws Exception {
 		// http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=1095329&callback=getCommentCount
-		String mUrl = String.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount", tBean.getProductCode());
+		String mUrl = String
+				.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount",
+						tBean.getProductCode());
 		HttpGet get = new HttpGet(mUrl);
 		get.addHeader("Referer", dom.baseUri());
 		String html = HttpClientUtils.getContent(client, get);
@@ -251,7 +212,8 @@ public class ConfigJdProduct implements ConfigParser {
 		if (StringUtils.isEmpty(tBean.getProductCode())) {
 			return;
 		}
-		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s", tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
+		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s",
+				tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
 		HttpGet get = new HttpGet(sUrl);
 		String html = HttpClientUtils.getContent(client, get);
 		html = html.replaceAll("jsonp[0-9]+", "var oData =callback");
@@ -273,7 +235,7 @@ public class ConfigJdProduct implements ConfigParser {
 	}
 
 	class TargetBean {
-		private Integer shopId=1001;
+		private Integer shopId = 1001;
 		// productStat
 		private String productCode;
 		private String productName;
@@ -291,9 +253,6 @@ public class ConfigJdProduct implements ConfigParser {
 		private String barCode;
 		private String imgUrl;
 		private Date onsailTime;
-
-		// promotionMap
-		private List<PromotionBean> promotionList = new ArrayList<ConfigJdProduct.PromotionBean>();
 
 		public String getProductCode() {
 			return productCode;
@@ -415,14 +374,6 @@ public class ConfigJdProduct implements ConfigParser {
 			this.onsailTime = onsailTime;
 		}
 
-		public List<PromotionBean> getPromotionList() {
-			return promotionList;
-		}
-
-		public void setPromotionList(List<PromotionBean> promotionList) {
-			this.promotionList = promotionList;
-		}
-
 		public Integer getShopId() {
 			return shopId;
 		}
@@ -431,86 +382,6 @@ public class ConfigJdProduct implements ConfigParser {
 			this.shopId = shopId;
 		}
 
-	}
-
-	class PromotionBean {
-		/**
-		 * 状态，-1-促销未开始,0-促销中，1-促销结束
-		 */
-		public static final int PROMOTE_STATUS_WAIT = -1;
-		public static final int PROMOTE_STATUS_START = 0;
-		public static final int PROMOTE_STATUS_END = 1;
-		/**
-		 * 促销类型，-1-未知，0-满减,1-满赠，2-满折
-		 */
-		public static final int PROMOTE_TYPE_UNKONW = -1;
-		public static final int PROMOTE_TYPE_FULL_SUB = 0;
-		public static final int PROMOTE_TYPE_FULL_GIFT = 1;
-		public static final int PROMOTE_TYPE_FULL_REBATE = 2;
-
-		private String promoteCode;
-		private String promoteName;
-		private String promoteDetail;
-		private String promoteNums;
-		private String promoteUrl;
-		private Integer promoteType = PROMOTE_STATUS_START;
-		private Integer promoteStatus = PROMOTE_STATUS_START;
-
-		public String getPromoteCode() {
-			return promoteCode;
-		}
-
-		public void setPromoteCode(String promoteCode) {
-			this.promoteCode = promoteCode;
-		}
-
-		public String getPromoteName() {
-			return promoteName;
-		}
-
-		public void setPromoteName(String promoteName) {
-			this.promoteName = promoteName;
-		}
-
-		public String getPromoteDetail() {
-			return promoteDetail;
-		}
-
-		public void setPromoteDetail(String promoteDetail) {
-			this.promoteDetail = promoteDetail;
-		}
-
-		public String getPromoteNums() {
-			return promoteNums;
-		}
-
-		public void setPromoteNums(String promoteNums) {
-			this.promoteNums = promoteNums;
-		}
-
-		public String getPromoteUrl() {
-			return promoteUrl;
-		}
-
-		public void setPromoteUrl(String promoteUrl) {
-			this.promoteUrl = promoteUrl;
-		}
-
-		public Integer getPromoteType() {
-			return promoteType;
-		}
-
-		public void setPromoteType(Integer promoteType) {
-			this.promoteType = promoteType;
-		}
-
-		public Integer getPromoteStatus() {
-			return promoteStatus;
-		}
-
-		public void setPromoteStatus(Integer promoteStatus) {
-			this.promoteStatus = promoteStatus;
-		}
 	}
 
 	public class HttpDirector {
