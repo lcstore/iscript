@@ -48,6 +48,7 @@ public class ClearTaskTimer {
 			running = false;
 			long cost = System.currentTimeMillis() - fromTimeMillis;
 			logger.info("ClearTaskTimer is done,totalType:{},clearType:{},cost:{}", typeConfigList.size(), clearTypeCount, cost);
+			return;
 		}
 
 	}

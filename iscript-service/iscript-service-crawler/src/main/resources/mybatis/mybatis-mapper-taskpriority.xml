@@ -61,7 +61,7 @@
 		TYPE ASC,LEVEL DESC
 	</select>
 	<delete id="deleteTaskPriorityDtos" parameterType="map">
-	   DELETE FROM T_TASK_PRIORITY
+	   DELETE FROM 
 	   WHERE TYPE=#{type} AND STATUS=#{status}
 	</delete>
 </mapper>
