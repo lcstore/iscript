@@ -235,26 +235,15 @@ public class ConfigJdProduct implements ConfigParser {
 		}, tBean);
 	}
 
-	class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
-
-		public List<Object> getDataList() {
-			return dataList;
+	private void evaluateString(String source, ScopeCallBack callBack, Object targetObject) {
+		try {
+			Context cx = Context.enter();
+			ScriptableObject scope = cx.initStandardObjects();
+			cx.evaluateString(scope, source, "<cmd>", 0, null);
+			callBack.doCallBack(scope, targetObject);
+		} finally {
+			Context.exit();
 		}
-
-		public void setDataList(List<Object> dataList) {
-			this.dataList = dataList;
-		}
-
-		public List<Object> getNextList() {
-			return nextList;
-		}
-
-		public void setNextList(List<Object> nextList) {
-			this.nextList = nextList;
-		}
-
 	}
 
 	class TargetBean {
@@ -430,14 +419,25 @@ public class ConfigJdProduct implements ConfigParser {
 		void doCallBack(ScriptableObject scope, Object targetObject);
 	}
 
-	private void evaluateString(String source, ScopeCallBack callBack, Object targetObject) {
-		try {
-			Context cx = Context.enter();
-			ScriptableObject scope = cx.initStandardObjects();
-			cx.evaluateString(scope, source, "<cmd>", 0, null);
-			callBack.doCallBack(scope, targetObject);
-		} finally {
-			Context.exit();
+	final class ResultBean {
+		private List<Object> dataList = new ArrayList<Object>();
+		private List<Object> nextList = new ArrayList<Object>();
+
+		public List<Object> getDataList() {
+			return dataList;
 		}
+
+		public void setDataList(List<Object> dataList) {
+			this.dataList = dataList;
+		}
+
+		public List<Object> getNextList() {
+			return nextList;
+		}
+
+		public void setNextList(List<Object> nextList) {
+			this.nextList = nextList;
+		}
+
 	}
 }

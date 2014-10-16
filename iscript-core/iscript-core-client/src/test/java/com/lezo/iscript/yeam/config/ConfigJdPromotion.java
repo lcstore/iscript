@@ -68,15 +68,16 @@ public class ConfigJdPromotion implements ConfigParser {
 	 * @throws Exception
 	 */
 	private JSONObject getDataObject(TaskWritable task) throws Exception {
-		JSONObject itemObject = new JSONObject();
 		List<PromotionBean> promotList = getPromotions(task);
 		if (!promotList.isEmpty()) {
+			ResultBean rsBean = new ResultBean();
+			rsBean.getDataList().addAll(promotList);
 			ObjectMapper mapper = new ObjectMapper();
 			StringWriter writer = new StringWriter();
-			mapper.writeValue(writer, promotList);
-			JSONUtils.put(itemObject, "data", new JSONArray(writer.toString()));
+			mapper.writeValue(writer, rsBean);
+			return new JSONObject(writer.toString());
 		}
-		return itemObject;
+		return new JSONObject();
 	}
 
 	private String getPromotionScript(String url) {
@@ -407,14 +408,26 @@ public class ConfigJdPromotion implements ConfigParser {
 		void doCallBack(ScriptableObject scope, Object targetObject);
 	}
 
-	private void evaluateString(String source, ScopeCallBack callBack, Object targetObject) {
-		try {
-			Context cx = Context.enter();
-			ScriptableObject scope = cx.initStandardObjects();
-			cx.evaluateString(scope, source, "<cmd>", 0, null);
-			callBack.doCallBack(scope, targetObject);
-		} finally {
-			Context.exit();
+	final class ResultBean {
+		private List<Object> dataList = new ArrayList<Object>();
+		private List<Object> nextList = new ArrayList<Object>();
+
+		public List<Object> getDataList() {
+			return dataList;
 		}
+
+		public void setDataList(List<Object> dataList) {
+			this.dataList = dataList;
+		}
+
+		public List<Object> getNextList() {
+			return nextList;
+		}
+
+		public void setNextList(List<Object> nextList) {
+			this.nextList = nextList;
+		}
+
 	}
+
 }

@@ -76,7 +76,7 @@ public class ConfigJdPromotList implements ConfigParser {
 		JSONArray nextArray = new JSONArray();
 		addActs(dom, nextArray);
 		addNexts(dom, nextArray);
-		JSONUtils.put(itemObject, "nexts", nextArray);
+		JSONUtils.put(itemObject, "nextList", nextArray);
 		System.err.println(itemObject);
 		return itemObject;
 	}
@@ -88,7 +88,7 @@ public class ConfigJdPromotList implements ConfigParser {
 		}
 		int size = productAs.size();
 		JSONArray dataArray = new JSONArray();
-		JSONUtils.put(itemObject, "data", dataArray);
+		JSONUtils.put(itemObject, "dataList", dataArray);
 		Set<String> urlSet = new HashSet<String>(size);
 		for (int i = 0; i < size; i++) {
 			String pUrl = productAs.get(i).absUrl("href");
