@@ -48,7 +48,7 @@ public class PromotionStrategy implements ResultStrategy {
 	}
 
 	private void addOthers(JSONObject rsObject, JSONObject argsObject) throws JSONException {
-		JSONArray dataArray = JSONUtils.get(rsObject, "data");
+		JSONArray dataArray = JSONUtils.get(rsObject, "dataList");
 		if (dataArray == null) {
 			return;
 		}
@@ -70,7 +70,7 @@ public class PromotionStrategy implements ResultStrategy {
 	}
 
 	private void addNextTasks(JSONObject rsObject, JSONObject argsObject) throws Exception {
-		JSONArray nextArray = JSONUtils.get(rsObject, "nexts");
+		JSONArray nextArray = JSONUtils.get(rsObject, "nextList");
 		if (nextArray == null) {
 			return;
 		}

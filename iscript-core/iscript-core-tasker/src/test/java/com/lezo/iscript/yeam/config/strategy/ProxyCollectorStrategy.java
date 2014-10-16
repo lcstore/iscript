@@ -71,7 +71,7 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 
 	private void addNextTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
 			throws Exception {
-		JSONArray nextArray = JSONUtils.get(rootObject, "nexts");
+		JSONArray nextArray = JSONUtils.get(rootObject, "nextList");
 		if (nextArray == null) {
 			return;
 		}

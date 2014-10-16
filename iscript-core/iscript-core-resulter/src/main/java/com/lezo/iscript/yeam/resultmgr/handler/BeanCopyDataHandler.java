@@ -24,7 +24,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"data":[],"nexts":[]}, args: {"target":[]}|{"target":"Class"}
+	 * data struct: {"dataList":[],"nextList":[]}, args: {"target":[]}|{"target":"Class"}
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
@@ -37,7 +37,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			logger.warn("no target.type:{},data:{}", type, gObject);
 			return;
 		}
-		Object dataObject = JSONUtils.get(rsObject, "data");
+		Object dataObject = JSONUtils.get(rsObject, "dataList");
 		JSONArray dataArray = null;
 		if (dataObject instanceof JSONArray) {
 			dataArray = (JSONArray) dataObject;

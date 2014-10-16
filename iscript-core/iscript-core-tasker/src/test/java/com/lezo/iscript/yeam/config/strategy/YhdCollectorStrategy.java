@@ -135,7 +135,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 	}
 
 	private void addNextTasks(JSONObject rootObject, JSONObject argsObject) throws Exception {
-		JSONArray nextArray = JSONUtils.get(rootObject, "nexts");
+		JSONArray nextArray = JSONUtils.get(rootObject, "nextList");
 		if (nextArray == null) {
 			return;
 		}

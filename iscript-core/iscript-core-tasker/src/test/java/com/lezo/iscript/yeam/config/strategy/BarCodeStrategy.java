@@ -85,7 +85,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 
 	private void addNextListTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
 			throws Exception {
-		JSONArray nextArray = JSONUtils.get(rootObject, "nexts");
+		JSONArray nextArray = JSONUtils.get(rootObject, "nextList");
 		if (nextArray == null) {
 			return;
 		}

@@ -32,7 +32,7 @@ public class DefaultStrategy implements ResultStrategy {
 		JSONObject argsObject = JSONUtils.get(jObject, "args");
 		String rsString = JSONUtils.getString(jObject, "rs");
 		JSONObject rootObject = JSONUtils.getJSONObject(rsString);
-		JSONArray nextArray = JSONUtils.get(rootObject, "nexts");
+		JSONArray nextArray = JSONUtils.get(rootObject, "nextList");
 		if (nextArray == null || nextArray.length() < 1) {
 			return;
 		}

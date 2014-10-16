@@ -57,14 +57,14 @@ public class ConfigJdProduct implements ConfigParser {
 		JSONUtils.put(gObject, "args", argsObject);
 
 		JSONUtils.put(gObject, "rs", dataObject.toString());
-
+		System.err.println("data:" + dataObject);
 		List<JSONObject> dataList = new ArrayList<JSONObject>();
 		dataList.add(gObject);
 		PersistentCollector.getInstance().getBufferWriter().write(dataList);
 	}
 
 	/**
-	 * {"data":[],"nexts":[]}
+	 * {"dataList":[],"nextList":[]}
 	 * 
 	 * @param task
 	 * @return
@@ -111,11 +111,12 @@ public class ConfigJdProduct implements ConfigParser {
 				addStock(tBean, dom, task);
 			}
 		}
+		ResultBean rsBean = new ResultBean();
+		rsBean.getDataList().add(tBean);
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, tBean);
-		System.out.println(writer);
-		return itemObject;
+		mapper.writeValue(writer, rsBean);
+		return new JSONObject(writer.toString());
 	}
 
 	private boolean isHome(Document dom) {
@@ -232,6 +233,28 @@ public class ConfigJdProduct implements ConfigParser {
 				tBean.setMarketPrice(mObject == null ? null : Float.valueOf(mObject.toString()));
 			}
 		}, tBean);
+	}
+
+	class ResultBean {
+		private List<Object> dataList = new ArrayList<Object>();
+		private List<Object> nextList = new ArrayList<Object>();
+
+		public List<Object> getDataList() {
+			return dataList;
+		}
+
+		public void setDataList(List<Object> dataList) {
+			this.dataList = dataList;
+		}
+
+		public List<Object> getNextList() {
+			return nextList;
+		}
+
+		public void setNextList(List<Object> nextList) {
+			this.nextList = nextList;
+		}
+
 	}
 
 	class TargetBean {
