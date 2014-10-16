@@ -45,7 +45,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotion();
 		parser = new ConfigJdProduct();
-		parser = new ConfigJdPromotList();
+//		parser = new ConfigJdPromotList();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1217833.html";
@@ -55,9 +55,12 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1044455.html";
 		url = "http://item.jd.com/810286.html";
 		url = "http://item.jd.com/1010693.html";
+		url = "http://item.jd.com/671315.html";
+		url = "http://item.jd.com/989260.html";
+		url = "http://item.jd.com/1061139232.html";//barCode
 //		url = "http://item.jd.com/527895.html";
 //		url = "http://item.jd.com/926512.html";
-		url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
+//		url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
 		try {

@@ -1,10 +1,13 @@
 package com.lezo.iscript.utils;
 
+import java.util.Date;
+
 public class SampleDto {
 	private String name;
 	private Integer age;
 	private Boolean bMan;
 	private Float height;
+	private Date birthDate;
 
 	public String getName() {
 		return name;
@@ -38,8 +41,17 @@ public class SampleDto {
 		this.height = height;
 	}
 
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
+
 	@Override
 	public String toString() {
-		return "SampleDto [name=" + name + ", age=" + age + ", bMan=" + bMan + ", height=" + height + "]";
+		return "SampleDto [name=" + name + ", age=" + age + ", bMan=" + bMan + ", height=" + height + ", birthDate="
+				+ birthDate + "]";
 	}
 }

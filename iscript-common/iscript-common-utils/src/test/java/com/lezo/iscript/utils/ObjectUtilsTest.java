@@ -1,5 +1,7 @@
 package com.lezo.iscript.utils;
 
+import java.util.Date;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,6 +26,7 @@ public class ObjectUtilsTest {
 		JSONUtils.put(jObject, "age", 18);
 		JSONUtils.put(jObject, "bMan", true);
 		JSONUtils.put(jObject, "isMan", false);
+		JSONUtils.put(jObject, "birthDate", 1384941006000L);
 		Object target = ObjectUtils.newObject(SampleDto.class);
 		ObjectUtils.copyObject(jObject, target);
 		System.out.println(dto);
@@ -39,6 +42,7 @@ public class ObjectUtilsTest {
 		JSONUtils.put(jObject, "bMan", true);
 		JSONUtils.put(jObject, "isMan", false);
 		JSONUtils.put(jObject, "height", 170);
+		JSONUtils.put(jObject, "birthDate", new Date());
 		Object target = ObjectUtils.newObject(SampleDto.class);
 		ObjectUtils.copyObject(jObject, target);
 		System.out.println(dto);

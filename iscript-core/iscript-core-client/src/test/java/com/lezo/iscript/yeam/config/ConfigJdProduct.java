@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
@@ -32,7 +34,7 @@ public class ConfigJdProduct implements ConfigParser {
 	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static int[] stockArr = { 0, -1, 1 };
-
+	private static Pattern oBarCodeReg = Pattern.compile("条形码[\\s]*([0-9]{13,})");
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
@@ -108,6 +110,7 @@ public class ConfigJdProduct implements ConfigParser {
 				addPrice(tBean, dom);
 				addAttributes(tBean, dom);
 				addComment(tBean, dom);
+				addBarCode(tBean, dom);
 				addStock(tBean, dom, task);
 			}
 		}
@@ -117,6 +120,17 @@ public class ConfigJdProduct implements ConfigParser {
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, rsBean);
 		return new JSONObject(writer.toString());
+	}
+
+	private void addBarCode(TargetBean tBean, Document dom) {
+		String name = tBean.getProductName();
+		if(!StringUtils.isEmpty(name)){
+			Matcher matcher = oBarCodeReg.matcher(name);
+			if(matcher.find()){
+				tBean.setBarCode(matcher.group(1));
+			}
+		}
+		
 	}
 
 	private boolean isHome(Document dom) {
@@ -201,9 +215,13 @@ public class ConfigJdProduct implements ConfigParser {
 			}
 			tBean.setCategoryNav(sb.toString());
 		}
-		Elements modelAs = dom.select("div[id^=product-detail].mc table.Ptable tr td:matchesOwn(^型号$) + td");
+		Elements modelAs = dom.select("div[id^=product-detail].mc table.Ptable tr td:matchesOwn(^(型号)|(产品型号)$) + td");
 		if (!modelAs.isEmpty()) {
 			tBean.setProductModel(modelAs.first().ownText().trim());
+		}
+		Elements imgAs = dom.select("#spec-list div.spec-items ul.lh li img[src]");
+		if (!imgAs.isEmpty()) {
+			tBean.setImgUrl(imgAs.first().absUrl("src"));
 		}
 	}
 

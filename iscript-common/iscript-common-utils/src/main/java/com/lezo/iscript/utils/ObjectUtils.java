@@ -7,8 +7,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
 public class ObjectUtils {
@@ -130,27 +132,39 @@ public class ObjectUtils {
 			writeMethod.invoke(target, args);
 			return target;
 		}
-		Class<?> paramClass = paramArray[0];
+		Class<?> targetParamClass = paramArray[0];
 		Object valueObject = args[0];
 		if (valueObject == null) {
 			writeMethod.invoke(target, valueObject);
 			return target;
 		}
-		if (valueObject.getClass().isAssignableFrom(paramClass)) {
+		if (valueObject.getClass().isAssignableFrom(targetParamClass)) {
 			writeMethod.invoke(target, valueObject);
 			return target;
 		}
-		Method valueOfMd = paramClass.getMethod("valueOf", String.class);
+		Method valueOfMd = org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod(targetParamClass,
+				"valueOf", valueObject.getClass());
 		if (valueOfMd != null) {
-			valueObject = valueOfMd.invoke(paramClass, valueObject.toString());
+			valueObject = valueOfMd.invoke(targetParamClass, valueObject);
 			writeMethod.invoke(target, valueObject);
-		} else {
-			try {
-				writeMethod.invoke(target, valueObject);
-			} catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException("invoke field:" + writeMethod.getName() + ",destParams:"
-						+ paramClass + ",srcParam:" + valueObject.getClass() + ",cause:", e);
-			}
+			return target;
+		}
+		valueOfMd = org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod(targetParamClass, "valueOf",
+				String.class);
+		if (valueOfMd != null) {
+			valueObject = valueOfMd.invoke(targetParamClass, valueObject.toString());
+			writeMethod.invoke(target, valueObject);
+			return target;
+		}
+		if (targetParamClass.equals(Date.class) && NumberUtils.isNumber(valueObject.toString())) {
+			writeMethod.invoke(target, new Date(Long.valueOf(valueObject.toString())));
+			return target;
+		}
+		try {
+			writeMethod.invoke(target, valueObject);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("invoke field:" + writeMethod.getName() + ",destParams:"
+					+ targetParamClass + ",srcParam:" + valueObject.getClass() + ",cause:", e);
 		}
 		return target;
 	}
