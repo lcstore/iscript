@@ -2,6 +2,8 @@ package com.lezo.iscript.yeam.resultmgr.writer;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
@@ -17,7 +19,12 @@ public class ProductWriter implements ObjectWriter<ProductDto> {
 
 	@Override
 	public void write(List<ProductDto> dataList) {
-		productService.batchSaveProductDtos(dataList);
+		if (CollectionUtils.isEmpty(dataList)) {
+			return;
+		}
+		synchronized (this) {
+			productService.batchSaveProductDtos(dataList);
+		}
 	}
 
 	@Override

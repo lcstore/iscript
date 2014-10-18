@@ -2,6 +2,8 @@ package com.lezo.iscript.yeam.resultmgr.writer;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.PromotionMapDto;
 import com.lezo.iscript.service.crawler.service.PromotionMapService;
@@ -17,7 +19,12 @@ public class PromotionMapWriter implements ObjectWriter<PromotionMapDto> {
 
 	@Override
 	public void write(List<PromotionMapDto> dataList) {
-		promotionMapService.batchSaveDtos(dataList);
+		if (CollectionUtils.isEmpty(dataList)) {
+			return;
+		}
+		synchronized (this) {
+			promotionMapService.batchSaveDtos(dataList);
+		}
 	}
 
 	@Override

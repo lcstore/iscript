@@ -1,5 +1,6 @@
 package com.lezo.iscript.yeam.config;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,6 +15,8 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
+import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -28,6 +32,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
+	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
@@ -35,7 +40,6 @@ public class ConfigProxyDetector implements ConfigParser {
 		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
 		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
 		detectUrls.add("http://item.jd.com/856850.html");
-		detectUrls.add("http://detail.1688.com/offer/36970162715.html");
 	}
 
 	@Override
@@ -45,10 +49,31 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
+		JSONObject gObject = new JSONObject();
+		JSONObject itemObject = getDataObject(task, gObject);
+		JSONUtils.put(gObject, "rs", itemObject.toString());
+		doCollect(gObject, task);
+		return EMTPY_RESULT;
+	}
+
+	private void doCollect(JSONObject gObject, TaskWritable task) {
+		JSONObject argsObject = new JSONObject(task.getArgs());
+		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+
+		JSONArray tArray = new JSONArray();
+		tArray.put("ProxyDetectDto");
+		JSONUtils.put(argsObject, "target", tArray);
+		JSONUtils.put(gObject, "args", argsObject);
+
+		System.err.println("gObject:" + gObject);
+		List<JSONObject> dataList = new ArrayList<JSONObject>();
+		dataList.add(gObject);
+		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+	}
+
+	private JSONObject getDataObject(TaskWritable task, JSONObject gObject) throws Exception {
 		Integer port = (Integer) task.get("port");
 		String host = getHost(task);
-
-		JSONObject itemObject = new JSONObject();
 		String url = getDetectUrl(task);
 		HttpGet get = new HttpGet(url);
 		long start = System.currentTimeMillis();
@@ -71,7 +96,7 @@ public class ConfigProxyDetector implements ConfigParser {
 		} catch (Exception e) {
 			status = 0;
 			String msg = ExceptionUtils.getStackTrace(e);
-			JSONUtils.put(itemObject, "ex", msg);
+			JSONUtils.put(gObject, "ex", msg);
 			logger.warn(String.format("detect url:%s,cause:%s", url, msg));
 		} finally {
 			if (get != null && !get.isAborted()) {
@@ -82,12 +107,22 @@ public class ConfigProxyDetector implements ConfigParser {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		JSONUtils.put(itemObject, "url", url);
-		JSONUtils.put(itemObject, "domain", URLUtils.getRootHost(url));
-		JSONUtils.put(itemObject, "cost", cost);
-		JSONUtils.put(itemObject, "status", status);
-		JSONUtils.put(itemObject, "detector", HeaderUtils.CLIENT_NAME);
-		return itemObject.toString();
+		JSONObject argsObject = new JSONObject(task.getArgs());
+		ProxyDetectDto tBean = new ProxyDetectDto();
+		tBean.setIp(InetAddressUtils.inet_aton(host));
+		tBean.setPort(JSONUtils.getInteger(argsObject, "port"));
+
+		tBean.setDetector(HeaderUtils.CLIENT_NAME);
+		tBean.setStatus(status);
+		tBean.setCurCost(cost);
+		tBean.setDomain(URLUtils.getRootHost(url));
+		tBean.setUrl(url);
+		ResultBean rsBean = new ResultBean();
+		rsBean.getDataList().add(tBean);
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, rsBean);
+		return new JSONObject(writer.toString());
 	}
 
 	private String getHost(TaskWritable task) {
@@ -117,5 +152,94 @@ public class ConfigProxyDetector implements ConfigParser {
 		Random rand = new Random();
 		int index = rand.nextInt(detectUrls.size());
 		return detectUrls.get(index);
+	}
+
+	private final class ResultBean {
+		private List<Object> dataList = new ArrayList<Object>();
+		private List<Object> nextList = new ArrayList<Object>();
+
+		public List<Object> getDataList() {
+			return dataList;
+		}
+
+		public void setDataList(List<Object> dataList) {
+			this.dataList = dataList;
+		}
+
+		public List<Object> getNextList() {
+			return nextList;
+		}
+
+		public void setNextList(List<Object> nextList) {
+			this.nextList = nextList;
+		}
+
+	}
+
+	private class ProxyDetectDto {
+		private Long ip;
+		private int port;
+		private String domain;
+		private String url;
+		private String detector;
+		private Long curCost;
+		private int status = 0;
+
+		public Long getIp() {
+			return ip;
+		}
+
+		public void setIp(Long ip) {
+			this.ip = ip;
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public void setPort(int port) {
+			this.port = port;
+		}
+
+		public String getDomain() {
+			return domain;
+		}
+
+		public void setDomain(String domain) {
+			this.domain = domain;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public String getDetector() {
+			return detector;
+		}
+
+		public void setDetector(String detector) {
+			this.detector = detector;
+		}
+
+		public Long getCurCost() {
+			return curCost;
+		}
+
+		public void setCurCost(Long curCost) {
+			this.curCost = curCost;
+		}
+
+		public int getStatus() {
+			return status;
+		}
+
+		public void setStatus(int status) {
+			this.status = status;
+		}
+
 	}
 }

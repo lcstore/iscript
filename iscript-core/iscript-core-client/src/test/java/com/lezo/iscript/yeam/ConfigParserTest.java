@@ -17,7 +17,6 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
-import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -291,6 +290,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		url = "https://nordvpn.com/free-proxy-list/1/?allc=all&allp=all&port&sortby=0&way=1&pp=1";
 		url = "https://nordvpn.com/free-proxy-list/34/?allc=all&allp=all&port&sortby=0&way=1&pp=1";
+		// url = "";
 		try {
 			task.put("url", url);
 			String result = parser.doParse(task);

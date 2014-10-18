@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,19 +19,15 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
-import com.lezo.iscript.common.storage.StorageListener;
-import com.lezo.iscript.common.storage.StorageTimeTrigger;
 import com.lezo.iscript.service.crawler.dto.ListRankDto;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
-import com.lezo.iscript.service.crawler.service.ListRankService;
 import com.lezo.iscript.service.crawler.service.ProductService;
 import com.lezo.iscript.service.crawler.utils.ShopCacher;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.storage.StorageCaller;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
@@ -42,29 +37,33 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class YhdCollectorStrategy implements ResultStrategy {
 	private static Logger logger = LoggerFactory.getLogger(YhdCollectorStrategy.class);
 
-	static {
-		StorageTimeTrigger storageTimeTrigger = SpringBeanUtils.getBean(StorageTimeTrigger.class);
-		storageTimeTrigger.addListener(ListRankDto.class, new StorageListener<ListRankDto>() {
-			@Override
-			public void doStorage() {
-				logger.info("start ProxyDetectDto...");
-				StorageBuffer<ListRankDto> storageBuffer = StorageBufferFactory.getStorageBuffer(ListRankDto.class);
-				final List<ListRankDto> copyList = storageBuffer.moveTo();
-				if (CollectionUtils.isEmpty(copyList)) {
-					logger.info("insert ProxyDetectDto:0");
-					return;
-				}
-
-				StorageCaller.getInstance().execute(new Runnable() {
-					@Override
-					public void run() {
-						ListRankService listRankService = SpringBeanUtils.getBean(ListRankService.class);
-						listRankService.batchSaveDtos(copyList);
-					}
-				});
-			}
-		});
-	}
+	// static {
+	// StorageTimeTrigger storageTimeTrigger =
+	// SpringBeanUtils.getBean(StorageTimeTrigger.class);
+	// storageTimeTrigger.addListener(ListRankDto.class, new
+	// StorageListener<ListRankDto>() {
+	// @Override
+	// public void doStorage() {
+	// logger.info("start ProxyDetectDto...");
+	// StorageBuffer<ListRankDto> storageBuffer =
+	// StorageBufferFactory.getStorageBuffer(ListRankDto.class);
+	// final List<ListRankDto> copyList = storageBuffer.moveTo();
+	// if (CollectionUtils.isEmpty(copyList)) {
+	// logger.info("insert ProxyDetectDto:0");
+	// return;
+	// }
+	//
+	// StorageCaller.getInstance().execute(new Runnable() {
+	// @Override
+	// public void run() {
+	// ListRankService listRankService =
+	// SpringBeanUtils.getBean(ListRankService.class);
+	// listRankService.batchSaveDtos(copyList);
+	// }
+	// });
+	// }
+	// });
+	// }
 
 	@Override
 	public String getName() {

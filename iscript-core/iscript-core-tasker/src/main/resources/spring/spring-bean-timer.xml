@@ -15,21 +15,16 @@
 	</bean>
 	<bean id="signTaskTimer" class="com.lezo.iscript.yeam.tasker.SignTaskTimer">
 	</bean>
-	<bean id="proxyDetectTimer" class="com.lezo.iscript.yeam.tasker.ProxyDetectTimer">
-	</bean>
 	<bean id="saveSessionTimer" class="com.lezo.iscript.yeam.tasker.SaveSessionTimer">
 	</bean>
 
-	<bean id="taskPriorityStorager"
-		class="com.lezo.iscript.yeam.storage.TaskPriorityStorager">
+	<bean id="taskPriorityStorager" class="com.lezo.iscript.yeam.storage.TaskPriorityStorager">
 	</bean>
-<!-- 	<bean id="sessionStorager" class="com.lezo.iscript.yeam.storage.SessionStorager">
-	</bean> -->
-<!-- 	<bean id="productStatStorager"
-		class="com.lezo.iscript.yeam.storage.ProductStatStorager">
-	</bean>
-	<bean id="productStorager" class="com.lezo.iscript.yeam.storage.ProductStorager">
-	</bean> -->
+	<!-- <bean id="sessionStorager" class="com.lezo.iscript.yeam.storage.SessionStorager"> 
+		</bean> -->
+	<!-- <bean id="productStatStorager" class="com.lezo.iscript.yeam.storage.ProductStatStorager"> 
+		</bean> <bean id="productStorager" class="com.lezo.iscript.yeam.storage.ProductStorager"> 
+		</bean> -->
 
 	<bean id="taskStorageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
 		<property name="listeners">
@@ -59,16 +54,14 @@
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
 
-<!-- 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="signTaskTimer" method="run"
-			cron="0 20 9 * * ?" />
-	</task:scheduled-tasks> -->
+	<!-- <task:scheduled-tasks scheduler="scheduler"> <task:scheduled ref="signTaskTimer" 
+		method="run" cron="0 20 9 * * ?" /> </task:scheduled-tasks> -->
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="clearTaskTimer" method="run"
 			cron="0 0 0/5 * * ?" />
 	</task:scheduled-tasks>
-	
+
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="saveSessionTimer" method="run"
 			cron="0 0/5 * * * ?" />
@@ -77,7 +70,6 @@
 		<task:scheduled ref="messageFlushTimer" method="run"
 			cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
-	
 	<bean id="messageFlushTimer" class="com.lezo.iscript.yeam.message.MessageFlushTimer">
 	</bean>
 </beans>

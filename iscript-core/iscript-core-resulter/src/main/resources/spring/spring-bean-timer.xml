@@ -39,6 +39,8 @@
 				<value>ConfigYhdProduct</value>
 				<value>ConfigJdProduct</value>
 				<value>ConfigJdPromotion</value>
+				<value>ConfigProxyDetector</value>
+				<value>ConfigProxyCollector</value>
 			</list>
 		</property>
 	</bean>

@@ -47,13 +47,11 @@ public class ConfigProxyCollector implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		String url = (String) task.get("url");
 
-		BasicClientCookie cookie = new BasicClientCookie("__utma",
-				"193324902.1016719687.1401026096.1401026096.1401026096.1");
+		BasicClientCookie cookie = new BasicClientCookie("__utma", "193324902.1016719687.1401026096.1401026096.1401026096.1");
 		client.getCookieStore().addCookie(cookie);
 		cookie = new BasicClientCookie("__utmc", "193324902");
 		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("__utmz",
-				"193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
+		cookie = new BasicClientCookie("__utmz", "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
 		client.getCookieStore().addCookie(cookie);
 		JSONObject jObject = new JSONObject();
 		JSONArray nextArray = new JSONArray();
@@ -70,7 +68,7 @@ public class ConfigProxyCollector implements ConfigParser {
 		doCollect(jObject, nextArray, task);
 
 		JSONObject taskObject = new JSONObject();
-		JSONUtils.put(taskObject, "nexts", nextArray);
+		JSONUtils.put(taskObject, "nextList", nextArray);
 		return taskObject.toString();
 	}
 
@@ -82,14 +80,12 @@ public class ConfigProxyCollector implements ConfigParser {
 		JSONUtils.put(gObject, "args", argsObject);
 
 		// {"target":[],"data":{},"nexts":[]}
-		JSONObject dataObject = new JSONObject();
+		JSONObject dataObject = itemObject;
 		JSONArray tArray = new JSONArray();
-		tArray.put("com.lezo.iscript.service.crawler.dto.ProxyDetectDto");
+		tArray.put("ProxyDetectDto");
 		JSONUtils.put(dataObject, "target", tArray);
 
-		JSONArray dArray = JSONUtils.get(itemObject, "proxys");
-		JSONUtils.put(dataObject, "data", dArray);
-		JSONUtils.put(dataObject, "nexts", nextArray);
+		JSONUtils.put(dataObject, "nextList", nextArray);
 
 		JSONUtils.put(gObject, "rs", dataObject.toString());
 
@@ -107,7 +103,7 @@ public class ConfigProxyCollector implements ConfigParser {
 		html = decode(html);
 		Pattern oReg = Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)[^0-9]+?([0-9]{2,})", Pattern.MULTILINE);
 		Matcher matcher = oReg.matcher(html);
-		String key = "proxys";
+		String key = "dataList";
 		JSONArray proxyArray = JSONUtils.get(jObject, key);
 		if (proxyArray == null) {
 			proxyArray = new JSONArray();
@@ -141,9 +137,7 @@ public class ConfigProxyCollector implements ConfigParser {
 				if (pMatcher.find()) {
 					Integer lastPage = Integer.valueOf(pMatcher.group());
 					for (int i = 2; i <= lastPage; i++) {
-						String nextUrl = String
-								.format("https://nordvpn.com/free-proxy-list/%d/?allc=all&allp=all&port&sortby=0&way=1&pp=1",
-										i);
+						String nextUrl = String.format("https://nordvpn.com/free-proxy-list/%d/?allc=all&allp=all&port&sortby=0&way=1&pp=1", i);
 						nextList.add(nextUrl);
 					}
 				}

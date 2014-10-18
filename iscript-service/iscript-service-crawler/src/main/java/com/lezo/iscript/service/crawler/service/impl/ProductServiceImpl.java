@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.lezo.iscript.service.crawler.dao.ProductDao;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.BatchIterator;
 
 @Service
@@ -70,8 +71,7 @@ public class ProductServiceImpl implements ProductService {
 		doAssort(dtoList, insertDtos, updateDtos);
 		batchInsertProductDtos(insertDtos);
 		batchUpdateProductDtos(updateDtos);
-		logger.info(String.format("save [%s],insert:%d,update:%d,cost:", "ProductDto", insertDtos.size(),
-				updateDtos.size()));
+		logger.info(String.format("save [%s],insert:%d,update:%d,cost:", "ProductDto", insertDtos.size(), updateDtos.size()));
 	}
 
 	private void doAssort(List<ProductDto> productDtos, List<ProductDto> insertDtos, List<ProductDto> updateDtos) {
@@ -99,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
 				String key = dto.getShopId() + "-" + dto.getProductCode();
 				ProductDto newDto = dtoMap.get(key);
 				hasCodeSet.add(dto.getProductCode());
-				newDto.setId(dto.getId());
+				convertFields(newDto, dto);
 				updateDtos.add(newDto);
 			}
 			for (String code : entry.getValue()) {
@@ -115,4 +115,10 @@ public class ProductServiceImpl implements ProductService {
 
 	}
 
+	private void convertFields(ProductDto newDto, ProductDto oldDto) {
+		newDto.setId(oldDto.getId());
+		if (BarCodeUtils.isBarCode(oldDto.getBarCode()) && !BarCodeUtils.isBarCode(newDto.getBarCode())) {
+			newDto.setBarCode(oldDto.getBarCode());
+		}
+	}
 }

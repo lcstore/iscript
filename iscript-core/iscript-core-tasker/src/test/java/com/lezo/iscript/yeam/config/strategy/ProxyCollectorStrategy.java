@@ -53,7 +53,7 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 				List<ProxyDetectDto> dtoList = new ArrayList<ProxyDetectDto>();
 				try {
 					JSONObject rootObject = new JSONObject(rsString);
-					addResults(rootObject, argsObject, dtoList);
+					// addResults(rootObject, argsObject, dtoList);
 					addNextTasks(rootObject, argsObject, taskList);
 				} catch (Exception e) {
 					e.printStackTrace();
