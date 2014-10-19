@@ -35,7 +35,7 @@ public class ShopCacher {
 		for (ShopDto dto : dtoList) {
 			shopIdMap.put(dto.getId(), dto);
 			shopKeyMap.put(getSiteCodeNameKey(dto.getSiteCode(), dto.getShopName()), dto);
-			if (dto.getIsSelf().equals(1)) {
+			if (dto.getIsSelf().equals(1) || dto.getParentId() == null) {
 				domainMap.put(dto.getSiteCode(), dto);
 			}
 		}
@@ -124,6 +124,10 @@ public class ShopCacher {
 		dto.setSiteCode(URLUtils.getRootHost(shopUrl));
 		dto.setCreateTime(new Date());
 		dto.setUpdateTime(dto.getCreateTime());
+		ShopDto siteDto = getDomainShopDto(shopUrl);
+		if (siteDto != null) {
+			dto.setParentId(siteDto.getId());
+		}
 		ShopService shopService = SpringBeanUtils.getBean(ShopService.class);
 		List<ShopDto> dtoList = new ArrayList<ShopDto>();
 		dtoList.add(dto);

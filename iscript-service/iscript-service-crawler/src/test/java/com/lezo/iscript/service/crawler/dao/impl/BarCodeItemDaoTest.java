@@ -209,8 +209,9 @@ public class BarCodeItemDaoTest {
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		BarCodeItemDao barCodeItemDao = SpringBeanUtils.getBean(BarCodeItemDao.class);
 		List<Long> idList = new ArrayList<Long>();
-		idList.add(201L);
-		barCodeItemDao.deleteFromId(idList);
+		idList.add(208L);
+		Integer count = barCodeItemDao.deleteFromId(idList);
+		System.err.println("Delete:" + count);
 	}
 
 	@Test

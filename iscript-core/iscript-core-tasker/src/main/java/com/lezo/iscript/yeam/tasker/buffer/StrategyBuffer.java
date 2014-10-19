@@ -1,8 +1,10 @@
 package com.lezo.iscript.yeam.tasker.buffer;
 
+import java.io.Closeable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,11 +61,23 @@ public class StrategyBuffer {
 		Object newObject = ClassUtils.newObject(codeSource);
 		if (newObject instanceof ResultStrategy) {
 			ResultStrategy resultStrategy = (ResultStrategy) newObject;
-			strategyMap.put(resultStrategy.getName(), resultStrategy);
+			ResultStrategy oldStrategy = strategyMap.put(resultStrategy.getName(), resultStrategy);
+			handleOldStrategy(oldStrategy);
 		}
 		long cStamp = dto.getUpdateTime().getTime();
 		stamp = cStamp > stamp ? cStamp : stamp;
 
+	}
+
+	private void handleOldStrategy(ResultStrategy oldStrategy) {
+		if (oldStrategy == null) {
+			return;
+		}
+		if (oldStrategy instanceof Closeable) {
+			Closeable closeable = (Closeable) oldStrategy;
+			IOUtils.closeQuietly(closeable);
+		}
+		oldStrategy = null;
 	}
 
 	public long getStamp() {

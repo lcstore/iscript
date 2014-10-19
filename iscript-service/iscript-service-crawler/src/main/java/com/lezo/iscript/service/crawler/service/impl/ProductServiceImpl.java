@@ -43,11 +43,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> getProductDtos(List<String> codeList, Integer shopId) {
+	public List<ProductDto> getProductDtos(List<String> codeList, Integer siteId) {
 		List<ProductDto> dtoList = new ArrayList<ProductDto>();
 		BatchIterator<String> it = new BatchIterator<String>(codeList);
 		while (it.hasNext()) {
-			List<ProductDto> subList = productDao.getProductDtos(it.next(), shopId);
+			List<ProductDto> subList = productDao.getProductDtos(it.next(), siteId);
 			if (CollectionUtils.isNotEmpty(subList)) {
 				dtoList.addAll(subList);
 			}
@@ -60,8 +60,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> getProductDtosFromId(Long fromId, int limit, Integer shopId) {
-		return productDao.getProductDtosFromId(fromId, limit, shopId);
+	public List<ProductDto> getProductDtosFromId(Long fromId, int limit, Integer siteId) {
+		return productDao.getProductDtosFromId(fromId, limit, siteId);
 	}
 
 	@Override
@@ -78,28 +78,28 @@ public class ProductServiceImpl implements ProductService {
 		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
 		Map<String, ProductDto> dtoMap = new HashMap<String, ProductDto>();
 		for (ProductDto dto : productDtos) {
-			String key = dto.getShopId() + "-" + dto.getProductCode();
+			String key = getDtoKey(dto);
 			ProductDto hasDto = dtoMap.get(key);
 			if (hasDto == null) {
 				dtoMap.put(key, dto);
 			} else if (hasDto.getUpdateTime().before(dto.getUpdateTime())) {
 				dtoMap.put(key, dto);
 			}
-			Set<String> codeSet = shopMap.get(dto.getShopId());
+			Set<String> codeSet = shopMap.get(dto.getSiteId());
 			if (codeSet == null) {
 				codeSet = new HashSet<String>();
-				shopMap.put(dto.getShopId(), codeSet);
+				shopMap.put(dto.getSiteId(), codeSet);
 			}
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
 			List<ProductDto> hasDtos = getProductDtos(new ArrayList<String>(entry.getValue()), entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
-			for (ProductDto dto : hasDtos) {
-				String key = dto.getShopId() + "-" + dto.getProductCode();
+			for (ProductDto oldDto : hasDtos) {
+				String key = getDtoKey(oldDto);
 				ProductDto newDto = dtoMap.get(key);
-				hasCodeSet.add(dto.getProductCode());
-				convertFields(newDto, dto);
+				hasCodeSet.add(oldDto.getProductCode());
+				convertFields(newDto, oldDto);
 				updateDtos.add(newDto);
 			}
 			for (String code : entry.getValue()) {
@@ -113,6 +113,10 @@ public class ProductServiceImpl implements ProductService {
 
 		}
 
+	}
+
+	private String getDtoKey(ProductDto dto) {
+		return dto.getSiteId() + "-" + dto.getProductCode();
 	}
 
 	private void convertFields(ProductDto newDto, ProductDto oldDto) {

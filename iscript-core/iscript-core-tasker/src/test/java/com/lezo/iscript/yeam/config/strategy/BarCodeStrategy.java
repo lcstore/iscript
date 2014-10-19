@@ -1,4 +1,5 @@
 package com.lezo.iscript.yeam.config.strategy;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
-	
+
 	@Override
 	public void handleResult(ResultWritable rWritable) {
 		if (ResultWritable.RESULT_FAIL == rWritable.getStatus()) {
@@ -83,8 +84,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 
 	}
 
-	private void addNextListTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
-			throws Exception {
+	private void addNextListTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList) throws Exception {
 		JSONArray nextArray = JSONUtils.get(rootObject, "nextList");
 		if (nextArray == null) {
 			return;
@@ -114,8 +114,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 		}
 	}
 
-	private void addProductTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
-			throws Exception {
+	private void addProductTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList) throws Exception {
 		JSONArray listArray = JSONUtils.get(rootObject, "list");
 		if (listArray == null) {
 			return;
@@ -148,8 +147,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 		}
 	}
 
-	private void addListTasks(JSONObject ctObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
-			throws Exception {
+	private void addListTasks(JSONObject ctObject, JSONObject argsObject, List<TaskPriorityDto> dtoList) throws Exception {
 		JSONArray childArray = JSONUtils.get(ctObject, "children");
 		if (childArray == null || childArray.length() < 1) {
 			TaskPriorityDto taskPriorityDto = new TaskPriorityDto();
@@ -261,8 +259,7 @@ public class BarCodeStrategy implements ResultStrategy, StorageListener<BarCodeI
 				if (this.storageBuffer == null) {
 					StorageTimeTrigger storageTimeTrigger = SpringBeanUtils.getBean(StorageTimeTrigger.class);
 					storageTimeTrigger.addListener(this.getClass(), this);
-					this.storageBuffer = (StorageBuffer<BarCodeItemDto>) StorageBufferFactory
-							.getStorageBuffer(BarCodeItemDto.class);
+					this.storageBuffer = (StorageBuffer<BarCodeItemDto>) StorageBufferFactory.getStorageBuffer(BarCodeItemDto.class);
 				}
 			}
 		}

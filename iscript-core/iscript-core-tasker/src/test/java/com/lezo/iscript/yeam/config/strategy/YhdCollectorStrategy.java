@@ -99,18 +99,20 @@ public class YhdCollectorStrategy implements ResultStrategy {
 					e.printStackTrace();
 				}
 			} else if ("ConfigYhdProduct".equals(rWritable.getType())) {
-//				JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
-//				String rsString = JSONUtils.getString(jObject, "rs");
-//				try {
-//					JSONObject rootObject = new JSONObject(rsString);
-//					List<ProductDto> productDtos = new ArrayList<ProductDto>();
-//					List<ProductStatDto> productStatDtos = new ArrayList<ProductStatDto>();
-//					handleOne(rootObject, productDtos, productStatDtos);
-//					getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
-//					getStorageBuffer(ProductDto.class).addAll(productDtos);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
+				// JSONObject jObject =
+				// JSONUtils.getJSONObject(rWritable.getResult());
+				// String rsString = JSONUtils.getString(jObject, "rs");
+				// try {
+				// JSONObject rootObject = new JSONObject(rsString);
+				// List<ProductDto> productDtos = new ArrayList<ProductDto>();
+				// List<ProductStatDto> productStatDtos = new
+				// ArrayList<ProductStatDto>();
+				// handleOne(rootObject, productDtos, productStatDtos);
+				// getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
+				// getStorageBuffer(ProductDto.class).addAll(productDtos);
+				// } catch (Exception e) {
+				// e.printStackTrace();
+				// }
 			}
 		}
 
@@ -188,10 +190,10 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			handleOne(itemObject, productDtos, productStatDtos);
 			createListRankDto(itemObject, argsObject, listRankDtos);
 		}
-		//getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
+		// getStorageBuffer(ProductStatDto.class).addAll(productStatDtos);
 		getStorageBuffer(ListRankDto.class).addAll(listRankDtos);
 
-		//getStorageBuffer(ProductDto.class).addAll(productDtos);
+		// getStorageBuffer(ProductDto.class).addAll(productDtos);
 
 		createProductTasks(argsObject, productDtos);
 
@@ -276,8 +278,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey());
+			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()), entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductDto dto : hasDtos) {
 				String key = dto.getShopId() + "-" + dto.getProductCode();
@@ -330,8 +331,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 		Integer level = JSONUtils.getInteger(argsObject, "level");
 		level = level == null ? 0 : level;
 		TaskCacher.getInstance().getQueue(rWritable.getType()).offer(tWritable, level);
-		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()) + ",ex:"
-				+ exObject);
+		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()) + ",ex:" + exObject);
 	}
 
 	private void handleOne(JSONObject itemObject, List<ProductDto> productDtos, List<ProductStatDto> productStatDtos) {

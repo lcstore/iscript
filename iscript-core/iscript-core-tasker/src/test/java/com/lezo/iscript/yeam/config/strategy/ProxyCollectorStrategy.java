@@ -69,8 +69,7 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 
 	}
 
-	private void addNextTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList)
-			throws Exception {
+	private void addNextTasks(JSONObject rootObject, JSONObject argsObject, List<TaskPriorityDto> dtoList) throws Exception {
 		JSONArray nextArray = JSONUtils.get(rootObject, "nextList");
 		if (nextArray == null) {
 			return;
@@ -101,8 +100,7 @@ public class ProxyCollectorStrategy implements ResultStrategy, StorageListener<B
 		}
 	}
 
-	private void addResults(JSONObject rootObject, JSONObject argsObject, List<ProxyDetectDto> dtoList)
-			throws Exception {
+	private void addResults(JSONObject rootObject, JSONObject argsObject, List<ProxyDetectDto> dtoList) throws Exception {
 		JSONArray listArray = JSONUtils.get(rootObject, "proxys");
 		if (listArray == null) {
 			return;

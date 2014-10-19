@@ -5,6 +5,7 @@
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ShopDao">
 	<resultMap type="ShopDto" id="RM_ShopDto">
 		<result column="ID" property="id"/>
+		<result column="PARENT_ID" property="parentId"/>
 		<result column="SITE_CODE" property="siteCode"/>
 		<result column="SHOP_NAME" property="shopName"/>
 		<result column="SHOP_CODE" property="shopCode"/>
@@ -15,7 +16,8 @@
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="ShopDto-coloumn-list">
-		SITE_CODE
+		PARENT_ID
+		,SITE_CODE
 		,SHOP_NAME
 		,SHOP_CODE
 		,SHOP_URL
@@ -31,11 +33,12 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteCode},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.onLine},#{item.isSelf},#{item.createTime},#{item.updateTime})
+			(#{item.parentId},#{item.siteCode},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.onLine},#{item.isSelf},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ShopDto">
 		UPDATE T_SHOP SET
+		PARENT_ID=#{parentId},
 		SITE_CODE=#{siteCode},
 		SHOP_NAME=#{shopName},
 		SHOP_CODE=#{shopCode},

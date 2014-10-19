@@ -5,5 +5,5 @@ import java.util.List;
 import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
 
 public interface TypeConfigService {
-	List<TypeConfigDto> getEnableTypeConfigDtos(String tasker);
+	List<TypeConfigDto> getTypeConfigDtos(String tasker, Integer status);
 }

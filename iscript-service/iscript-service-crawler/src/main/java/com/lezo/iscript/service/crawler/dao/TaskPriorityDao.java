@@ -11,8 +11,7 @@ public interface TaskPriorityDao {
 
 	int batchUpdateStatusByIds(@Param(value = "taskIds") List<Long> taskIds, @Param(value = "status") int status);
 
-	List<TaskPriorityDto> getTaskPriorityDtosByType(@Param(value = "type") String type, @Param(value = "level") int level,
-			@Param(value = "status") int status, @Param(value = "limit") int limit);
+	List<TaskPriorityDto> getTaskPriorityDtosByType(@Param(value = "type") String type, @Param(value = "level") int level, @Param(value = "status") int status, @Param(value = "limit") int limit);
 
 	List<TaskPriorityDto> getTaskTypeLevels(@Param(value = "typeList") List<String> typeList, @Param(value = "status") int status);
 

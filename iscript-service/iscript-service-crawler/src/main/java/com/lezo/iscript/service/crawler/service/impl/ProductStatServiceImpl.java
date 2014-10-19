@@ -47,11 +47,11 @@ public class ProductStatServiceImpl implements ProductStatService {
 	}
 
 	@Override
-	public List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer shopId) {
+	public List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer siteId) {
 		List<ProductStatDto> dtoList = new ArrayList<ProductStatDto>();
 		BatchIterator<String> it = new BatchIterator<String>(codeList);
 		while (it.hasNext()) {
-			List<ProductStatDto> subList = productStatDao.getProductStatDtos(it.next(), shopId);
+			List<ProductStatDto> subList = productStatDao.getProductStatDtos(it.next(), siteId);
 			if (CollectionUtils.isNotEmpty(subList)) {
 				dtoList.addAll(subList);
 			}
@@ -78,8 +78,7 @@ public class ProductStatServiceImpl implements ProductStatService {
 		turnCreateTime2UpdateTime(insertStatHisDtos);
 		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
 		long cost = System.currentTimeMillis() - start;
-		logger.info(String.format("save [%s]insert:%d,update:%d,[%s]insert:%d,cost:%s", "ProductStatDto",
-				insertStatDtos.size(), updateStatDtos.size(), "ProductStatHisDto", insertStatHisDtos.size(), cost));
+		logger.info(String.format("save [%s]insert:%d,update:%d,[%s]insert:%d,cost:%s", "ProductStatDto", insertStatDtos.size(), updateStatDtos.size(), "ProductStatHisDto", insertStatHisDtos.size(), cost));
 	}
 
 	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {
@@ -88,17 +87,16 @@ public class ProductStatServiceImpl implements ProductStatService {
 		}
 	}
 
-	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos,
-			List<ProductStatDto> updateDtos, List<ProductStatDto> insertStatHisDtos) {
+	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos, List<ProductStatDto> updateDtos, List<ProductStatDto> insertStatHisDtos) {
 		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
 		Map<String, ProductStatDto> dtoMap = new HashMap<String, ProductStatDto>();
 		for (ProductStatDto dto : productDtos) {
-			String key = dto.getShopId() + "-" + dto.getProductCode();
+			String key = getDtoKey(dto);
 			dtoMap.put(key, dto);
-			Set<String> codeSet = shopMap.get(dto.getShopId());
+			Set<String> codeSet = shopMap.get(dto.getSiteId());
 			if (codeSet == null) {
 				codeSet = new HashSet<String>();
-				shopMap.put(dto.getShopId(), codeSet);
+				shopMap.put(dto.getSiteId(), codeSet);
 			}
 			codeSet.add(dto.getProductCode());
 		}
@@ -106,7 +104,7 @@ public class ProductStatServiceImpl implements ProductStatService {
 			List<ProductStatDto> hasDtos = getProductStatDtos(new ArrayList<String>(entry.getValue()), entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductStatDto oldDto : hasDtos) {
-				String key = oldDto.getShopId() + "-" + oldDto.getProductCode();
+				String key = getDtoKey(oldDto);
 				ProductStatDto newDto = dtoMap.get(key);
 				hasCodeSet.add(oldDto.getProductCode());
 				newDto.setId(oldDto.getId());
@@ -130,6 +128,10 @@ public class ProductStatServiceImpl implements ProductStatService {
 
 		}
 
+	}
+
+	private String getDtoKey(ProductStatDto dto) {
+		return dto.getSiteId() + "-" + dto.getProductCode();
 	}
 
 	private void doPriceStatistic(ProductStatDto newDto, ProductStatDto oldDto) {
@@ -161,16 +163,17 @@ public class ProductStatServiceImpl implements ProductStatService {
 		if (!isSameObject(oldDto.getStockNum(), newDto.getStockNum())) {
 			return true;
 		}
-//		if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice())) {
-//			return true;
-//		}
-//		if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
-//			return true;
-//		}
-//
-//		if (!isSameObject(oldDto.getCommentNum(), newDto.getCommentNum())) {
-//			return true;
-//		}
+		// if (!isSameObject(oldDto.getMarketPrice(), newDto.getMarketPrice()))
+		// {
+		// return true;
+		// }
+		// if (!isSameObject(oldDto.getSoldNum(), newDto.getSoldNum())) {
+		// return true;
+		// }
+		//
+		// if (!isSameObject(oldDto.getCommentNum(), newDto.getCommentNum())) {
+		// return true;
+		// }
 		return false;
 	}
 
@@ -184,28 +187,28 @@ public class ProductStatServiceImpl implements ProductStatService {
 	}
 
 	@Override
-	public List<ProductStatDto> getProductStatDtosByCommentDesc(Integer shopId, int limit) {
-		return productStatDao.getProductStatDtosByCommentDesc(shopId, limit);
+	public List<ProductStatDto> getProductStatDtosByCommentDesc(Integer siteId, int limit) {
+		return productStatDao.getProductStatDtosByCommentDesc(siteId, limit);
 	}
 
 	@Override
-	public List<ProductStatDto> getProductStatDtosByPriceAsc(Integer shopId, int limit) {
-		return productStatDao.getProductStatDtosByPriceAsc(shopId, limit);
+	public List<ProductStatDto> getProductStatDtosByPriceAsc(Integer siteId, int limit) {
+		return productStatDao.getProductStatDtosByPriceAsc(siteId, limit);
 	}
 
 	@Override
-	public List<ProductStatDto> getProductStatDtosBySoldDesc(Integer shopId, int limit) {
-		return productStatDao.getProductStatDtosBySoldDesc(shopId, limit);
+	public List<ProductStatDto> getProductStatDtosBySoldDesc(Integer siteId, int limit) {
+		return productStatDao.getProductStatDtosBySoldDesc(siteId, limit);
 	}
 
 	@Override
-	public List<ProductStatDto> getProductStatDtosLowestPrice(Long fromId, Integer shopId, Date updateTime, int limit) {
+	public List<ProductStatDto> getProductStatDtosLowestPrice(Long fromId, Integer siteId, Date updateTime, int limit) {
 		if (limit < 1) {
 			return Collections.emptyList();
 		}
 		if (fromId == null) {
 			fromId = 0L;
 		}
-		return productStatDao.getProductStatDtosLowestPrice(fromId, shopId, updateTime, limit);
+		return productStatDao.getProductStatDtosLowestPrice(fromId, siteId, updateTime, limit);
 	}
 }

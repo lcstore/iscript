@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.config.strategy;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -26,13 +28,15 @@ import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ProxyDetectStrategy implements ResultStrategy {
+public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(ProxyDetectStrategy.class);
 	private static volatile boolean running = false;
+	private Timer timer;
 
 	public ProxyDetectStrategy() {
 		ProxyDetectTimer task = new ProxyDetectTimer();
-		new Timer("ProxyDetectProducer").schedule(task, 1 * 60 * 1000, 5 * 60 * 1000);
+		this.timer = new Timer("ProxyDetectProducer");
+		this.timer.schedule(task, 5 * 60 * 60 * 1000, 10 * 60 * 60 * 1000);
 	}
 
 	@Override
@@ -182,5 +186,12 @@ public class ProxyDetectStrategy implements ResultStrategy {
 			logger.info(String.format("add task to buffer,size:%d", taskDtos.size()));
 		}
 
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.timer.cancel();
+		this.timer = null;
+		logger.info("close " + getName() + " strategy..");
 	}
 }

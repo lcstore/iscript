@@ -17,8 +17,7 @@ public class TypeConfigServiceImpl implements TypeConfigService {
 	private TypeConfigDao typeConfigDao;
 
 	@Override
-	public List<TypeConfigDto> getEnableTypeConfigDtos(String tasker) {
-		int status = TypeConfigDto.TYPE_ENABLE;
+	public List<TypeConfigDto> getTypeConfigDtos(String tasker, Integer status) {
 		List<TypeConfigDto> commonList = typeConfigDao.getTypeConfigDtos(TypeConfigDto.TASKER_COMMON, status);
 		List<TypeConfigDto> typeList = typeConfigDao.getTypeConfigDtos(tasker, status);
 		Map<String, TypeConfigDto> typeMap = new HashMap<String, TypeConfigDto>();

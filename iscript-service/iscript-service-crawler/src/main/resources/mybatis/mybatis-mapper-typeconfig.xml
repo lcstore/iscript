@@ -45,6 +45,9 @@
 	</update>
 	<select id="getTypeConfigDtos" parameterType="map" resultMap="RM_TypeConfigDto">
 		SELECT * FROM T_TYPE_CONFIG
-		WHERE TASKER=#{tasker} AND STATUS=#{status}
+		WHERE TASKER=#{tasker}
+		<if test="status !=null">
+			AND STATUS=#{status}
+		</if>
 	</select>
 </mapper>

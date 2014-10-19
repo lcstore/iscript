@@ -11,5 +11,5 @@ public interface TypeConfigDao {
 
 	void batchStatusUpdate(@Param(value = "idList") List<Long> idList, @Param(value = "status") int status);
 
-	List<TypeConfigDto> getTypeConfigDtos(@Param(value = "tasker") String tasker, @Param(value = "status") int status);
+	List<TypeConfigDto> getTypeConfigDtos(@Param(value = "tasker") String tasker, @Param(value = "status") Integer status);
 }

@@ -35,6 +35,7 @@ public class ConfigJdProduct implements ConfigParser {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static int[] stockArr = { 0, -1, 1 };
 	private static Pattern oBarCodeReg = Pattern.compile("条形码[\\s]*([0-9]{13,})");
+
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
@@ -124,13 +125,13 @@ public class ConfigJdProduct implements ConfigParser {
 
 	private void addBarCode(TargetBean tBean, Document dom) {
 		String name = tBean.getProductName();
-		if(!StringUtils.isEmpty(name)){
+		if (!StringUtils.isEmpty(name)) {
 			Matcher matcher = oBarCodeReg.matcher(name);
-			if(matcher.find()){
+			if (matcher.find()) {
 				tBean.setBarCode(matcher.group(1));
 			}
 		}
-		
+
 	}
 
 	private boolean isHome(Document dom) {
@@ -159,9 +160,7 @@ public class ConfigJdProduct implements ConfigParser {
 
 	private void addComment(TargetBean tBean, Document dom) throws Exception {
 		// http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=1095329&callback=getCommentCount
-		String mUrl = String
-				.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount",
-						tBean.getProductCode());
+		String mUrl = String.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount", tBean.getProductCode());
 		HttpGet get = new HttpGet(mUrl);
 		get.addHeader("Referer", dom.baseUri());
 		String html = HttpClientUtils.getContent(client, get);
@@ -231,8 +230,7 @@ public class ConfigJdProduct implements ConfigParser {
 		if (StringUtils.isEmpty(tBean.getProductCode())) {
 			return;
 		}
-		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s",
-				tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
+		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s", tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
 		HttpGet get = new HttpGet(sUrl);
 		String html = HttpClientUtils.getContent(client, get);
 		html = html.replaceAll("jsonp[0-9]+", "var oData =callback");
@@ -283,6 +281,10 @@ public class ConfigJdProduct implements ConfigParser {
 		private String barCode;
 		private String imgUrl;
 		private Date onsailTime;
+
+		private Integer siteId = 1001;
+		private Integer goodComment;
+		private Integer poorComment;
 
 		public String getProductCode() {
 			return productCode;
@@ -410,6 +412,30 @@ public class ConfigJdProduct implements ConfigParser {
 
 		public void setShopId(Integer shopId) {
 			this.shopId = shopId;
+		}
+
+		public Integer getSiteId() {
+			return siteId;
+		}
+
+		public void setSiteId(Integer siteId) {
+			this.siteId = siteId;
+		}
+
+		public Integer getGoodComment() {
+			return goodComment;
+		}
+
+		public void setGoodComment(Integer goodComment) {
+			this.goodComment = goodComment;
+		}
+
+		public Integer getPoorComment() {
+			return poorComment;
+		}
+
+		public void setPoorComment(Integer poorComment) {
+			this.poorComment = poorComment;
 		}
 
 	}

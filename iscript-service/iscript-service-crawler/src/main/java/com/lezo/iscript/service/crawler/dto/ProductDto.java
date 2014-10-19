@@ -18,6 +18,8 @@ public class ProductDto {
 	private Date createTime;
 	private Date updateTime;
 
+	private Integer siteId;
+
 	public Long getId() {
 		return id;
 	}
@@ -128,5 +130,13 @@ public class ProductDto {
 
 	public void setMarketPrice(Float marketPrice) {
 		this.marketPrice = marketPrice;
+	}
+
+	public Integer getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(Integer siteId) {
+		this.siteId = siteId;
 	}
 }

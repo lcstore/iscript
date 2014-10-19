@@ -4,12 +4,13 @@ import java.util.Date;
 
 public class ShopDto {
 	private Integer id;
+	private Integer parentId;
 	private String siteCode;
 	private String shopName;
 	private String shopCode;
 	private String shopUrl;
 	private Integer onLine = 0;
-	private Integer isSelf = 0 ;
+	private Integer isSelf = 0;
 	private Date createTime;
 	private Date updateTime;
 
@@ -83,6 +84,14 @@ public class ShopDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Integer getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
 	}
 
 }

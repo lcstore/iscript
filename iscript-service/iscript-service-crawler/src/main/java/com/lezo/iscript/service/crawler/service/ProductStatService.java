@@ -12,13 +12,13 @@ public interface ProductStatService {
 
 	void batchSaveProductStatDtos(List<ProductStatDto> dtoList);
 
-	List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer shopId);
+	List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer siteId);
 
-	List<ProductStatDto> getProductStatDtosByCommentDesc(Integer shopId, int limit);
+	List<ProductStatDto> getProductStatDtosByCommentDesc(Integer siteId, int limit);
 
-	List<ProductStatDto> getProductStatDtosByPriceAsc(Integer shopId, int limit);
+	List<ProductStatDto> getProductStatDtosByPriceAsc(Integer siteId, int limit);
 
-	List<ProductStatDto> getProductStatDtosBySoldDesc(Integer shopId, int limit);
+	List<ProductStatDto> getProductStatDtosBySoldDesc(Integer siteId, int limit);
 
-	List<ProductStatDto> getProductStatDtosLowestPrice(Long fromId, Integer shopId, Date updateTime, int limit);
+	List<ProductStatDto> getProductStatDtosLowestPrice(Long fromId, Integer siteId, Date updateTime, int limit);
 }

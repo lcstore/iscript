@@ -2,58 +2,73 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.PromotionMapDao">
-	<resultMap type="PromotionMapDto" id="RM_PromotionMapDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatDao">
+	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
 		<result column="ID" property="id"/>
 		<result column="SITE_ID" property="siteId"/>
+		<result column="SHOP_ID" property="shopId"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PROMOTE_CODE" property="promoteCode"/>
-		<result column="PROMOTE_NAME" property="promoteName"/>
-		<result column="PROMOTE_DETAIL" property="promoteDetail"/>
-		<result column="PROMOTE_NUMS" property="promoteNums"/>
-		<result column="PROMOTE_URL" property="promoteUrl"/>
-		<result column="PROMOTE_TYPE" property="promoteType"/>
-		<result column="PROMOTE_STATUS" property="promoteStatus"/>
-		<result column="IS_DELETE" property="isDelete"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="CATEGORY_NAV" property="categoryNav"/>
+		<result column="MIN_PRICE" property="minPrice"/>
+		<result column="MAX_PRICE" property="maxPrice"/>
+		<result column="PRODUCT_PRICE" property="productPrice"/>
+		<result column="MARKET_PRICE" property="marketPrice"/>
+		<result column="SOLD_NUM" property="soldNum"/>
+		<result column="COMMENT_NUM" property="commentNum"/>
+		<result column="GOOD_COMMENT" property="goodComment"/>
+		<result column="POOR_COMMENT" property="poorComment"/>
+		<result column="STOCK_NUM" property="stockNum"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="PromotionMapDto-coloumn-list">
+	<sql id="ProductStatDto-coloumn-list">
 		SITE_ID
+		,SHOP_ID
 		,PRODUCT_CODE
-		,PROMOTE_CODE
-		,PROMOTE_NAME
-		,PROMOTE_DETAIL
-		,PROMOTE_NUMS
-		,PROMOTE_URL
-		,PROMOTE_TYPE
-		,PROMOTE_STATUS
-		,IS_DELETE
+		,PRODUCT_NAME
+		,PRODUCT_URL
+		,CATEGORY_NAV
+		,MIN_PRICE
+		,MAX_PRICE
+		,PRODUCT_PRICE
+		,MARKET_PRICE
+		,SOLD_NUM
+		,COMMENT_NUM
+		,GOOD_COMMENT
+		,POOR_COMMENT
+		,STOCK_NUM
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="PromotionMapDto">
-		INSERT INTO T_PROMOTION_MAP(
-		<include refid="PromotionMapDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="ProductStatDto">
+		INSERT INTO T_PRODUCT_STAT(
+		<include refid="ProductStatDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.productCode},#{item.promoteCode},#{item.promoteName},#{item.promoteDetail},#{item.promoteNums},#{item.promoteUrl},#{item.promoteType},#{item.promoteStatus},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="PromotionMapDto">
-		UPDATE T_PROMOTION_MAP SET
+	<update id="updateOne" parameterType="ProductStatDto">
+		UPDATE T_PRODUCT_STAT SET
 		SITE_ID=#{siteId},
+		SHOP_ID=#{shopId},
 		PRODUCT_CODE=#{productCode},
-		PROMOTE_CODE=#{promoteCode},
-		PROMOTE_NAME=#{promoteName},
-		PROMOTE_DETAIL=#{promoteDetail},
-		PROMOTE_NUMS=#{promoteNums},
-		PROMOTE_URL=#{promoteUrl},
-		PROMOTE_TYPE=#{promoteType},
-		PROMOTE_STATUS=#{promoteStatus},
-		IS_DELETE=#{isDelete},
+		PRODUCT_NAME=#{productName},
+		PRODUCT_URL=#{productUrl},
+		CATEGORY_NAV=#{categoryNav},
+		MIN_PRICE=#{minPrice},
+		MAX_PRICE=#{maxPrice},
+		PRODUCT_PRICE=#{productPrice},
+		MARKET_PRICE=#{marketPrice},
+		SOLD_NUM=#{soldNum},
+		COMMENT_NUM=#{commentNum},
+		GOOD_COMMENT=#{goodComment},
+		POOR_COMMENT=#{poorComment},
+		STOCK_NUM=#{stockNum},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}

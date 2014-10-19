@@ -7,9 +7,6 @@
 	<bean id="cacheTaskTimer" class="com.lezo.iscript.yeam.tasker.CacheTaskTimer">
 		<property name="tasker" value="tasker" />
 	</bean>
-	<bean id="clearTaskTimer" class="com.lezo.iscript.yeam.tasker.ClearTaskTimer">
-		<property name="tasker" value="tasker" />
-	</bean>
 	<bean id="cacheConfigTimer" class="com.lezo.iscript.yeam.tasker.CacheConfigTimer">
 		<property name="tasker" value="tasker" />
 	</bean>
@@ -36,7 +33,7 @@
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="5" />
-	<task:scheduler id="scheduler" pool-size="20" />
+	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
@@ -52,14 +49,6 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="taskStorageTimeTrigger" method="doTrigger"
 			fixed-delay="60000" />
-	</task:scheduled-tasks>
-
-	<!-- <task:scheduled-tasks scheduler="scheduler"> <task:scheduled ref="signTaskTimer" 
-		method="run" cron="0 20 9 * * ?" /> </task:scheduled-tasks> -->
-
-	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="clearTaskTimer" method="run"
-			cron="0 0 0/5 * * ?" />
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">

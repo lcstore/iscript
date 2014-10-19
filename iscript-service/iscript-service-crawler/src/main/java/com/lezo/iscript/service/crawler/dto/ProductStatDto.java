@@ -21,6 +21,10 @@ public class ProductStatDto {
 
 	private String categoryNav;
 
+	private Integer siteId;
+	private Integer goodComment;
+	private Integer poorComment;
+
 	public Long getId() {
 		return id;
 	}
@@ -139,6 +143,30 @@ public class ProductStatDto {
 
 	public void setCategoryNav(String categoryNav) {
 		this.categoryNav = categoryNav;
+	}
+
+	public Integer getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(Integer siteId) {
+		this.siteId = siteId;
+	}
+
+	public Integer getGoodComment() {
+		return goodComment;
+	}
+
+	public void setGoodComment(Integer goodComment) {
+		this.goodComment = goodComment;
+	}
+
+	public Integer getPoorComment() {
+		return poorComment;
+	}
+
+	public void setPoorComment(Integer poorComment) {
+		this.poorComment = poorComment;
 	}
 
 }

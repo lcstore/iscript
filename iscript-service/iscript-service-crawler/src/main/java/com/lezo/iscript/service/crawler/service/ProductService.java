@@ -11,7 +11,7 @@ public interface ProductService {
 	
 	void batchSaveProductDtos(List<ProductDto> dtoList);
 
-	List<ProductDto> getProductDtos(List<String> codeList, Integer shopId);
+	List<ProductDto> getProductDtos(List<String> codeList, Integer siteId);
 
-	List<ProductDto> getProductDtosFromId(Long fromId, int limit, Integer shopId);
+	List<ProductDto> getProductDtosFromId(Long fromId, int limit, Integer siteId);
 }
