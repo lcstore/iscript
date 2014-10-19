@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,7 +25,8 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"dataList":[],"nextList":[]}, args: {"target":[]}|{"target":"Class"}
+	 * data struct: {"dataList":[],"nextList":[]}, args:
+	 * {"target":[]}|{"target":"Class"}
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
@@ -78,8 +80,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		return dataArray;
 	}
 
-	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject)
-			throws Exception {
+	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
 		Class<?> dtoClass = getDtoClass(clsName);
 		Object destObject = ObjectUtils.newObject(dtoClass);
 		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());
@@ -154,21 +155,18 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			writeMd.invoke(destObject, shopId);
 			return;
 		}
-		Method readUrlMd = MethodUtils.getReadMethod("productUrl", destObject.getClass());
-		if (readUrlMd != null) {
-			String pUrl = (String) readUrlMd.invoke(destObject);
-			if (pUrl != null) {
-				ShopDto shopDto = ShopCacher.getInstance().getDomainShopDto(pUrl);
-				if (shopDto != null) {
-					writeMd.invoke(destObject, shopDto.getId());
-				}
+		String shopUrl = JSONUtils.getString(dataObject, "shopUrl");
+		String shopCode = JSONUtils.getString(argsObject, "shopCode");
+		String shopName = JSONUtils.getString(argsObject, "shopName");
+		if (StringUtils.isEmpty(shopUrl) && StringUtils.isEmpty(shopName)) {
+			ShopDto shopDto = ShopCacher.getInstance().insertIfAbsent(shopName, shopUrl, shopCode);
+			if (shopDto != null) {
+				writeMd.invoke(destObject, shopDto.getId());
+				return;
 			}
 		}
-		sidObject = readMd.invoke(destObject);
-		if (sidObject == null) {
-			String msg = String.format("can not set shopId.args:%s,data:%s", argsObject, dataObject);
-			throw new IllegalAccessException(msg);
-		}
+		String msg = String.format("can not set shopId.args:%s,data:%s", argsObject, dataObject);
+		throw new IllegalAccessException(msg);
 	}
 
 	private Class<?> getDtoClass(String name) throws ClassNotFoundException {

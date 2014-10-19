@@ -19,8 +19,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
@@ -113,6 +115,7 @@ public class ConfigJdProduct implements ConfigParser {
 				addComment(tBean, dom);
 				addBarCode(tBean, dom);
 				addStock(tBean, dom, task);
+				addShopInfo(tBean, dom, task);
 			}
 		}
 		ResultBean rsBean = new ResultBean();
@@ -121,6 +124,35 @@ public class ConfigJdProduct implements ConfigParser {
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, rsBean);
 		return new JSONObject(writer.toString());
+	}
+
+	private void addShopInfo(TargetBean tBean, Document dom, TaskWritable task) throws Exception {
+		// http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=1015367811
+		String sUrl = String.format("http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=%s", tBean.getProductCode());
+		HttpGet get = new HttpGet(sUrl);
+		String html = HttpClientUtils.getContent(client, get);
+		String source = "function setPopInfo(data){return data;}; ";
+		html = html.replace("setPopInfo", "var oData=setPopInfo");
+		source += html + ";";
+		source += "var sDataResult = JSON.stringify(oData);";
+
+		Context cx = Context.enter();
+		Scriptable coreScriptable = ScriptableUtils.getCoreScriptable();
+		ScriptableObject scope = null;
+		scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) coreScriptable);
+		cx.evaluateString(scope, source, "<cmd>", 0, null);
+
+		String sDataResult = Context.toString(ScriptableObject.getProperty(scope, "sDataResult"));
+		JSONObject dObject = JSONUtils.getJSONObject(sDataResult);
+		if (dObject == null || StringUtils.isEmpty(JSONUtils.getString(dObject, "vender"))) {
+			tBean.setShopName("京东商城");
+			tBean.setShopUrl("http://www.jd.com/");
+			tBean.setShopId(tBean.getSiteId());
+		} else {
+			tBean.setShopName(JSONUtils.getString(dObject, "vender"));
+			tBean.setShopCode(JSONUtils.get(dObject, "vid").toString());
+			tBean.setShopUrl(JSONUtils.getString(dObject, "url"));
+		}
 	}
 
 	private void addBarCode(TargetBean tBean, Document dom) {
@@ -164,15 +196,22 @@ public class ConfigJdProduct implements ConfigParser {
 		HttpGet get = new HttpGet(mUrl);
 		get.addHeader("Referer", dom.baseUri());
 		String html = HttpClientUtils.getContent(client, get);
+		System.err.println("cmm:" + html);
 		html = html.replace("getCommentCount", "var oCmm = getCommentCount");
 		html = "function getCommentCount(data){return data};" + html;
 		html += "var iCmm = oCmm.CommentCount;";
+		html += "var gCmm = oCmm.GoodCount;";
+		html += "var pCmm = oCmm.PoorCount;";
 		evaluateString(html, new ScopeCallBack() {
 			@Override
 			public void doCallBack(ScriptableObject scope, Object targetObject) {
 				TargetBean tBean = (TargetBean) targetObject;
 				Object cmmObject = ScriptableObject.getProperty(scope, "iCmm");
 				tBean.setCommentNum(cmmObject == null ? null : Integer.valueOf(cmmObject.toString()));
+				Object goodCmmObject = ScriptableObject.getProperty(scope, "gCmm");
+				tBean.setGoodComment(goodCmmObject == null ? null : Integer.valueOf(goodCmmObject.toString()));
+				Object poorCmmObject = ScriptableObject.getProperty(scope, "pCmm");
+				tBean.setPoorComment(poorCmmObject == null ? null : Integer.valueOf(poorCmmObject.toString()));
 			}
 		}, tBean);
 	}
@@ -190,7 +229,7 @@ public class ConfigJdProduct implements ConfigParser {
 				e.printStackTrace();
 			}
 		}
-		Elements brandAs = dom.select("div[id^=product-detail].mc ul.detail-list li:containsOwn(品牌)");
+		Elements brandAs = dom.select("div[id^=product-detail].mc ul.detail-list li:containsOwn(品牌),div.breadcrumb span a[href*=.jd.com/pinpai]");
 		if (!brandAs.isEmpty()) {
 			String sBrandName = brandAs.first().text();
 			sBrandName = sBrandName.replace("品牌：", "");
@@ -198,7 +237,7 @@ public class ConfigJdProduct implements ConfigParser {
 			tBean.setProductBrand(sBrandName);
 		}
 		Elements navAs = dom.select("div.breadcrumb");
-		if (!brandAs.isEmpty()) {
+		if (!navAs.isEmpty()) {
 			String sNav = navAs.first().text();
 			sNav = sNav.replaceAll(" ", "");
 			String[] navArr = sNav.split(">");
@@ -263,7 +302,6 @@ public class ConfigJdProduct implements ConfigParser {
 	}
 
 	class TargetBean {
-		private Integer shopId = 1001;
 		// productStat
 		private String productCode;
 		private String productName;
@@ -285,6 +323,12 @@ public class ConfigJdProduct implements ConfigParser {
 		private Integer siteId = 1001;
 		private Integer goodComment;
 		private Integer poorComment;
+
+		// shopDto
+		private Integer shopId;
+		private String shopName;
+		private String shopCode;
+		private String shopUrl;
 
 		public String getProductCode() {
 			return productCode;
@@ -406,14 +450,6 @@ public class ConfigJdProduct implements ConfigParser {
 			this.onsailTime = onsailTime;
 		}
 
-		public Integer getShopId() {
-			return shopId;
-		}
-
-		public void setShopId(Integer shopId) {
-			this.shopId = shopId;
-		}
-
 		public Integer getSiteId() {
 			return siteId;
 		}
@@ -436,6 +472,38 @@ public class ConfigJdProduct implements ConfigParser {
 
 		public void setPoorComment(Integer poorComment) {
 			this.poorComment = poorComment;
+		}
+
+		public String getShopName() {
+			return shopName;
+		}
+
+		public void setShopName(String shopName) {
+			this.shopName = shopName;
+		}
+
+		public String getShopCode() {
+			return shopCode;
+		}
+
+		public void setShopCode(String shopCode) {
+			this.shopCode = shopCode;
+		}
+
+		public String getShopUrl() {
+			return shopUrl;
+		}
+
+		public void setShopUrl(String shopUrl) {
+			this.shopUrl = shopUrl;
+		}
+
+		public Integer getShopId() {
+			return shopId;
+		}
+
+		public void setShopId(Integer shopId) {
+			this.shopId = shopId;
 		}
 
 	}

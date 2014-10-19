@@ -29,7 +29,7 @@ public class ShopCacher {
 		return INSTANCE;
 	}
 
-	private static void loadShopMap() {
+	private synchronized static void loadShopMap() {
 		ShopService shopService = SpringBeanUtils.getBean(ShopService.class);
 		List<ShopDto> dtoList = shopService.getShopDtos(null);
 		for (ShopDto dto : dtoList) {
@@ -63,9 +63,7 @@ public class ShopCacher {
 		ShopDto curShopDto = shopIdMap.get(shopId);
 		if (curShopDto == null) {
 			logger.warn("can not found shop[" + shopId + "].reload shop info..");
-			synchronized (this) {
-				loadShopMap();
-			}
+			loadShopMap();
 			curShopDto = shopIdMap.get(shopId);
 			if (curShopDto == null) {
 				logger.error("can not found shop[" + shopId + "].after reload..");
@@ -83,9 +81,7 @@ public class ShopCacher {
 		ShopDto curShopDto = shopKeyMap.get(key);
 		if (curShopDto == null) {
 			logger.warn("can not found shop[" + name + "].reload shop info..");
-			synchronized (this) {
-				loadShopMap();
-			}
+			loadShopMap();
 			curShopDto = shopKeyMap.get(key);
 			if (curShopDto == null) {
 				logger.error("can not found shop[" + name + "].after reload..");
