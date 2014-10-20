@@ -51,6 +51,7 @@ public class ConfigParserTest {
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.jd.com/1015367811.html";
+		url = "http://item.jd.com/1188228588.html";
 		// url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);

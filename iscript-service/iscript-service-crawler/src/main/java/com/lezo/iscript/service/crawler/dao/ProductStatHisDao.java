@@ -9,7 +9,6 @@ import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 public interface ProductStatHisDao {
 	void batchInsert(List<ProductStatDto> dtoList);
 
-	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList,
-			@Param(value = "shopId") Integer shopId);
+	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList, @Param(value = "shopId") Integer shopId);
 
 }

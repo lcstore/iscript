@@ -4,24 +4,28 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatHisDao">
 	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
-		<result column="ID" property="id" />
-		<result column="SHOP_ID" property="shopId" />
-		<result column="PRODUCT_CODE" property="productCode" />
-		<result column="PRODUCT_NAME" property="productName" />
-		<result column="PRODUCT_URL" property="productUrl" />
-		<result column="CATEGORY_NAV" property="categoryNav" />
-		<result column="MIN_PRICE" property="minPrice" />
-		<result column="MAX_PRICE" property="maxPrice" />
-		<result column="PRODUCT_PRICE" property="productPrice" />
-		<result column="MARKET_PRICE" property="marketPrice" />
-		<result column="SOLD_NUM" property="soldNum" />
-		<result column="COMMENT_NUM" property="commentNum" />
-		<result column="STOCK_NUM" property="stockNum" />
-		<result column="CREATE_TIME" property="createTime" />
-		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="ID" property="id"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="SHOP_ID" property="shopId"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="CATEGORY_NAV" property="categoryNav"/>
+		<result column="MIN_PRICE" property="minPrice"/>
+		<result column="MAX_PRICE" property="maxPrice"/>
+		<result column="PRODUCT_PRICE" property="productPrice"/>
+		<result column="MARKET_PRICE" property="marketPrice"/>
+		<result column="SOLD_NUM" property="soldNum"/>
+		<result column="COMMENT_NUM" property="commentNum"/>
+		<result column="GOOD_COMMENT" property="goodComment"/>
+		<result column="POOR_COMMENT" property="poorComment"/>
+		<result column="STOCK_NUM" property="stockNum"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="ProductStatDto-coloumn-list">
-		SHOP_ID
+		SITE_ID
+		,SHOP_ID
 		,PRODUCT_CODE
 		,PRODUCT_NAME
 		,PRODUCT_URL
@@ -32,22 +36,27 @@
 		,MARKET_PRICE
 		,SOLD_NUM
 		,COMMENT_NUM
+		,GOOD_COMMENT
+		,POOR_COMMENT
 		,STOCK_NUM
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="ProductStatDto">
-		INSERT INTO T_PRODUCT_STAT(
+		INSERT INTO T_PRODUCT_STAT_HIS(
 		<include refid="ProductStatDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
-		UPDATE T_PRODUCT_STAT SET
+		UPDATE T_PRODUCT_STAT_HIS SET
+		SITE_ID=#{siteId},
+		SHOP_ID=#{shopId},
+		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
 		CATEGORY_NAV=#{categoryNav},
@@ -57,26 +66,11 @@
 		MARKET_PRICE=#{marketPrice},
 		SOLD_NUM=#{soldNum},
 		COMMENT_NUM=#{commentNum},
-		STOCK_NUM=#{stockNum}
+		GOOD_COMMENT=#{goodComment},
+		POOR_COMMENT=#{poorComment},
+		STOCK_NUM=#{stockNum},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
-	<select id="getProductStatDtos" parameterType="map"
-		resultMap="RM_ProductStatDto">
-		SELECT ID,
-		<include refid="ProductStatDto-coloumn-list" />
-		FROM T_PRODUCT_STAT_HIS
-		WHERE 1=1
-		<if test="codeList.isEmpty()">
-			AND 1=0
-		</if>
-		<if test="!codeList.isEmpty()">
-			<foreach collection="codeList" item="code" open="AND PRODUCT_CODE IN("
-				close=")" separator=",">
-				#{code}
-			</foreach>
-		</if>
-		<if test="shopId !=null">
-			AND SHOP_ID=#{shopId}
-		</if>
-	</select>
 </mapper>

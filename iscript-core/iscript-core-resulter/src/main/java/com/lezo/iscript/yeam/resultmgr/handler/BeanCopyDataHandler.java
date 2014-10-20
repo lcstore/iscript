@@ -156,9 +156,9 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			return;
 		}
 		String shopUrl = JSONUtils.getString(dataObject, "shopUrl");
-		String shopCode = JSONUtils.getString(argsObject, "shopCode");
-		String shopName = JSONUtils.getString(argsObject, "shopName");
-		if (StringUtils.isEmpty(shopUrl) && StringUtils.isEmpty(shopName)) {
+		String shopCode = JSONUtils.getString(dataObject, "shopCode");
+		String shopName = JSONUtils.getString(dataObject, "shopName");
+		if (!StringUtils.isEmpty(shopUrl) && !StringUtils.isEmpty(shopName)) {
 			ShopDto shopDto = ShopCacher.getInstance().insertIfAbsent(shopName, shopUrl, shopCode);
 			if (shopDto != null) {
 				writeMd.invoke(destObject, shopDto.getId());

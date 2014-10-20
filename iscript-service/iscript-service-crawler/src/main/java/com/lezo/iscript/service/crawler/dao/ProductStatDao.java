@@ -12,20 +12,14 @@ public interface ProductStatDao {
 
 	void batchUpdate(List<ProductStatDto> dtoList);
 
-	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList,
- @Param(value = "siteId") Integer siteId);
+	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList, @Param(value = "siteId") Integer siteId);
 
-	List<ProductStatDto> getProductStatDtosByCommentDesc(@Param(value = "siteId") Integer siteId,
-			@Param(value = "limit") int limit);
+	List<ProductStatDto> getProductStatDtosByCommentDesc(@Param(value = "siteId") Integer siteId, @Param(value = "limit") int limit);
 
-	List<ProductStatDto> getProductStatDtosByPriceAsc(@Param(value = "siteId") Integer siteId,
-			@Param(value = "limit") int limit);
+	List<ProductStatDto> getProductStatDtosByPriceAsc(@Param(value = "siteId") Integer siteId, @Param(value = "limit") int limit);
 
-	List<ProductStatDto> getProductStatDtosBySoldDesc(@Param(value = "siteId") Integer siteId,
-			@Param(value = "limit") int limit);
+	List<ProductStatDto> getProductStatDtosBySoldDesc(@Param(value = "siteId") Integer siteId, @Param(value = "limit") int limit);
 
-	List<ProductStatDto> getProductStatDtosLowestPrice(@Param(value = "fromId") Long fromId,
- @Param(value = "siteId") Integer siteId, @Param(value = "updateTime") Date updateTime,
-			@Param(value = "limit") int limit);
+	List<ProductStatDto> getProductStatDtosLowestPrice(@Param(value = "fromId") Long fromId, @Param(value = "siteId") Integer siteId, @Param(value = "updateTime") Date updateTime, @Param(value = "limit") int limit);
 
 }
