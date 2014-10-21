@@ -18,7 +18,7 @@ public class BufferObjectWriter<E> implements ObjectWriter<E> {
 		this.bList = new ArrayList<E>(bSize);
 		this.lock = this;
 	}
- 
+
 	@Override
 	public void write(List<E> dataList) {
 		if (CollectionUtils.isEmpty(dataList)) {
@@ -49,7 +49,7 @@ public class BufferObjectWriter<E> implements ObjectWriter<E> {
 				return;
 			}
 			daoWriter.write(bList);
-			bList.clear();
+			this.bList = new ArrayList<E>(this.bSize);
 		}
 	}
 }

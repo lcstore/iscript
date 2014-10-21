@@ -104,4 +104,18 @@
 		AND IS_DELETE=#{isDelete}
 	  </if>
 	</select>
+	<select id="getProductCodeSetBySiteIdAndType" parameterType="map" resultType="set"  >
+	  SELECT DISTINCT(PRODUCT_CODE)
+	  FROM T_PROMOTION_MAP
+	  WHERE SITE_ID=#{siteId}
+	  <if test="promoteType !=null">
+	    AND PROMOTE_TYPE=#{promoteType}
+	  </if>
+	  <if test="promoteStatus !=null">
+		AND PROMOTE_STATUS=#{promoteStatus}
+	  </if>
+	  <if test="isDelete !=null">
+		AND IS_DELETE=#{isDelete}
+	  </if>
+	</select>
 </mapper>
