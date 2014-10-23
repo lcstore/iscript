@@ -14,10 +14,8 @@ import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
-import com.lezo.iscript.yeam.config.ConfigBaiduDoc;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
-import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -67,6 +65,8 @@ public class ConfigParserTest {
 		url = "http://wenku.baidu.com/link?url=h5O5y_icCcKrNuz-xhVun0e_pCKdU2ZC1Ms3VTfPwIV7_esMeqcky9VXsXB9Eta4rX_4BcfvQkF9U2zq3ih5jPMK7J7v1YsTF6NE6iHAHlC";
 		url = "http://item.jd.com/1114888.html";
 		url = "http://item.jd.com/209954.html";
+		
+		
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
 		try {
