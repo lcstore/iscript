@@ -44,9 +44,9 @@ public class ConfigParserTest {
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotion();
-		parser = new ConfigJdProduct();
+//		parser = new ConfigJdProduct();
 		// parser = new ConfigJdPromotList();
-		parser = new ConfigBaiduDoc();
+//		parser = new ConfigBaiduDoc();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1217833.html";
@@ -65,6 +65,8 @@ public class ConfigParserTest {
 		url = "http://wenku.baidu.com/link?url=snJmlNgPgnNrKEKcN_6wEHaa-pj5b2PJIJ9NO-je_uJ4oooZYvGY_Ui8_R4TV7gqudQ1T4QEkhyWd_rG3-ao5IxgZinNzEunj7mrv-5Mbhe";
 		url = "http://wenku.baidu.com/link?url=FgOlvOwN2ONj0hhzNnq0Sq3DKc4h4h9Ja4YUapFi2E1dF69zrmd1HgYV6ggrh781Hnr_dNfXtGmywAOG1k_d4BBA9BMtyph1d2EzWe5Vx2e";
 		url = "http://wenku.baidu.com/link?url=h5O5y_icCcKrNuz-xhVun0e_pCKdU2ZC1Ms3VTfPwIV7_esMeqcky9VXsXB9Eta4rX_4BcfvQkF9U2zq3ih5jPMK7J7v1YsTF6NE6iHAHlC";
+		url = "http://item.jd.com/1114888.html";
+		url = "http://item.jd.com/209954.html";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
 		try {
