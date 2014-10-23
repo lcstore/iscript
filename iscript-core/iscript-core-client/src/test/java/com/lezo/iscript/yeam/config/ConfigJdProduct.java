@@ -105,8 +105,8 @@ public class ConfigJdProduct implements ConfigParser {
 					@Override
 					public void doCallBack(ScriptableObject scope, Object targetObject) {
 						TargetBean tBean = (TargetBean) targetObject;
-						tBean.setProductCode(ScriptableObject.getProperty(scope, "skuid").toString());
-						tBean.setProductName(ScriptableObject.getProperty(scope, "name").toString());
+						tBean.setProductCode(Context.toString(ScriptableObject.getProperty(scope, "skuid")));
+						tBean.setProductName(Context.toString(ScriptableObject.getProperty(scope, "name")));
 					}
 				}, tBean);
 				tBean.setProductUrl(url);
@@ -207,11 +207,11 @@ public class ConfigJdProduct implements ConfigParser {
 			public void doCallBack(ScriptableObject scope, Object targetObject) {
 				TargetBean tBean = (TargetBean) targetObject;
 				Object cmmObject = ScriptableObject.getProperty(scope, "iCmm");
-				tBean.setCommentNum(cmmObject == null ? null : Integer.valueOf(cmmObject.toString()));
+				tBean.setCommentNum(cmmObject == null ? null : Integer.valueOf(Context.toString(cmmObject)));
 				Object goodCmmObject = ScriptableObject.getProperty(scope, "gCmm");
-				tBean.setGoodComment(goodCmmObject == null ? null : Integer.valueOf(goodCmmObject.toString()));
+				tBean.setGoodComment(goodCmmObject == null ? null : Integer.valueOf(Context.toString(goodCmmObject)));
 				Object poorCmmObject = ScriptableObject.getProperty(scope, "pCmm");
-				tBean.setPoorComment(poorCmmObject == null ? null : Integer.valueOf(poorCmmObject.toString()));
+				tBean.setPoorComment(poorCmmObject == null ? null : Integer.valueOf(Context.toString(poorCmmObject)));
 			}
 		}, tBean);
 	}
@@ -284,8 +284,8 @@ public class ConfigJdProduct implements ConfigParser {
 				Object pObject = ScriptableObject.getProperty(scope, "price");
 				Object mObject = ScriptableObject.getProperty(scope, "mkprice").toString();
 
-				tBean.setProductPrice(pObject == null ? null : Float.valueOf(pObject.toString()));
-				tBean.setMarketPrice(mObject == null ? null : Float.valueOf(mObject.toString()));
+				tBean.setProductPrice(pObject == null ? null : Float.valueOf(Context.toString(pObject)));
+				tBean.setMarketPrice(mObject == null ? null : Float.valueOf(Context.toString(mObject)));
 			}
 		}, tBean);
 	}

@@ -3,8 +3,11 @@ package com.lezo.iscript.yeam.config.strategy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +24,61 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class PromotionStrategy implements ResultStrategy {
 	private static Logger logger = LoggerFactory.getLogger(PromotionStrategy.class);
+
+	private static volatile boolean running = false;
+	private Timer timer;
+
+	public PromotionStrategy() {
+		CreateTaskTimer task = new CreateTaskTimer();
+		this.timer = new Timer("CreateTaskTimer");
+		this.timer.schedule(task, 60 * 1000, 2 * 60 * 60 * 1000);
+	}
+
+	private class CreateTaskTimer extends TimerTask {
+		private List<String> urlList;
+
+		public CreateTaskTimer() {
+			this.urlList = new ArrayList<String>();
+			this.urlList.add("http://xuan.jd.com/youhui/1-0-0-0-1.html");
+			this.urlList.add("http://xuan.jd.com/youhui/2-0-0-0-1.html");
+			this.urlList.add("http://xuan.jd.com/youhui/3-0-0-0-1.html");
+			this.urlList.add("http://xuan.jd.com/youhui/4-0-0-0-1.html");
+			this.urlList.add("http://xuan.jd.com/youhui/5-0-0-0-1.html");
+			this.urlList.add("http://xuan.jd.com/youhui/6-0-0-0-1.html");
+			this.urlList.add("http://xuan.jd.com/youhui/7-0-0-0-1.html");
+		}
+
+		@Override
+		public void run() {
+			if (running) {
+				logger.warn("CreateTaskTimer is working...");
+				return;
+			}
+			long start = System.currentTimeMillis();
+			String taskId = UUID.randomUUID().toString();
+			try {
+				logger.info("CreateTaskTimer is start...");
+				running = true;
+				List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(urlList.size());
+				JSONObject argsObject = new JSONObject();
+				JSONUtils.put(argsObject, "strategy", getName());
+				JSONUtils.put(argsObject, "bid", taskId);
+				String type = "ConfigJdPromotList";
+				for (String url : urlList) {
+					TaskPriorityDto taskDto = createPriorityDto(url, type, argsObject);
+					taskList.add(taskDto);
+				}
+				getTaskPriorityDtoBuffer().addAll(taskList);
+				logger.info("Offer task:{},size:{}", type, taskList.size());
+			} catch (Exception ex) {
+				logger.warn(ExceptionUtils.getStackTrace(ex));
+			} finally {
+				long cost = System.currentTimeMillis() - start;
+				logger.info("CreateTaskTimer is done.cost:{}", cost);
+				running = false;
+			}
+		}
+	}
 
 	@Override
 	public String getName() {
