@@ -14,6 +14,7 @@ import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
+import com.lezo.iscript.yeam.config.ConfigBaiduDoc;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
@@ -45,6 +46,7 @@ public class ConfigParserTest {
 		parser = new ConfigJdPromotion();
 		parser = new ConfigJdProduct();
 		// parser = new ConfigJdPromotList();
+		parser = new ConfigBaiduDoc();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1217833.html";
@@ -53,6 +55,16 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1015367811.html";
 		url = "http://item.jd.com/1188228588.html";
 		// url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
+		url = "http://ke.baidu.com/view/28298d1bf18583d04964592d.html";
+//		url = "http://wenku.baidu.com/link?url=Q8HO5oSQ326-cSu8ZAkur8xPoNZRZ9qUNCX3J4j_mvRNoXWUfvjRaxn2MYQUAE2oCe8p0nvZE-vxdJjBtj91RcBiSO3jkPgEW4tqhUndr8u";
+//		url = "http://ke.baidu.com/view/074adb2baaea998fcc220e9a.html";
+//		url = "http://ke.baidu.com/view/87f4b92ba5e9856a561260dd.html?re=view";
+//		url = "http://wenku.baidu.com/view/3eac1e29cfc789eb172dc8b5.html";
+//		url = "http://wenku.baidu.com/link?url=Jzp5bLcF3vdqXCAsJTjJu5NiYS4kypwIvbO046m1vKSnVX5pzBmJUGbyFfwzvKiCZoMOc_ylNHxkLXDXbpnu8voYg0ojVDg-lcu_vPjQL2C";
+//		url = "http://wenku.baidu.com/link?url=BL7E1hkU5eNKG0IHRJ746Zi6WpUd0zudkvzNjJFidySlup3dFpDZ4qbrNSYMw4mZElUPg3J93UVi9zgEFaFB8_";
+		url = "http://wenku.baidu.com/link?url=snJmlNgPgnNrKEKcN_6wEHaa-pj5b2PJIJ9NO-je_uJ4oooZYvGY_Ui8_R4TV7gqudQ1T4QEkhyWd_rG3-ao5IxgZinNzEunj7mrv-5Mbhe";
+		url = "http://wenku.baidu.com/link?url=FgOlvOwN2ONj0hhzNnq0Sq3DKc4h4h9Ja4YUapFi2E1dF69zrmd1HgYV6ggrh781Hnr_dNfXtGmywAOG1k_d4BBA9BMtyph1d2EzWe5Vx2e";
+		url = "http://wenku.baidu.com/link?url=h5O5y_icCcKrNuz-xhVun0e_pCKdU2ZC1Ms3VTfPwIV7_esMeqcky9VXsXB9Eta4rX_4BcfvQkF9U2zq3ih5jPMK7J7v1YsTF6NE6iHAHlC";
 		TaskWritable task = new TaskWritable();
 		task.put("url", url);
 		try {
