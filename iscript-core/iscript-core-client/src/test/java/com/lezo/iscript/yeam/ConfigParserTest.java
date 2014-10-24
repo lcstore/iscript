@@ -27,7 +27,6 @@ import com.lezo.iscript.yeam.config.ConfigBaiduDoc;
 import com.lezo.iscript.yeam.config.ConfigBarCodeCollector;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
-import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -54,12 +53,15 @@ public class ConfigParserTest {
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotion();
-		parser = new ConfigJdProduct();
+//		parser = new ConfigJdProduct();
 		// parser = new ConfigJdPromotList();
 		parser = new ConfigBaiduDoc();
 		parser = new ConfigBarCodeCollector();
+//		parser = new ConfigBaiduDoc();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
+		url = "http://item.jd.com/1114888.html";
+		url = "http://item.jd.com/209954.html";
 		url = "http://item.jd.com/1217833.html";
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
