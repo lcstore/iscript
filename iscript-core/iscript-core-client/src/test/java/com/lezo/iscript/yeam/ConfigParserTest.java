@@ -24,7 +24,6 @@ import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigBaiduDoc;
-import com.lezo.iscript.yeam.config.ConfigBarCodeCollector;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
@@ -56,17 +55,16 @@ public class ConfigParserTest {
 //		parser = new ConfigJdProduct();
 		// parser = new ConfigJdPromotList();
 		parser = new ConfigBaiduDoc();
-		parser = new ConfigBarCodeCollector();
+//		parser = new ConfigBarCodeCollector();
 //		parser = new ConfigBaiduDoc();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1114888.html";
 		url = "http://item.jd.com/209954.html";
-		url = "http://item.jd.com/1217833.html";
+		url = "http://item.jd.com/1158252.html";
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.jd.com/1015367811.html";
-		url = "http://item.jd.com/1188228588.html";
 		// url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		url = "http://ke.baidu.com/view/28298d1bf18583d04964592d.html";
 //		url = "http://wenku.baidu.com/link?url=Q8HO5oSQ326-cSu8ZAkur8xPoNZRZ9qUNCX3J4j_mvRNoXWUfvjRaxn2MYQUAE2oCe8p0nvZE-vxdJjBtj91RcBiSO3jkPgEW4tqhUndr8u";
@@ -82,6 +80,7 @@ public class ConfigParserTest {
 		url = "http://wenku.baidu.com/link?url=IMxSOPppUorkq7JmYtxh63aWAruJoiA9Fg41jTcwHRTAYfmML-q7Yv_dFhL__stCzjXkBYFZtffMP31r_DZVG6x-R_p8n9yk8_KyEhfRYuK";
 		url = "http://wenku.baidu.com/link?url=h0kfZgcIx3B4pTkh-faGagIEK1VZtmIK6tOcn2ivPkHe0Ef9C88ycrucYhNEMhg_xExhxjCWTgRFp-EcVLx1szo6qFA_gVdXiakycTJqefm";
 		url = "http://www.cdgs315.com/record/dztz.asp?Page=1&am";
+		url = "http://item.jd.com/739101.html";
 		List<String> urlList = getUrlList();
 //		urlList.add(url);
 		TaskWritable task = new TaskWritable();
@@ -102,7 +101,7 @@ public class ConfigParserTest {
 
 	private List<String> getUrlList() throws Exception {
 		List<String> urlList = new ArrayList<String>();
-		String url = "http://club.1688.com/article/29905497.html?domainid=liuhuanbing88&boardid=0";
+		String url = "http://wenku.baidu.com/link?url=Si4IfoMJH7ogXfzpxbadVUzKRE5c6gyxgDmbR9nMwbE82bNhWqLX8YC7yhbiMOHn7ASnM-cD_PnDm-PqpdSTfPZdpoer6aTmP7LEyzWOOcS";
 		urlList.add(url);
 //		for (int i = 2; i <= 351; i++) {
 //			urlList.add(url + "?page=" + i);

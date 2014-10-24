@@ -1,7 +1,6 @@
 package com.lezo.iscript.service.crawler.service;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -15,5 +14,5 @@ public interface PromotionMapService extends BaseService<PromotionMapDto> {
 
 	void batchUpdateIsDelete(@Param(value = "idList") List<Long> idList, @Param(value = "isDelete") Integer isDelete);
 
-	Set<String> getProductCodeSetBySiteIdAndType(Integer siteId, Integer promoteType, Integer promoteStatus, Integer isDelete);
+	List<String> getProductCodeSetBySiteIdAndType(Integer siteId, Integer promoteType, Integer promoteStatus, Integer isDelete);
 }

@@ -169,7 +169,7 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 	}
 
 	@Override
-	public Set<String> getProductCodeSetBySiteIdAndType(Integer siteId, Integer promoteType, Integer promoteStatus, Integer isDelete) {
+	public List<String> getProductCodeSetBySiteIdAndType(Integer siteId, Integer promoteType, Integer promoteStatus, Integer isDelete) {
 		if (siteId == null) {
 			throw new IllegalArgumentException("siteId must not be null.");
 		}

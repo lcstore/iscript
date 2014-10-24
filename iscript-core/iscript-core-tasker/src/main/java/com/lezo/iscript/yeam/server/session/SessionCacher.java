@@ -11,6 +11,7 @@ import org.apache.mina.core.session.IoSession;
 
 public class SessionCacher {
 	private static final SessionCacher INSTANCE = new SessionCacher();
+	private static final long SESSION_TIME_OUT = 2 * 60 * 1000;
 	private ConcurrentHashMap<String, IoSession> sessionMap = new ConcurrentHashMap<String, IoSession>();
 
 	private SessionCacher() {
@@ -36,9 +37,14 @@ public class SessionCacher {
 	public List<IoSession> removeClosed() {
 		List<IoSession> closeList = new ArrayList<IoSession>();
 		Iterator<Entry<String, IoSession>> it = sessionMap.entrySet().iterator();
+		long currentTimeMillis = System.currentTimeMillis();
 		while (it.hasNext()) {
 			Entry<String, IoSession> entry = it.next();
-			if (!entry.getValue().isConnected()) {
+			IoSession session = entry.getValue();
+			if (!session.isConnected()) {
+				closeList.add(entry.getValue());
+				it.remove();
+			} else if (currentTimeMillis - session.getLastIoTime() > SESSION_TIME_OUT) {
 				closeList.add(entry.getValue());
 				it.remove();
 			}

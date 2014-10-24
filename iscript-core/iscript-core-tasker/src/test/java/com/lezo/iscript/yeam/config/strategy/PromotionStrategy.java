@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.config.strategy;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +24,7 @@ import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
-public class PromotionStrategy implements ResultStrategy {
+public class PromotionStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(PromotionStrategy.class);
 
 	private static volatile boolean running = false;
@@ -171,5 +173,12 @@ public class PromotionStrategy implements ResultStrategy {
 
 	private StorageBuffer<TaskPriorityDto> getTaskPriorityDtoBuffer() {
 		return (StorageBuffer<TaskPriorityDto>) StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class);
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.timer.cancel();
+		this.timer = null;
+		logger.info("close " + getName() + " strategy..");
 	}
 }

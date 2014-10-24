@@ -1,7 +1,6 @@
 package com.lezo.iscript.service.crawler.dao;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -15,6 +14,6 @@ public interface PromotionMapDao extends BaseDao<PromotionMapDto> {
 
 	void batchUpdateIsDelete(@Param(value = "idList") List<Long> idList, @Param(value = "isDelete") Integer isDelete);
 
-	Set<String> getProductCodeSetBySiteIdAndType(@Param(value = "siteId") Integer siteId, @Param(value = "promoteType") Integer promoteType, @Param(value = "promoteStatus") Integer promoteStatus, @Param(value = "isDelete") Integer isDelete);
+	List<String> getProductCodeSetBySiteIdAndType(@Param(value = "siteId") Integer siteId, @Param(value = "promoteType") Integer promoteType, @Param(value = "promoteStatus") Integer promoteStatus, @Param(value = "isDelete") Integer isDelete);
 
 }

@@ -4,20 +4,20 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.PromotionMapDao">
 	<resultMap type="PromotionMapDto" id="RM_PromotionMapDto">
-		<result column="ID" property="id"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PROMOTE_CODE" property="promoteCode"/>
-		<result column="PROMOTE_NAME" property="promoteName"/>
-		<result column="PROMOTE_DETAIL" property="promoteDetail"/>
-		<result column="PROMOTE_NUMS" property="promoteNums"/>
-		<result column="PROMOTE_URL" property="promoteUrl"/>
-		<result column="PROMOTE_EXTRA" property="promoteExtra"/>
-		<result column="PROMOTE_TYPE" property="promoteType"/>
-		<result column="PROMOTE_STATUS" property="promoteStatus"/>
-		<result column="IS_DELETE" property="isDelete"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="SITE_ID" property="siteId" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PROMOTE_CODE" property="promoteCode" />
+		<result column="PROMOTE_NAME" property="promoteName" />
+		<result column="PROMOTE_DETAIL" property="promoteDetail" />
+		<result column="PROMOTE_NUMS" property="promoteNums" />
+		<result column="PROMOTE_URL" property="promoteUrl" />
+		<result column="PROMOTE_EXTRA" property="promoteExtra" />
+		<result column="PROMOTE_TYPE" property="promoteType" />
+		<result column="PROMOTE_STATUS" property="promoteStatus" />
+		<result column="IS_DELETE" property="isDelete" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="PromotionMapDto-coloumn-list">
 		SITE_ID
@@ -57,7 +57,7 @@
 		IS_DELETE=#{isDelete}
 		WHERE ID=#{id}
 	</update>
-	
+
 	<update id="batchUpdateIsDelete" parameterType="map">
 		UPDATE T_PROMOTION_MAP SET
 		IS_DELETE=#{isDelete}
@@ -67,55 +67,60 @@
 			#{id}
 		</foreach>
 	</update>
-	
-	<select id="getPromotionMapDtosByProductCodes" parameterType="map" resultMap="RM_PromotionMapDto">
-	  SELECT ID,<include refid="PromotionMapDto-coloumn-list"/>
-	  FROM T_PROMOTION_MAP
-	  WHERE SITE_ID=#{siteId}
-	  <foreach collection="productCodes" item="pCode" open="AND PRODUCT_CODE IN("
+
+	<select id="getPromotionMapDtosByProductCodes" parameterType="map"
+		resultMap="RM_PromotionMapDto">
+		SELECT ID,
+		<include refid="PromotionMapDto-coloumn-list" />
+		FROM T_PROMOTION_MAP
+		WHERE SITE_ID=#{siteId}
+		<foreach collection="productCodes" item="pCode" open="AND PRODUCT_CODE IN("
 			close=")" separator=",">
 			#{pCode}
-	  </foreach>
-	  <if test="promoteType !=null">
-	    AND PROMOTE_TYPE=#{promoteType}
-	  </if>
-	  <if test="promoteStatus !=null">
-		AND PROMOTE_STATUS=#{promoteStatus}
-	  </if>
-	  <if test="isDelete !=null">
-		AND IS_DELETE=#{isDelete}
-	  </if>
+		</foreach>
+		<if test="promoteType !=null">
+			AND PROMOTE_TYPE=#{promoteType}
+		</if>
+		<if test="promoteStatus !=null">
+			AND PROMOTE_STATUS=#{promoteStatus}
+		</if>
+		<if test="isDelete !=null">
+			AND IS_DELETE=#{isDelete}
+		</if>
 	</select>
-	<select id="getPromotionMapDtosByPromotCodes" parameterType="map" resultMap="RM_PromotionMapDto">
-	  SELECT ID,<include refid="PromotionMapDto-coloumn-list"/>
-	  FROM T_PROMOTION_MAP
-	  WHERE SITE_ID=#{siteId}
-	  <foreach collection="promotCodes" item="mCode" open="AND PROMOTE_CODE IN("
+	<select id="getPromotionMapDtosByPromotCodes" parameterType="map"
+		resultMap="RM_PromotionMapDto">
+		SELECT ID,
+		<include refid="PromotionMapDto-coloumn-list" />
+		FROM T_PROMOTION_MAP
+		WHERE SITE_ID=#{siteId}
+		<foreach collection="promotCodes" item="mCode" open="AND PROMOTE_CODE IN("
 			close=")" separator=",">
 			#{mCode}
-	  </foreach>
-	  <if test="promoteType !=null">
-	    AND PROMOTE_TYPE=#{promoteType}
-	  </if>
-	  <if test="promoteStatus !=null">
-		AND PROMOTE_STATUS=#{promoteStatus}
-	  </if>
-	  <if test="isDelete !=null">
-		AND IS_DELETE=#{isDelete}
-	  </if>
+		</foreach>
+		<if test="promoteType !=null">
+			AND PROMOTE_TYPE=#{promoteType}
+		</if>
+		<if test="promoteStatus !=null">
+			AND PROMOTE_STATUS=#{promoteStatus}
+		</if>
+		<if test="isDelete !=null">
+			AND IS_DELETE=#{isDelete}
+		</if>
 	</select>
-	<select id="getProductCodeSetBySiteIdAndType" parameterType="map" resultType="set"  >
-	  SELECT DISTINCT(PRODUCT_CODE)
-	  FROM T_PROMOTION_MAP
-	  WHERE SITE_ID=#{siteId}
-	  <if test="promoteType !=null">
-	    AND PROMOTE_TYPE=#{promoteType}
-	  </if>
-	  <if test="promoteStatus !=null">
-		AND PROMOTE_STATUS=#{promoteStatus}
-	  </if>
-	  <if test="isDelete !=null">
-		AND IS_DELETE=#{isDelete}
-	  </if>
+	<select id="getProductCodeSetBySiteIdAndType" parameterType="map"
+		resultType="String">
+		SELECT DISTINCT(PRODUCT_CODE)
+		FROM T_PROMOTION_MAP
+		WHERE SITE_ID=#{siteId}
+		<if test="promoteType !=null">
+			AND PROMOTE_TYPE=#{promoteType}
+		</if>
+		<if test="promoteStatus !=null">
+			AND PROMOTE_STATUS=#{promoteStatus}
+		</if>
+		<if test="isDelete !=null">
+			AND IS_DELETE=#{isDelete}
+		</if>
 	</select>
 </mapper>
