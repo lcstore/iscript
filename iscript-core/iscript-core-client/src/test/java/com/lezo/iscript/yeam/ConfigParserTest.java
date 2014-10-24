@@ -1,20 +1,30 @@
 package com.lezo.iscript.yeam;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.net.InetAddress;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigBaiduDoc;
+import com.lezo.iscript.yeam.config.ConfigBarCodeCollector;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
@@ -47,6 +57,7 @@ public class ConfigParserTest {
 		parser = new ConfigJdProduct();
 		// parser = new ConfigJdPromotList();
 		parser = new ConfigBaiduDoc();
+		parser = new ConfigBarCodeCollector();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1217833.html";
@@ -65,17 +76,73 @@ public class ConfigParserTest {
 		url = "http://wenku.baidu.com/link?url=snJmlNgPgnNrKEKcN_6wEHaa-pj5b2PJIJ9NO-je_uJ4oooZYvGY_Ui8_R4TV7gqudQ1T4QEkhyWd_rG3-ao5IxgZinNzEunj7mrv-5Mbhe";
 		url = "http://wenku.baidu.com/link?url=FgOlvOwN2ONj0hhzNnq0Sq3DKc4h4h9Ja4YUapFi2E1dF69zrmd1HgYV6ggrh781Hnr_dNfXtGmywAOG1k_d4BBA9BMtyph1d2EzWe5Vx2e";
 		url = "http://wenku.baidu.com/link?url=h5O5y_icCcKrNuz-xhVun0e_pCKdU2ZC1Ms3VTfPwIV7_esMeqcky9VXsXB9Eta4rX_4BcfvQkF9U2zq3ih5jPMK7J7v1YsTF6NE6iHAHlC";
+		url = "http://wenku.baidu.com/link?url=MIlJdsSzs4401BNWsD08eLHM0firh_uN58DGJKsU7fekd4dcHJkJTkZmZdB3fv1i5yeZ3bDBYP8LQ7IDh3_NJPtje3yoBSeZ7T6col8o36e";
+		url = "http://wenku.baidu.com/link?url=IMxSOPppUorkq7JmYtxh63aWAruJoiA9Fg41jTcwHRTAYfmML-q7Yv_dFhL__stCzjXkBYFZtffMP31r_DZVG6x-R_p8n9yk8_KyEhfRYuK";
+		url = "http://wenku.baidu.com/link?url=h0kfZgcIx3B4pTkh-faGagIEK1VZtmIK6tOcn2ivPkHe0Ef9C88ycrucYhNEMhg_xExhxjCWTgRFp-EcVLx1szo6qFA_gVdXiakycTJqefm";
+		url = "http://www.cdgs315.com/record/dztz.asp?Page=1&am";
+		List<String> urlList = getUrlList();
+//		urlList.add(url);
 		TaskWritable task = new TaskWritable();
-		task.put("url", url);
 		try {
-			String result = parser.doParse(task);
-			System.out.println("result:" + result);
+			for (String sUrl : urlList) {
+				System.out.println("sUrl:" + sUrl);
+				task.put("url", sUrl);
+				String result = parser.doParse(task);
+				System.out.println("result:" + result);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 		Date dat = new Date(1418616643000L);
 		System.err.println(dat);
+	}
+
+	private List<String> getUrlList() throws Exception {
+		List<String> urlList = new ArrayList<String>();
+		String url = "http://club.1688.com/article/29905497.html?domainid=liuhuanbing88&boardid=0";
+		urlList.add(url);
+//		for (int i = 2; i <= 351; i++) {
+//			urlList.add(url + "?page=" + i);
+//		}
+		return urlList;
+	}
+
+	@Test
+	public void testBarMerge() throws Exception {
+		File parent = new File("D:/codes/lezo/barcode.src");
+		File[] fileArr = parent.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isFile() && pathname.getName().endsWith(".log");
+			}
+		});
+		JSONArray dArray = new JSONArray();
+		int total = 0;
+		Set<String> hasCodeSet = new HashSet<String>();
+		for (int i = 0; i < fileArr.length; i++) {
+			File file = fileArr[i];
+			String source = FileUtils.readFileToString(file, "UTF-8");
+			Pattern oReg = Pattern.compile("[0-9]{13}");
+			Matcher matcher = oReg.matcher(source);
+			while (matcher.find()) {
+				String sBarCode = matcher.group();
+				if (BarCodeUtils.isBarCode(sBarCode)) {
+					if (!hasCodeSet.contains(sBarCode)) {
+						dArray.put(sBarCode);
+						hasCodeSet.add(sBarCode);
+						if (dArray.length() >= 1000) {
+							System.out.println(dArray);
+							total += dArray.length();
+							dArray = new JSONArray();
+						}
+					}
+				}
+			}
+		}
+		total += dArray.length();
+		System.out.println(dArray);
+		System.out.println("total:" + total);
 	}
 
 	@Test

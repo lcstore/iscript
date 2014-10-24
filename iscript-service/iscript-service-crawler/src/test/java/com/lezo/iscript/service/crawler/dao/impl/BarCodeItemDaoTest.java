@@ -1,6 +1,7 @@
 package com.lezo.iscript.service.crawler.dao.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -11,9 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +31,7 @@ import com.lezo.iscript.service.crawler.dao.ShopDao;
 import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
 import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 
 public class BarCodeItemDaoTest {
@@ -237,5 +242,28 @@ public class BarCodeItemDaoTest {
 			idList = idList.subList(1, idList.size());
 			barCodeItemDao.deleteFromId(idList);
 		}
+	}
+
+	@Test
+	public void testFilterBarCode() throws Exception {
+		List<String> lineList = FileUtils.readLines(new File("C:/Users/lezo.li/Desktop/bcode-src.txt"), "UTF-8");
+		Pattern oReg = Pattern.compile("[0-9]{13}");
+		Set<String> codeSet = new HashSet<String>();
+		for (String line : lineList) {
+			String[] unitArr = line.split("\t");
+			if (unitArr == null || unitArr.length < 2) {
+				continue;
+			}
+			Matcher matcher = oReg.matcher(unitArr[0]);
+			if (matcher.find() && BarCodeUtils.isBarCode(matcher.group())) {
+				String barCode = matcher.group();
+				if (!codeSet.contains(barCode)) {
+					line = line.replace(unitArr[0], barCode);
+					System.out.println(line);
+					codeSet.add(barCode);
+				}
+			}
+		}
+		System.err.println("end:" + lineList.size());
 	}
 }

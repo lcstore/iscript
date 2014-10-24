@@ -3,8 +3,11 @@ package com.lezo.iscript.yeam.config.strategy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +24,40 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class PromotionStrategy implements ResultStrategy {
 	private static Logger logger = LoggerFactory.getLogger(PromotionStrategy.class);
+	private static volatile boolean running = false;
+	private Timer timer;
+
+	public PromotionStrategy() {
+		CreateTaskTimer task = new CreateTaskTimer();
+		this.timer = new Timer("ProxyDetectProducer");
+		this.timer.schedule(task, 5 * 60 * 60 * 1000, 10 * 60 * 60 * 1000);
+	}
+
+	private class CreateTaskTimer extends TimerTask {
+
+		@Override
+		public void run() {
+			if (running) {
+				logger.warn("ProxyDetectTimer is working...");
+				return;
+			}
+			long start = System.currentTimeMillis();
+			JSONObject statusObject = new JSONObject();
+			String taskId = UUID.randomUUID().toString();
+			try {
+				logger.info("create promotion list start...");
+				running = true;
+			} catch (Exception ex) {
+				logger.warn(ExceptionUtils.getStackTrace(ex));
+			} finally {
+				long cost = System.currentTimeMillis() - start;
+				String msg = String.format("Detect proxy.taskId:%s,%s,cost:%s", taskId, statusObject.toString(), cost);
+				logger.info(msg);
+				running = false;
+			}
+		}
+
+	}
 
 	@Override
 	public String getName() {
