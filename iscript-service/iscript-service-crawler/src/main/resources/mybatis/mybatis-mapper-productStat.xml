@@ -54,7 +54,6 @@
 	</insert>
 	<update id="updateOne" parameterType="ProductStatDto">
 		UPDATE T_PRODUCT_STAT SET
-		SITE_ID=#{siteId},
 		SHOP_ID=#{shopId},
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},

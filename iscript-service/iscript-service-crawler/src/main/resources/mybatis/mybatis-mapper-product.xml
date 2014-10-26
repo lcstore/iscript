@@ -48,6 +48,7 @@
 	</insert>
 	<update id="updateOne" parameterType="ProductDto">
 		UPDATE T_PRODUCT SET
+		SHOP_ID=#{shopId},
 		PRODUCT_NAME=#{productName},
 		MARKET_PRICE=#{marketPrice},
 		PRODUCT_URL=#{productUrl},

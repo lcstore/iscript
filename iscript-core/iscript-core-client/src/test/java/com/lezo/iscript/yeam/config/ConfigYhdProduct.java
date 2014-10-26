@@ -17,6 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
@@ -63,7 +64,8 @@ public class ConfigYhdProduct implements ConfigParser {
 		JSONUtils.put(dataObject, "target", tArray);
 		JSONArray dArray = new JSONArray();
 		dArray.put(itemObject);
-		JSONUtils.put(dataObject, "data", dArray);
+		JSONUtils.put(dataObject, "dataList", dArray);
+		System.err.println(dataObject);
 
 		JSONUtils.put(gObject, "rs", dataObject.toString());
 
@@ -73,7 +75,7 @@ public class ConfigYhdProduct implements ConfigParser {
 	}
 
 	private JSONObject getItemObject(TaskWritable task) throws Exception {
-		String url = task.get("url").toString();
+		String url = (String) task.get("url");
 		String refer = url;
 		HttpGet get = createHttpGetWithIp(url);
 		get.addHeader("Refer", refer);
@@ -85,6 +87,11 @@ public class ConfigYhdProduct implements ConfigParser {
 			JSONUtils.put(itemObject, "stockNum", -1);
 			return itemObject;
 		}
+		String barCode = (String) task.get("barCode");
+		if (BarCodeUtils.isBarCode(barCode)) {
+			JSONUtils.put(itemObject, "barCode", barCode);
+		}
+		JSONUtils.put(itemObject, "siteId", 1002);
 		JSONUtils.put(itemObject, "productUrl", url);
 		Elements oElements = dom.select("div.main_info_con div[class^=pd] h2,#productMainName");
 		if (!oElements.isEmpty()) {
@@ -94,9 +101,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		if (!oElements.isEmpty()) {
 			JSONUtils.put(itemObject, "productCode", oElements.first().attr("value"));
 		}
-		String detailUrl = String.format(
-				"http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s",
-				JSONUtils.getString(itemObject, "productCode"), System.currentTimeMillis());
+		String detailUrl = String.format("http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s", JSONUtils.getString(itemObject, "productCode"), System.currentTimeMillis());
 		HttpGet dGet = createHttpGetWithIp(detailUrl);
 		dGet.addHeader("Refer", url);
 		html = HttpClientUtils.getContent(client, dGet, "UTF-8");
@@ -130,7 +135,7 @@ public class ConfigYhdProduct implements ConfigParser {
 				JSONUtils.put(itemObject, "soldNum", Integer.valueOf(oElements.first().attr("saleNumber")));
 			}
 		}
-		oElements = dom.select("div.crumb a[href^=http://www.yhd.com/ctg/]");
+		oElements = dom.select("div.crumb a[href^=http://www.yhd.com/ctg/],div.crumb a[href^=http://list.yhd.com/]");
 		if (!oElements.isEmpty()) {
 			StringBuilder sb = new StringBuilder();
 			for (Element oEle : oElements) {
@@ -146,8 +151,9 @@ public class ConfigYhdProduct implements ConfigParser {
 				attrObject = new JSONObject();
 				JSONUtils.put(itemObject, "attrs", attrObject);
 			}
-			JSONUtils.put(attrObject, "categorys", sb.toString());
-			JSONUtils.put(itemObject, "category_nav", sb.toString());
+			String sCat = sb.toString();
+			JSONUtils.put(attrObject, "categorys", sCat);
+			JSONUtils.put(itemObject, "categoryNav", sCat);
 		}
 		oElements = dom.select("#prodDetailCotentDiv.desitem dl.des_info dd[title]");
 		if (!oElements.isEmpty()) {
@@ -165,8 +171,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		oElements = dom.select("#merchantId[value]");
 		if (!oElements.isEmpty()) {
 			String merchantId = oElements.first().attr("value");
-			String shopUrl = "1".equals(merchantId) ? "http://www.yhd.com/" : String.format(
-					"http://shop.yhd.com/m-%s.html", merchantId);
+			String shopUrl = "1".equals(merchantId) ? "http://www.yhd.com/" : String.format("http://shop.yhd.com/m-%s.html", merchantId);
 			JSONUtils.put(itemObject, "shopUrl", shopUrl);
 		}
 		oElements = dom.select("#brandName[value]");
@@ -179,9 +184,7 @@ public class ConfigYhdProduct implements ConfigParser {
 			imgUrl = imgUrl.replace("_60x60.jpg", "_200x200.jpg");
 			JSONUtils.put(itemObject, "imgUrl", imgUrl);
 		}
-		String mUrl = String.format(
-				"http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
-				JSONUtils.getString(itemObject, "productCode"));
+		String mUrl = String.format("http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback", JSONUtils.getString(itemObject, "productCode"));
 		HttpGet mGet = createHttpGetWithIp(mUrl);
 		dGet.addHeader("Refer", url);
 		html = HttpClientUtils.getContent(client, mGet, "UTF-8");
@@ -213,13 +216,11 @@ public class ConfigYhdProduct implements ConfigParser {
 	}
 
 	private void addCookie() {
-		BasicClientCookie cookie = new BasicClientCookie("__utma",
-				"40580330.1541470702.1396602044.1406527175.1406603327.18");
+		BasicClientCookie cookie = new BasicClientCookie("__utma", "40580330.1541470702.1396602044.1406527175.1406603327.18");
 		client.getCookieStore().addCookie(cookie);
 		cookie = new BasicClientCookie("__utmc", "193324902");
 		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("__utmz",
-				"193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
+		cookie = new BasicClientCookie("__utmz", "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
 		client.getCookieStore().addCookie(cookie);
 		cookie = new BasicClientCookie("provinceId", "1");
 		client.getCookieStore().addCookie(cookie);

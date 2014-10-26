@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.InetAddress;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +26,10 @@ import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
-import com.lezo.iscript.yeam.config.ConfigBaiduDoc;
+import com.lezo.iscript.yeam.config.ConfigBarCodeMatcher;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
+import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
@@ -52,11 +56,13 @@ public class ConfigParserTest {
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotion();
-//		parser = new ConfigJdProduct();
+		parser = new ConfigJdProduct();
 		// parser = new ConfigJdPromotList();
-		parser = new ConfigBaiduDoc();
-//		parser = new ConfigBarCodeCollector();
-//		parser = new ConfigBaiduDoc();
+		// parser = new ConfigBaiduDoc();
+		// parser = new ConfigBarCodeCollector();
+		// parser = new ConfigBaiduDoc();
+		// parser = new ConfigBarCodeMatcher();
+		// parser = new ConfigYhdProduct();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1114888.html";
@@ -67,12 +73,16 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1015367811.html";
 		// url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
 		url = "http://ke.baidu.com/view/28298d1bf18583d04964592d.html";
-//		url = "http://wenku.baidu.com/link?url=Q8HO5oSQ326-cSu8ZAkur8xPoNZRZ9qUNCX3J4j_mvRNoXWUfvjRaxn2MYQUAE2oCe8p0nvZE-vxdJjBtj91RcBiSO3jkPgEW4tqhUndr8u";
-//		url = "http://ke.baidu.com/view/074adb2baaea998fcc220e9a.html";
-//		url = "http://ke.baidu.com/view/87f4b92ba5e9856a561260dd.html?re=view";
-//		url = "http://wenku.baidu.com/view/3eac1e29cfc789eb172dc8b5.html";
-//		url = "http://wenku.baidu.com/link?url=Jzp5bLcF3vdqXCAsJTjJu5NiYS4kypwIvbO046m1vKSnVX5pzBmJUGbyFfwzvKiCZoMOc_ylNHxkLXDXbpnu8voYg0ojVDg-lcu_vPjQL2C";
-//		url = "http://wenku.baidu.com/link?url=BL7E1hkU5eNKG0IHRJ746Zi6WpUd0zudkvzNjJFidySlup3dFpDZ4qbrNSYMw4mZElUPg3J93UVi9zgEFaFB8_";
+		// url =
+		// "http://wenku.baidu.com/link?url=Q8HO5oSQ326-cSu8ZAkur8xPoNZRZ9qUNCX3J4j_mvRNoXWUfvjRaxn2MYQUAE2oCe8p0nvZE-vxdJjBtj91RcBiSO3jkPgEW4tqhUndr8u";
+		// url = "http://ke.baidu.com/view/074adb2baaea998fcc220e9a.html";
+		// url =
+		// "http://ke.baidu.com/view/87f4b92ba5e9856a561260dd.html?re=view";
+		// url = "http://wenku.baidu.com/view/3eac1e29cfc789eb172dc8b5.html";
+		// url =
+		// "http://wenku.baidu.com/link?url=Jzp5bLcF3vdqXCAsJTjJu5NiYS4kypwIvbO046m1vKSnVX5pzBmJUGbyFfwzvKiCZoMOc_ylNHxkLXDXbpnu8voYg0ojVDg-lcu_vPjQL2C";
+		// url =
+		// "http://wenku.baidu.com/link?url=BL7E1hkU5eNKG0IHRJ746Zi6WpUd0zudkvzNjJFidySlup3dFpDZ4qbrNSYMw4mZElUPg3J93UVi9zgEFaFB8_";
 		url = "http://wenku.baidu.com/link?url=snJmlNgPgnNrKEKcN_6wEHaa-pj5b2PJIJ9NO-je_uJ4oooZYvGY_Ui8_R4TV7gqudQ1T4QEkhyWd_rG3-ao5IxgZinNzEunj7mrv-5Mbhe";
 		url = "http://wenku.baidu.com/link?url=FgOlvOwN2ONj0hhzNnq0Sq3DKc4h4h9Ja4YUapFi2E1dF69zrmd1HgYV6ggrh781Hnr_dNfXtGmywAOG1k_d4BBA9BMtyph1d2EzWe5Vx2e";
 		url = "http://wenku.baidu.com/link?url=h5O5y_icCcKrNuz-xhVun0e_pCKdU2ZC1Ms3VTfPwIV7_esMeqcky9VXsXB9Eta4rX_4BcfvQkF9U2zq3ih5jPMK7J7v1YsTF6NE6iHAHlC";
@@ -80,32 +90,38 @@ public class ConfigParserTest {
 		url = "http://wenku.baidu.com/link?url=IMxSOPppUorkq7JmYtxh63aWAruJoiA9Fg41jTcwHRTAYfmML-q7Yv_dFhL__stCzjXkBYFZtffMP31r_DZVG6x-R_p8n9yk8_KyEhfRYuK";
 		url = "http://wenku.baidu.com/link?url=h0kfZgcIx3B4pTkh-faGagIEK1VZtmIK6tOcn2ivPkHe0Ef9C88ycrucYhNEMhg_xExhxjCWTgRFp-EcVLx1szo6qFA_gVdXiakycTJqefm";
 		url = "http://www.cdgs315.com/record/dztz.asp?Page=1&am";
-		url = "http://item.jd.com/739101.html";
-		List<String> urlList = getUrlList();
-//		urlList.add(url);
+		url = "http://item.jd.com/909507.html";
+		url = "http://item.jd.com/1199826.html";
+		url = "http://item.jd.com/1178704.html";
+		url = "http://item.jd.com/1059376.html";
+		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
+		task.put("barCode", "6900068005020");
+		// task.put("barCode", "9787807514398");
+		task.put("barCode", "6903148018194");
+		task.put("url", url);
+		String result = parser.doParse(task);
+		System.out.println("result:" + result);
 		try {
-			for (String sUrl : urlList) {
-				System.out.println("sUrl:" + sUrl);
-				task.put("url", sUrl);
-				String result = parser.doParse(task);
-				System.out.println("result:" + result);
-			}
+			// List<String> urlList = getUrlList();
+			// for (String sUrl : urlList) {
+			// System.out.println("sUrl:" + sUrl);
+			// String result = parser.doParse(task);
+			// System.out.println("result:" + result);
+			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
-		Date dat = new Date(1418616643000L);
-		System.err.println(dat);
 	}
 
 	private List<String> getUrlList() throws Exception {
 		List<String> urlList = new ArrayList<String>();
 		String url = "http://wenku.baidu.com/link?url=Si4IfoMJH7ogXfzpxbadVUzKRE5c6gyxgDmbR9nMwbE82bNhWqLX8YC7yhbiMOHn7ASnM-cD_PnDm-PqpdSTfPZdpoer6aTmP7LEyzWOOcS";
 		urlList.add(url);
-//		for (int i = 2; i <= 351; i++) {
-//			urlList.add(url + "?page=" + i);
-//		}
+		// for (int i = 2; i <= 351; i++) {
+		// urlList.add(url + "?page=" + i);
+		// }
 		return urlList;
 	}
 
@@ -150,15 +166,16 @@ public class ConfigParserTest {
 	public void test() throws Exception {
 		ConfigParser parser = new StringLinker();
 		TaskWritable task = new TaskWritable();
-		task.put("x", "i am lezo");
-		task.put("y", "i am lezo");
-		try {
-			String result = parser.doParse(task);
-			System.out.println(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		// task.put("x", "i am lezo");
+		// task.put("y", "i am lezo");
+		// try {
+		// String result = parser.doParse(task);
+		// System.out.println(result);
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// throw e;
+		// }
+		System.out.println(new Date(0));
 	}
 
 	@Test

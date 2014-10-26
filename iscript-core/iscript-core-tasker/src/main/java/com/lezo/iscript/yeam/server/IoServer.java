@@ -60,8 +60,7 @@ public class IoServer extends IoHandlerAdapter {
 	private void resetProxys() {
 		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 		List<Long> idList = new ArrayList<Long>();
-		List<ProxyDetectDto> workList = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE,
-				ProxyDetectDto.STATUS_WORK);
+		List<ProxyDetectDto> workList = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE, ProxyDetectDto.STATUS_WORK);
 		for (ProxyDetectDto dto : workList) {
 			idList.add(dto.getId());
 		}
@@ -99,9 +98,7 @@ public class IoServer extends IoHandlerAdapter {
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
 		add2Attribute(session, SessionHisDto.ERROR_SIZE, 1);
 		SessionHisDto trackDto = getSessionHisDto(session);
-		logger.warn(
-				String.format("%s,remote:%s,local:%s,cause:", trackDto, session.getRemoteAddress(),
-						session.getLocalAddress()), cause);
+		logger.warn(String.format("%s,remote:%s,local:%s,cause:", trackDto, session.getRemoteAddress(), session.getLocalAddress()), cause);
 	}
 
 	public void add2Attribute(IoSession session, String key, int num) {

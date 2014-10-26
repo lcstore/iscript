@@ -121,7 +121,9 @@ public class ProductDto {
 	}
 
 	public void setOnsailTime(Date onsailTime) {
-		this.onsailTime = onsailTime;
+		if (onsailTime != null && onsailTime.getTime() > 0) {
+			this.onsailTime = onsailTime;
+		}
 	}
 
 	public Float getMarketPrice() {

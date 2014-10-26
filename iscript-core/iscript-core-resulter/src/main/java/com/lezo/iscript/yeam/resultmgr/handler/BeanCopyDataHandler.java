@@ -40,6 +40,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			return;
 		}
 		Object dataObject = JSONUtils.get(rsObject, "dataList");
+		dataObject = dataObject != null ? dataObject : JSONUtils.get(rsObject, "data");
 		JSONArray dataArray = null;
 		if (dataObject instanceof JSONArray) {
 			dataArray = (JSONArray) dataObject;
@@ -104,6 +105,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	}
 
 	private void addProperties(Object destObject, JSONObject dataObject, JSONObject argsObject) throws Exception {
+		addSiteId(destObject, dataObject, argsObject);
 		addShopId(destObject, dataObject, argsObject);
 		Date newDate = new Date();
 		addCreateTime(destObject, newDate);
@@ -166,6 +168,32 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			}
 		}
 		String msg = String.format("can not set shopId.args:%s,data:%s", argsObject, dataObject);
+		throw new IllegalAccessException(msg);
+	}
+
+	private void addSiteId(Object destObject, JSONObject dataObject, JSONObject argsObject) throws Exception {
+		String fieldName = "siteId";
+		Method readMd = MethodUtils.getReadMethod(fieldName, destObject.getClass());
+		if (readMd == null) {
+			return;
+		}
+		Object sidObject = readMd.invoke(destObject);
+		if (sidObject != null) {
+			return;
+		}
+		Method writeMd = MethodUtils.getWriteMethod(fieldName, destObject.getClass(), Integer.class);
+		if (writeMd == null) {
+			return;
+		}
+		String productUrl = JSONUtils.getString(dataObject, "productUrl");
+		if (!StringUtils.isEmpty(productUrl)) {
+			ShopDto shopDto = ShopCacher.getInstance().getDomainShopDto(productUrl);
+			if (shopDto != null) {
+				writeMd.invoke(destObject, shopDto.getId());
+				return;
+			}
+		}
+		String msg = String.format("can not set siteId.args:%s,data:%s", argsObject, dataObject);
 		throw new IllegalAccessException(msg);
 	}
 

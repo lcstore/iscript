@@ -27,20 +27,24 @@ public class SaveSessionTimer {
 		try {
 			running = true;
 			long start = System.currentTimeMillis();
+			List<IoSession> closeList = SessionCacher.getInstance().removeClosed();
 			List<SessionHisDto> copyList = new ArrayList<SessionHisDto>();
+			for (IoSession session : closeList) {
+				SessionHisDto sessionHisDto = getSessionHisDto(session);
+				sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
+				copyList.add(sessionHisDto);
+			}
 			for (Entry<String, IoSession> entry : SessionCacher.getInstance().entrySet()) {
 				IoSession session = entry.getValue();
 				SessionHisDto sessionHisDto = getSessionHisDto(session);
-				if (!session.isConnected()) {
+				if (!session.isConnected() || session.isClosing()) {
 					sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
 				}
 				copyList.add(sessionHisDto);
 			}
-			List<IoSession> closeList = SessionCacher.getInstance().removeClosed();
 			sessionHisService.batchSaveSessionHisDtos(copyList);
 			long cost = System.currentTimeMillis() - start;
-			logger.info(String.format("Save[%s],close:%d,cost:%s", "SessionHisDto", copyList.size(), closeList.size(),
-					cost));
+			logger.info(String.format("Save[%s],close:%d,cost:%s", "SessionHisDto", copyList.size(), closeList.size(), cost));
 		} finally {
 			running = false;
 		}

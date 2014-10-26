@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
@@ -113,17 +115,18 @@ public class ConfigJdProduct implements ConfigParser {
 				addPrice(tBean, dom);
 				addAttributes(tBean, dom);
 				addComment(tBean, dom);
-				addBarCode(tBean, dom);
+				addBarCode(tBean, dom, task);
 				addStock(tBean, dom, task);
 				addShopInfo(tBean, dom, task);
 			}
+			ResultBean rsBean = new ResultBean();
+			rsBean.getDataList().add(tBean);
+			ObjectMapper mapper = new ObjectMapper();
+			StringWriter writer = new StringWriter();
+			mapper.writeValue(writer, rsBean);
+			return new JSONObject(writer.toString());
 		}
-		ResultBean rsBean = new ResultBean();
-		rsBean.getDataList().add(tBean);
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsBean);
-		return new JSONObject(writer.toString());
+		return itemObject;
 	}
 
 	private void addShopInfo(TargetBean tBean, Document dom, TaskWritable task) throws Exception {
@@ -155,12 +158,17 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 	}
 
-	private void addBarCode(TargetBean tBean, Document dom) {
-		String name = tBean.getProductName();
-		if (!StringUtils.isEmpty(name)) {
-			Matcher matcher = oBarCodeReg.matcher(name);
-			if (matcher.find()) {
-				tBean.setBarCode(matcher.group(1));
+	private void addBarCode(TargetBean tBean, Document dom, TaskWritable task) {
+		String barCode = (String) task.get("barCode");
+		if (BarCodeUtils.isBarCode(barCode)) {
+			tBean.setBarCode(barCode);
+		} else {
+			String name = tBean.getProductName();
+			if (!StringUtils.isEmpty(name)) {
+				Matcher matcher = oBarCodeReg.matcher(name);
+				if (matcher.find() && BarCodeUtils.isBarCode(matcher.group(1))) {
+					tBean.setBarCode(matcher.group(1));
+				}
 			}
 		}
 
@@ -223,8 +231,10 @@ public class ConfigJdProduct implements ConfigParser {
 			sSaleTime = sSaleTime.replace("上架时间：", "");
 			sSaleTime = sSaleTime.replace("上架时间:", "");
 			try {
-				Date onsailTime = DATE_FORMAT.parse(sSaleTime);
-				tBean.setOnsailTime(onsailTime);
+				Date onsailTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).parse(sSaleTime);
+				if (onsailTime.getTime() > 0) {
+					tBean.setOnsailTime(onsailTime);
+				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}

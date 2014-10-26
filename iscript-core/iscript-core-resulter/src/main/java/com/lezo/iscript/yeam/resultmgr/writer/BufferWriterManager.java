@@ -1,13 +1,14 @@
 package com.lezo.iscript.yeam.resultmgr.writer;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.WeakHashMap;
 
 import com.lezo.iscript.common.ObjectWriter;
 
 public class BufferWriterManager {
-	private WeakHashMap<String, ObjectWriter<?>> writerMap = new WeakHashMap<String, ObjectWriter<?>>();
+	private Map<String, ObjectWriter<?>> writerMap = new HashMap<String, ObjectWriter<?>>();
 	private Object addLock = new Object();
 
 	static class InstanceHolder {

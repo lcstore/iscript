@@ -91,23 +91,27 @@ public class ShopCacher {
 	}
 
 	public ShopDto insertIfAbsent(String shopName, String shopUrl, String shopCode) {
-		if (StringUtils.isEmpty(shopName)) {
+		if (StringUtils.isEmpty(shopName) || StringUtils.isEmpty(shopUrl)) {
 			logger.warn("empty shopName.shopUrl:" + shopUrl + ",shopCode:" + shopCode);
 			return null;
 		}
 		String siteCode = URLUtils.getRootHost(shopUrl);
 		String key = getSiteCodeNameKey(siteCode, shopName);
 		ShopDto curShopDto = shopKeyMap.get(key);
-		if (curShopDto == null) {
-			logger.warn("can not found shop[" + shopName + "].insert and reload..");
-			synchronized (this) {
+		if (curShopDto != null) {
+			return curShopDto;
+		}
+		synchronized (this) {
+			curShopDto = shopKeyMap.get(key);
+			if (curShopDto == null) {
+				logger.warn("can not found shop[" + shopName + "].insert and reload..");
 				insertDto(shopName, shopUrl, shopCode);
 				loadShopMap();
 			}
-			curShopDto = shopKeyMap.get(key);
-			if (curShopDto == null) {
-				logger.error("can not found shop[" + shopName + "].after reload..");
-			}
+		}
+		curShopDto = shopKeyMap.get(key);
+		if (curShopDto == null) {
+			logger.error("can not found shop[" + shopName + "].after reload..");
 		}
 		return curShopDto;
 	}

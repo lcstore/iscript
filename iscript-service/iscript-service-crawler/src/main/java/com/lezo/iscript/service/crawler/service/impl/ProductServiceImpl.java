@@ -38,7 +38,15 @@ public class ProductServiceImpl implements ProductService {
 	public void batchUpdateProductDtos(List<ProductDto> dtoList) {
 		BatchIterator<ProductDto> it = new BatchIterator<ProductDto>(dtoList);
 		while (it.hasNext()) {
-			productDao.batchUpdate(it.next());
+			List<ProductDto> subList = it.next();
+			try {
+				productDao.batchUpdate(subList);
+			} catch (Exception e) {
+				e.printStackTrace();
+				for (ProductDto dto : subList) {
+					logger.warn("code:{},url:{},onsail:{}", dto.getProductCode(), dto.getProductUrl(), dto.getOnsailTime());
+				}
+			}
 		}
 	}
 
