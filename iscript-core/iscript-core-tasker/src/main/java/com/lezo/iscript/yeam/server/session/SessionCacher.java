@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 
@@ -47,7 +46,7 @@ public class SessionCacher {
 		while (it.hasNext()) {
 			Entry<String, IoSession> entry = it.next();
 			IoSession session = entry.getValue();
-			if (!session.isConnected() || session.isClosing()) {
+			if (session.getCloseFuture().isClosed()) {
 				closeList.add(entry.getValue());
 				it.remove();
 			} else if (currentTimeMillis - session.getLastIoTime() > SESSION_TIME_OUT) {
