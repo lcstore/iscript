@@ -62,7 +62,7 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		 parser = new ConfigYhdProduct();
+//		 parser = new ConfigYhdProduct();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1114888.html";
@@ -71,7 +71,7 @@ public class ConfigParserTest {
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.jd.com/1059376.html";
-		url = "http://item.yhd.com/item/28407988";
+		url = "http://item.jd.com/1163616.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		task.put("barCode", "6900068005020");
