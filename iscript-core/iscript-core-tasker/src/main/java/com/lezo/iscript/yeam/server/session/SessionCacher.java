@@ -47,7 +47,7 @@ public class SessionCacher {
 		while (it.hasNext()) {
 			Entry<String, IoSession> entry = it.next();
 			IoSession session = entry.getValue();
-			if (!session.isConnected() || session.isClosing()) {
+			if (session.getCloseFuture().isClosed()) {
 				closeList.add(entry.getValue());
 				it.remove();
 			} else if (currentTimeMillis - session.getLastIoTime() > SESSION_TIME_OUT) {

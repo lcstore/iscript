@@ -37,9 +37,6 @@ public class SaveSessionTimer {
 			for (Entry<String, IoSession> entry : SessionCacher.getInstance().entrySet()) {
 				IoSession session = entry.getValue();
 				SessionHisDto sessionHisDto = getSessionHisDto(session);
-				if (!session.isConnected() || session.isClosing()) {
-					sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
-				}
 				copyList.add(sessionHisDto);
 			}
 			sessionHisService.batchSaveSessionHisDtos(copyList);
