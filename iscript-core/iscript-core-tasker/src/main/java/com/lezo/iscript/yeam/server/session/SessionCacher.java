@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 
