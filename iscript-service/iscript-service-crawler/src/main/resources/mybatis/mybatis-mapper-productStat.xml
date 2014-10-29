@@ -4,24 +4,24 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatDao">
 	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
-		<result column="ID" property="id"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="CATEGORY_NAV" property="categoryNav"/>
-		<result column="MIN_PRICE" property="minPrice"/>
-		<result column="MAX_PRICE" property="maxPrice"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="MARKET_PRICE" property="marketPrice"/>
-		<result column="SOLD_NUM" property="soldNum"/>
-		<result column="COMMENT_NUM" property="commentNum"/>
-		<result column="GOOD_COMMENT" property="goodComment"/>
-		<result column="POOR_COMMENT" property="poorComment"/>
-		<result column="STOCK_NUM" property="stockNum"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="SITE_ID" property="siteId" />
+		<result column="SHOP_ID" property="shopId" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="PRODUCT_URL" property="productUrl" />
+		<result column="CATEGORY_NAV" property="categoryNav" />
+		<result column="MIN_PRICE" property="minPrice" />
+		<result column="MAX_PRICE" property="maxPrice" />
+		<result column="PRODUCT_PRICE" property="productPrice" />
+		<result column="MARKET_PRICE" property="marketPrice" />
+		<result column="SOLD_NUM" property="soldNum" />
+		<result column="COMMENT_NUM" property="commentNum" />
+		<result column="GOOD_COMMENT" property="goodComment" />
+		<result column="POOR_COMMENT" property="poorComment" />
+		<result column="STOCK_NUM" property="stockNum" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="ProductStatDto-coloumn-list">
 		SITE_ID
@@ -90,6 +90,9 @@
 		<if test="siteId !=null">
 			AND SITE_ID=#{siteId}
 		</if>
+		<if test="minStock !=null">
+			AND STOCK_NUM&gt;=#{minStock}
+		</if>
 	</select>
 	<select id="getProductStatDtosByCommentDesc" parameterType="map"
 		resultMap="RM_ProductStatDto">
@@ -138,11 +141,12 @@
 			AND SITE_ID=#{siteId}
 		</if>
 		<if test="updateTime !=null">
-		   AND UPDATE_TIME &gt;=#{updateTime}
+			AND UPDATE_TIME &gt;=#{updateTime}
 		</if>
 		AND MIN_PRICE = PRODUCT_PRICE
 		AND MIN_PRICE &lt; MAX_PRICE
-		ORDER BY SOLD_NUM DESC
+		ORDER BY
+		SOLD_NUM DESC
 		LIMIT #{limit}
 	</select>
 </mapper>

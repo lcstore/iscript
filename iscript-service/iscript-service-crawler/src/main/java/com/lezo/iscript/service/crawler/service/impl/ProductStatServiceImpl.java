@@ -47,11 +47,11 @@ public class ProductStatServiceImpl implements ProductStatService {
 	}
 
 	@Override
-	public List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer siteId) {
+	public List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer siteId, Integer minStock) {
 		List<ProductStatDto> dtoList = new ArrayList<ProductStatDto>();
 		BatchIterator<String> it = new BatchIterator<String>(codeList);
 		while (it.hasNext()) {
-			List<ProductStatDto> subList = productStatDao.getProductStatDtos(it.next(), siteId);
+			List<ProductStatDto> subList = productStatDao.getProductStatDtos(it.next(), siteId, minStock);
 			if (CollectionUtils.isNotEmpty(subList)) {
 				dtoList.addAll(subList);
 			}
@@ -101,7 +101,7 @@ public class ProductStatServiceImpl implements ProductStatService {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<ProductStatDto> hasDtos = getProductStatDtos(new ArrayList<String>(entry.getValue()), entry.getKey());
+			List<ProductStatDto> hasDtos = getProductStatDtos(new ArrayList<String>(entry.getValue()), entry.getKey(), null);
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductStatDto oldDto : hasDtos) {
 				String key = getDtoKey(oldDto);

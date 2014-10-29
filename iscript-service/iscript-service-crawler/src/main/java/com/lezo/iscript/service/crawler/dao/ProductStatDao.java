@@ -12,7 +12,7 @@ public interface ProductStatDao {
 
 	void batchUpdate(List<ProductStatDto> dtoList);
 
-	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList, @Param(value = "siteId") Integer siteId);
+	List<ProductStatDto> getProductStatDtos(@Param(value = "codeList") List<String> codeList, @Param(value = "siteId") Integer siteId, @Param(value = "minStock") Integer minStock);
 
 	List<ProductStatDto> getProductStatDtosByCommentDesc(@Param(value = "siteId") Integer siteId, @Param(value = "limit") int limit);
 

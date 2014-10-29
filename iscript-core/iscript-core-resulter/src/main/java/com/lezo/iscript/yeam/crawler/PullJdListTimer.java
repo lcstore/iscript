@@ -110,7 +110,7 @@ public class PullJdListTimer {
 		turnCreateTime2UpdateTime(insertStatHisDtos);
 		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
 	}
-	
+
 	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {
 		for (ProductStatDto hisDto : insertStatHisDtos) {
 			hisDto.setCreateTime(hisDto.getUpdateTime());
@@ -131,8 +131,7 @@ public class PullJdListTimer {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey());
+			List<ProductDto> hasDtos = productService.getProductDtos(new ArrayList<String>(entry.getValue()), entry.getKey());
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductDto dto : hasDtos) {
 				String key = dto.getShopId() + "-" + dto.getProductCode();
@@ -154,8 +153,7 @@ public class PullJdListTimer {
 
 	}
 
-	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos,
-			List<ProductStatDto> updateDtos, List<ProductStatDto> insertStatHisDtos) {
+	private void doStatAssort(List<ProductStatDto> productDtos, List<ProductStatDto> insertDtos, List<ProductStatDto> updateDtos, List<ProductStatDto> insertStatHisDtos) {
 		Map<Integer, Set<String>> shopMap = new HashMap<Integer, Set<String>>();
 		Map<String, ProductStatDto> dtoMap = new HashMap<String, ProductStatDto>();
 		for (ProductStatDto dto : productDtos) {
@@ -169,8 +167,7 @@ public class PullJdListTimer {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<ProductStatDto> hasDtos = productStatService.getProductStatDtos(
-					new ArrayList<String>(entry.getValue()), entry.getKey());
+			List<ProductStatDto> hasDtos = productStatService.getProductStatDtos(new ArrayList<String>(entry.getValue()), entry.getKey(), null);
 			Set<String> hasCodeSet = new HashSet<String>();
 			for (ProductStatDto oldDto : hasDtos) {
 				String key = oldDto.getShopId() + "-" + oldDto.getProductCode();

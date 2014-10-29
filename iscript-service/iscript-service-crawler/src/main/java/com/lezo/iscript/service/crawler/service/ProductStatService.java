@@ -12,7 +12,7 @@ public interface ProductStatService {
 
 	void batchSaveProductStatDtos(List<ProductStatDto> dtoList);
 
-	List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer siteId);
+	List<ProductStatDto> getProductStatDtos(List<String> codeList, Integer siteId, Integer minStock);
 
 	List<ProductStatDto> getProductStatDtosByCommentDesc(Integer siteId, int limit);
 
