@@ -110,6 +110,7 @@ public class ProductStatServiceImpl implements ProductStatService {
 				newDto.setId(oldDto.getId());
 				doPriceStatistic(newDto, oldDto);
 				updateDtos.add(newDto);
+				fixedPrice(newDto, oldDto);
 				if (isChange(oldDto, newDto)) {
 					insertStatHisDtos.add(newDto);
 				}
@@ -120,12 +121,24 @@ public class ProductStatServiceImpl implements ProductStatService {
 				}
 				String key = entry.getKey() + "-" + code;
 				ProductStatDto newDto = dtoMap.get(key);
-				newDto.setMinPrice(newDto.getProductPrice());
-				newDto.setMaxPrice(newDto.getProductPrice());
+				if (newDto.getProductPrice() >= 0) {
+					newDto.setMinPrice(newDto.getProductPrice());
+					newDto.setMaxPrice(newDto.getProductPrice());
+				}
 				insertDtos.add(newDto);
 				insertStatHisDtos.add(newDto);
 			}
 
+		}
+
+	}
+
+	private void fixedPrice(ProductStatDto newDto, ProductStatDto oldDto) {
+		if (newDto.getStockNum() == null || newDto.getProductPrice() >= 0) {
+			return;
+		}
+		if (newDto.getStockNum() <= 0 && newDto.getProductPrice() < 0) {
+			newDto.setProductPrice(oldDto.getProductPrice());
 		}
 
 	}
@@ -135,7 +148,7 @@ public class ProductStatServiceImpl implements ProductStatService {
 	}
 
 	private void doPriceStatistic(ProductStatDto newDto, ProductStatDto oldDto) {
-		if (newDto.getProductPrice() == null) {
+		if (newDto.getProductPrice() == null || newDto.getProductPrice() < 0) {
 			return;
 		}
 		if (oldDto.getMinPrice() == null) {

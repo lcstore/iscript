@@ -62,7 +62,7 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		// parser = new ConfigYhdProduct();
+//		 parser = new ConfigYhdProduct();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1114888.html";
@@ -70,30 +70,8 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1158252.html";
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
-		url = "http://item.jd.com/1015367811.html";
-		// url = "http://xuan.jd.com/youhui/1-0-0-0-1.html";
-		url = "http://ke.baidu.com/view/28298d1bf18583d04964592d.html";
-		// url =
-		// "http://wenku.baidu.com/link?url=Q8HO5oSQ326-cSu8ZAkur8xPoNZRZ9qUNCX3J4j_mvRNoXWUfvjRaxn2MYQUAE2oCe8p0nvZE-vxdJjBtj91RcBiSO3jkPgEW4tqhUndr8u";
-		// url = "http://ke.baidu.com/view/074adb2baaea998fcc220e9a.html";
-		// url =
-		// "http://ke.baidu.com/view/87f4b92ba5e9856a561260dd.html?re=view";
-		// url = "http://wenku.baidu.com/view/3eac1e29cfc789eb172dc8b5.html";
-		// url =
-		// "http://wenku.baidu.com/link?url=Jzp5bLcF3vdqXCAsJTjJu5NiYS4kypwIvbO046m1vKSnVX5pzBmJUGbyFfwzvKiCZoMOc_ylNHxkLXDXbpnu8voYg0ojVDg-lcu_vPjQL2C";
-		// url =
-		// "http://wenku.baidu.com/link?url=BL7E1hkU5eNKG0IHRJ746Zi6WpUd0zudkvzNjJFidySlup3dFpDZ4qbrNSYMw4mZElUPg3J93UVi9zgEFaFB8_";
-		url = "http://wenku.baidu.com/link?url=snJmlNgPgnNrKEKcN_6wEHaa-pj5b2PJIJ9NO-je_uJ4oooZYvGY_Ui8_R4TV7gqudQ1T4QEkhyWd_rG3-ao5IxgZinNzEunj7mrv-5Mbhe";
-		url = "http://wenku.baidu.com/link?url=FgOlvOwN2ONj0hhzNnq0Sq3DKc4h4h9Ja4YUapFi2E1dF69zrmd1HgYV6ggrh781Hnr_dNfXtGmywAOG1k_d4BBA9BMtyph1d2EzWe5Vx2e";
-		url = "http://wenku.baidu.com/link?url=h5O5y_icCcKrNuz-xhVun0e_pCKdU2ZC1Ms3VTfPwIV7_esMeqcky9VXsXB9Eta4rX_4BcfvQkF9U2zq3ih5jPMK7J7v1YsTF6NE6iHAHlC";
-		url = "http://wenku.baidu.com/link?url=MIlJdsSzs4401BNWsD08eLHM0firh_uN58DGJKsU7fekd4dcHJkJTkZmZdB3fv1i5yeZ3bDBYP8LQ7IDh3_NJPtje3yoBSeZ7T6col8o36e";
-		url = "http://wenku.baidu.com/link?url=IMxSOPppUorkq7JmYtxh63aWAruJoiA9Fg41jTcwHRTAYfmML-q7Yv_dFhL__stCzjXkBYFZtffMP31r_DZVG6x-R_p8n9yk8_KyEhfRYuK";
-		url = "http://wenku.baidu.com/link?url=h0kfZgcIx3B4pTkh-faGagIEK1VZtmIK6tOcn2ivPkHe0Ef9C88ycrucYhNEMhg_xExhxjCWTgRFp-EcVLx1szo6qFA_gVdXiakycTJqefm";
-		url = "http://www.cdgs315.com/record/dztz.asp?Page=1&am";
-		url = "http://item.jd.com/909507.html";
-		url = "http://item.jd.com/1199826.html";
-		url = "http://item.jd.com/1178704.html";
 		url = "http://item.jd.com/1059376.html";
+		url = "http://item.jd.com/1163616.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		task.put("barCode", "6900068005020");

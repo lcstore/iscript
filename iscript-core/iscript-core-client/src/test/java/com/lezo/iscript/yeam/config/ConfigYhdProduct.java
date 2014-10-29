@@ -173,6 +173,7 @@ public class ConfigYhdProduct implements ConfigParser {
 			String merchantId = oElements.first().attr("value");
 			String shopUrl = "1".equals(merchantId) ? "http://www.yhd.com/" : String.format("http://shop.yhd.com/m-%s.html", merchantId);
 			JSONUtils.put(itemObject, "shopUrl", shopUrl);
+			JSONUtils.put(itemObject, "shopCode", merchantId);
 		}
 		oElements = dom.select("#brandName[value]");
 		if (!oElements.isEmpty()) {
