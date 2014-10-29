@@ -91,6 +91,8 @@
 		<httpclient.version>4.2.1</httpclient.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		
+		
+		
 		<pcs.version>android-L2-2.1.0</pcs.version>
 		<httpmime.version>4.2.1</httpmime.version>
 		<jss.version>1.1.1-SNAPSHOT</jss.version>

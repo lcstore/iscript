@@ -101,9 +101,7 @@ public class SessionHisServiceImpl implements SessionHisService {
 			if (hasCodeSet.contains(entry.getKey())) {
 				continue;
 			}
-			SessionHisDto newDto = entry.getValue();
-			newDto.setStatus(SessionHisDto.STATUS_UP);
-			insertDtos.add(newDto);
+			insertDtos.add(entry.getValue());
 		}
 	}
 

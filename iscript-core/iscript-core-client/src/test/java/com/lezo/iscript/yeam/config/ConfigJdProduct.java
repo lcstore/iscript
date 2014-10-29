@@ -269,7 +269,9 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 		Elements imgAs = dom.select("#spec-list div.spec-items ul.lh li img[src]");
 		if (!imgAs.isEmpty()) {
-			tBean.setImgUrl(imgAs.first().absUrl("src"));
+			String imgUrl = imgAs.first().absUrl("src");
+			imgUrl = imgUrl.replace(".360buyimg.com/n5", ".360buyimg.com/n1");
+			tBean.setImgUrl(imgUrl);
 		}
 	}
 
