@@ -2,75 +2,71 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatDao">
-	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
-		<result column="ID" property="id"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="CATEGORY_NAV" property="categoryNav"/>
-		<result column="MIN_PRICE" property="minPrice"/>
-		<result column="MAX_PRICE" property="maxPrice"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="MARKET_PRICE" property="marketPrice"/>
-		<result column="SOLD_NUM" property="soldNum"/>
-		<result column="COMMENT_NUM" property="commentNum"/>
-		<result column="GOOD_COMMENT" property="goodComment"/>
-		<result column="POOR_COMMENT" property="poorComment"/>
-		<result column="STOCK_NUM" property="stockNum"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+<mapper namespace="com.vipshop.crawler.price.dao.DailyBrandCompetitionDao">
+	<resultMap type="DailyBrandCompetitionDto" id="RM_DailyBrandCompetitionDto">
+		<result column="id" property="id"/>
+		<result column="data_date" property="dataDate"/>
+		<result column="category" property="category"/>
+		<result column="category_id" property="categoryId"/>
+		<result column="sales_amount_per" property="salesAmountPer"/>
+		<result column="competition_index" property="competitionIndex"/>
+		<result column="site_id" property="siteId"/>
+		<result column="brand_count" property="brandCount"/>
+		<result column="vcode_count" property="vcodeCount"/>
+		<result column="ocode_count" property="ocodeCount"/>
+		<result column="vmatch_count" property="vmatchCount"/>
+		<result column="calc_count" property="calcCount"/>
+		<result column="vavg_price" property="vavgPrice"/>
+		<result column="oavg_price" property="oavgPrice"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
 	</resultMap>
-	<sql id="ProductStatDto-coloumn-list">
-		SITE_ID
-		,SHOP_ID
-		,PRODUCT_CODE
-		,PRODUCT_NAME
-		,PRODUCT_URL
-		,CATEGORY_NAV
-		,MIN_PRICE
-		,MAX_PRICE
-		,PRODUCT_PRICE
-		,MARKET_PRICE
-		,SOLD_NUM
-		,COMMENT_NUM
-		,GOOD_COMMENT
-		,POOR_COMMENT
-		,STOCK_NUM
-		,CREATE_TIME
-		,UPDATE_TIME
+	<sql id="DailyBrandCompetitionDto-coloumn-list">
+		id
+		,data_date
+		,category
+		,category_id
+		,sales_amount_per
+		,competition_index
+		,site_id
+		,brand_count
+		,vcode_count
+		,ocode_count
+		,vmatch_count
+		,calc_count
+		,vavg_price
+		,oavg_price
+		,create_time
+		,update_time
 	</sql>
-	<insert id="batchInsert" parameterType="ProductStatDto">
-		INSERT INTO T_PRODUCT_STAT(
-		<include refid="ProductStatDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="DailyBrandCompetitionDto">
+		INSERT INTO T_PRICING_DAILY_BRAND_COMPETITION(
+		<include refid="DailyBrandCompetitionDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.dataDate},#{item.category},#{item.categoryId},#{item.salesAmountPer},#{item.competitionIndex},#{item.siteId},#{item.brandCount},#{item.vcodeCount},#{item.ocodeCount},#{item.vmatchCount},#{item.calcCount},#{item.vavgPrice},#{item.oavgPrice},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ProductStatDto">
-		UPDATE T_PRODUCT_STAT SET
-		SITE_ID=#{siteId},
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
-		PRODUCT_NAME=#{productName},
-		PRODUCT_URL=#{productUrl},
-		CATEGORY_NAV=#{categoryNav},
-		MIN_PRICE=#{minPrice},
-		MAX_PRICE=#{maxPrice},
-		PRODUCT_PRICE=#{productPrice},
-		MARKET_PRICE=#{marketPrice},
-		SOLD_NUM=#{soldNum},
-		COMMENT_NUM=#{commentNum},
-		GOOD_COMMENT=#{goodComment},
-		POOR_COMMENT=#{poorComment},
-		STOCK_NUM=#{stockNum},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+	<update id="updateOne" parameterType="DailyBrandCompetitionDto">
+		UPDATE T_PRICING_DAILY_BRAND_COMPETITION SET
+		id=#{id},
+		data_date=#{dataDate},
+		category=#{category},
+		category_id=#{categoryId},
+		sales_amount_per=#{salesAmountPer},
+		competition_index=#{competitionIndex},
+		site_id=#{siteId},
+		brand_count=#{brandCount},
+		vcode_count=#{vcodeCount},
+		ocode_count=#{ocodeCount},
+		vmatch_count=#{vmatchCount},
+		calc_count=#{calcCount},
+		vavg_price=#{vavgPrice},
+		oavg_price=#{oavgPrice},
+		create_time=#{createTime},
+		update_time=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 </mapper>
