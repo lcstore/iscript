@@ -10,14 +10,14 @@
 		<constructor-arg name="corePoolSize" value="1" />
 		<constructor-arg name="maximumPoolSize" value="3" />
 		<constructor-arg name="keepAliveTime" value="60000" />
-		<constructor-arg name="capacity" value="50" />
+		<constructor-arg name="capacity" value="100" />
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
 	<bean id="dataConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
 		<constructor-arg name="corePoolSize" value="2" />
 		<constructor-arg name="maximumPoolSize" value="5" />
 		<constructor-arg name="keepAliveTime" value="60000" />
-		<constructor-arg name="capacity" value="100" />
+		<constructor-arg name="capacity" value="1000" />
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
 

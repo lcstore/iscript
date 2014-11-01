@@ -121,7 +121,7 @@ public class ConfigBarCodeMatcher implements ConfigParser {
 				JSONArray wareArray = JSONUtils.get(dObject, "wareInfoList");
 				if (wareArray != null && wareArray.length() > 0) {
 					dObject = wareArray.getJSONObject(0);
-					ProductBean tBean = new ProductBean();
+					BarCodeBean tBean = new BarCodeBean();
 					tBean.setSiteId(1001);
 					tBean.setBarCode(barCode);
 					tBean.setProductName(JSONUtils.getString(dObject, "wname"));
@@ -173,9 +173,9 @@ public class ConfigBarCodeMatcher implements ConfigParser {
 				Document dom = Jsoup.parse(html);
 				Elements rsList = dom.select("#atfResults [id^=result_][name]");
 				if (!rsList.isEmpty()) {
-					List<ProductBean> beanList = new ArrayList<ConfigBarCodeMatcher.ProductBean>(rsList.size());
+					List<BarCodeBean> beanList = new ArrayList<ConfigBarCodeMatcher.BarCodeBean>(rsList.size());
 					for (Element rsEle : rsList) {
-						ProductBean tBean = new ProductBean();
+						BarCodeBean tBean = new BarCodeBean();
 						tBean.setSiteId(1003);
 						tBean.setBarCode(barCode);
 						tBean.setProductCode(rsEle.attr("name").trim());
@@ -221,9 +221,9 @@ public class ConfigBarCodeMatcher implements ConfigParser {
 					org.dom4j.Document document = DocumentHelper.parseText(html);
 					org.dom4j.Element root = document.getRootElement();
 					List<org.dom4j.Element> eleList = root.elements();
-					List<ProductBean> beanList = new ArrayList<ConfigBarCodeMatcher.ProductBean>(eleList.size());
+					List<BarCodeBean> beanList = new ArrayList<ConfigBarCodeMatcher.BarCodeBean>(eleList.size());
 					for (org.dom4j.Element pVoEle : eleList) {
-						ProductBean tBean = new ProductBean();
+						BarCodeBean tBean = new BarCodeBean();
 						tBean.setSiteId(1002);
 						tBean.setBarCode(barCode);
 						tBean.setProductCode(pVoEle.elementTextTrim("pmId"));
@@ -255,7 +255,7 @@ public class ConfigBarCodeMatcher implements ConfigParser {
 		}
 	}
 
-	class ProductBean {
+	private class BarCodeBean {
 		private Integer siteId;
 		private String barCode;
 		private String productCode;
@@ -304,7 +304,7 @@ public class ConfigBarCodeMatcher implements ConfigParser {
 
 	}
 
-	final class ResultBean {
+	private class ResultBean {
 		private List<Object> dataList = new ArrayList<Object>();
 		private List<Object> nextList = new ArrayList<Object>();
 

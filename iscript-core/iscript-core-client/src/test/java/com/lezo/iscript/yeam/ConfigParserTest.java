@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.InetAddress;
 import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +23,6 @@ import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
-import com.lezo.iscript.yeam.config.ConfigBarCodeMatcher;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
@@ -36,7 +32,6 @@ import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.ConfigYhdProduct;
-import com.lezo.iscript.yeam.config.ConfigYhdPromotList;
 import com.lezo.iscript.yeam.config.ConfigYhdPromotion;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
@@ -95,6 +90,7 @@ public class ConfigParserTest {
 			e.printStackTrace();
 			throw e;
 		}
+		System.err.println("Date:" + new Date(1414638164360L).toLocaleString());
 	}
 
 	private List<String> getUrlList() throws Exception {

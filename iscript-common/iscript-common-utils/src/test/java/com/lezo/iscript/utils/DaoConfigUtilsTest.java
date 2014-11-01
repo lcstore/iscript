@@ -17,6 +17,7 @@ public class DaoConfigUtilsTest {
 		String params = DaoConfigUtils.getDtoParams(columnList);
 		System.out.println(params);
 	}
+
 	@Test
 	public void testField2Param() throws IOException {
 		File file = new File("src/test/resources/sqlLine.sql");
@@ -31,7 +32,7 @@ public class DaoConfigUtilsTest {
 			String insertString = "#{item." + col + "},";
 //			 insertString = "#" + col + "#,";
 //			System.out.print(insertString);
-			 System.out.println(dtoFiled);
+			System.out.println(dtoFiled);
 		}
 	}
 
@@ -41,8 +42,8 @@ public class DaoConfigUtilsTest {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_PRODUCT_STAT";
-		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.ProductStatDao";
+		String tableName = "dm_bijia_category_goods_code_num";
+		String daoQualifyName = "com.vipshop.dp.vipshopinterface.dao.CategoryGoodNumDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);
