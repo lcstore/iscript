@@ -21,6 +21,7 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
@@ -113,6 +114,11 @@ public class ConfigJdPromotion implements ConfigParser {
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html);
 		if (isHome(dom)) {
+			String skuid = URLUtils.getCodeFromUrl(url);
+			PromotionBean bean = new PromotionBean();
+			bean.setProductCode(skuid);
+			bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
+			promotionList.add(bean);
 			return promotionList;
 		}
 		ScriptableObject scope = createPromotionDocument(dom, task);
@@ -165,8 +171,7 @@ public class ConfigJdPromotion implements ConfigParser {
 	private List<PromotionBean> toItemBeans(String skuid, List<PromotionBean> promotionList, JSONArray promotArray) {
 		int addCount = promotArray.length() - promotionList.size();
 		if (addCount > 0) {
-			List<PromotionBean> resultList = new ArrayList<ConfigJdPromotion.PromotionBean>(addCount
-					+ promotionList.size());
+			List<PromotionBean> resultList = new ArrayList<ConfigJdPromotion.PromotionBean>(addCount + promotionList.size());
 			for (int i = 0; i < addCount; i++) {
 				PromotionBean bean = new PromotionBean();
 				bean.setProductCode(skuid);

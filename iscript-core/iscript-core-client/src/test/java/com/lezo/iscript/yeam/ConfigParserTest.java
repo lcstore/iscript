@@ -36,6 +36,8 @@ import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.ConfigYhdProduct;
+import com.lezo.iscript.yeam.config.ConfigYhdPromotList;
+import com.lezo.iscript.yeam.config.ConfigYhdPromotion;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
 import com.lezo.iscript.yeam.config.HuihuiSigner;
@@ -62,7 +64,8 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-//		 parser = new ConfigYhdProduct();
+		// parser = new ConfigYhdProduct();
+		parser = new ConfigYhdPromotion();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1114888.html";
@@ -71,7 +74,8 @@ public class ConfigParserTest {
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.jd.com/1059376.html";
-		url = "http://item.jd.com/1163616.html";
+		url = "http://www.yhd.com/?tracker_u=4734&website_id=A100202367";
+		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		task.put("barCode", "6900068005020");

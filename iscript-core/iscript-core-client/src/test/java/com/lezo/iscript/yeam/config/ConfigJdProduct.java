@@ -543,7 +543,7 @@ public class ConfigJdProduct implements ConfigParser {
 		void doCallBack(ScriptableObject scope, Object targetObject);
 	}
 
-	final class ResultBean {
+	private final class ResultBean {
 		private List<Object> dataList = new ArrayList<Object>();
 		private List<Object> nextList = new ArrayList<Object>();
 

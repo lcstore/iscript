@@ -42,7 +42,7 @@ public class TaskPriorityDaoImplTest {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		TaskPriorityDao taskPriorityDao = SpringBeanUtils.getBean(TaskPriorityDao.class);
-		List<String> lines = FileUtils.readLines(new File("E:/lezo/codes/barCode437751.log"), "UTF-8");
+		List<String> lines = FileUtils.readLines(new File("E:/lezo/codes/bCode536333.log"), "UTF-8");
 		String type = "ConfigBarCodeMatcher";
 		JSONObject argsObject = new JSONObject();
 		int total = 0;

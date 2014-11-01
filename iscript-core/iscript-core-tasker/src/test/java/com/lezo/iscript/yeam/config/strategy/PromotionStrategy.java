@@ -4,7 +4,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -20,15 +25,23 @@ import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class PromotionStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(PromotionStrategy.class);
-
+	private static Map<String, String> typeMap = new HashMap<String, String>();
 	private static volatile boolean running = false;
 	private Timer timer;
+
+	static {
+		typeMap.put("jd.com-product", "ConfigJdProduct");
+		typeMap.put("jd.com-promotion", "ConfigJdPromotion");
+		typeMap.put("yhd.com-product", "ConfigYhdProduct");
+		typeMap.put("yhd.com-promotion", "ConfigYhdPromotion");
+	}
 
 	public PromotionStrategy() {
 		CreateTaskTimer task = new CreateTaskTimer();
@@ -37,17 +50,24 @@ public class PromotionStrategy implements ResultStrategy, Closeable {
 	}
 
 	private class CreateTaskTimer extends TimerTask {
-		private List<String> urlList;
+		private Map<String, Set<String>> typeMap;
 
 		public CreateTaskTimer() {
-			this.urlList = new ArrayList<String>();
-			this.urlList.add("http://xuan.jd.com/youhui/1-0-0-0-1.html");
-			this.urlList.add("http://xuan.jd.com/youhui/2-0-0-0-1.html");
-			this.urlList.add("http://xuan.jd.com/youhui/3-0-0-0-1.html");
-			this.urlList.add("http://xuan.jd.com/youhui/4-0-0-0-1.html");
-			this.urlList.add("http://xuan.jd.com/youhui/5-0-0-0-1.html");
-			this.urlList.add("http://xuan.jd.com/youhui/6-0-0-0-1.html");
-			this.urlList.add("http://xuan.jd.com/youhui/7-0-0-0-1.html");
+			typeMap = new HashMap<String, Set<String>>();
+			Set<String> urlSet = new HashSet<String>();
+			urlSet.add("http://xuan.jd.com/youhui/1-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/2-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/3-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/4-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/5-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/6-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/7-0-0-0-1.html");
+
+			typeMap.put("ConfigJdPromotList", urlSet);
+
+			urlSet = new HashSet<String>();
+			urlSet.add("http://www.yhd.com");
+			typeMap.put("ConfigYhdPromotList", urlSet);
 		}
 
 		@Override
@@ -57,21 +77,23 @@ public class PromotionStrategy implements ResultStrategy, Closeable {
 				return;
 			}
 			long start = System.currentTimeMillis();
-			String taskId = UUID.randomUUID().toString();
 			try {
 				logger.info("CreateTaskTimer is start...");
 				running = true;
-				List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(urlList.size());
+				List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
 				JSONObject argsObject = new JSONObject();
 				JSONUtils.put(argsObject, "strategy", getName());
-				JSONUtils.put(argsObject, "bid", taskId);
-				String type = "ConfigJdPromotList";
-				for (String url : urlList) {
-					TaskPriorityDto taskDto = createPriorityDto(url, type, argsObject);
-					taskList.add(taskDto);
+				for (Entry<String, Set<String>> entry : typeMap.entrySet()) {
+					String taskId = UUID.randomUUID().toString();
+					JSONUtils.put(argsObject, "bid", taskId);
+					String type = entry.getKey();
+					for (String url : entry.getValue()) {
+						TaskPriorityDto taskDto = createPriorityDto(url, type, argsObject);
+						taskList.add(taskDto);
+					}
+					getTaskPriorityDtoBuffer().addAll(taskList);
+					logger.info("Offer task:{},size:{}", type, taskList.size());
 				}
-				getTaskPriorityDtoBuffer().addAll(taskList);
-				logger.info("Offer task:{},size:{}", type, taskList.size());
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
 			} finally {
@@ -118,15 +140,23 @@ public class PromotionStrategy implements ResultStrategy, Closeable {
 		String url = JSONUtils.getString(argsObject, "url");
 		oParamObject.remove("strategy");
 		JSONUtils.put(oParamObject, "fromUrl", url);
+		String productType = getType(url, "product");
+		String promotionType = getType(url, "promotion");
 		for (int i = 0; i < len; i++) {
 			String sUrl = dataArray.getString(i);
-			TaskPriorityDto taskPriorityDto = createPriorityDto(sUrl, "ConfigJdProduct", oParamObject);
+			TaskPriorityDto taskPriorityDto = createPriorityDto(sUrl, productType, oParamObject);
 			dtoList.add(taskPriorityDto);
-			taskPriorityDto = createPriorityDto(sUrl, "ConfigJdPromotion", oParamObject);
+			taskPriorityDto = createPriorityDto(sUrl, promotionType, oParamObject);
 			dtoList.add(taskPriorityDto);
 		}
 		getTaskPriorityDtoBuffer().addAll(dtoList);
 
+	}
+
+	private String getType(String url, String name) {
+		String host = URLUtils.getRootHost(url);
+		String key = host + "-" + name;
+		return typeMap.get(key);
 	}
 
 	private void addNextTasks(JSONObject rsObject, JSONObject argsObject) throws Exception {
