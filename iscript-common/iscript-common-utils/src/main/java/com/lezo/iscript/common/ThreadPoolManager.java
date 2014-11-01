@@ -22,7 +22,7 @@ public class ThreadPoolManager {
 			return false;
 		}
 		ThreadPoolExecutor oldExecutor = EXECUTOR_MAP.putIfAbsent(name, executor);
-		return executor == oldExecutor;
+		return oldExecutor == null;
 	}
 
 	public static ThreadPoolExecutor getExecutor(String name) {

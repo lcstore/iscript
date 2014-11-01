@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.InetAddress;
 import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +23,6 @@ import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
-import com.lezo.iscript.yeam.config.ConfigBarCodeMatcher;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
@@ -74,8 +70,15 @@ public class ConfigParserTest {
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.jd.com/1059376.html";
+<<<<<<< HEAD
 		url = "http://www.yhd.com/?tracker_u=4734&website_id=A100202367";
 		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
+=======
+		url = "http://item.jd.com/1163616.html";
+		url = "http://item.yhd.com/item/35924832?tc=ad.0.0.6328-100000019.3";
+		url = "http://item.yhd.com/item/1070073?tc=3.0.5.1070073.1&tp=52.22882.108.0.12.K|VBX8R";
+		url = "http://item.yhd.com/item/11873526";
+>>>>>>> 73f3c16ae8a5744177fcdb3aaa5e8840fbb16c82
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		task.put("barCode", "6900068005020");
@@ -95,6 +98,7 @@ public class ConfigParserTest {
 			e.printStackTrace();
 			throw e;
 		}
+		System.err.println("Date:" + new Date(1414638164360L).toLocaleString());
 	}
 
 	private List<String> getUrlList() throws Exception {

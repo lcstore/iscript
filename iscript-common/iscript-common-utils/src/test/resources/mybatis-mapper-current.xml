@@ -2,75 +2,53 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatDao">
-	<resultMap type="ProductStatDto" id="RM_ProductStatDto">
-		<result column="ID" property="id"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="CATEGORY_NAV" property="categoryNav"/>
-		<result column="MIN_PRICE" property="minPrice"/>
-		<result column="MAX_PRICE" property="maxPrice"/>
-		<result column="PRODUCT_PRICE" property="productPrice"/>
-		<result column="MARKET_PRICE" property="marketPrice"/>
-		<result column="SOLD_NUM" property="soldNum"/>
-		<result column="COMMENT_NUM" property="commentNum"/>
-		<result column="GOOD_COMMENT" property="goodComment"/>
-		<result column="POOR_COMMENT" property="poorComment"/>
-		<result column="STOCK_NUM" property="stockNum"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+<mapper namespace="com.vipshop.dp.vipshopinterface.dao.CategoryGoodNumDao">
+	<resultMap type="CategoryGoodNumDto" id="RM_CategoryGoodNumDto">
+		<result column="stat_date" property="statDate"/>
+		<result column="brand_name" property="brandName"/>
+		<result column="sell_date_start" property="sellDateStart"/>
+		<result column="category_first_id" property="categoryFirstId"/>
+		<result column="category_first_name" property="categoryFirstName"/>
+		<result column="category_second_id" property="categorySecondId"/>
+		<result column="category_second_name" property="categorySecondName"/>
+		<result column="category_third_id" property="categoryThirdId"/>
+		<result column="category_third_name" property="categoryThirdName"/>
+		<result column="goods_code_num" property="goodsCodeNum"/>
 	</resultMap>
-	<sql id="ProductStatDto-coloumn-list">
-		SITE_ID
-		,SHOP_ID
-		,PRODUCT_CODE
-		,PRODUCT_NAME
-		,PRODUCT_URL
-		,CATEGORY_NAV
-		,MIN_PRICE
-		,MAX_PRICE
-		,PRODUCT_PRICE
-		,MARKET_PRICE
-		,SOLD_NUM
-		,COMMENT_NUM
-		,GOOD_COMMENT
-		,POOR_COMMENT
-		,STOCK_NUM
-		,CREATE_TIME
-		,UPDATE_TIME
+	<sql id="CategoryGoodNumDto-coloumn-list">
+		stat_date
+		,brand_name
+		,sell_date_start
+		,category_first_id
+		,category_first_name
+		,category_second_id
+		,category_second_name
+		,category_third_id
+		,category_third_name
+		,goods_code_num
 	</sql>
-	<insert id="batchInsert" parameterType="ProductStatDto">
-		INSERT INTO T_PRODUCT_STAT(
-		<include refid="ProductStatDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="CategoryGoodNumDto">
+		INSERT INTO dm_bijia_category_goods_code_num(
+		<include refid="CategoryGoodNumDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.statDate},#{item.brandName},#{item.sellDateStart},#{item.categoryFirstId},#{item.categoryFirstName},#{item.categorySecondId},#{item.categorySecondName},#{item.categoryThirdId},#{item.categoryThirdName},#{item.goodsCodeNum})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ProductStatDto">
-		UPDATE T_PRODUCT_STAT SET
-		SITE_ID=#{siteId},
-		SHOP_ID=#{shopId},
-		PRODUCT_CODE=#{productCode},
-		PRODUCT_NAME=#{productName},
-		PRODUCT_URL=#{productUrl},
-		CATEGORY_NAV=#{categoryNav},
-		MIN_PRICE=#{minPrice},
-		MAX_PRICE=#{maxPrice},
-		PRODUCT_PRICE=#{productPrice},
-		MARKET_PRICE=#{marketPrice},
-		SOLD_NUM=#{soldNum},
-		COMMENT_NUM=#{commentNum},
-		GOOD_COMMENT=#{goodComment},
-		POOR_COMMENT=#{poorComment},
-		STOCK_NUM=#{stockNum},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+	<update id="updateOne" parameterType="CategoryGoodNumDto">
+		UPDATE dm_bijia_category_goods_code_num SET
+		stat_date=#{statDate},
+		brand_name=#{brandName},
+		sell_date_start=#{sellDateStart},
+		category_first_id=#{categoryFirstId},
+		category_first_name=#{categoryFirstName},
+		category_second_id=#{categorySecondId},
+		category_second_name=#{categorySecondName},
+		category_third_id=#{categoryThirdId},
+		category_third_name=#{categoryThirdName},
+		goods_code_num=#{goodsCodeNum}
 		WHERE ID=#{id}
 	</update>
 </mapper>
