@@ -44,7 +44,7 @@ public class SaveSessionTimer {
 			}
 			sessionHisService.batchSaveSessionHisDtos(copyList);
 			long cost = System.currentTimeMillis() - start;
-			logger.info(String.format("Save[%s],close:%d,cost:%s", "SessionHisDto", copyList.size(), closeList.size(), cost));
+			logger.info(String.format("Save SessionHisDto,close:%d,active:%d,cost:%s", closeList.size(), copyList.size(), cost));
 		} finally {
 			running = false;
 		}

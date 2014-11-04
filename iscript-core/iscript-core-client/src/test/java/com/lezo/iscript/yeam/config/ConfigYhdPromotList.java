@@ -1,18 +1,24 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
@@ -39,6 +45,7 @@ public class ConfigYhdPromotList implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
+		addCookie();
 		JSONObject dataObject = getDataObject(task);
 		logData(dataObject);
 		doCollect(dataObject, task);
@@ -48,6 +55,22 @@ public class ConfigYhdPromotList implements ConfigParser {
 	private void logData(JSONObject dataObject) {
 		System.err.println("data:" + dataObject);
 
+	}
+
+	private void addCookie() {
+		BasicClientCookie cookie = new BasicClientCookie("__utma", "40580330.1541470702.1396602044.1406527175.1406603327.18");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__utmc", "193324902");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__utmz", "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("provinceId", "1");
+		client.getCookieStore().addCookie(cookie);
+		String[] uArr = UUID.randomUUID().toString().split("-");
+		cookie = new BasicClientCookie("uname", uArr[0]);
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
+		client.getCookieStore().addCookie(cookie);
 	}
 
 	private void doCollect(JSONObject dataObject, TaskWritable task) {
@@ -73,17 +96,59 @@ public class ConfigYhdPromotList implements ConfigParser {
 	 */
 	private JSONObject getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
+		url = doParamEncode(url);
 		HttpGet get = new HttpGet(url);
+		get.addHeader("Referer", url);
+		get.addHeader("DNT", "1");
 		String html = HttpClientUtils.getContent(client, get);
 		ResultBean rsBean = new ResultBean();
-		Document dom = Jsoup.parse(html, url);
+		Document dom = getDocument(html, url);
 		addProducts(dom, rsBean);
 		addActs(dom, rsBean);
 		addNexts(dom, rsBean);
+		if (rsBean.getDataList().isEmpty()) {
+			System.err.println(html);
+		}
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, rsBean);
 		return new JSONObject(writer.toString());
+	}
+
+	private Document getDocument(String html, String url) throws Exception {
+		Document dom = Jsoup.parse(html, url);
+		Elements scriptEls = dom.select("#userSrc ~ script");
+		if (scriptEls.isEmpty()) {
+			return dom;
+		}
+		String script = null;
+		for (Element ele : scriptEls) {
+			String sHtml = ele.html();
+			if (sHtml.indexOf("frames['userSrc']") > 0) {
+				script = sHtml;
+				break;
+			}
+		}
+		Context cx = Context.enter();
+		ScriptableObject scope = cx.initStandardObjects();
+		String source = "var frames={};frames['userSrc']={};" + script;
+		cx.evaluateString(scope, source, "", 0, null);
+		String directUrl = Context.toString(ScriptableObject.getProperty(scope, "url"));
+		System.err.println("get directUrl:" + directUrl);
+		HttpGet get = new HttpGet(directUrl);
+		get.addHeader("Referer", url);
+		get.addHeader("DNT", "1");
+		html = HttpClientUtils.getContent(client, get);
+		return Jsoup.parse(html, url);
+	}
+
+	private String doParamEncode(String url) throws Exception {
+		int index = url.indexOf("?");
+		if (index > 0) {
+			String paramUrl = url.substring(index + 1);
+			url = url.substring(0, index + 1) + URLEncoder.encode(paramUrl, "UTF-8");
+		}
+		return url;
 	}
 
 	private void addProducts(Document dom, ResultBean rsBean) {

@@ -32,6 +32,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.ConfigYhdProduct;
+import com.lezo.iscript.yeam.config.ConfigYhdPromotList;
 import com.lezo.iscript.yeam.config.ConfigYhdPromotion;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
@@ -61,6 +62,7 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeMatcher();
 		// parser = new ConfigYhdProduct();
 		parser = new ConfigYhdPromotion();
+//		parser = new ConfigYhdPromotList();
 		String url = null;
 		url = "http://item.jd.com/1124365.html";
 		url = "http://item.jd.com/1114888.html";
@@ -69,8 +71,11 @@ public class ConfigParserTest {
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.jd.com/1059376.html";
-		url = "http://www.yhd.com/?tracker_u=4734&website_id=A100202367";
-		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
+		url = "http://www.yhd.com";
+		url = "http://www.yhd.com/?tc=0.0.12.7292_5282792_1.9&tp=1.0.16.0.1.K|eNS9j";
+		url = "http://item.yhd.com/item/39633902";
+		// url =
+		// "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		task.put("barCode", "6900068005020");
@@ -336,13 +341,10 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		try {
 			url = "http://www.baidu.com/index.php?tn=19045005_6_pg";
+			url = "http://item.jd.com/856850.html";
 			long ip = 1567820005;
-			task.put("ip", "92.222.153.153");
-			task.put("port", 7808);
-			task.put("ip", ip);
-			task.put("port", 7808);
-			task.put("ip", "112.133.255.33");
-			task.put("port", 80);
+			task.put("ip", "121.12.255.214");
+			task.put("port", 8086);
 			task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);

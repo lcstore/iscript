@@ -4,10 +4,13 @@ import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -18,7 +21,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
@@ -31,8 +33,6 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class ConfigYhdPromotion implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private static final String EMTPY_RESULT = new JSONObject().toString();
-	private static String promotionScript = null;
-	private ScriptableObject definePromotScriptable;
 
 	@Override
 	public String getName() {
@@ -41,6 +41,7 @@ public class ConfigYhdPromotion implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
+		addCookie();
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
 		return EMTPY_RESULT;
@@ -59,6 +60,22 @@ public class ConfigYhdPromotion implements ConfigParser {
 		List<JSONObject> dataList = new ArrayList<JSONObject>();
 		dataList.add(gObject);
 		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+	}
+
+	private void addCookie() {
+		BasicClientCookie cookie = new BasicClientCookie("__utma", "40580330.1541470702.1396602044.1406527175.1406603327.18");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__utmc", "193324902");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("__utmz", "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("provinceId", "1");
+		client.getCookieStore().addCookie(cookie);
+		String[] uArr = UUID.randomUUID().toString().split("-");
+		cookie = new BasicClientCookie("uname", uArr[0]);
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
+		client.getCookieStore().addCookie(cookie);
 	}
 
 	/**
@@ -81,30 +98,6 @@ public class ConfigYhdPromotion implements ConfigParser {
 		return new JSONObject();
 	}
 
-	private String getPromotionScript(String url) {
-		if (promotionScript == null) {
-			synchronized (ConfigYhdPromotion.class) {
-				if (promotionScript == null) {
-					String promotUrl = "http://misc.360buyimg.com/product/js/2012/promotion.js";
-					HttpGet get = new HttpGet(promotUrl);
-					get.addHeader("Referer", url);
-					get.addHeader("Accept", "application/javascript, */*;q=0.8");
-					get.addHeader("Accept-Encoding", "gzip, deflate");
-					get.addHeader("Accept-Language", "zh-CN");
-					try {
-						promotionScript = HttpClientUtils.getContent(client, get, "GBK");
-					} catch (Exception e) {
-						e.printStackTrace();
-						if (!get.isAborted()) {
-							get.abort();
-						}
-					}
-				}
-			}
-		}
-		return promotionScript;
-	}
-
 	private List<PromotionBean> getPromotions(TaskWritable task) throws Exception {
 		// http://item-home.yhd.com/item/ajax/ajaxProductPromotion.do?callback=detailPromotion.reduceScrollbar&productID=9122034&merchantID=1&productMercantID=10323264&categoryId=18226&brandId=585&isYihaodian=1&vId=bpGHKnpNaLAfegw3yM1a8w%253D%253D&version=version_new
 		List<PromotionBean> promotionList = new ArrayList<ConfigYhdPromotion.PromotionBean>();
@@ -121,21 +114,35 @@ public class ConfigYhdPromotion implements ConfigParser {
 			promotionList.add(bean);
 			return promotionList;
 		}
-		// String promotUrl =
-		// String.format("http://item-home.yhd.com/item/ajax/ajaxProductPromotion.do?callback=detailPromotion.reduceScrollbar&productID=9122034&merchantID=1&productMercantID=10323264&categoryId=18226&brandId=585&isYihaodian=1&vId=bpGHKnpNaLAfegw3yM1a8w%253D%253D&version=version_new",
-		// "");
 		Scriptable scope = getPromotScope(dom);
 		String result = Context.toString(ScriptableObject.getProperty(scope, "dataString"));
-		String productId = Context.toString(ScriptableObject.getProperty(scope, "productId"));
+		String productCode = Context.toString(ScriptableObject.getProperty(scope, "b"));
 		Document promotDom = Jsoup.parse(result);
-		Elements promotEls = promotDom.select("#detailPromotion div.sp_item");
+		Elements promotEls = promotDom.select("div.sp_item");
+		if (promotEls.isEmpty()) {
+			PromotionBean bean = new PromotionBean();
+			bean.setProductCode(productCode);
+			bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
+			promotionList.add(bean);
+			return promotionList;
+		}
 		for (Element ele : promotEls) {
 			Elements urlEls = ele.select("p.sp_txt a[href]");
 			if (!urlEls.isEmpty()) {
 				String pUrl = urlEls.first().absUrl("href");
-				Pattern codeReg = Pattern.compile("-pt688666-");
-				if (pUrl.startsWith("http://")) {
-
+				Pattern codeReg = Pattern.compile("(.*?-pt)([0-9]{4,})(-.*)");
+				Matcher matcher = codeReg.matcher(pUrl);
+				if (matcher.find()) {
+					PromotionBean bean = new PromotionBean();
+					bean.setProductCode(productCode);
+					bean.setPromoteUrl(pUrl);
+					bean.setPromoteCode(matcher.group(2));
+					bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_START);
+					bean.setSiteId(1002);
+					bean.setPromoteName(ele.select("div.dt").first().ownText());
+					bean.setPromoteType(PromotionBean.PROMOTE_TYPE_UNKONW);
+					bean.setPromoteDetail(urlEls.first().text());
+					promotionList.add(bean);
 				}
 			}
 		}

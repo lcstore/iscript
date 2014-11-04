@@ -114,7 +114,7 @@ public class PromotionStrategy implements ResultStrategy, Closeable {
 		if (ResultWritable.RESULT_SUCCESS != rWritable.getStatus()) {
 			return;
 		}
-		if ("ConfigJdPromotList".equals(rWritable.getType())) {
+		if (rWritable.getType().indexOf("PromotList") > 0) {
 			JSONObject gObject = JSONUtils.getJSONObject(rWritable.getResult());
 			JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
 			JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");

@@ -51,6 +51,7 @@ public class ConfigProxyDetector implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		JSONObject gObject = new JSONObject();
 		JSONObject itemObject = getDataObject(task, gObject);
+		System.out.println(itemObject);
 		JSONUtils.put(gObject, "rs", itemObject.toString());
 		doCollect(gObject, task);
 		return EMTPY_RESULT;

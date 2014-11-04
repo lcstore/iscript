@@ -23,12 +23,13 @@ public class ConfigEventHandler extends AbstractEventHandler {
 
 	protected void doHandle(RequestEvent event) {
 		List<ConfigWritable> configWritables = new ArrayList<ConfigWritable>();
-		long configStamp = 0;
-		// TODO: get config stamp from session or message
+		IoRequest ioRequest = getIoRequest(event);
+		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
+		Long cstamp = JSONUtils.getLong(hObject, "cstamp");
 		Iterator<Entry<String, ConfigWritable>> it = ConfigBuffer.getInstance().unmodifyIterator();
 		while (it.hasNext()) {
 			ConfigWritable config = it.next().getValue();
-			if (config.getStamp() > configStamp) {
+			if (config.getStamp() > cstamp) {
 				configWritables.add(config);
 			}
 		}
@@ -55,7 +56,7 @@ public class ConfigEventHandler extends AbstractEventHandler {
 			return false;
 		}
 		Long cstamp = JSONUtils.getLong(hObject, "cstamp");
-		if (cstamp == null || cstamp < ConfigBuffer.getInstance().getStamp()) {
+		if (cstamp == null || cstamp != ConfigBuffer.getInstance().getStamp()) {
 			return true;
 		}
 		return false;
