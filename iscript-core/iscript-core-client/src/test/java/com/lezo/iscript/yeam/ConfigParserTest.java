@@ -71,6 +71,7 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1059376.html";
 		url = "http://www.yhd.com/?tracker_u=4734&website_id=A100202367";
 		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
+		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		task.put("barCode", "6900068005020");
