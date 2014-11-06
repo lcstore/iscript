@@ -36,7 +36,7 @@
 			(#{item.parentId},#{item.siteCode},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.onLine},#{item.isSelf},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ShopDto">
+	<update id="batchUpdate" parameterType="ShopDto">
 		UPDATE T_SHOP SET
 		PARENT_ID=#{parentId},
 		SITE_CODE=#{siteCode},

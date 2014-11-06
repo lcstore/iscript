@@ -44,7 +44,7 @@
 			(#{item.siteId},#{item.productCode},#{item.promoteCode},#{item.promoteName},#{item.promoteDetail},#{item.promoteNums},#{item.promoteUrl},#{item.promoteExtra},#{item.promoteType},#{item.promoteStatus},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="PromotionMapDto">
+	<update id="batchUpdate" parameterType="PromotionMapDto">
 		UPDATE T_PROMOTION_MAP SET
 		PROMOTE_CODE=#{promoteCode},
 		PROMOTE_NAME=#{promoteName},

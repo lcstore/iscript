@@ -22,6 +22,7 @@ public class ProductDaoTest {
 		ProductDao productDao = SpringBeanUtils.getBean(ProductDao.class);
 		List<ProductDto> dtoList = new ArrayList<ProductDto>();
 		ProductDto dto = new ProductDto();
+		dto.setSiteId(1001);
 		dto.setBarCode("barCode");
 		dto.setCreateTime(new Date());
 		dto.setMarketPrice(1000F);

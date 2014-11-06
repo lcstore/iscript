@@ -30,7 +30,7 @@
 			(#{item.sessionId},#{item.clienName},#{item.requestSize},#{item.responeSize},#{item.errorSize},#{item.successNum},#{item.failNum},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="SessionHisDto">
+	<update id="batchUpdate" parameterType="SessionHisDto">
 		UPDATE T_SESSION_HIS SET
 		REQUEST_SIZE=#{requestSize}, RESPONE_SIZE=#{responeSize},
 		ERROR_SIZE=#{errorSize}, SUCCESS_NUM=#{successNum},

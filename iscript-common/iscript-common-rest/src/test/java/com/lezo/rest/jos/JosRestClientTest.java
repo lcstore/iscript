@@ -148,4 +148,47 @@ public class JosRestClientTest {
 		System.out.println(result);
 	}
 
+	@Test
+	public void testWebPromotion() throws Exception {
+		// 网盟推广
+		String accessToken = "7a2d3547-1816-4df3-a1c2-e5a919fa3b63";
+		String appKey = "E87EB8CEFEB1E72D8BC760C47029BB15";
+		String appSecret = "f558814ec9874217a10d5efc6166e6f9";
+		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
+		String method = "jingdong.service.promotion.getcode";
+		method = "jingdong.service.promotion.batch.getcode";
+		JSONObject argsObject = new JSONObject();
+		String pCode = "1304092293";
+		argsObject.put("id", pCode);
+		argsObject.put("url", "http://item.jd.com/" + pCode + ".html");
+		argsObject.put("unionId", "51698052");
+		argsObject.put("channel", "PC");
+		argsObject.put("subUnionId", "");
+		argsObject.put("webId", "");
+		argsObject.put("ext1", "");
+		String result = client.execute(method, argsObject.toString());
+		System.out.println(result);
+		System.out.println(result.length());
+	}
+
+	@Test
+	public void testPromotionGetCodes() throws Exception {
+		String accessToken = "482f64db-bf61-42a7-a250-f9b1e786d00b";
+		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
+		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
+		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
+		String method = "jingdong.service.promotion.getcode";
+		method = "jingdong.service.promotion.batch.getcode";
+		JSONObject argsObject = new JSONObject();
+		argsObject.put("id", "1322501291");
+		argsObject.put("url", "http://item.jd.com/1322501291.html");
+		argsObject.put("unionId", "51698052");
+		argsObject.put("channel", "PC");
+		argsObject.put("subUnionId", "");
+		argsObject.put("webId", "");
+		argsObject.put("ext1", "");
+		String result = client.execute(method, argsObject.toString());
+		System.out.println(result);
+	}
+
 }

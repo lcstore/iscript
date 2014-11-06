@@ -40,7 +40,7 @@
 			(#{item.categoryName},#{item.listUrl},#{item.shopId},#{item.productCode},#{item.productName},#{item.productPrice},#{item.productUrl},#{item.sortType},#{item.sortRank},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ListRankDto">
+	<update id="batchUpdate" parameterType="ListRankDto">
 		UPDATE T_LIST_RANK SET
 		CATEGORY_NAME=#{categoryName},
 		LIST_URL=#{listUrl},

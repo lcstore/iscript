@@ -16,6 +16,7 @@
 		<result column="PRODUCT_ATTR" property="productAttr"/>
 		<result column="BAR_CODE" property="barCode"/>
 		<result column="IMG_URL" property="imgUrl"/>
+		<result column="UNION_URL" property="unionUrl"/>
 		<result column="ONSAIL_TIME" property="onsailTime"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
@@ -32,6 +33,7 @@
 		,PRODUCT_ATTR
 		,BAR_CODE
 		,IMG_URL
+		,UNION_URL
 		,ONSAIL_TIME
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -43,10 +45,10 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.unionUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ProductDto">
+	<update id="batchUpdate" parameterType="ProductDto">
 		UPDATE T_PRODUCT SET
 		SHOP_ID=#{shopId},
 		PRODUCT_NAME=#{productName},

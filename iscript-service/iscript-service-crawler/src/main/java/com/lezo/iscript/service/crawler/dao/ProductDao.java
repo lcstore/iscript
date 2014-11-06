@@ -15,4 +15,6 @@ public interface ProductDao {
 
 	List<ProductDto> getProductDtosFromId(@Param(value = "fromId") Long fromId, @Param(value = "limit") int limit, @Param(value = "siteId") Integer siteId);
 
+	void batchUpdateUnionUrls(List<ProductDto> dtoList);
+
 }

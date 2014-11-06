@@ -40,7 +40,7 @@
 			(#{item.similarCode},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.source},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="SimilarDto">
+	<update id="batchUpdate" parameterType="SimilarDto">
 		UPDATE T_SIMILAR SET
 		SIMILAR_CODE=#{similarCode},
 		SHOP_ID=#{shopId},

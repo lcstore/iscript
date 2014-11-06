@@ -52,7 +52,7 @@
 			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ProductStatDto">
+	<update id="batchUpdate" parameterType="ProductStatDto">
 		UPDATE T_PRODUCT_STAT SET
 		SHOP_ID=#{shopId},
 		PRODUCT_CODE=#{productCode},

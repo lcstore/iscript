@@ -14,6 +14,7 @@ public class ProductDto {
 	private String productAttr;
 	private String barCode;
 	private String imgUrl;
+	private String unionUrl;
 	private Date onsailTime;
 	private Date createTime;
 	private Date updateTime;
@@ -140,5 +141,13 @@ public class ProductDto {
 
 	public void setSiteId(Integer siteId) {
 		this.siteId = siteId;
+	}
+
+	public String getUnionUrl() {
+		return unionUrl;
+	}
+
+	public void setUnionUrl(String unionUrl) {
+		this.unionUrl = unionUrl;
 	}
 }

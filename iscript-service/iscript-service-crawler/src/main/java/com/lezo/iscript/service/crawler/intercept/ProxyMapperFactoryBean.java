@@ -32,7 +32,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 		List<?> dataList = (List<?>) args[0];
 		SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
 		try {
-			String sqlMapper = getObjectType().getName() + ".updateOne";
+			String sqlMapper = getObjectType().getName() + "." + method.getName();
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 			boolean hasParamName = !CollectionUtils.isEmpty(keyList);
 			if (hasParamName) {
@@ -70,8 +70,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 	@Override
 	public T getObject() throws Exception {
 		this.targetObject = super.getObject();
-		return (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), targetObject.getClass()
-				.getInterfaces(), this);
+		return (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), targetObject.getClass().getInterfaces(), this);
 	}
 
 	public void setMethodName(String methodName) {

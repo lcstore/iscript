@@ -36,7 +36,7 @@
 			(#{item.barCode},#{item.productName},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.imgUrl},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="BarCodeItemDto">
+	<update id="batchUpdate" parameterType="BarCodeItemDto">
 		UPDATE T_BARCODE_ITEM SET
 		BAR_CODE=#{barCode},
 		PRODUCT_NAME=#{productName},

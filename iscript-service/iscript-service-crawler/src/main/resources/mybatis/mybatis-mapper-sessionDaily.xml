@@ -38,7 +38,7 @@
 			(#{item.clienName},#{item.requestSize},#{item.responeSize},#{item.errorSize},#{item.successNum},#{item.failNum},#{item.workTime},#{item.setupTimes},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="SessionDailyDto">
+	<update id="batchUpdate" parameterType="SessionDailyDto">
 		UPDATE T_SESSION_DAILY SET
 		CLIEN_NAME=#{clienName},
 		REQUEST_SIZE=#{requestSize},

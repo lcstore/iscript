@@ -19,7 +19,7 @@
 			(${insert-values})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="${dtoSimpleName}">
+	<update id="batchUpdate" parameterType="${dtoSimpleName}">
 		UPDATE ${tableName} SET
 		${update-values}
 		WHERE ID=#{id}

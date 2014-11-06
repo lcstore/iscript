@@ -30,7 +30,7 @@
 			(#{item.ip},#{item.port},#{item.source},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ProxyAddrDto">
+	<update id="batchUpdate" parameterType="ProxyAddrDto">
 		UPDATE T_PROXY_ADDR SET
 		IP=#{ip},
 		PORT=#{port},

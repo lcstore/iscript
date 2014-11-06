@@ -32,7 +32,7 @@
 			(#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="ProxyDetectDto">
+	<update id="batchUpdate" parameterType="ProxyDetectDto">
 		UPDATE T_PROXY_DETECT SET
 		DOMAIN =#{domain},URL =#{url},DETECTOR =#{detector},
 		CUR_COST=#{curCost}, MIN_COST=#{minCost}, MAX_COST=#{maxCost},

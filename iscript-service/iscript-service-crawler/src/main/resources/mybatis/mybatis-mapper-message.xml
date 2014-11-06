@@ -34,7 +34,7 @@
 			(#{item.name},#{item.message},#{item.source},#{item.remark},#{item.status},#{item.sortCode},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="MessageDto">
+	<update id="batchUpdate" parameterType="MessageDto">
 		UPDATE T_MESSAGE SET
 		NAME=#{name},
 		MESSAGE=#{message},
