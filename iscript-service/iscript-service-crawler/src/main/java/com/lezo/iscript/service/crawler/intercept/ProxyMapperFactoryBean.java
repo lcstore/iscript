@@ -3,6 +3,7 @@ package com.lezo.iscript.service.crawler.intercept;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,23 +18,42 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 	public static final String DEFAULT_INTERCEPT_METHOD = "batchUpdate";
 	private SqlSessionFactory sqlSessionFactory;
 	private T targetObject;
-	private String methodName = DEFAULT_INTERCEPT_METHOD;
-	private List<String> keyList;
+	private List<BatchMethod> batchMethods;
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		if (isIntercept(method)) {
-			return doIntercepter(proxy, method, args);
+		BatchMethod batchMethod = findBatchMethod(method);
+		if (batchMethod != null) {
+			return doIntercepter(proxy, method, args, batchMethod);
 		}
 		return method.invoke(this.targetObject, args);
 	}
 
-	public Object doIntercepter(Object proxy, Method method, Object[] args) throws Exception {
+	private BatchMethod findBatchMethod(Method method) {
+		if (CollectionUtils.isEmpty(batchMethods)) {
+			return null;
+		}
+		Class<?>[] pTypes = method.getParameterTypes();
+		if (pTypes == null || pTypes.length < 1) {
+			return null;
+		}
+		int pSize = pTypes.length;
+		String name = method.getName();
+		for (BatchMethod bm : batchMethods) {
+			if (name.equals(bm.getName()) && pSize > bm.getIndex()) {
+				return bm;
+			}
+		}
+		return null;
+	}
+
+	public Object doIntercepter(Object proxy, Method method, Object[] args, BatchMethod batchMethod) throws Exception {
 		List<?> dataList = (List<?>) args[0];
 		SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
 		try {
 			String sqlMapper = getObjectType().getName() + "." + method.getName();
 			Map<String, Object> paramMap = new HashMap<String, Object>();
+			paramMap = getCommonParamMap(method, args, batchMethod);
 			boolean hasParamName = !CollectionUtils.isEmpty(keyList);
 			if (hasParamName) {
 				for (int i = 1; i < keyList.size(); i++) {
@@ -58,12 +78,20 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 		return null;
 	}
 
-	public boolean isIntercept(Method method) {
-		Class<?>[] pTypes = method.getParameterTypes();
-		if (pTypes == null || pTypes.length < 1) {
-			return false;
+	private Map<String, Object> getCommonParamMap(Method method, Object[] args, BatchMethod batchMethod) {
+		if (args == null) {
+			return null;
 		}
-		return method.getName().equals(this.methodName) && List.class.isAssignableFrom(pTypes[0]);
+		Type[] pTypes = method.getGenericParameterTypes();
+		int batchIndex = batchMethod.getIndex();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		for (int i = 0; i < pTypes.length; i++) {
+			if (batchIndex != i) {
+				Type pType = pTypes[i];
+				paramMap.put(key, value);
+			}
+		}
+		return paramMap;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,18 +101,18 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 		return (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), targetObject.getClass().getInterfaces(), this);
 	}
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
-
-	public void setKeyList(List<String> keyList) {
-		this.keyList = keyList;
-	}
-
 	@Override
 	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
 		this.sqlSessionFactory = sqlSessionFactory;
 		super.setSqlSessionFactory(sqlSessionFactory);
+	}
+
+	public List<BatchMethod> getBatchMethods() {
+		return batchMethods;
+	}
+
+	public void setBatchMethods(List<BatchMethod> batchMethods) {
+		this.batchMethods = batchMethods;
 	}
 
 }

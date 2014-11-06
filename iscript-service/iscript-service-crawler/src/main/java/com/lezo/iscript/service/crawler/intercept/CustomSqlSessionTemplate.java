@@ -1,14 +1,16 @@
 package com.lezo.iscript.service.crawler.intercept;
 
-import org.apache.ibatis.session.ExecutorType;
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.dao.support.PersistenceExceptionTranslator;
 
 public class CustomSqlSessionTemplate extends SqlSessionTemplate {
+	private List<String> batchUpdateMethods;
+	private List<String> batchInsertMethods;
 
-	public CustomSqlSessionTemplate(SqlSessionFactory sqlSessionFactory, ExecutorType executorType, PersistenceExceptionTranslator exceptionTranslator) {
-		super(sqlSessionFactory, executorType, exceptionTranslator);
+	public CustomSqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+		super(sqlSessionFactory);
 	}
 
 	@Override
