@@ -6,7 +6,7 @@
 	<resultMap type="SimilarDto" id="RM_SimilarDto">
 		<result column="ID" property="id"/>
 		<result column="SIMILAR_CODE" property="similarCode"/>
-		<result column="SHOP_ID" property="shopId"/>
+		<result column="SITE_ID" property="siteId"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
 		<result column="PRODUCT_NAME" property="productName"/>
 		<result column="PRODUCT_URL" property="productUrl"/>
@@ -19,7 +19,7 @@
 	</resultMap>
 	<sql id="SimilarDto-coloumn-list">
 		SIMILAR_CODE
-		,SHOP_ID
+		,SITE_ID
 		,PRODUCT_CODE
 		,PRODUCT_NAME
 		,PRODUCT_URL
@@ -37,21 +37,20 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.similarCode},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.source},#{item.createTime},#{item.updateTime})
+			(#{item.similarCode},#{item.siteId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.source},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="SimilarDto">
 		UPDATE T_SIMILAR SET
 		SIMILAR_CODE=#{similarCode},
-		SHOP_ID=#{shopId},
+		SITE_ID=#{siteId},
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
 		PRODUCT_PRICE=#{productPrice},
 		BAR_CODE=#{barCode},
 		IMG_URL=#{imgUrl},
-		SOURCE=#{source},
-		UPDATE_TIME=#{updateTime}
+		SOURCE=#{source}
 		WHERE ID=#{id}
 	</update>
 	
@@ -67,8 +66,8 @@
 		      #{code}
 		   </foreach>
 	   </if>
-	   <if test="shopId !=null">
-	     AND SHOP_ID=#{shopId}
+	   <if test="siteId !=null">
+	     AND SITE_ID=#{siteId}
 	   </if>
 	</select>
 	<select id="getSimilarDtoBySimilarCodes" parameterType="map" resultMap="RM_SimilarDto">
@@ -83,9 +82,9 @@
 		      #{similarCode}
 		   </foreach>
 	   </if>
-	   <if test="shopIds !=null">
-	     <foreach collection="shopIds" item="shopId" open="AND SHOP_ID IN(" close=")" separator=",">
-		      #{shopId}
+	   <if test="siteIdList !=null">
+	     <foreach collection="siteIdList" item="siteId" open="AND SITE_ID IN(" close=")" separator=",">
+		      #{siteId}
 		   </foreach>
 	   </if>
 	</select>

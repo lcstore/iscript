@@ -102,7 +102,7 @@ public class WccSimilarSearchTimer {
 		List<SimilarDto> similarDtos = new ArrayList<SimilarDto>();
 
 		SimilarDto dto = new SimilarDto();
-		dto.setShopId(JSONUtils.getInteger(argsObject, "wShopId"));
+		dto.setSiteId(JSONUtils.getInteger(argsObject, "wShopId"));
 		dto.setProductCode(JSONUtils.getString(argsObject, "wCode"));
 		dto.setProductName(JSONUtils.getString(argsObject, "wName"));
 		dto.setProductUrl(JSONUtils.getString(argsObject, "wUrl"));
@@ -146,7 +146,7 @@ public class WccSimilarSearchTimer {
 		for (int i = 0; i < itemsArray.length(); i++) {
 			mObject = itemsArray.getJSONObject(i);
 			SimilarDto dto = new SimilarDto();
-			dto.setShopId(shopId);
+			dto.setSiteId(shopId);
 			dto.setProductName(JSONUtils.getString(mObject, "name"));
 			dto.setProductUrl(toDestUrl(JSONUtils.getString(mObject, "productURL")));
 			String code = CodeParser.getCodeFromUrl(dto.getProductUrl());

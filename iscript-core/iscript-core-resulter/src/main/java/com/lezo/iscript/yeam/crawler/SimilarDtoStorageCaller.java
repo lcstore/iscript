@@ -39,12 +39,12 @@ public class SimilarDtoStorageCaller {
 		Map<String, SimilarDto> dtoMap = new HashMap<String, SimilarDto>();
 		Map<Long, Set<String>> similarCodeKeyMap = new HashMap<Long, Set<String>>();
 		for (SimilarDto dto : similarDtos) {
-			String key = dto.getShopId() + "-" + dto.getProductCode();
+			String key = dto.getSiteId() + "-" + dto.getProductCode();
 			dtoMap.put(key, dto);
-			Set<String> codeSet = shopMap.get(dto.getShopId());
+			Set<String> codeSet = shopMap.get(dto.getSiteId());
 			if (codeSet == null) {
 				codeSet = new HashSet<String>();
-				shopMap.put(dto.getShopId(), codeSet);
+				shopMap.put(dto.getSiteId(), codeSet);
 			}
 			Set<String> keySet = similarCodeKeyMap.get(dto.getSimilarCode());
 			if (keySet == null) {
@@ -60,7 +60,7 @@ public class SimilarDtoStorageCaller {
 			Set<String> hasCodeSet = new HashSet<String>();
 			Map<Long, Long> similarCodeMap = new HashMap<Long, Long>();
 			for (SimilarDto oldDto : hasDtos) {
-				String key = oldDto.getShopId() + "-" + oldDto.getProductCode();
+				String key = oldDto.getSiteId() + "-" + oldDto.getProductCode();
 				SimilarDto newDto = dtoMap.get(key);
 				hasCodeSet.add(oldDto.getProductCode());
 				newDto.setId(oldDto.getId());

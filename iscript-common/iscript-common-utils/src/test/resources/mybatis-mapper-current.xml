@@ -5,6 +5,7 @@
 <mapper namespace="com.vipshop.crawler.price.dao.DailyBrandCompetitionDao">
 	<resultMap type="DailyBrandCompetitionDto" id="RM_DailyBrandCompetitionDto">
 		<result column="id" property="id"/>
+		<result column="data_date" property="dataDate"/>
 		<result column="category_name" property="categoryName"/>
 		<result column="category_id" property="categoryId"/>
 		<result column="brand_name" property="brandName"/>
@@ -26,6 +27,7 @@
 	</resultMap>
 	<sql id="DailyBrandCompetitionDto-coloumn-list">
 		id
+		,data_date
 		,category_name
 		,category_id
 		,brand_name
@@ -52,12 +54,13 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.categoryName},#{item.categoryId},#{item.brandName},#{item.ptBrandName},#{item.sellDateStart},#{item.sellDateEnd},#{item.salesAmountPer},#{item.competitivenessIndex},#{item.siteId},#{item.brandCount},#{item.vcodeCount},#{item.ocodeCount},#{item.vmatchCount},#{item.calcCount},#{item.vavgPrice},#{item.oavgPrice},#{item.createTime},#{item.updateTime})
+			(#{item.dataDate},#{item.categoryName},#{item.categoryId},#{item.brandName},#{item.ptBrandName},#{item.sellDateStart},#{item.sellDateEnd},#{item.salesAmountPer},#{item.competitivenessIndex},#{item.siteId},#{item.brandCount},#{item.vcodeCount},#{item.ocodeCount},#{item.vmatchCount},#{item.calcCount},#{item.vavgPrice},#{item.oavgPrice},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="updateOne" parameterType="DailyBrandCompetitionDto">
 		UPDATE T_PRICING_DAILY_BRAND_COMPETITION SET
 		id=#{id},
+		data_date=#{dataDate},
 		category_name=#{categoryName},
 		category_id=#{categoryId},
 		brand_name=#{brandName},
