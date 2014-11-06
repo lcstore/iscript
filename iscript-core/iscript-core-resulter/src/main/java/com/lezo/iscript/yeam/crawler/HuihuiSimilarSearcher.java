@@ -102,7 +102,7 @@ public class HuihuiSimilarSearcher {
 		List<SimilarDto> similarDtos = new ArrayList<SimilarDto>();
 
 		SimilarDto dto = new SimilarDto();
-		dto.setShopId(JSONUtils.getInteger(argsObject, "shopId"));
+		dto.setSiteId(JSONUtils.getInteger(argsObject, "shopId"));
 		dto.setProductCode(JSONUtils.getString(argsObject, "code"));
 		dto.setProductName(JSONUtils.getString(argsObject, "name"));
 		dto.setProductUrl(JSONUtils.getString(argsObject, "url"));
@@ -147,7 +147,7 @@ public class HuihuiSimilarSearcher {
 		for (int i = 0; i < itemsArray.length(); i++) {
 			JSONObject mObject = itemsArray.getJSONObject(i);
 			SimilarDto dto = new SimilarDto();
-			dto.setShopId(shopId);
+			dto.setSiteId(shopId);
 			dto.setProductName(JSONUtils.getString(mObject, "name"));
 			dto.setProductUrl(toDestUrl(JSONUtils.getString(mObject, "url")));
 			String code = CodeParser.getCodeFromUrl(dto.getProductUrl());

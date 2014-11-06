@@ -5,7 +5,7 @@ import java.util.Date;
 public class SimilarDto {
 	private Long id;
 	private Long similarCode;
-	private Integer shopId;
+	private Integer siteId;
 	private String productCode;
 	private String productName;
 	private String productUrl;
@@ -32,12 +32,12 @@ public class SimilarDto {
 		this.similarCode = similarCode;
 	}
 
-	public Integer getShopId() {
-		return shopId;
+	public Integer getSiteId() {
+		return siteId;
 	}
 
-	public void setShopId(Integer shopId) {
-		this.shopId = shopId;
+	public void setSiteId(Integer siteId) {
+		this.siteId = siteId;
 	}
 
 	public String getProductCode() {

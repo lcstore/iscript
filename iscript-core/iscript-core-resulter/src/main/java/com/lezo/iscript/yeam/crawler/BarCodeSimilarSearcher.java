@@ -120,7 +120,7 @@ public class BarCodeSimilarSearcher {
 		Integer shopId = JSONUtils.getInteger(argsObject, "shopId");
 		String barCode = JSONUtils.getString(argsObject, "barCode");
 		for (SimilarDto dto : similarDtos) {
-			dto.setShopId(shopId);
+			dto.setSiteId(shopId);
 			dto.setBarCode(barCode);
 		}
 	}

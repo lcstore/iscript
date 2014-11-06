@@ -1,4 +1,5 @@
-`id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `data_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '数据日期',
   `category_name` varchar(100) NOT NULL DEFAULT '' COMMENT '分类',
   `category_id` int(10) DEFAULT NULL COMMENT '分类ID',
   `brand_name` varchar(100) NOT NULL COMMENT '档期名称',
@@ -16,4 +17,4 @@
   `vavg_price` float(10,2) NOT NULL DEFAULT '0.00' COMMENT '唯品会平均价格',
   `oavg_price` float(10,2) NOT NULL DEFAULT '0.00' COMMENT '对手平均平均价格',
   `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURR
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDd

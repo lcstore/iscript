@@ -12,9 +12,9 @@ public interface SimilarDao {
 	void batchUpdate(List<SimilarDto> dtoList);
 
 	List<SimilarDto> getSimilarDtos(@Param(value = "codeList") List<String> codeList,
-			@Param(value = "shopId") Integer shopId);
+			@Param(value = "siteId") Integer siteId);
 
 	List<SimilarDto> getSimilarDtoBySimilarCodes(@Param(value = "similarCodeList") List<Long> similarCodeList,
-			@Param(value = "shopIds") List<Integer> shopIds);
+			@Param(value = "siteIdList") List<Integer> siteIdList);
 
 }

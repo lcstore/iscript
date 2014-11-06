@@ -1,12 +1,13 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -97,6 +98,7 @@ public class ConfigYhdPromotList implements ConfigParser {
 	private JSONObject getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		url = doParamEncode(url);
+		System.err.println("url:" + url);
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		get.addHeader("DNT", "1");
@@ -143,16 +145,12 @@ public class ConfigYhdPromotList implements ConfigParser {
 	}
 
 	private String doParamEncode(String url) throws Exception {
-		int index = url.indexOf("?");
-		if (index > 0) {
-			String paramUrl = url.substring(index + 1);
-			url = url.substring(0, index + 1) + URLEncoder.encode(paramUrl, "UTF-8");
-		}
+		url = url.replace("|", "%7C");
 		return url;
 	}
 
 	private void addProducts(Document dom, ResultBean rsBean) {
-		Elements productAs = dom.select("a[href*=item.yhd.com][target]");
+		Elements productAs = dom.select("a[href*=item.yhd.com/item/],[a[href*=t.yhd.com/detail]");
 		if (productAs.isEmpty()) {
 			return;
 		}
@@ -170,17 +168,18 @@ public class ConfigYhdPromotList implements ConfigParser {
 	}
 
 	private void addNexts(Document dom, ResultBean rsBean) {
+
 	}
 
 	private void addActs(Document dom, ResultBean rsBean) {
 		String url = dom.baseUri();
-		if (url.indexOf("cms.yhd.com/cmsPage/show.do") > -1) {
-			return;
-		}
-		Elements actAs = dom.select("a[href*=http://cms.yhd.com/cmsPage/show.do][target]");
+		Elements actAs = dom.select("#cms_first_dom a[href*=http://cms.yhd.com/cmsPage/show.do][target],#cms_first_dom map area[href*=http://cms.yhd.com/cmsPage/show.do]");
 		if (actAs.isEmpty()) {
 			return;
 		}
+		Pattern oReg = Pattern.compile("pageId=[0-9]+");
+		Matcher matcher = oReg.matcher(url);
+		String curPageId = matcher.find() ? matcher.group() : "";
 		int len = actAs.size();
 		Set<String> urlSet = new HashSet<String>(len);
 		urlSet.add(dom.baseUri());
@@ -190,7 +189,7 @@ public class ConfigYhdPromotList implements ConfigParser {
 			String sActUrl = actAs.get(i).absUrl("href");
 			int index = sActUrl.indexOf(head);
 			sActUrl = index > 0 ? sActUrl.substring(index + head.length()) : sActUrl;
-			if (!urlSet.contains(sActUrl)) {
+			if (!sActUrl.contains(curPageId) && !urlSet.contains(sActUrl)) {
 				nextList.add(sActUrl);
 				urlSet.add(sActUrl);
 			}
