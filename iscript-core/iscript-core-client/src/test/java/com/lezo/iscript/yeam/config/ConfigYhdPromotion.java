@@ -1,9 +1,12 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +36,26 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class ConfigYhdPromotion implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private static final String EMTPY_RESULT = new JSONObject().toString();
+	private static Map<String, String> hostIpMap = new HashMap<String, String>();
+	static {
+		hostIpMap.put("item.yhd.com", "180.153.252.38");
+		hostIpMap.put("gps.yihaodian.com", "180.153.252.46");
+		hostIpMap.put("e.yhd.com", "180.153.252.36");
+		hostIpMap.put("item-home.yhd.com", "180.153.252.38");
+	}
+
+	private HttpGet createHttpGetWithIp(String url) throws Exception {
+		URI oUri = new URI(url);
+		String host = oUri.getHost();
+		String oldUrl = oUri.toString();
+		String ip = hostIpMap.get(host);
+		if (ip != null) {
+			url = oldUrl.replace(host, ip);
+		}
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Host", oUri.getHost());
+		return get;
+	}
 
 	@Override
 	public String getName() {
@@ -103,7 +126,7 @@ public class ConfigYhdPromotion implements ConfigParser {
 		List<PromotionBean> promotionList = new ArrayList<ConfigYhdPromotion.PromotionBean>();
 		String url = (String) task.get("url");
 		url = doParamEncode(url);
-		HttpGet get = new HttpGet(url);
+		HttpGet get = createHttpGetWithIp(url);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html);
 		if (isHome(dom)) {
@@ -182,7 +205,7 @@ public class ConfigYhdPromotion implements ConfigParser {
 			String source = sb.toString();
 			cx.evaluateString(scope, source, "<cmd>", 0, null);
 			String promotUrl = Context.toString(ScriptableObject.getProperty(scope, "promotUrl"));
-			HttpGet get = new HttpGet(promotUrl);
+			HttpGet get = createHttpGetWithIp(promotUrl);
 			get.addHeader("Referer", dom.baseUri());
 			String html = HttpClientUtils.getContent(client, get);
 			html = html.replace("detailPromotion.reduceScrollbar", "var dataString = getCallBack");
@@ -325,12 +348,12 @@ public class ConfigYhdPromotion implements ConfigParser {
 		}
 
 		public String get(String url) throws Exception {
-			HttpGet get = new HttpGet(url);
+			HttpGet get = createHttpGetWithIp(url);
 			return HttpClientUtils.getContent(client, get);
 		}
 
 		public String get(String url, Object args) throws Exception {
-			HttpGet get = new HttpGet(url);
+			HttpGet get = createHttpGetWithIp(url);
 			return HttpClientUtils.getContent(client, get);
 		}
 	}

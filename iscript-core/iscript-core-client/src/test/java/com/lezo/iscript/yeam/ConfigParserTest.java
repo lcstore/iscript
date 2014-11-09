@@ -62,8 +62,8 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeMatcher();
 		// parser = new ConfigYhdProduct();
 		parser = new ConfigYhdPromotion();
-		parser = new ConfigYhdProduct();
-		parser = new ConfigYhdPromotList();
+//		parser = new ConfigYhdProduct();
+//		parser = new ConfigYhdPromotList();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
@@ -71,11 +71,11 @@ public class ConfigParserTest {
 		// "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
 		url = "http://www.yhd.com/?tracker_u=4734&website_id=A100202367";
 		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
-		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
-		url = "http://item.yhd.com/item/lp/369182_8382612_1";
-		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";
-		url = "http://cms.yhd.com/cmsPage/show.do?pageId=110003&tp=4.108589.0.0.0.K|yPYA5";
-		url = "http://cms.yhd.com/cmsPage/show.do?pageId=109548&tp=4.110003.m1631357.0.20.K|yeUxf";
+//		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
+//		url = "http://item.yhd.com/item/lp/369182_8382612_1";
+//		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";
+//		url = "http://cms.yhd.com/cmsPage/show.do?pageId=110003&tp=4.108589.0.0.0.K|yPYA5";
+//		url = "http://cms.yhd.com/cmsPage/show.do?pageId=109548&tp=4.110003.m1631357.0.20.K|yeUxf";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=109548&tp=4.110003.m1631357.0.20.K|yQWtI";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
