@@ -4,7 +4,7 @@ import org.apache.mina.core.session.IoSession;
 
 import com.lezo.iscript.yeam.io.IoConstant;
 
-public class RequestEvent {
+public class ClientEvent {
 	private int type = IoConstant.EVENT_TYPE_NONE;
 	private IoSession session;
 	private Object message;

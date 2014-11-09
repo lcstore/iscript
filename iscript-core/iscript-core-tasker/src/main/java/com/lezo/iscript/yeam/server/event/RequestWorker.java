@@ -1,23 +1,21 @@
 package com.lezo.iscript.yeam.server.event;
 
-import org.apache.mina.core.session.IoSession;
-
-import com.lezo.iscript.yeam.server.event.handler.RequestEventHandleChain;
+import com.lezo.iscript.yeam.server.event.handler.ClientEventHandler;
 
 public class RequestWorker implements Runnable {
-	private IoSession session;
-	private Object message;
-
-	public RequestWorker(IoSession session, Object message) {
+	private final ClientEvent event;
+	public RequestWorker(ClientEvent event, ClientEventHandler handler) {
 		super();
-		this.session = session;
-		this.message = message;
+		this.event = event;
+		this.handler = handler;
 	}
+
+
+	private final ClientEventHandler handler;
+
 
 	@Override
 	public void run() {
-		// TODO: record this request
-		RequestEvent event = RequestEventBuilder.creatEvent(session, message);
-		RequestEventHandleChain.doEvent(event);
+		handler.handle(event);
 	}
 }

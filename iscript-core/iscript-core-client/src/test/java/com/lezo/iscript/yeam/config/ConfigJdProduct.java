@@ -34,7 +34,7 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigJdProduct implements ConfigParser {
-	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
+	private DefaultHttpClient client = HttpClientManager.getProxyHttpClient();
 	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static int[] stockArr = { 0, -1, 1 };

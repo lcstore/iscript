@@ -37,9 +37,12 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	public ConfigProxyDetector() {
 		detectUrls = new ArrayList<String>();
-		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
-		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
+//		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
+//		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
+		detectUrls.add("http://www.jd.com/");
 		detectUrls.add("http://item.jd.com/856850.html");
+		detectUrls.add("http://www.yhd.com");
+		detectUrls.add("http://item.yhd.com/item/7381158");
 	}
 
 	@Override

@@ -14,13 +14,13 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.resultmgr.ResultHandlerCaller;
 import com.lezo.iscript.yeam.resultmgr.ResultHandlerWoker;
-import com.lezo.iscript.yeam.server.event.RequestEvent;
+import com.lezo.iscript.yeam.server.event.ClientEvent;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ResultEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(ResultEventHandler.class);
 
-	protected void doHandle(RequestEvent event) {
+	protected void doHandle(ClientEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
 		if (ioRequest == null || ioRequest.getData() == null) {
 			return;
@@ -62,7 +62,7 @@ public class ResultEventHandler extends AbstractEventHandler {
 	}
 
 	@Override
-	protected boolean isAccept(RequestEvent event) {
+	protected boolean isAccept(ClientEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
 		if (ioRequest == null) {
 			return false;

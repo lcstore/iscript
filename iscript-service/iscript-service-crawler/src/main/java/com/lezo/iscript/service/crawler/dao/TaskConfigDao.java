@@ -10,7 +10,7 @@ import com.lezo.iscript.service.crawler.dto.TaskConfigDto;
 public interface TaskConfigDao {
 	void batchInsert(List<TaskConfigDto> dtoList);
 
-	void updateOne(TaskConfigDto configDto);
+	void updateTaskConfigDto(TaskConfigDto configDto);
 
 	List<TaskConfigDto> getTaskConfigDtos(@Param(value = "afterStamp") Date afterStamp,
 			@Param(value = "status") Integer status);

@@ -1,7 +1,9 @@
 package com.lezo.iscript.yeam.config;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.InetAddressUtils;
@@ -36,6 +39,10 @@ public class ConfigProxyCollector implements ConfigParser {
 		// proxySeedList.add("http://www.simpleproxylist.com/");
 		proxySeedList.add("http://www.mrhinkydink.com/proxies.htm");
 		proxySeedList.add("https://nordvpn.com/free-proxy-list/1/?allc=all&allp=all&port&sortby=0&way=1&pp=1");
+		for (int i = 0; i < 10; i++) {
+			proxySeedList.add("http://mianfeidaili.ttju.cn/getAgent.php?uCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%BA%C5%2C%BF%C9%B2%BB%CC%EE%D0%B4&pCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%C3%DC%2C%BF%C9%B2%BB%CC%EE%D0%B4&Number=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%CA%FD%C1%BF&Area=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B5%D8%C7%F8&Operators=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%D4%CB%D3%AA%C9%CC&port=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B6%CB%BF%DA&list=Blist");
+		}
+		proxySeedList.add("http://www.xici.net.co/");
 	}
 
 	@Override
@@ -59,10 +66,13 @@ public class ConfigProxyCollector implements ConfigParser {
 			for (String seedUrl : proxySeedList) {
 				nextArray.put(seedUrl);
 			}
+			offerNexts(nextArray);
 		} else {
 			List<String> nextUrls = handleUrl(url, jObject, client);
 			for (String nextUrl : nextUrls) {
-				nextArray.put(nextUrl);
+				if (!StringUtils.isEmpty(nextUrl)) {
+					nextArray.put(nextUrl);
+				}
 			}
 		}
 		doCollect(jObject, nextArray, task);
@@ -70,6 +80,45 @@ public class ConfigProxyCollector implements ConfigParser {
 		JSONObject taskObject = new JSONObject();
 		JSONUtils.put(taskObject, "nextList", nextArray);
 		return taskObject.toString();
+	}
+
+	private void offerNexts(JSONArray nextArray) throws Exception {
+		List<String> homeList = new ArrayList<String>();
+		homeList.add("http://www.xunluw.com/IP/");
+		homeList.add("http://www.mesk.cn/");
+		Set<String> urlSet = new HashSet<String>();
+		for (String url : homeList) {
+			try {
+				while (true) {
+					HttpGet get = new HttpGet(url);
+					String html = HttpClientUtils.getContent(client, get, "gbk");
+					Document dom = Jsoup.parse(html, url);
+					Elements urlEls = dom.select("a[href][target]");
+					for (Element e : urlEls) {
+						String proxyUrl = e.absUrl("href");
+						if (proxyUrl.contains("/IP/") || proxyUrl.contains("/ip/")) {
+							urlSet.add(proxyUrl);
+						}
+					}
+					Elements nextEls = dom.select("a[href]:containsOwn(下一页)");
+					if (nextEls.isEmpty()) {
+						break;
+					} else {
+						String nextUrl = nextEls.first().absUrl("href");
+						if (url.equals(nextUrl)) {
+							break;
+						}
+						url = nextUrl;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		for (String newUrl : urlSet) {
+			nextArray.put(newUrl);
+		}
+
 	}
 
 	private void doCollect(JSONObject itemObject, JSONArray nextArray, TaskWritable task) {

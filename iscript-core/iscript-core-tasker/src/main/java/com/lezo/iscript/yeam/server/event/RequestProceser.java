@@ -9,8 +9,8 @@ import com.lezo.iscript.common.NameThreadFactory;
 
 public class RequestProceser {
 	private static RequestProceser instance;
-	private int coreSize = 2;
-	private int maxSize = 5;
+	private int coreSize = 3;
+	private int maxSize = 3;
 	private BlockingQueue<Runnable> taskQueue = new ArrayBlockingQueue<Runnable>(1000);
 	private ThreadPoolExecutor executor = new ThreadPoolExecutor(coreSize, maxSize, 60000L, TimeUnit.MILLISECONDS,
 			taskQueue, new NameThreadFactory("RequestProceser-"));

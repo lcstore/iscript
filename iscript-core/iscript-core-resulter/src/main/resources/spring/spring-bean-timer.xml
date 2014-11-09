@@ -40,8 +40,12 @@
 				<value>ConfigJdProduct</value>
 				<value>ConfigJdPromotion</value>
 				<value>ConfigProxyDetector</value>
-				<value>ConfigProxyCollector</value> -->
+				<value>ConfigProxyCollector</value>
 				<value>ConfigYhdPromotion</value>
+				 -->
+				<value>ConfigProxyCollector</value>
+				<value>ConfigProxyDetector</value>
+				
 			</list>
 		</property>
 	</bean>

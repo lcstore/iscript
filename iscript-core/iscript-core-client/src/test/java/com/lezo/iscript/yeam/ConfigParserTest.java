@@ -36,7 +36,7 @@ import com.lezo.iscript.yeam.config.ConfigYhdPromotList;
 import com.lezo.iscript.yeam.config.ConfigYhdPromotion;
 import com.lezo.iscript.yeam.config.FDSSigner;
 import com.lezo.iscript.yeam.config.God360Signer;
-import com.lezo.iscript.yeam.config.HuihuiSigner;
+import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
 import com.lezo.iscript.yeam.config.JDBBSSigner;
 import com.lezo.iscript.yeam.config.JDCid2PList;
 import com.lezo.iscript.yeam.config.Latest163News;
@@ -164,10 +164,12 @@ public class ConfigParserTest {
 
 	@Test
 	public void testHuihuiSigner() throws Exception {
-		ConfigParser parser = new HuihuiSigner();
+		ConfigParser parser = new ConfigHuihuiSigner();
 		TaskWritable task = new TaskWritable();
-		task.put("user", "lcs");
-		task.put("pwd", "");
+		task.put("user", "dlinked@126.com");
+		task.put("pwd", "dl1234");
+		task.put("user", "pis1002@163.com");
+		task.put("pwd", "pis1234");
 		try {
 			String result = parser.doParse(task);
 			System.out.println(result);
@@ -361,6 +363,10 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		url = "https://nordvpn.com/free-proxy-list/1/?allc=all&allp=all&port&sortby=0&way=1&pp=1";
 		url = "https://nordvpn.com/free-proxy-list/34/?allc=all&allp=all&port&sortby=0&way=1&pp=1";
+		url = "http://mianfeidaili.ttju.cn/getAgent.php?uCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%BA%C5%2C%BF%C9%B2%BB%CC%EE%D0%B4&pCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%C3%DC%2C%BF%C9%B2%BB%CC%EE%D0%B4&Number=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%CA%FD%C1%BF&Area=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B5%D8%C7%F8&Operators=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%D4%CB%D3%AA%C9%CC&port=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B6%CB%BF%DA&list=Blist";
+		url = "http://www.xunluw.com/IP/2014/0923/1383.html";
+		url = "http://www.mesk.cn/ip/hongkong/2014/0901/1174.html";
+		url = "http://www.xunluw.com/IP/2014/0726/1074.html";
 		// url = "";
 		try {
 			task.put("url", url);

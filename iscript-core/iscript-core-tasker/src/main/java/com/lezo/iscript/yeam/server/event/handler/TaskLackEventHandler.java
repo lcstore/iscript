@@ -14,18 +14,18 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.server.event.RequestEvent;
+import com.lezo.iscript.yeam.server.event.ClientEvent;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class TaskEventHandler extends AbstractEventHandler {
-	private static Logger logger = LoggerFactory.getLogger(TaskEventHandler.class);
-	private static final int PER_OFFER_SIZE = 50;
-	private static final int MIN_TASK_SIZE = 30;
+public class TaskLackEventHandler extends AbstractEventHandler {
+	private static Logger logger = LoggerFactory.getLogger(TaskLackEventHandler.class);
+	private static final int PER_OFFER_SIZE = 20;
+	private static final int MIN_TASK_SIZE = 5;
 
 	@Override
-	protected void doHandle(RequestEvent event) {
+	protected void doHandle(ClientEvent event) {
 		long start = System.currentTimeMillis();
 		IoRequest request = getIoRequest(event);
 		JSONObject hObject = JSONUtils.getJSONObject(request.getHeader());
@@ -69,9 +69,7 @@ public class TaskEventHandler extends AbstractEventHandler {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
-				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
-				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
+		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s", taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"), JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
 		logger.info(msg);
 
 	}
@@ -93,7 +91,7 @@ public class TaskEventHandler extends AbstractEventHandler {
 	}
 
 	@Override
-	protected boolean isAccept(RequestEvent event) {
+	protected boolean isAccept(ClientEvent event) {
 		if (IoConstant.EVENT_TYPE_CONFIG == event.getType()) {
 			return false;
 		}

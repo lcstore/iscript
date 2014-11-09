@@ -106,9 +106,9 @@ public class PcsClient {
 
 	@Test
 	public void mkdir() throws Exception {
-		String access_token = "21.fcc31ac0a79532ae080e3b26e191b55b.2592000.1405140469.4026763474-2920106";
+		String access_token = "23.e6a365f2f4369e60eeedfdc9d141a591.2592000.1418106087.4026763474-2920106";
 		String url = "https://pcs.baidu.com/rest/2.0/pcs/file";
-		String path = "/apps/emao_doc/mydi";
+		String path = "/apps/idoc/mydi";
 		// Get请求
 		HttpPost httpPost = new HttpPost(url);
 		List<NameValuePair> paramList = new ArrayList<NameValuePair>();

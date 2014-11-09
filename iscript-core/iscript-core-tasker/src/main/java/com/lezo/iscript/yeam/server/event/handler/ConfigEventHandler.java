@@ -14,14 +14,14 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.server.event.RequestEvent;
+import com.lezo.iscript.yeam.server.event.ClientEvent;
 import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
 public class ConfigEventHandler extends AbstractEventHandler {
 	private static Logger logger = LoggerFactory.getLogger(ConfigEventHandler.class);
 
-	protected void doHandle(RequestEvent event) {
+	protected void doHandle(ClientEvent event) {
 		List<ConfigWritable> configWritables = new ArrayList<ConfigWritable>();
 		IoRequest ioRequest = getIoRequest(event);
 		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
@@ -45,7 +45,7 @@ public class ConfigEventHandler extends AbstractEventHandler {
 	}
 
 	@Override
-	protected boolean isAccept(RequestEvent event) {
+	protected boolean isAccept(ClientEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
 		if (ioRequest == null) {
 			return false;

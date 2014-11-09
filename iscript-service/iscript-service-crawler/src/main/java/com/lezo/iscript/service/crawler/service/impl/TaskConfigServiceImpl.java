@@ -26,7 +26,7 @@ public class TaskConfigServiceImpl implements TaskConfigService {
 
 	@Override
 	public void updateOne(TaskConfigDto configDto) {
-		taskConfigDao.updateOne(configDto);
+		taskConfigDao.updateTaskConfigDto(configDto);
 	}
 
 	@Override

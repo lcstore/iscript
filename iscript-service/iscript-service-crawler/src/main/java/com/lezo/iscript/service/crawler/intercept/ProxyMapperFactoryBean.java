@@ -44,17 +44,24 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 		try {
 			String sqlMapper = getObjectType().getName() + "." + method.getName();
 			Object paramObject = SqlSessionParamsUtils.doConvert(method, args);
-			if (!(paramObject instanceof Map)) {
+			if (paramObject instanceof Map) {
+				Map<String, Object> paramMap = (Map<String, Object>) paramObject;
+				String batchKey = methodParamMap.get(method.getName());
+				Collection<Object> batchCollection = (Collection<Object>) paramMap.get(batchKey);
+				for (Object bObject : batchCollection) {
+					paramMap.put(batchKey, bObject);
+					result += sqlSession.update(sqlMapper, paramMap);
+				}
+				sqlSession.commit();
+			} else if (paramObject instanceof List) {
+				Collection<Object> batchCollection = (Collection<Object>) paramObject;
+				for (Object bObject : batchCollection) {
+					result += sqlSession.update(sqlMapper, bObject);
+				}
+				sqlSession.commit();
+			} else {
 				throw new RuntimeException("It is not an auto batch mapper:[" + sqlMapper + "]");
 			}
-			Map<String, Object> paramMap = (Map<String, Object>) paramObject;
-			String batchKey = methodParamMap.get(method.getName());
-			Collection<Object> batchCollection = (Collection<Object>) paramMap.get(batchKey);
-			for (Object bObject : batchCollection) {
-				paramMap.put(batchKey, bObject);
-				result += sqlSession.update(sqlMapper, paramMap);
-			}
-			sqlSession.commit();
 		} catch (Exception ex) {
 			sqlSession.rollback();
 			throw ex;
@@ -85,9 +92,13 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 		methodParamMap.clear();
 		for (String mParam : invokParams) {
 			int index = mParam.indexOf(":");
-			String methodName = mParam.substring(0, index);
-			String convertParam = mParam.substring(index + 1);
-			methodParamMap.put(methodName, convertParam);
+			if (index < 0) {
+				methodParamMap.put(mParam.trim(), "param1");
+			} else {
+				String methodName = mParam.substring(0, index);
+				String convertParam = mParam.substring(index + 1);
+				methodParamMap.put(methodName.trim(), convertParam.trim());
+			}
 		}
 		this.invokParams = invokParams;
 	}

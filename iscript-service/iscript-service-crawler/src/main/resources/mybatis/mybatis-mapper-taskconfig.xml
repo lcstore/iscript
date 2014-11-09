@@ -26,7 +26,7 @@
 			(#{item.type},#{item.config},#{item.source},#{item.status},#{item.destType},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="TaskConfigDto">
+	<update id="updateTaskConfigDto" parameterType="TaskConfigDto">
 		UPDATE T_TASK_CONFIG SET
 		CONFIG=#{config}, SOURCE=#{source}, STATUS=#{status},
 		DEST_TYPE=#{destType},

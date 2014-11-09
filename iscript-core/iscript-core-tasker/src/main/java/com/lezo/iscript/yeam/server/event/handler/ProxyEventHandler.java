@@ -23,23 +23,23 @@ import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.server.event.RequestEvent;
+import com.lezo.iscript.yeam.server.event.ClientEvent;
 import com.lezo.iscript.yeam.writable.ProxyWritable;
 
 public class ProxyEventHandler extends AbstractEventHandler {
-	private static final int MAX_PROXY_PER_CLIENT = 5;
+	private static final int MAX_PROXY_PER_CLIENT = 50;
 	private static Logger logger = LoggerFactory.getLogger(ProxyEventHandler.class);
 	private static final Object OFFER_LOCK = new Object();
 	private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 	private ConcurrentHashMap<String, Integer> clientProxyMap = new ConcurrentHashMap<String, Integer>();
 
-	protected void doHandle(RequestEvent event) {
+	protected void doHandle(ClientEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
 		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
 		offerProxys(hObject, event);
 	}
 
-	private void offerProxys(JSONObject hObject, RequestEvent event) {
+	private void offerProxys(JSONObject hObject, ClientEvent event) {
 		long start = System.currentTimeMillis();
 		Integer active = JSONUtils.getInteger(hObject, "proxyactive");
 		int remain = MAX_PROXY_PER_CLIENT - active;
@@ -82,8 +82,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 			}
 			int limit = remain - offerProxyList.size();
 			if (limit > 0) {
-				List<ProxyDetectDto> newDtoList = proxyDetectService.getProxyDetectDtosFromId(0L, limit,
-						ProxyDetectDto.STATUS_USABLE);
+				List<ProxyDetectDto> newDtoList = proxyDetectService.getProxyDetectDtosFromId(0L, limit, ProxyDetectDto.STATUS_USABLE);
 				offerProxyList.addAll(newDtoList);
 			}
 			List<ProxyDetectDto> update2WorkList = turn2WorkDto(offerProxyList, clientName);
@@ -94,8 +93,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		sendProxys(event, clientName, proxyWritableList, start);
 		if (offerProxyList.size() < remain) {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("offer proxy[%d] for client:%s,but except[%d],cost:%s", offerProxyList.size(),
-					clientName, remain, cost);
+			String msg = String.format("offer proxy[%d] for client:%s,but except[%d],cost:%s", offerProxyList.size(), clientName, remain, cost);
 			logger.warn(msg);
 		}
 		clientProxyMap.put(clientName, active + offerProxyList.size());
@@ -125,8 +123,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 
 	private List<ProxyDetectDto> offerDomainProxy(Set<String> domainSet, int remain) {
 		List<String> domainList = new ArrayList<String>(domainSet);
-		List<ProxyDetectDto> dtoList = proxyDetectService.getUnionProxyDetectDtoFromDomain(domainList,
-				ProxyDetectDto.STATUS_USABLE, 1);
+		List<ProxyDetectDto> dtoList = proxyDetectService.getUnionProxyDetectDtoFromDomain(domainList, ProxyDetectDto.STATUS_USABLE, 1);
 		List<ProxyDetectDto> offerProxyList = new ArrayList<ProxyDetectDto>(remain);
 		for (ProxyDetectDto dto : dtoList) {
 			if (offerProxyList.size() < remain) {
@@ -137,8 +134,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 	}
 
 	private List<ProxyDetectDto> turnLost2RetryStatus(String clientName) {
-		List<ProxyDetectDto> workDtos = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE,
-				ProxyDetectDto.STATUS_WORK);
+		List<ProxyDetectDto> workDtos = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE, ProxyDetectDto.STATUS_WORK);
 		List<ProxyDetectDto> workList = new ArrayList<ProxyDetectDto>();
 		Date curDate = new Date();
 		for (ProxyDetectDto dto : workDtos) {
@@ -151,7 +147,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		return workList;
 	}
 
-	private void sendProxys(RequestEvent event, String clientName, List<ProxyWritable> offerProxyList, long start) {
+	private void sendProxys(ClientEvent event, String clientName, List<ProxyWritable> offerProxyList, long start) {
 		if (offerProxyList.isEmpty()) {
 			return;
 		}
@@ -161,13 +157,11 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		WriteFuture writeFuture = event.getSession().write(ioRespone);
 		if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("Fail to offer proxy[%d] for client:%s,cost:%s", offerProxyList.size(),
-					clientName, cost);
+			String msg = String.format("Fail to offer proxy[%d] for client:%s,cost:%s", offerProxyList.size(), clientName, cost);
 			logger.warn(msg, writeFuture.getException());
 		} else {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String
-					.format("offer proxy[%d] for client:%s,cost:%s", offerProxyList.size(), clientName, cost);
+			String msg = String.format("offer proxy[%d] for client:%s,cost:%s", offerProxyList.size(), clientName, cost);
 			logger.info(msg);
 		}
 	}
@@ -185,7 +179,7 @@ public class ProxyEventHandler extends AbstractEventHandler {
 	}
 
 	@Override
-	protected boolean isAccept(RequestEvent event) {
+	protected boolean isAccept(ClientEvent event) {
 		IoRequest ioRequest = getIoRequest(event);
 		if (ioRequest == null) {
 			return false;
@@ -203,5 +197,4 @@ public class ProxyEventHandler extends AbstractEventHandler {
 		Integer active = JSONUtils.getInteger(hObject, "proxyactive");
 		return active != null && active < MAX_PROXY_PER_CLIENT;
 	}
-
 }

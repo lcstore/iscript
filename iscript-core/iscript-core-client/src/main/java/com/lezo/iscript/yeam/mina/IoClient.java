@@ -78,7 +78,7 @@ public class IoClient extends IoHandlerAdapter {
 				future.awaitUninterruptibly();
 				return future.getSession();
 			} catch (RuntimeIoException e) {
-				logger.warn("Can not coonect to " + host + ":" + port);
+				logger.warn("Can not connect to " + host + ":" + port);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {

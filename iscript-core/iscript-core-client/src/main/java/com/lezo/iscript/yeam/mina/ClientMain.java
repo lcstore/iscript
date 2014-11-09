@@ -34,6 +34,6 @@ public class ClientMain {
 			public void run() {
 				PersistentCollector.getInstance().getBufferWriter().flush();
 			}
-		}, 60000L, 300000L);
+		}, 60000L, 60000L);
 	}
 }

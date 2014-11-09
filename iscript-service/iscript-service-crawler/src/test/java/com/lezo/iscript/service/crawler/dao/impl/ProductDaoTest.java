@@ -44,9 +44,25 @@ public class ProductDaoTest {
 		List<ProductDto> dtoList = productDao.getProductDtos(codeList, null);
 		dtoList = productDao.getProductDtos(codeList, null);
 		for (ProductDto dto : dtoList) {
-			dto.setProductAttr("update.attr.999");
+			dto.setProductAttr("update.attr.99999");
 		}
 		productDao.batchUpdate(dtoList);
+	}
+
+	@Test
+	public void testBatchUpdateUnionUrls() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+		ProductDao productDao = SpringBeanUtils.getBean(ProductDao.class);
+		List<String> codeList = new ArrayList<String>();
+		codeList.add("productCode");
+		List<ProductDto> dtoList = new ArrayList<ProductDto>();
+		ProductDto dto = new ProductDto();
+		dto.setProductAttr("updat.test");
+		dto.setId(55221L);
+		dto.setUnionUrl("unionUrl.test");
+		dtoList.add(dto);
+		productDao.batchUpdateUnionUrls(dtoList);
 	}
 
 	@Test
@@ -58,5 +74,21 @@ public class ProductDaoTest {
 		codeList.add("productCode");
 		List<ProductDto> dtoList = productDao.getProductDtos(codeList, null);
 		Assert.assertEquals(false, dtoList.isEmpty());
+	}
+
+	@Test
+	public void testFillUnionUrls() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+		ProductDao productDao = SpringBeanUtils.getBean(ProductDao.class);
+		List<String> codeList = new ArrayList<String>();
+		codeList.add("productCode");
+		List<ProductDto> dtoList = new ArrayList<ProductDto>();
+		ProductDto dto = new ProductDto();
+		dto.setProductAttr("updat.test");
+		dto.setId(55221L);
+		dto.setUnionUrl("unionUrl.test");
+		dtoList.add(dto);
+		productDao.batchUpdateUnionUrls(dtoList);
 	}
 }

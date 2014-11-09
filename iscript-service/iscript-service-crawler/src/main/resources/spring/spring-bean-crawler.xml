@@ -20,7 +20,7 @@
 			value="com.lezo.iscript.service.crawler.dao.TaskPriorityDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
-	
+
 	<bean id="proxyAddrDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxyAddrDao" />
@@ -44,6 +44,12 @@
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProductDao" />
+		<property name="invokParams">
+			<list>
+				<value>batchUpdate</value>
+				<value>batchUpdateUnionUrls</value>
+			</list>
+		</property>
 	</bean>
 	<bean id="productStatDao"
 		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">

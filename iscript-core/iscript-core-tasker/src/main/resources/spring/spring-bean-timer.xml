@@ -32,18 +32,18 @@
 	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
-	<task:executor id="executor" pool-size="5" />
+	<task:executor id="executor" pool-size="8" />
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheConfigTimer" method="run"
-			fixed-delay="60000" />
+			fixed-delay="30000" />
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
-			fixed-delay="60000" />
+			fixed-delay="30000" />
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">
