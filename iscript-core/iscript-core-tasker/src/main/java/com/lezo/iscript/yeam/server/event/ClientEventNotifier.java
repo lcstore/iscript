@@ -31,11 +31,11 @@ public class ClientEventNotifier {
 		private static ClientEventHandler handler;
 		static {
 			AbstractEventHandler configEventHandler = new ConfigEventHandler();
-			AbstractEventHandler proxyEventHandler = new ProxyEventHandler();
+//			AbstractEventHandler proxyEventHandler = new ProxyEventHandler();
 			AbstractEventHandler taskEventHandler = new TaskLackEventHandler();
 
-			configEventHandler.setNextHandler(proxyEventHandler);
-			proxyEventHandler.setNextHandler(taskEventHandler);
+			configEventHandler.setNextHandler(taskEventHandler);
+//			proxyEventHandler.setNextHandler(taskEventHandler);
 			handler = configEventHandler;
 		}
 	}

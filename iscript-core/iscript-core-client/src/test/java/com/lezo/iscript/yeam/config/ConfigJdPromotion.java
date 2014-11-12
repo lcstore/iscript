@@ -3,11 +3,15 @@ package com.lezo.iscript.yeam.config;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +23,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
@@ -40,8 +45,72 @@ public class ConfigJdPromotion implements ConfigParser {
 		return this.getClass().getSimpleName();
 	}
 
+	private void ensureCookie() throws Exception {
+		Set<String> checkSet = new HashSet<String>();
+		checkSet.add("__jda");
+		checkSet.add("__jdb");
+		checkSet.add("__jdc");
+		checkSet.add("__jdv");
+		boolean hasAddCookie = false;
+		for (Cookie ck : client.getCookieStore().getCookies()) {
+			if (checkSet.contains(ck.getName())) {
+				hasAddCookie = true;
+				break;
+			}
+		}
+		if (!hasAddCookie) {
+			Scriptable scope = EnvjsUtils.initStandardObjects(null);
+			addCookie(client, scope);
+		}
+	}
+
+	private void addCookie(DefaultHttpClient client, Scriptable scope) throws Exception {
+		Context cx = EnvjsUtils.enterContext();
+		StringBuilder sb = new StringBuilder();
+		// sb.append("var location={};var document={}; var navigator={};");
+		sb.append("location.href=\"http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/\";");
+		sb.append("document.domain=\"passport.jd.com\";");
+		sb.append("navigator.userAgent='Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36';");
+		sb.append("navigator.platform=\"Win32\";");
+		sb.append("document.title=\"登录京东\";");
+		sb.append("document.referrer=\"\";");
+		sb.append("function Image(width, height){_globalImg=this;};");
+		sb.append("Image.prototype = document.createElement('img');");
+		HttpGet get = new HttpGet("http://passport.jd.com/new/misc/js/jquery-1.2.6.pack.js?t=20130718");
+		get.addHeader("Referer", "http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/");
+		String encodeJQuery = HttpClientUtils.getContent(client, get);
+		String callJQuery = "var jQ =" + encodeJQuery + ";eval(jQ);";
+		sb.append(callJQuery);
+		get = new HttpGet("http://csc.jd.com/wl.js");
+		get.addHeader("Referer", "http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/");
+		String jsCookieHtml = HttpClientUtils.getContent(client, get);
+		sb.append(jsCookieHtml);
+		sb.append("var __jda=cookieUtils.get('__jda');");
+		sb.append("var __jdb=cookieUtils.get('__jdb');");
+		sb.append("var __jdc=cookieUtils.get('__jdc');");
+		// sb.append("var __jdu=cookieUtils.get('__jdu');;");
+		sb.append("var __jdv=cookieUtils.get('__jdv');");
+		sb.append("var logoUrl=_globalImg.src;");
+		cx.evaluateString(scope, sb.toString(), "cmd", 0, null);
+		List<String> cookieList = new ArrayList<String>();
+		cookieList.add("__jda");
+		cookieList.add("__jdb");
+		cookieList.add("__jdc");
+		cookieList.add("__jdv");
+		for (String key : cookieList) {
+			String cookieValue = Context.toString(ScriptableObject.getProperty(scope, key));
+			BasicClientCookie cookie = new BasicClientCookie(key, cookieValue);
+			cookie.setDomain(".jd.com");
+			client.getCookieStore().addCookie(cookie);
+		}
+		for (Cookie ck : client.getCookieStore().getCookies()) {
+			System.err.println(ck);
+		}
+	}
+
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
+		ensureCookie();
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
 		return EMTPY_RESULT;

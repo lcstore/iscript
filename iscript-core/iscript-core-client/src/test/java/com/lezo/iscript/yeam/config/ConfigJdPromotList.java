@@ -8,13 +8,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
@@ -40,9 +46,29 @@ public class ConfigJdPromotList implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
+		ensureCookie();
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
 		return itemObject.toString();
+	}
+
+	private void ensureCookie() throws Exception {
+		Set<String> checkSet = new HashSet<String>();
+		checkSet.add("__jda");
+		checkSet.add("__jdb");
+		checkSet.add("__jdc");
+		checkSet.add("__jdv");
+		boolean hasAddCookie = false;
+		for (Cookie ck : client.getCookieStore().getCookies()) {
+			if (checkSet.contains(ck.getName())) {
+				hasAddCookie = true;
+				break;
+			}
+		}
+		if (!hasAddCookie) {
+			Scriptable scope = EnvjsUtils.initStandardObjects(null);
+			addCookie(client, scope);
+		}
 	}
 
 	private void doCollect(JSONObject dataObject, TaskWritable task) {
@@ -59,6 +85,50 @@ public class ConfigJdPromotList implements ConfigParser {
 		PersistentCollector.getInstance().getBufferWriter().write(dataList);
 	}
 
+	private void addCookie(DefaultHttpClient client, Scriptable scope) throws Exception {
+		Context cx = EnvjsUtils.enterContext();
+		StringBuilder sb = new StringBuilder();
+		// sb.append("var location={};var document={}; var navigator={};");
+		sb.append("location.href=\"http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/\";");
+		sb.append("document.domain=\"passport.jd.com\";");
+		sb.append("navigator.userAgent='Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36';");
+		sb.append("navigator.platform=\"Win32\";");
+		sb.append("document.title=\"登录京东\";");
+		sb.append("document.referrer=\"\";");
+		sb.append("function Image(width, height){_globalImg=this;};");
+		sb.append("Image.prototype = document.createElement('img');");
+		HttpGet get = new HttpGet("http://passport.jd.com/new/misc/js/jquery-1.2.6.pack.js?t=20130718");
+		get.addHeader("Referer", "http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/");
+		String encodeJQuery = HttpClientUtils.getContent(client, get);
+		String callJQuery = "var jQ =" + encodeJQuery + ";eval(jQ);";
+		sb.append(callJQuery);
+		get = new HttpGet("http://csc.jd.com/wl.js");
+		get.addHeader("Referer", "http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/");
+		String jsCookieHtml = HttpClientUtils.getContent(client, get);
+		sb.append(jsCookieHtml);
+		sb.append("var __jda=cookieUtils.get('__jda');");
+		sb.append("var __jdb=cookieUtils.get('__jdb');");
+		sb.append("var __jdc=cookieUtils.get('__jdc');");
+		// sb.append("var __jdu=cookieUtils.get('__jdu');;");
+		sb.append("var __jdv=cookieUtils.get('__jdv');");
+		sb.append("var logoUrl=_globalImg.src;");
+		cx.evaluateString(scope, sb.toString(), "cmd", 0, null);
+		List<String> cookieList = new ArrayList<String>();
+		cookieList.add("__jda");
+		cookieList.add("__jdb");
+		cookieList.add("__jdc");
+		cookieList.add("__jdv");
+		for (String key : cookieList) {
+			String cookieValue = Context.toString(ScriptableObject.getProperty(scope, key));
+			BasicClientCookie cookie = new BasicClientCookie(key, cookieValue);
+			cookie.setDomain(".jd.com");
+			client.getCookieStore().addCookie(cookie);
+		}
+		for (Cookie ck : client.getCookieStore().getCookies()) {
+			System.err.println(ck);
+		}
+	}
+
 	/**
 	 * {"data":[],"nexts":[]}
 	 * 
@@ -70,7 +140,6 @@ public class ConfigJdPromotList implements ConfigParser {
 		String url = task.get("url").toString();
 		JSONObject itemObject = new JSONObject();
 		HttpGet get = new HttpGet(url);
-		get.addHeader("Cookie", "__jda=183698212.1642501015.1412589727.1415285934.1415794562.12; __jdv=183698212|kong|t_51698052_|tuiguang|d76cc5be82724528b3aac83fa9ee15d8; __jdu=1642501015; unpl=V2_ZzNtbRdRREcnDBUAchpaBmIHEVQRVRNFJwFEAysRCFFnB0dUclRCFXAURlRnGFsUZAAZWUpcQRFFCHZQex5UDGYHEW1yZ0MWRQF2VHwcXwFmAxNdRmc%3d; unionuuid=V2_ZgJGXhJeQkZ9W0VdfhBYBW4ARl1KAxEQcwBGVXwZX1cIABNdR1dCF3QIRVZ9Gl9qZAARQkVQXBFqCEFTbgxJ; mt_xid=52007|%7B%22unt%22%3A%222014-10-30T12%3A37%3A21%22%2C%22jd_pop%22%3Anull%2C%22ad_sku_type%22%3A%22%22%2C%22rf%22%3A0%2C%22stp%22%3A%221%22%2C%22ad_type%22%3A%22%22%2C%22xjdb%22%3A%221642501015%22%7D; mt_subsite=207944_197; mt_ext=%7B%22unt%22%3A%222014-10-30T12%3A37%3A21%22%2C%22jd_pop%22%3Anull%2C%22ad_sku_type%22%3A%22%22%2C%22rf%22%3A0%2C%22stp%22%3A%221%22%2C%22ad_type%22%3A%22%22%2C%22xjdb%22%3A%221642501015%22%7D; ipLocation=%u5317%u4EAC; ipLoc-djd=2-2813-2865-0; __jdb=183698212.1.1642501015|12.1415794562; __jdc=183698212");
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html, url);
 		addProducts(dom, itemObject);
@@ -125,7 +194,6 @@ public class ConfigJdPromotList implements ConfigParser {
 		if (url.indexOf("http://sale.jd.com/act/") > -1) {
 			return;
 		}
-		System.err.println(dom);
 		Elements actAs = dom.select("a[href*=sale.jd.com/act/]:not(a[href*=sale.jd.com/act/][rel=nofollow])");
 		if (actAs.isEmpty()) {
 			return;

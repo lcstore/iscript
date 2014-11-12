@@ -36,7 +36,7 @@ public class SignOnStrategy implements ResultStrategy, Closeable {
 
 	public SignOnStrategy() {
 		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, getSignDate(0, 15, 0));
+		this.timer.schedule(task, 5 * 60 * 1000, 24 * 60 * 60 * 1000);
 	}
 
 	public Date getSignDate(int addDay, int hour, int minute) {
@@ -104,9 +104,6 @@ public class SignOnStrategy implements ResultStrategy, Closeable {
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
 			} finally {
-				SignOnStrategy.this.timer.cancel();
-				SignOnStrategy.this.timer = new Timer("CreateTaskTimer");
-				SignOnStrategy.this.timer.schedule(task, getSignDate(1, 9, 30));
 				long cost = System.currentTimeMillis() - start;
 				logger.info("CreateTaskTimer is done.cost:{}", cost);
 				running = false;

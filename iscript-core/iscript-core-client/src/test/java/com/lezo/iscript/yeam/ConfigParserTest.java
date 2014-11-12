@@ -52,9 +52,9 @@ public class ConfigParserTest {
 	@Test
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
+		parser = new ConfigJdPromotList();
 		parser = new ConfigJdPromotion();
 		parser = new ConfigJdProduct();
-		 parser = new ConfigJdPromotList();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
@@ -72,6 +72,7 @@ public class ConfigParserTest {
 		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
 		url = "http://item.yhd.com/item/27838177";
 		url = "http://xuan.jd.com/youhui/1-0-0-1.html";
+		url = "http://item.jd.com/633371.html";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
 //		url = "http://item.yhd.com/item/lp/369182_8382612_1";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";
