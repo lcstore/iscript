@@ -70,6 +70,7 @@ public class ConfigJdPromotList implements ConfigParser {
 		String url = task.get("url").toString();
 		JSONObject itemObject = new JSONObject();
 		HttpGet get = new HttpGet(url);
+		get.addHeader("Cookie", "__jda=183698212.1642501015.1412589727.1415285934.1415794562.12; __jdv=183698212|kong|t_51698052_|tuiguang|d76cc5be82724528b3aac83fa9ee15d8; __jdu=1642501015; unpl=V2_ZzNtbRdRREcnDBUAchpaBmIHEVQRVRNFJwFEAysRCFFnB0dUclRCFXAURlRnGFsUZAAZWUpcQRFFCHZQex5UDGYHEW1yZ0MWRQF2VHwcXwFmAxNdRmc%3d; unionuuid=V2_ZgJGXhJeQkZ9W0VdfhBYBW4ARl1KAxEQcwBGVXwZX1cIABNdR1dCF3QIRVZ9Gl9qZAARQkVQXBFqCEFTbgxJ; mt_xid=52007|%7B%22unt%22%3A%222014-10-30T12%3A37%3A21%22%2C%22jd_pop%22%3Anull%2C%22ad_sku_type%22%3A%22%22%2C%22rf%22%3A0%2C%22stp%22%3A%221%22%2C%22ad_type%22%3A%22%22%2C%22xjdb%22%3A%221642501015%22%7D; mt_subsite=207944_197; mt_ext=%7B%22unt%22%3A%222014-10-30T12%3A37%3A21%22%2C%22jd_pop%22%3Anull%2C%22ad_sku_type%22%3A%22%22%2C%22rf%22%3A0%2C%22stp%22%3A%221%22%2C%22ad_type%22%3A%22%22%2C%22xjdb%22%3A%221642501015%22%7D; ipLocation=%u5317%u4EAC; ipLoc-djd=2-2813-2865-0; __jdb=183698212.1.1642501015|12.1415794562; __jdc=183698212");
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html, url);
 		addProducts(dom, itemObject);
@@ -124,6 +125,7 @@ public class ConfigJdPromotList implements ConfigParser {
 		if (url.indexOf("http://sale.jd.com/act/") > -1) {
 			return;
 		}
+		System.err.println(dom);
 		Elements actAs = dom.select("a[href*=sale.jd.com/act/]:not(a[href*=sale.jd.com/act/][rel=nofollow])");
 		if (actAs.isEmpty()) {
 			return;

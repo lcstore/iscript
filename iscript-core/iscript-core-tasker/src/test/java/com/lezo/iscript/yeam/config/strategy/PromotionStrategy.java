@@ -55,13 +55,13 @@ public class PromotionStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
-			urlSet.add("http://xuan.jd.com/youhui/1-0-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/2-0-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/3-0-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/4-0-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/5-0-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/6-0-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/7-0-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/1-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/2-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/3-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/4-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/5-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/6-0-0-1.html");
+			urlSet.add("http://xuan.jd.com/youhui/7-0-0-1.html");
 
 			typeMap.put("ConfigJdPromotList", urlSet);
 
