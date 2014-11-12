@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
+	version="2.5" metadata-complete="true">
+
+	<env-entry>
+		<env-entry-name>solr/home</env-entry-name>
+		<env-entry-value>D:\codes\lezo\solr_home</env-entry-value>
+		<env-entry-type>java.lang.String</env-entry-type>
+	</env-entry>
+
 	<display-name>tasker</display-name>
 
 	<description>sesion过期时间,单位为分种</description>
@@ -56,24 +62,36 @@
 		<filter-name>CharacterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<filter>
+		<filter-name>solrRequestFilter</filter-name>
+		<filter-class>com.lezo.iscript.yeam.solr.CustomSolrDispatchFilter</filter-class>
+		<init-param>
+			<param-name>path-prefix</param-name>
+			<param-value>/s2</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>solrRequestFilter</filter-name>
+		<url-pattern>/s2/*</url-pattern>
+	</filter-mapping>
 
 
-
-    <servlet>
-        <servlet-name>resulter-servlet</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:resulter-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>2</load-on-startup>
-     </servlet>
-	 <servlet-mapping>
-        <servlet-name>resulter-servlet</servlet-name>
-        <url-pattern>/resultservlet/*</url-pattern>
-     </servlet-mapping>
+	<servlet>
+		<servlet-name>resulter-servlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:resulter-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>resulter-servlet</servlet-name>
+		<url-pattern>/resultservlet/*</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>admin.html</welcome-file>
 	</welcome-file-list>
 </web-app>
