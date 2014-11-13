@@ -31,8 +31,6 @@
 		class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
 	<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
 
-	<mvc:resources mapping="/resources/**" location="/resources/" />
-	<mvc:resources mapping="/css/**" location="solr/css/**" />
 
 	<bean
 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
