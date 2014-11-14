@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5" metadata-complete="true">
-
-	<display-name>tasker</display-name>
+	version="2.5">
+	<display-name>resulter</display-name>
 
 	<description>sesion过期时间,单位为分种</description>
 	<session-config>
@@ -32,8 +32,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-				classpath:spring-config-ds.xml,
-				classpath:spring/spring-bean-resulter.xml
+				classpath:spring-config-ds.xml
 		</param-value>
 	</context-param>
 	<listener>
@@ -56,45 +55,22 @@
 		<filter-name>CharacterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<filter>
-		<filter-name>solrRequestFilter</filter-name>
-		<filter-class>com.lezo.iscript.yeam.solr.CustomSolrDispatchFilter</filter-class>
-		<init-param>
-			<param-name>path-prefix</param-name>
-			<param-value>/s2</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>solrRequestFilter</filter-name>
-		<url-pattern>/s2/*</url-pattern>
-	</filter-mapping>
-
 
 	<servlet>
-		<servlet-name>resulter-servlet</servlet-name>
+		<servlet-name>springmvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>classpath:resulter-servlet.xml</param-value>
+			<param-value>classpath:spring/spring-config-mvc.xml</param-value>
 		</init-param>
-		<load-on-startup>2</load-on-startup>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>resulter-servlet</servlet-name>
-		<url-pattern>/*</url-pattern>
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>resulter-servlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>classpath:resulter-servlet.xml</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
 
 	<welcome-file-list>
-		<welcome-file>admin.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 </web-app>
