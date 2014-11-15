@@ -28,5 +28,6 @@
 
 	<import resource="classpath:spring/spring-config-mvc.xml" />
 	<import resource="classpath:spring/spring-bean-timer.xml" />
+	<import resource="classpath:spring/spring-bean-resulter.xml" />
 	<import resource="classpath*:spring/spring-bean-crawler.xml" />
 </beans>  
