@@ -169,6 +169,9 @@ public class ConfigYhdPromotion implements ConfigParser {
 				}
 			}
 		}
+		promotEls = null;
+		dom = null;
+		scope = null;
 		return promotionList;
 	}
 
@@ -182,6 +185,7 @@ public class ConfigYhdPromotion implements ConfigParser {
 				break;
 			}
 		}
+		scriptEls = null;
 		String productId = dom.select("#productId").val();
 		String merchantId = dom.select("#merchantId").val();
 		String productMercantId = dom.select("#productMercantId").val();

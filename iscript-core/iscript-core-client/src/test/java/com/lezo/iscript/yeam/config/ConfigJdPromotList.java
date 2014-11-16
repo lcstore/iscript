@@ -46,7 +46,7 @@ public class ConfigJdPromotList implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		ensureCookie();
+		//ensureCookie();
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
 		return itemObject.toString();

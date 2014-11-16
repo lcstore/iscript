@@ -54,7 +54,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotList();
 		parser = new ConfigJdPromotion();
-		parser = new ConfigJdProduct();
+//		parser = new ConfigJdProduct();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();

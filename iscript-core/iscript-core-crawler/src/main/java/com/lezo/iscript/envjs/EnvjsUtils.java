@@ -30,6 +30,13 @@ public class EnvjsUtils {
 		return cx;
 	}
 
+	/**
+	 * Memory leak
+	 * 
+	 * @author lezo
+	 *
+	 */
+	@Deprecated
 	public static Scriptable initStandardObjects(ScriptableObject parent) throws Exception {
 		Context cx = enterContext();
 		Scriptable scope = null;

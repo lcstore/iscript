@@ -10,6 +10,13 @@ import org.w3c.dom.NodeList;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 import com.lezo.iscript.envjs.dom.ElementJavaObject;
 
+/**
+ * Memory leak
+ * 
+ * @author lezo
+ *
+ */
+@Deprecated
 public class EnvjsWrapFactory extends WrapFactory {
 	@Override
 	public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {

@@ -1,17 +1,21 @@
 package com.lezo.iscript.yeam.config;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.cookie.Cookie;
@@ -40,6 +44,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigJdProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
+	private HttpDirector httpDirector = new HttpDirector(client);
 	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static int[] stockArr = { 0, -1, 1 };
@@ -64,52 +69,21 @@ public class ConfigJdProduct implements ConfigParser {
 			}
 		}
 		if (!hasAddCookie) {
-			Scriptable scope = EnvjsUtils.initStandardObjects(null);
-			addCookie(client, scope);
+			addCookie(client, null);
 		}
 	}
 
 	private void addCookie(DefaultHttpClient client, Scriptable scope) throws Exception {
-		Context cx = EnvjsUtils.enterContext();
-		StringBuilder sb = new StringBuilder();
-		// sb.append("var location={};var document={}; var navigator={};");
-		sb.append("location.href=\"http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/\";");
-		sb.append("document.domain=\"passport.jd.com\";");
-		sb.append("navigator.userAgent='Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36';");
-		sb.append("navigator.platform=\"Win32\";");
-		sb.append("document.title=\"登录京东\";");
-		sb.append("document.referrer=\"\";");
-		sb.append("function Image(width, height){_globalImg=this;};");
-		sb.append("Image.prototype = document.createElement('img');");
-		HttpGet get = new HttpGet("http://passport.jd.com/new/misc/js/jquery-1.2.6.pack.js?t=20130718");
-		get.addHeader("Referer", "http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/");
-		String encodeJQuery = HttpClientUtils.getContent(client, get);
-		String callJQuery = "var jQ =" + encodeJQuery + ";eval(jQ);";
-		sb.append(callJQuery);
-		get = new HttpGet("http://csc.jd.com/wl.js");
-		get.addHeader("Referer", "http://passport.jd.com/new/login.aspx?ReturnUrl=http://boss.jd.com/redirect/goto?returnUrl=http://bbs.zone.jd.com/");
-		String jsCookieHtml = HttpClientUtils.getContent(client, get);
-		sb.append(jsCookieHtml);
-		sb.append("var __jda=cookieUtils.get('__jda');");
-		sb.append("var __jdb=cookieUtils.get('__jdb');");
-		sb.append("var __jdc=cookieUtils.get('__jdc');");
-		// sb.append("var __jdu=cookieUtils.get('__jdu');;");
-		sb.append("var __jdv=cookieUtils.get('__jdv');");
-		sb.append("var logoUrl=_globalImg.src;");
-		cx.evaluateString(scope, sb.toString(), "cmd", 0, null);
-		List<String> cookieList = new ArrayList<String>();
-		cookieList.add("__jda");
-		cookieList.add("__jdb");
-		cookieList.add("__jdc");
-		cookieList.add("__jdv");
-		for (String key : cookieList) {
-			String cookieValue = Context.toString(ScriptableObject.getProperty(scope, key));
+		Map<String, String> cookieMap = new HashMap<String, String>();
+		cookieMap.put("__jda", "95931165.580577879.1416135846.1416135846.1416135846.1");
+		cookieMap.put("__jdb", "95931165.1.580577879|1.1416135846");
+		cookieMap.put("__jdc", "95931165");
+		cookieMap.put("__jdv", "95931165|direct|-|none|-");
+		for (String key : cookieMap.keySet()) {
+			String cookieValue = cookieMap.get(key);
 			BasicClientCookie cookie = new BasicClientCookie(key, cookieValue);
 			cookie.setDomain(".jd.com");
 			client.getCookieStore().addCookie(cookie);
-		}
-		for (Cookie ck : client.getCookieStore().getCookies()) {
-			System.err.println(ck);
 		}
 	}
 
@@ -151,51 +125,58 @@ public class ConfigJdProduct implements ConfigParser {
 		JSONObject itemObject = new JSONObject();
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get);
-		Document dom = Jsoup.parse(html, url);
-		if (isHome(dom)) {
-			return itemObject;
-		}
-		Elements scriptAs = dom.select("script[type]");
-		ProductBean tBean = new ProductBean();
-		if (!scriptAs.isEmpty()) {
-			String sMark = "";
-			String destScript = null;
-			int size = scriptAs.size();
-			for (int i = 0; i < size; i++) {
-				String script = scriptAs.get(i).html();
-				if (script.indexOf(sMark) >= 0) {
-					destScript = script;
-					break;
-				}
+		Document dom = null;
+		try {
+			dom = Jsoup.parse(html, url);
+			if (isHome(dom)) {
+				return itemObject;
 			}
-			if (destScript != null) {
-				destScript = "var window={}; " + destScript;
-				destScript += " var skuid=window.pageConfig.product.skuid;";
-				destScript += " var name=window.pageConfig.product.name;";
-				evaluateString(destScript, new ScopeCallBack() {
-					@Override
-					public void doCallBack(ScriptableObject scope, Object targetObject) {
-						ProductBean tBean = (ProductBean) targetObject;
-						tBean.setProductCode(Context.toString(ScriptableObject.getProperty(scope, "skuid")));
-						tBean.setProductName(Context.toString(ScriptableObject.getProperty(scope, "name")));
+			Elements scriptAs = dom.select("script[type]");
+			ProductBean tBean = new ProductBean();
+			if (!scriptAs.isEmpty()) {
+				String sMark = "";
+				String destScript = null;
+				int size = scriptAs.size();
+				for (int i = 0; i < size; i++) {
+					String script = scriptAs.get(i).html();
+					if (script.indexOf(sMark) >= 0) {
+						destScript = script;
+						break;
 					}
-				}, tBean);
-				tBean.setProductUrl(url);
-				addPrice(tBean, dom);
-				addAttributes(tBean, dom);
-				addComment(tBean, dom);
-				addBarCode(tBean, dom, task);
-				addStock(tBean, dom, task);
-				addShopInfo(tBean, dom, task);
+				}
+				if (destScript != null) {
+					destScript = "var window={}; " + destScript;
+					destScript += " var skuid=window.pageConfig.product.skuid;";
+					destScript += " var name=window.pageConfig.product.name;";
+					evaluateString(destScript, new ScopeCallBack() {
+						@Override
+						public void doCallBack(ScriptableObject scope, Object targetObject) {
+							ProductBean tBean = (ProductBean) targetObject;
+							tBean.setProductCode(Context.toString(ScriptableObject.getProperty(scope, "skuid")));
+							tBean.setProductName(Context.toString(ScriptableObject.getProperty(scope, "name")));
+						}
+					}, tBean);
+					tBean.setProductUrl(url);
+					addPrice(tBean, dom);
+					addAttributes(tBean, dom);
+					addComment(tBean, dom);
+					addBarCode(tBean, dom, task);
+					addStock(tBean, dom, task);
+					addShopInfo(tBean, dom, task);
+				}
+
+				ResultBean rsBean = new ResultBean();
+				rsBean.getDataList().add(tBean);
+				ObjectMapper mapper = new ObjectMapper();
+				StringWriter writer = new StringWriter();
+				mapper.writeValue(writer, rsBean);
+				return new JSONObject(writer.toString());
 			}
-			ResultBean rsBean = new ResultBean();
-			rsBean.getDataList().add(tBean);
-			ObjectMapper mapper = new ObjectMapper();
-			StringWriter writer = new StringWriter();
-			mapper.writeValue(writer, rsBean);
-			return new JSONObject(writer.toString());
+			scriptAs = null;
+			return itemObject;
+		} finally {
+			closeDocument(dom);
 		}
-		return itemObject;
 	}
 
 	private void addShopInfo(ProductBean tBean, Document dom, TaskWritable task) throws Exception {
@@ -225,6 +206,7 @@ public class ConfigJdProduct implements ConfigParser {
 			tBean.setShopCode(JSONUtils.get(dObject, "vid").toString());
 			tBean.setShopUrl(JSONUtils.getString(dObject, "url"));
 		}
+		scope = null;
 	}
 
 	private void addBarCode(ProductBean tBean, Document dom, TaskWritable task) {
@@ -256,12 +238,13 @@ public class ConfigJdProduct implements ConfigParser {
 			ScriptableObject scope = cx.initStandardObjects();
 			cx.evaluateString(scope, argsString, "<args>", 0, null);
 			ScriptableObject.putProperty(scope, "src", dom.select("body").first());
-			ScriptableObject.putProperty(scope, "http", new HttpDirector(client));
+			ScriptableObject.putProperty(scope, "http", httpDirector);
 			cx.evaluateString(scope, source, "<cmd>", 0, null);
 			Object stockObject = ScriptableObject.getProperty(scope, "stockStatus");
 			Integer stockNum = Integer.valueOf(Context.toString(stockObject));
 			int index = stockNum + 2;
 			tBean.setStockNum(stockArr[index]);
+			scope = null;
 		} finally {
 			Context.exit();
 		}
@@ -308,6 +291,7 @@ public class ConfigJdProduct implements ConfigParser {
 				e.printStackTrace();
 			}
 		}
+		saleTimeAs = null;
 		Elements brandAs = dom.select("div[id^=product-detail].mc ul.detail-list li:containsOwn(品牌),div.breadcrumb span a[href*=.jd.com/pinpai]");
 		if (!brandAs.isEmpty()) {
 			String sBrandName = brandAs.first().text();
@@ -315,6 +299,7 @@ public class ConfigJdProduct implements ConfigParser {
 			sBrandName = sBrandName.replace("品牌:", "");
 			tBean.setProductBrand(sBrandName);
 		}
+		brandAs = null;
 		Elements navAs = dom.select("div.breadcrumb");
 		if (!navAs.isEmpty()) {
 			String sNav = navAs.first().text();
@@ -332,16 +317,26 @@ public class ConfigJdProduct implements ConfigParser {
 			}
 			tBean.setCategoryNav(sb.toString());
 		}
+		navAs = null;
 		Elements modelAs = dom.select("div[id^=product-detail].mc table.Ptable tr td:matchesOwn(^(型号)|(产品型号)$) + td");
 		if (!modelAs.isEmpty()) {
 			tBean.setProductModel(modelAs.first().ownText().trim());
 		}
+		modelAs = null;
 		Elements imgAs = dom.select("#spec-list div.spec-items ul.lh li img[src]");
 		if (!imgAs.isEmpty()) {
 			String imgUrl = imgAs.first().absUrl("src");
 			imgUrl = imgUrl.replace(".360buyimg.com/n5", ".360buyimg.com/n1");
 			tBean.setImgUrl(imgUrl);
 		}
+		imgAs = null;
+	}
+
+	public void closeDocument(Document dom) {
+		if (dom == null) {
+			return;
+		}
+		dom = null;
 	}
 
 	private void addPrice(ProductBean tBean, Document dom) throws Exception {
@@ -377,6 +372,7 @@ public class ConfigJdProduct implements ConfigParser {
 			ScriptableObject scope = cx.initStandardObjects();
 			cx.evaluateString(scope, source, "<cmd>", 0, null);
 			callBack.doCallBack(scope, targetObject);
+			scope = null;
 		} finally {
 			Context.exit();
 		}

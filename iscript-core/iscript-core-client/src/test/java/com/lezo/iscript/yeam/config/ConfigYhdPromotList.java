@@ -141,6 +141,7 @@ public class ConfigYhdPromotList implements ConfigParser {
 		get.addHeader("Referer", url);
 		get.addHeader("DNT", "1");
 		html = HttpClientUtils.getContent(client, get);
+		scope= null;
 		return Jsoup.parse(html, url);
 	}
 

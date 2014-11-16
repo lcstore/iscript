@@ -184,7 +184,9 @@ public class ConfigYhdProduct implements ConfigParser {
 			imgUrl = imgUrl.replace("_60x60.jpg", "_200x200.jpg");
 			productBean.setImgUrl(imgUrl);
 		}
-//		String mUrl = String.format("http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback", productBean.getProductCode());
+		// String mUrl =
+		// String.format("http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
+		// productBean.getProductCode());
 		Integer siteType = 2;
 		if ("1".equals(productBean.getShopCode())) {
 			siteType = 1;
@@ -226,10 +228,16 @@ public class ConfigYhdProduct implements ConfigParser {
 						productBean.setPoorComment(Integer.valueOf(matcher.group()));
 					}
 				}
+				cmmAs = null;
+				gCmmAs = null;
+				pCmmAs = null;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		pidAs = null;
+		oHomeAs = null;
+		dom = null;
 		return doReturn(resultBean);
 	}
 

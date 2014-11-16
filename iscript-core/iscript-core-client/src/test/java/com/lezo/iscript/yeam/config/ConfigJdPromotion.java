@@ -3,8 +3,10 @@ package com.lezo.iscript.yeam.config;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,12 +61,13 @@ public class ConfigJdPromotion implements ConfigParser {
 			}
 		}
 		if (!hasAddCookie) {
-			Scriptable scope = EnvjsUtils.initStandardObjects(null);
+//			Scriptable scope = EnvjsUtils.initStandardObjects(null);
+			Scriptable scope = null;
 			addCookie(client, scope);
 		}
 	}
 
-	private void addCookie(DefaultHttpClient client, Scriptable scope) throws Exception {
+	private void addCookieAuto(DefaultHttpClient client, Scriptable scope) throws Exception {
 		Context cx = EnvjsUtils.enterContext();
 		StringBuilder sb = new StringBuilder();
 		// sb.append("var location={};var document={}; var navigator={};");
@@ -105,6 +108,21 @@ public class ConfigJdPromotion implements ConfigParser {
 		}
 		for (Cookie ck : client.getCookieStore().getCookies()) {
 			System.err.println(ck);
+		}
+		scope = null;
+	}
+	
+	private void addCookie(DefaultHttpClient client, Scriptable scope) throws Exception {
+		Map<String, String> cookieMap = new HashMap<String, String>();
+		cookieMap.put("__jda", "95931165.580577879.1416135846.1416135846.1416135846.1");
+		cookieMap.put("__jdb", "95931165.1.1092150815|1.1416136026");
+		cookieMap.put("__jdc", "95931165");
+		cookieMap.put("__jdv", "95931165|direct|-|none|-");
+		for (String key : cookieMap.keySet()) {
+			String cookieValue = cookieMap.get(key);
+			BasicClientCookie cookie = new BasicClientCookie(key, cookieValue);
+			cookie.setDomain(".jd.com");
+			client.getCookieStore().addCookie(cookie);
 		}
 	}
 
@@ -181,60 +199,71 @@ public class ConfigJdPromotion implements ConfigParser {
 		String url = (String) task.get("url");
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get);
-		Document dom = Jsoup.parse(html);
-		if (isHome(dom)) {
-			String skuid = URLUtils.getCodeFromUrl(url);
-			PromotionBean bean = new PromotionBean();
-			bean.setProductCode(skuid);
-			bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
-			promotionList.add(bean);
-			return promotionList;
-		}
-		ScriptableObject scope = createPromotionDocument(dom, task);
-		String sPromotData = Context.toString(ScriptableObject.getProperty(scope, "sPromotData"));
-		JSONObject oPromotData = JSONUtils.getJSONObject(sPromotData);
-		System.err.println(oPromotData);
-		String skuid = Context.toString(ScriptableObject.getProperty(scope, "skuid"));
-		Elements promotAs = dom.select("#product-promotions");
-		if (!promotAs.isEmpty()) {
-			JSONArray promotArray = JSONUtils.get(oPromotData, "promotionInfoList");
-			Element promot = promotAs.first();
-			int size = promot.children().size();
-			PromotionBean bean = new PromotionBean();
-			for (int i = 0; i < size; i++) {
-				Element child = promot.child(i);
-				if ("br".equals(child.tagName())) {
-					bean.setProductCode(skuid);
-					promotionList.add(bean);
-					bean = new PromotionBean();
-				} else if ("em".equals(child.tagName()) && child.hasClass("hl_red_bg")) {
-					bean.setPromoteName(child.ownText().trim());
-				} else if ("em".equals(child.tagName()) && child.hasClass("hl_red")) {
-					String pDetail = bean.getPromoteDetail();
-					if (pDetail == null) {
-						pDetail = child.ownText().trim();
-					} else {
-						pDetail += child.ownText().trim();
-					}
-					bean.setPromoteDetail(pDetail);
-				} else if ("a".equals(child.tagName()) && child.hasAttr("href")) {
-					String actUrl = child.absUrl("href");
-					if (actUrl != null && actUrl.indexOf("jd.com/act/") > 0) {
-						bean.setPromoteUrl(actUrl);
+		Document dom = null;
+		try {
+			dom = Jsoup.parse(html);
+			if (isHome(dom)) {
+				String skuid = URLUtils.getCodeFromUrl(url);
+				PromotionBean bean = new PromotionBean();
+				bean.setProductCode(skuid);
+				bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
+				promotionList.add(bean);
+				return promotionList;
+			}
+			ScriptableObject scope = createPromotionDocument(dom, task);
+			String sPromotData = Context.toString(ScriptableObject.getProperty(scope, "sPromotData"));
+			JSONObject oPromotData = JSONUtils.getJSONObject(sPromotData);
+			System.err.println(oPromotData);
+			String skuid = Context.toString(ScriptableObject.getProperty(scope, "skuid"));
+			scope= null;
+			Elements promotAs = dom.select("#product-promotions");
+			if (!promotAs.isEmpty()) {
+				JSONArray promotArray = JSONUtils.get(oPromotData, "promotionInfoList");
+				Element promot = promotAs.first();
+				int size = promot.children().size();
+				PromotionBean bean = new PromotionBean();
+				for (int i = 0; i < size; i++) {
+					Element child = promot.child(i);
+					if ("br".equals(child.tagName())) {
+						bean.setProductCode(skuid);
+						promotionList.add(bean);
+						bean = new PromotionBean();
+					} else if ("em".equals(child.tagName()) && child.hasClass("hl_red_bg")) {
+						bean.setPromoteName(child.ownText().trim());
+					} else if ("em".equals(child.tagName()) && child.hasClass("hl_red")) {
+						String pDetail = bean.getPromoteDetail();
+						if (pDetail == null) {
+							pDetail = child.ownText().trim();
+						} else {
+							pDetail += child.ownText().trim();
+						}
+						bean.setPromoteDetail(pDetail);
+					} else if ("a".equals(child.tagName()) && child.hasAttr("href")) {
+						String actUrl = child.absUrl("href");
+						if (actUrl != null && actUrl.indexOf("jd.com/act/") > 0) {
+							bean.setPromoteUrl(actUrl);
+						}
 					}
 				}
+				bean.setProductCode(skuid);
+				promotionList.add(bean);
+				promotionList = toItemBeans(skuid, promotionList, promotArray);
+				fillPromotions(promotionList, promotArray);
+			} else {
+				PromotionBean bean = new PromotionBean();
+				bean.setProductCode(skuid);
+				bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
+				promotionList.add(bean);
 			}
-			bean.setProductCode(skuid);
-			promotionList.add(bean);
-			promotionList = toItemBeans(skuid, promotionList, promotArray);
-			fillPromotions(promotionList, promotArray);
-		} else {
-			PromotionBean bean = new PromotionBean();
-			bean.setProductCode(skuid);
-			bean.setPromoteStatus(PromotionBean.PROMOTE_STATUS_END);
-			promotionList.add(bean);
+			promotAs = null;
+		} finally {
+			closeDocument(dom);
 		}
 		return promotionList;
+	}
+
+	public void closeDocument(Document dom) {
+		dom = null;
 	}
 
 	private List<PromotionBean> toItemBeans(String skuid, List<PromotionBean> promotionList, JSONArray promotArray) {
