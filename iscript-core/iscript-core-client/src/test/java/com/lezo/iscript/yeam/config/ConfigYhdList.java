@@ -202,7 +202,7 @@ public class ConfigYhdList implements ConfigParser {
 		int fromIndex = html.indexOf("(");
 		int toIndex = html.indexOf(")");
 		fromIndex = fromIndex < 0 ? 0 : fromIndex;
-		toIndex = toIndex < 0 ? 0 : html.length();
+		toIndex = toIndex < 0 ? html.length() : toIndex;
 		html = html.substring(fromIndex + 1, toIndex);
 		JSONArray sArray = new JSONArray(html);
 		Map<String, JSONObject> idMap = new HashMap<String, JSONObject>();
