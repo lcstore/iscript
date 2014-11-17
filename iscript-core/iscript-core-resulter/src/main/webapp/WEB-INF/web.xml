@@ -70,7 +70,22 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+
+	<filter>
+		<filter-name>solrRequestFilter</filter-name>
+		<filter-class>com.lezo.iscript.yeam.solr.CustomSolrDispatchFilter</filter-class>
+		<init-param>
+			<param-name>path-prefix</param-name>
+			<param-value>/s2</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>solrRequestFilter</filter-name>
+		<url-pattern>/s2/*</url-pattern>
+	</filter-mapping>
+
 	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>admin.html</welcome-file>
 	</welcome-file-list>
 </web-app>
