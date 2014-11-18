@@ -45,7 +45,6 @@ public class IoServer extends IoHandlerAdapter {
 		// 读写 通道均在600 秒内无任何操作就进入空闲状态
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 600);
 		acceptor.bind(new InetSocketAddress(port));
-
 		resetSessions();
 		resetProxys();
 		logger.info("start to listener port:" + port + " for IoServer..");
