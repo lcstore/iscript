@@ -113,7 +113,7 @@ public class HeadAnalyzer implements Runnable {
 	private void pushConfigs(JSONObject hObject) {
 		Long cstamp = JSONUtils.getLong(hObject, "cstamp");
 		Long stamp = ConfigBuffer.getInstance().getStamp();
-		if (cstamp == stamp) {
+		if (cstamp.equals(stamp)) {
 			return;
 		}
 		List<ConfigWritable> configWritables = new ArrayList<ConfigWritable>();
