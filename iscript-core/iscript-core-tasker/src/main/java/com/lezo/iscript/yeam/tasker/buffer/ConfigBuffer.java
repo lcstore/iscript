@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
+//TODO: hot switch buffer.
 public class ConfigBuffer {
 	private ConcurrentHashMap<String, ConfigWritable> configMap = new ConcurrentHashMap<String, ConfigWritable>();
 	private long stamp = 0;

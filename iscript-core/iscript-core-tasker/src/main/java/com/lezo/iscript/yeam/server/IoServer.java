@@ -27,12 +27,14 @@ import com.lezo.iscript.service.crawler.service.SessionHisService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
-import com.lezo.iscript.yeam.server.event.ClientEventNotifier;
+import com.lezo.iscript.yeam.server.event.MessageAccepter;
+import com.lezo.iscript.yeam.server.event.RequestProceser;
 import com.lezo.iscript.yeam.server.session.SessionCacher;
 
 public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
+	private RequestProceser requestProceser = RequestProceser.getInstance();
 
 	public IoServer(int port) throws IOException {
 		acceptor = new NioSocketAcceptor();
@@ -69,7 +71,9 @@ public class IoServer extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		add2Attribute(session, SessionHisDto.REQUEST_SIZE, 1);
 		addNewSession(session, message);
-		ClientEventNotifier.doNotify(session, message);
+		// ClientEventNotifier.doNotify(session, message);
+		IoRequest ioRequest = (IoRequest) message;
+		requestProceser.execute(new MessageAccepter(ioRequest, session));
 	}
 
 	@Override

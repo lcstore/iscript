@@ -53,12 +53,12 @@
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<!-- <task:scheduled-tasks scheduler="scheduler">
+	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
 			cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="flushWriterTimer" method="run"
 			cron="0 0/5 * * * ?" />
-	</task:scheduled-tasks> -->
+	</task:scheduled-tasks>
 </beans>

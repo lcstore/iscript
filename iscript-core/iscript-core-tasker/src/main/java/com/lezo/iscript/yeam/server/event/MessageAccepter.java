@@ -25,7 +25,7 @@ public class MessageAccepter implements Runnable {
 			DataProceser.getInstance().execute(new DataAnalyzer(ioRequest, ioSession));
 		}
 		String header = ioRequest.getHeader();
-		if (StringUtils.isEmpty(header)) {
+		if (!StringUtils.isEmpty(header)) {
 			HeadProceser.getInstance().execute(new HeadAnalyzer(header, ioSession));
 		} else {
 			logger.warn("empty header.session:" + ioSession.getId() + ",addr:" + ioSession.getRemoteAddress());
