@@ -42,7 +42,7 @@
   <!-- Any path (name) registered in solrconfig.xml will be sent to that filter -->
   <filter>
     <filter-name>SolrRequestFilter</filter-name>
-    <filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class>
+    <filter-class>com.lezo.iscript.yeam.solr.CustomSolrDispatchFilter</filter-class>
     <!-- If you are wiring Solr into a larger web application which controls
          the web context root, you will probably want to mount Solr under
          a path prefix (app.war with /app/solr mounted into it, for example).

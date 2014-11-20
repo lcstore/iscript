@@ -33,11 +33,11 @@ public class MessageSender implements Runnable {
 		WriteFuture writeFuture = ioSession.write(ioRespone);
 		if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("fail to push tasks to client:{},type:{},size:{},cost:{}", clientName, getResponeType(), size, cost);
+			String msg = String.format("fail to push {}s to client:{},size:{},cost:{}", getResponeType(), clientName, size, cost);
 			logger.warn(msg, writeFuture.getException());
 		} else {
 			long cost = System.currentTimeMillis() - start;
-			logger.info("finish to push tasks to client:{},type:{},size:{},cost:{}", clientName, getResponeType(), size, cost);
+			logger.info("finish to push {}s to client:{},size:{},cost:{}", getResponeType(), clientName, size, cost);
 		}
 	}
 

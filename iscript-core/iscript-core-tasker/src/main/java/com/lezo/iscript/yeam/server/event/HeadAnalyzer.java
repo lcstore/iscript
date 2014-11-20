@@ -24,7 +24,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class HeadAnalyzer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(HeadAnalyzer.class);
-	private static final int PER_OFFER_SIZE = 20;
+	private static final int PER_OFFER_SIZE = 10;
 	private static final int MIN_TASK_SIZE = 5;
 	private String header;
 	private IoSession ioSession;
