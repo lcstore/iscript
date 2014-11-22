@@ -48,8 +48,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		doAbsentAssort(dtoList, insertDtos, null);
 		batchInsertProxyDetectDtos(insertDtos);
-		logger.info("save ProxyDetectDto.insert:" + insertDtos.size());
-
+		logger.info("save ProxyDetectDto.insert:{},total:{}", insertDtos.size(), dtoList.size());
 	}
 
 	private void doAbsentAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos,
