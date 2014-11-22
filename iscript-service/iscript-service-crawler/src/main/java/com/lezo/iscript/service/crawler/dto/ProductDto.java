@@ -20,6 +20,7 @@ public class ProductDto {
 	private Date updateTime;
 
 	private Integer siteId;
+	private String categoryNav;
 
 	public Long getId() {
 		return id;
@@ -149,5 +150,13 @@ public class ProductDto {
 
 	public void setUnionUrl(String unionUrl) {
 		this.unionUrl = unionUrl;
+	}
+
+	public String getCategoryNav() {
+		return categoryNav;
+	}
+
+	public void setCategoryNav(String categoryNav) {
+		this.categoryNav = categoryNav;
 	}
 }

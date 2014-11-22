@@ -2,83 +2,36 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.vipshop.crawler.price.dao.DailyBrandCompetitionDao">
-	<resultMap type="DailyBrandCompetitionDto" id="RM_DailyBrandCompetitionDto">
-		<result column="id" property="id"/>
-		<result column="data_date" property="dataDate"/>
-		<result column="category_name" property="categoryName"/>
-		<result column="category_id" property="categoryId"/>
-		<result column="brand_name" property="brandName"/>
-		<result column="pt_brand_name" property="ptBrandName"/>
-		<result column="sell_date_start" property="sellDateStart"/>
-		<result column="sell_date_end" property="sellDateEnd"/>
-		<result column="sales_amount_per" property="salesAmountPer"/>
-		<result column="competitiveness_index" property="competitivenessIndex"/>
-		<result column="site_id" property="siteId"/>
-		<result column="brand_count" property="brandCount"/>
-		<result column="vcode_count" property="vcodeCount"/>
-		<result column="ocode_count" property="ocodeCount"/>
-		<result column="vmatch_count" property="vmatchCount"/>
-		<result column="calc_count" property="calcCount"/>
-		<result column="vavg_price" property="vavgPrice"/>
-		<result column="oavg_price" property="oavgPrice"/>
-		<result column="create_time" property="createTime"/>
-		<result column="update_time" property="updateTime"/>
+<mapper namespace="com.lezo.iscript.service.crawler.dao.LuceneIndexDao">
+	<resultMap type="LuceneIndexDto" id="RM_LuceneIndexDto">
+		<result column="ID" property="id"/>
+		<result column="MESSAGE" property="message"/>
+		<result column="STATUS" property="status"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="DailyBrandCompetitionDto-coloumn-list">
-		id
-		,data_date
-		,category_name
-		,category_id
-		,brand_name
-		,pt_brand_name
-		,sell_date_start
-		,sell_date_end
-		,sales_amount_per
-		,competitiveness_index
-		,site_id
-		,brand_count
-		,vcode_count
-		,ocode_count
-		,vmatch_count
-		,calc_count
-		,vavg_price
-		,oavg_price
-		,create_time
-		,update_time
+	<sql id="LuceneIndexDto-coloumn-list">
+		MESSAGE
+		,STATUS
+		,CREATE_TIME
+		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="DailyBrandCompetitionDto">
-		INSERT INTO T_PRICING_DAILY_BRAND_COMPETITION(
-		<include refid="DailyBrandCompetitionDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="LuceneIndexDto">
+		INSERT INTO T_LUCENE_INDEX(
+		<include refid="LuceneIndexDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.dataDate},#{item.categoryName},#{item.categoryId},#{item.brandName},#{item.ptBrandName},#{item.sellDateStart},#{item.sellDateEnd},#{item.salesAmountPer},#{item.competitivenessIndex},#{item.siteId},#{item.brandCount},#{item.vcodeCount},#{item.ocodeCount},#{item.vmatchCount},#{item.calcCount},#{item.vavgPrice},#{item.oavgPrice},#{item.createTime},#{item.updateTime})
+			(#{item.message},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="updateOne" parameterType="DailyBrandCompetitionDto">
-		UPDATE T_PRICING_DAILY_BRAND_COMPETITION SET
-		id=#{id},
-		data_date=#{dataDate},
-		category_name=#{categoryName},
-		category_id=#{categoryId},
-		brand_name=#{brandName},
-		pt_brand_name=#{ptBrandName},
-		sell_date_start=#{sellDateStart},
-		sell_date_end=#{sellDateEnd},
-		sales_amount_per=#{salesAmountPer},
-		competitiveness_index=#{competitivenessIndex},
-		site_id=#{siteId},
-		brand_count=#{brandCount},
-		vcode_count=#{vcodeCount},
-		ocode_count=#{ocodeCount},
-		vmatch_count=#{vmatchCount},
-		calc_count=#{calcCount},
-		vavg_price=#{vavgPrice},
-		oavg_price=#{oavgPrice},
-		create_time=#{createTime},
-		update_time=#{updateTime}
+	<update id="batchUpdate" parameterType="LuceneIndexDto">
+		UPDATE T_LUCENE_INDEX SET
+		MESSAGE=#{message},
+		STATUS=#{status},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 </mapper>

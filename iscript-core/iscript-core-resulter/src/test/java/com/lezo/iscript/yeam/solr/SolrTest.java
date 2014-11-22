@@ -45,7 +45,7 @@ public class SolrTest {
 	@Test
 	public void testSolrQuery() throws Exception {
 		System.setProperty("solr.solr.home", "E:/lezo/codes/solr_home/");
-		System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
+//		System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
 
 		CoreContainer.Initializer initializer = new CoreContainer.Initializer();
 		CoreContainer coreContainer = initializer.initialize();

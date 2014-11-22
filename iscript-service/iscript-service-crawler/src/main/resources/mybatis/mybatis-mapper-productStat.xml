@@ -10,7 +10,6 @@
 		<result column="PRODUCT_CODE" property="productCode" />
 		<result column="PRODUCT_NAME" property="productName" />
 		<result column="PRODUCT_URL" property="productUrl" />
-		<result column="CATEGORY_NAV" property="categoryNav" />
 		<result column="MIN_PRICE" property="minPrice" />
 		<result column="MAX_PRICE" property="maxPrice" />
 		<result column="PRODUCT_PRICE" property="productPrice" />
@@ -29,7 +28,6 @@
 		,PRODUCT_CODE
 		,PRODUCT_NAME
 		,PRODUCT_URL
-		,CATEGORY_NAV
 		,MIN_PRICE
 		,MAX_PRICE
 		,PRODUCT_PRICE
@@ -49,7 +47,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.minPrice},#{item.maxPrice},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProductStatDto">
@@ -58,7 +56,6 @@
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
-		CATEGORY_NAV=#{categoryNav},
 		MIN_PRICE=#{minPrice},
 		MAX_PRICE=#{maxPrice},
 		PRODUCT_PRICE=#{productPrice},
