@@ -146,7 +146,6 @@ public class IoServer extends IoHandlerAdapter {
 		session.setAttribute(SessionHisDto.ERROR_SIZE, 0);
 		session.setAttribute(SessionHisDto.SUCCESS_NUM, 0);
 		session.setAttribute(SessionHisDto.FAIL_NUM, 0);
-		session.setAttribute(SessionHisDto.SAVE_STAMP, System.currentTimeMillis());
 	}
 
 	@Override
