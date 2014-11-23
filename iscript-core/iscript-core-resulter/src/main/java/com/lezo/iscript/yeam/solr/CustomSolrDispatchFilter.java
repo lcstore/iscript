@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.servlet.SolrDispatchFilter;
 
+import com.lezo.iscript.spring.context.SpringBeanUtils;
+
 /**
  * @author lezo
  * @email lcstore@126.com
@@ -21,7 +23,7 @@ public class CustomSolrDispatchFilter extends org.apache.solr.servlet.SolrDispat
 		 */
 		EmbeddedSolrServer solrServer = new EmbeddedSolrServer(cores, cores.getDefaultCoreName());
 		config.getServletContext().setAttribute(SolrDispatchFilter.class.getName(), solrServer);
-
+		EmbeddedSolrServerHolder.getInstance().setEmbeddedSolrServer(solrServer);
 		// spring context loader
 		// ContextLoader loader = new ContextLoaderListener();
 		// loader.initWebApplicationContext(config.getServletContext());

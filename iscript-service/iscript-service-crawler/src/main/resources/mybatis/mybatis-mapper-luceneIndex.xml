@@ -6,12 +6,18 @@
 	<resultMap type="LuceneIndexDto" id="RM_LuceneIndexDto">
 		<result column="ID" property="id"/>
 		<result column="MESSAGE" property="message"/>
+		<result column="DATA_COUNT" property="dataCount"/>
+		<result column="DATA_DAY" property="dataDay"/>
+		<result column="RETRY" property="retry"/>
 		<result column="STATUS" property="status"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="LuceneIndexDto-coloumn-list">
 		MESSAGE
+		,DATA_COUNT
+		,DATA_DAY
+		,RETRY
 		,STATUS
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -23,19 +29,29 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.message},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.message},#{item.dataCount},#{item.dataDay},#{item.retry},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="LuceneIndexDto">
 		UPDATE T_LUCENE_INDEX SET
 		MESSAGE=#{message},
+		DATA_COUNT=#{dataCount},
+		RETRY=#{retry},
 		STATUS=#{status}
 		WHERE ID=#{id}
 	</update>
 	<select id="getLatestLuceneIndexDto" parameterType="map" resultMap="RM_LuceneIndexDto">
 	  SELECT * FROM T_LUCENE_INDEX
-	  WHERE STATUS=#{status}
-	  ORDER CREATE_TIME DESC
+	  WHERE 1=1
+	  <if test="status != null">
+	  AND STATUS=#{status}
+	  </if>
+	  ORDER BY CREATE_TIME DESC
+	  LIMIT 1
+	</select>
+	<select id="getLuceneIndexDtoByDay" parameterType="map" resultMap="RM_LuceneIndexDto">
+	  SELECT * FROM T_LUCENE_INDEX
+	  WHERE DATA_DAY=#{indexDay}
 	  LIMIT 1
 	</select>
 </mapper>

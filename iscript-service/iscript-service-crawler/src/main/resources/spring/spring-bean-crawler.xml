@@ -105,4 +105,10 @@
 			value="com.lezo.iscript.service.crawler.dao.LuceneIndexDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="searchHisDao"
+		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.SearchHisDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

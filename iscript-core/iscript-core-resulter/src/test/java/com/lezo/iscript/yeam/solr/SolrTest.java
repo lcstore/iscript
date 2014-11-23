@@ -2,12 +2,21 @@ package com.lezo.iscript.yeam.solr;
 
 import java.lang.reflect.Field;
 
+import org.apache.lucene.queryparser.flexible.core.QueryParserHelper;
+import org.apache.lucene.queryparser.flexible.standard.QueryParserUtil;
+import org.apache.lucene.search.Query;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.core.CoreContainer;
+import org.apache.solr.parser.QueryParserConstants;
+import org.apache.solr.parser.SolrQueryParserBase;
+import org.apache.solr.search.QParser;
+import org.apache.solr.search.SolrQueryParser;
+import org.apache.solr.search.SyntaxError;
 import org.junit.Test;
 
 import com.lezo.iscript.service.crawler.dto.ProductDto;
@@ -45,7 +54,7 @@ public class SolrTest {
 	@Test
 	public void testSolrQuery() throws Exception {
 		System.setProperty("solr.solr.home", "E:/lezo/codes/solr_home/");
-//		System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
+		// System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
 
 		CoreContainer.Initializer initializer = new CoreContainer.Initializer();
 		CoreContainer coreContainer = initializer.initialize();
@@ -55,16 +64,39 @@ public class SolrTest {
 		queryStr = "id:1";
 		queryStr = "productCode:1321297488";
 		queryStr = "copyText:OSCO";
+		queryStr = "copyText:雨伞/雨具";
 		SolrQuery solrQuery = new SolrQuery(queryStr);
+		solrQuery.setFields("siteId", "productCode");
 		solrQuery.setStart(0);
-		solrQuery.setRows(1000);
+		solrQuery.setRows(10);
+		System.err.println("getQuery:" + solrQuery.getQuery());
+		System.err.println("toString:" + solrQuery.toString());
 		QueryResponse respone = server.query(solrQuery);
 		SolrDocumentList resultList = respone.getResults();
 		System.out.println(resultList.size());
-		if (!resultList.isEmpty()) {
-			System.out.println(resultList.get(0).get("productCode"));
-			System.out.println(resultList.get(0).get("productName"));
-		}
+		// if (!resultList.isEmpty()) {
+		// for (int i = 0; i < resultList.size(); i++) {
+		// System.out.print(resultList.get(i).get("siteId") + " ");
+		// System.out.print(resultList.get(i).get("productCode") + " ");
+		// System.out.print(resultList.get(i).get("productName") + " ");
+		// System.out.println(resultList.get(i).get("categoryNav") + " ");
+		// }
+		// }
+	}
+
+	@Test
+	public void testSolrDelete() throws Exception {
+		System.setProperty("solr.solr.home", "E:/lezo/codes/solr_home/");
+		// System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
+
+		CoreContainer.Initializer initializer = new CoreContainer.Initializer();
+		CoreContainer coreContainer = initializer.initialize();
+		EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, "collection1");
+
+		String queryStr = "*:*";
+		server.deleteByQuery(queryStr);
+		server.commit();
+		server.optimize();
 	}
 
 	@Test

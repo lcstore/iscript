@@ -36,14 +36,31 @@
 	</insert>
 	<update id="batchUpdate" parameterType="SearchHisDto">
 		UPDATE T_SEARCH_HIS SET
-		QUERY_WORD=#{queryWord},
-		QUERY_SOLR=#{querySolr},
 		QUERY_RESULT=#{queryResult},
 		QUERY_COST=#{queryCost},
 		QUERY_HIT=#{queryHit},
-		STATUS=#{status},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		STATUS=#{status}
 		WHERE ID=#{id}
 	</update>
+	
+	<insert id="insertAndGetId" parameterType="SearchHisDto" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_SEARCH_HIS(
+		<include refid="SearchHisDto-coloumn-list" />
+		)
+		VALUES
+		(#{queryWord},#{querySolr},#{queryResult},#{queryCost},#{queryHit},#{status},#{createTime},#{updateTime})
+	</insert>
+	
+	<select id="getSearchHisDtoByIds" parameterType="map" resultMap="RM_SearchHisDto">
+	    SELECT * FROM T_SEARCH_HIS
+	    WHERE 1=1
+	    <foreach collection="idList" item="id" open="AND ID IN(" close=")" separator=",">
+	         #{id}
+	    </foreach>
+	</select>
+	<select id="getSearchHisDtoBySolrQuery" parameterType="map" resultMap="RM_SearchHisDto">
+	    SELECT * FROM T_SEARCH_HIS
+	    WHERE QUERY_SOLR=#{solrQuery}
+	    LIMIT 1
+	</select>
 </mapper>

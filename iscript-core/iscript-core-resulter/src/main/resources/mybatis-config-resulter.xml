@@ -22,5 +22,6 @@
 		<mapper resource="mybatis/mybatis-mapper-listRank.xml" />
 		<mapper resource="mybatis/mybatis-mapper-message.xml" />
 		<mapper resource="mybatis/mybatis-mapper-promotionMap.xml" />
+		<mapper resource="mybatis/mybatis-mapper-luceneIndex.xml" />
 	</mappers>
 </configuration>

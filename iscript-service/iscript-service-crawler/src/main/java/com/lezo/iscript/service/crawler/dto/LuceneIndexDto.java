@@ -9,8 +9,12 @@ public class LuceneIndexDto {
 	private Long id;
 	private String message;
 	private Integer status;
+	private Date dataDay;
 	private Date createTime;
 	private Date updateTime;
+
+	private Integer dataCount;
+	private Integer retry = 0;
 
 	public Long getId() {
 		return id;
@@ -50,6 +54,30 @@ public class LuceneIndexDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Date getDataDay() {
+		return dataDay;
+	}
+
+	public void setDataDay(Date dataDay) {
+		this.dataDay = dataDay;
+	}
+
+	public Integer getDataCount() {
+		return dataCount;
+	}
+
+	public void setDataCount(Integer dataCount) {
+		this.dataCount = dataCount;
+	}
+
+	public Integer getRetry() {
+		return retry;
+	}
+
+	public void setRetry(Integer retry) {
+		this.retry = retry;
 	}
 
 }
