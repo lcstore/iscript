@@ -16,7 +16,7 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ResultFutureStorager implements StorageListener<Future<ResultWritable>> {
 	private static Logger logger = LoggerFactory.getLogger(ResultFutureStorager.class);
-	private static final int capacity = 2000;
+	private static final int capacity = 200;
 	private StorageBuffer<Future<ResultWritable>> storageBuffer = new StorageBuffer<Future<ResultWritable>>(capacity);
 	private static ResultFutureStorager instance;
 

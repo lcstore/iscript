@@ -21,8 +21,8 @@ public class ClientMain {
 		final StorageTimeTrigger timeTrigger = new StorageTimeTrigger();
 		StorageListener<?> listener = ResultFutureStorager.getInstance();
 		timeTrigger.addListener(listener.getClass(), listener);
-		long delay = 1000L;
-		long period = 30000L;
+		long delay = 30000L;
+		long period = 1000L;
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
