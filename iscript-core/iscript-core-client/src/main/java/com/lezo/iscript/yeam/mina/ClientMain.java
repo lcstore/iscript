@@ -22,7 +22,7 @@ public class ClientMain {
 		StorageListener<?> listener = ResultFutureStorager.getInstance();
 		timeTrigger.addListener(listener.getClass(), listener);
 		long delay = 30000L;
-		long period = 1000L;
+		long period = 10000L;
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
