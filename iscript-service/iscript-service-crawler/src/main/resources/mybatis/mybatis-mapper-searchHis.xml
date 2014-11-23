@@ -4,25 +4,19 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.SearchHisDao">
 	<resultMap type="SearchHisDto" id="RM_SearchHisDto">
-		<result column="ID" property="id"/>
-		<result column="QUERY_WORD" property="queryWord"/>
-		<result column="QUERY_SOLR" property="querySolr"/>
-		<result column="QUERY_RESULT" property="queryResult"/>
-		<result column="QUERY_COST" property="queryCost"/>
-		<result column="QUERY_HIT" property="queryHit"/>
-		<result column="STATUS" property="status"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="QUERY_WORD" property="queryWord" />
+		<result column="QUERY_SOLR" property="querySolr" />
+		<result column="QUERY_RESULT" property="queryResult" />
+		<result column="QUERY_COST" property="queryCost" />
+		<result column="QUERY_HIT" property="queryHit" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="SearchHisDto-coloumn-list">
-		QUERY_WORD
-		,QUERY_SOLR
-		,QUERY_RESULT
-		,QUERY_COST
-		,QUERY_HIT
-		,STATUS
-		,CREATE_TIME
-		,UPDATE_TIME
+		QUERY_WORD ,QUERY_SOLR ,QUERY_RESULT ,QUERY_COST ,QUERY_HIT
+		,STATUS ,CREATE_TIME ,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="SearchHisDto">
 		INSERT INTO T_SEARCH_HIS(
@@ -36,31 +30,49 @@
 	</insert>
 	<update id="batchUpdate" parameterType="SearchHisDto">
 		UPDATE T_SEARCH_HIS SET
-		QUERY_RESULT=#{queryResult},
-		QUERY_COST=#{queryCost},
-		QUERY_HIT=#{queryHit},
-		STATUS=#{status}
-		WHERE ID=#{id}
+		QUERY_RESULT=#{queryResult}, QUERY_COST=#{queryCost},
+		QUERY_HIT=#{queryHit}, STATUS=#{status} WHERE ID=#{id}
 	</update>
-	
-	<insert id="insertAndGetId" parameterType="SearchHisDto" useGeneratedKeys="true" keyProperty="id">
+
+	<insert id="insertAndGetId" parameterType="SearchHisDto"
+		useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO T_SEARCH_HIS(
 		<include refid="SearchHisDto-coloumn-list" />
 		)
 		VALUES
 		(#{queryWord},#{querySolr},#{queryResult},#{queryCost},#{queryHit},#{status},#{createTime},#{updateTime})
 	</insert>
-	
-	<select id="getSearchHisDtoByIds" parameterType="map" resultMap="RM_SearchHisDto">
-	    SELECT * FROM T_SEARCH_HIS
-	    WHERE 1=1
-	    <foreach collection="idList" item="id" open="AND ID IN(" close=")" separator=",">
-	         #{id}
-	    </foreach>
+
+	<select id="getSearchHisDtoByIds" parameterType="map"
+		resultMap="RM_SearchHisDto">
+		SELECT * FROM T_SEARCH_HIS
+		WHERE 1=1
+		<foreach collection="idList" item="id" open="AND ID IN("
+			close=")" separator=",">
+			#{id}
+		</foreach>
 	</select>
-	<select id="getSearchHisDtoBySolrQuery" parameterType="map" resultMap="RM_SearchHisDto">
-	    SELECT * FROM T_SEARCH_HIS
-	    WHERE QUERY_SOLR=#{solrQuery}
-	    LIMIT 1
+	<select id="getSearchHisDtoBySolrQuery" parameterType="map"
+		resultMap="RM_SearchHisDto">
+		SELECT * FROM T_SEARCH_HIS
+		WHERE QUERY_SOLR=#{solrQuery}
+		LIMIT 1
 	</select>
+	<select id="getSearchHisDtoByStatus" parameterType="map"
+		resultMap="RM_SearchHisDto">
+		SELECT * FROM T_SEARCH_HIS
+		WHERE 1=1
+		<if test="status != null">
+			AND STATUS=#{status}
+		</if>
+	</select>
+	<update id="batchUpdateSearchHisDtoStatus" parameterType="map">
+		UPDATE T_SEARCH_HIS
+		SET STATUS=#{status}
+		WHERE 1=1
+		<foreach collection="idList" item="id" open="AND ID IN("
+			close=")" separator=",">
+			#{id}
+		</foreach>
+	</update>
 </mapper>

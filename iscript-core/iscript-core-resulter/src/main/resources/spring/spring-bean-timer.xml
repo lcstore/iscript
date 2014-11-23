@@ -48,22 +48,21 @@
 
 	<bean id="flushWriterTimer" class="com.lezo.iscript.yeam.resultmgr.writer.FlushWriterTimer"></bean>
 	<bean id="luceneIndexer" class="com.lezo.iscript.yeam.solr.LuceneIndexer"></bean>
+	<bean id="sorlSearchHandler" class="com.lezo.iscript.yeam.solr.SorlSearchHandler"></bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
 	<task:executor id="executor" pool-size="3" />
 	<task:scheduler id="scheduler" pool-size="10" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-<!-- 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="dataMessageHandler" method="run"
-			cron="0 0/1 * * * ?" />
-	</task:scheduled-tasks>
-	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="flushWriterTimer" method="run"
-			cron="0 0/5 * * * ?" />
-	</task:scheduled-tasks> -->
+	<!-- <task:scheduled-tasks scheduler="scheduler"> <task:scheduled ref="dataMessageHandler" 
+		method="run" cron="0 0/1 * * * ?" /> </task:scheduled-tasks> <task:scheduled-tasks 
+		scheduler="scheduler"> <task:scheduled ref="flushWriterTimer" method="run" 
+		cron="0 0/5 * * * ?" /> </task:scheduled-tasks> -->
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="luceneIndexer" method="run"
 			cron="0 28 15 * * ?" />
+		<task:scheduled ref="sorlSearchHandler" method="run"
+			cron="0/5 * * * * ?" />
 	</task:scheduled-tasks>
 </beans>

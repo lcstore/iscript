@@ -1,5 +1,6 @@
 package com.lezo.iscript.yeam.solr;
 
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 
 import org.apache.lucene.queryparser.flexible.core.QueryParserHelper;
@@ -17,6 +18,7 @@ import org.apache.solr.parser.SolrQueryParserBase;
 import org.apache.solr.search.QParser;
 import org.apache.solr.search.SolrQueryParser;
 import org.apache.solr.search.SyntaxError;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import com.lezo.iscript.service.crawler.dto.ProductDto;
@@ -74,6 +76,19 @@ public class SolrTest {
 		QueryResponse respone = server.query(solrQuery);
 		SolrDocumentList resultList = respone.getResults();
 		System.out.println(resultList.size());
+
+		System.err.println(",result:" + resultList);
+		SolrQueryResult sqr = new SolrQueryResult();
+		SolrDocumentList docs = respone.getResults();
+		sqr.setDocs(docs);
+		sqr.setNumFound(docs.getNumFound());
+		sqr.setStart(docs.getStart());
+		sqr.setMaxScore(docs.getMaxScore());
+
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, sqr);
+		System.err.println(",result:" + writer.toString());
 		// if (!resultList.isEmpty()) {
 		// for (int i = 0; i < resultList.size(); i++) {
 		// System.out.print(resultList.get(i).get("siteId") + " ");

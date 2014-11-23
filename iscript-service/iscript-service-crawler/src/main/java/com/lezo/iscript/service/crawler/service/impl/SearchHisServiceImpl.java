@@ -1,9 +1,9 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class SearchHisServiceImpl implements SearchHisService {
 	}
 
 	@Override
-	public Long saveSearchHisDtoAndGetId(SearchHisDto dto) {
+	public SearchHisDto saveSearchHisDtoAndGetId(SearchHisDto dto) {
 		if (StringUtils.isEmpty(dto.getQuerySolr())) {
 			throw new IllegalArgumentException("querySolr must not be null..");
 		}
@@ -48,7 +48,7 @@ public class SearchHisServiceImpl implements SearchHisService {
 			dtoList.add(hasDto);
 			batchUpdateDtos(dtoList);
 		}
-		return hasDto.getId();
+		return hasDto;
 	}
 
 	private boolean isExpired(SearchHisDto hasDto) {
@@ -84,6 +84,19 @@ public class SearchHisServiceImpl implements SearchHisService {
 	@Deprecated
 	public void batchSaveDtos(List<SearchHisDto> dtoList) {
 
+	}
+
+	@Override
+	public List<SearchHisDto> getSearchHisDtoByStatus(Integer status) {
+		return this.searchHisDao.getSearchHisDtoByStatus(status);
+	}
+
+	@Override
+	public void batchUpdateSearchHisDtoStatus(List<Long> idList, int status) {
+		if (CollectionUtils.isEmpty(idList)) {
+			return;
+		}
+		this.searchHisDao.batchUpdateSearchHisDtoStatus(idList, status);
 	}
 
 }

@@ -23,5 +23,6 @@
 		<mapper resource="mybatis/mybatis-mapper-message.xml" />
 		<mapper resource="mybatis/mybatis-mapper-promotionMap.xml" />
 		<mapper resource="mybatis/mybatis-mapper-luceneIndex.xml" />
+		<mapper resource="mybatis/mybatis-mapper-searchHis.xml" />
 	</mappers>
 </configuration>
