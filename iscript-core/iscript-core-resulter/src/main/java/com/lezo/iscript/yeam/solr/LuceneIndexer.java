@@ -77,10 +77,10 @@ public class LuceneIndexer {
 								server.commit();
 							}
 							docList = new ArrayList<SolrInputDocument>();
-							JSONObject mObject = new JSONObject();
-							JSONUtils.put(mObject, "toId", toId);
 							logger.info("query.dataDay:" + indexDto.getDataDay() + ",msg:" + indexDto.getMessage());
 							LuceneIndexDto indexingDto = luceneIndexService.getLuceneIndexDtoByDay(indexDto.getDataDay());
+							JSONObject mObject = new JSONObject(indexingDto.getMessage());
+							JSONUtils.put(mObject, "toId", toId);
 							indexingDto.setMessage(mObject.toString());
 							indexingDto.setDataCount(count);
 							indexingDto.setStatus(LuceneIndexDto.INDEX_DONE);

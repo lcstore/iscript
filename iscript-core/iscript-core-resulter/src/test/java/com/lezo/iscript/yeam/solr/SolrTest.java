@@ -3,21 +3,12 @@ package com.lezo.iscript.yeam.solr;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 
-import org.apache.lucene.queryparser.flexible.core.QueryParserHelper;
-import org.apache.lucene.queryparser.flexible.standard.QueryParserUtil;
-import org.apache.lucene.search.Query;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.core.CoreContainer;
-import org.apache.solr.parser.QueryParserConstants;
-import org.apache.solr.parser.SolrQueryParserBase;
-import org.apache.solr.search.QParser;
-import org.apache.solr.search.SolrQueryParser;
-import org.apache.solr.search.SyntaxError;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
@@ -102,7 +93,7 @@ public class SolrTest {
 	@Test
 	public void testSolrDelete() throws Exception {
 		System.setProperty("solr.solr.home", "E:/lezo/codes/solr_home/");
-		// System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
+		System.setProperty("solr.solr.home", "D:/codes/lezo/solr_home/");
 
 		CoreContainer.Initializer initializer = new CoreContainer.Initializer();
 		CoreContainer coreContainer = initializer.initialize();
