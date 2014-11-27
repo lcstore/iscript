@@ -14,9 +14,9 @@ public class ClientListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		logger.info("start to init client..");
-		String[] args = new String[1];
+//		String[] args = new String[1];
 		// YeamClient.main(args);
-		ClientMain.main(args);
+		new ClientMain().start();
 		logger.info("client is running..");
 	}
 

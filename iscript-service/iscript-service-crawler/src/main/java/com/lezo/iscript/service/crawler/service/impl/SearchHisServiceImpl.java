@@ -41,7 +41,8 @@ public class SearchHisServiceImpl implements SearchHisService {
 		}
 		SearchHisDto hasDto = getSearchHisDtoBySolrQuery(dto.getQuerySolr());
 		if (hasDto == null) {
-			return this.searchHisDao.insertAndGetId(dto);
+			this.searchHisDao.insertAndGetId(dto);
+			return dto;
 		} else if (hasDto.getStatus() < 0 || isExpired(dto)) {
 			hasDto.setStatus(dto.getStatus());
 			List<SearchHisDto> dtoList = new ArrayList<SearchHisDto>(1);

@@ -10,9 +10,9 @@ import com.lezo.iscript.yeam.storage.ResultFutureStorager;
 
 public class ClientMain {
 
-	public static void main(String[] args) {
-		new ClientMain().start();
-	}
+//	public static void main(String[] args) {
+//		new ClientMain().start();
+//	}
 
 	public void start() {
 		IoClient ioClient = new IoClient();

@@ -82,11 +82,6 @@ public class IoServer extends IoHandlerAdapter {
 	}
 
 	@Override
-	public void sessionCreated(IoSession session) throws Exception {
-		resetSession(session);
-	}
-
-	@Override
 	public void sessionClosed(IoSession session) throws Exception {
 		SessionHisDto downDto = getSessionHisDto(session);
 		if (!StringUtils.isEmpty(downDto.getClienName())) {
@@ -155,6 +150,12 @@ public class IoServer extends IoHandlerAdapter {
 			SessionHisDto sessionDto = getSessionHisDto(session);
 			logger.info(String.format("Close idle session:%s", sessionDto));
 		}
+	}
+
+	@Override
+	public void sessionOpened(IoSession session) throws Exception {
+		resetSession(session);
+		super.sessionOpened(session);
 	}
 
 }

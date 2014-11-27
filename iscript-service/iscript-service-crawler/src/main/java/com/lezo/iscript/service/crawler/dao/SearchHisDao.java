@@ -8,7 +8,7 @@ import com.lezo.iscript.common.BaseDao;
 import com.lezo.iscript.service.crawler.dto.SearchHisDto;
 
 public interface SearchHisDao extends BaseDao<SearchHisDto> {
-	SearchHisDto insertAndGetId(SearchHisDto dto);
+	void insertAndGetId(SearchHisDto dto);
 
 	List<SearchHisDto> getSearchHisDtoByIds(@Param(value = "idList") List<Long> idList);
 
