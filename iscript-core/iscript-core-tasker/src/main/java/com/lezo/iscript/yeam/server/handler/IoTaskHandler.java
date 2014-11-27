@@ -1,32 +1,62 @@
-package com.lezo.iscript.yeam.server.session;
+package com.lezo.iscript.yeam.server.handler;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.mina.core.session.IoSession;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
+import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.server.event.MessageSender;
-import com.lezo.iscript.yeam.server.event.ResponeProceser;
+import com.lezo.iscript.yeam.server.HeadCacher;
+import com.lezo.iscript.yeam.server.SendUtils;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class TaskActionHandler extends AbstractActionHandler {
-	private static Logger logger = LoggerFactory.getLogger(TaskActionHandler.class);
-	private static final int PER_OFFER_SIZE = 10;
+public class IoTaskHandler implements MessageHandler {
+	private Logger logger = org.slf4j.LoggerFactory.getLogger(IoTaskHandler.class);
+	private static final int PER_OFFER_SIZE = 15;
 	private static final int MIN_TASK_SIZE = 5;
-	private static final long MIN_WAIT_TIME = 5000;
 
 	@Override
-	public Object doAction(JSONObject hObject, IoSession ioSession) {
+	public void handleMessage(IoSession session, Object message) {
+		IoRequest ioRequest = (IoRequest) message;
+		if (ioRequest == null) {
+			return;
+		}
+		ensureTaskLoaded();
+		String header = ioRequest.getHeader();
+		pushTasks(JSONUtils.getJSONObject(header), session);
+	}
+
+	private void ensureTaskLoaded() {
+		TaskCacher taskCacher = TaskCacher.getInstance();
+		while (taskCacher.getTypeList().isEmpty()) {
+			logger.warn("wait to buffer tasks...");
+			try {
+				TimeUnit.MILLISECONDS.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public Object pushTasks(JSONObject hObject, IoSession ioSession) {
+		if (!HeadCacher.getInstace().putIfVary(IoConstant.EVENT_TYPE_TASK, hObject)) {
+			return 0;
+		}
+		Integer tsize = JSONUtils.getInteger(hObject, "tsize");
+		if (tsize >= MIN_TASK_SIZE) {
+			return 0;
+		}
 		long start = System.currentTimeMillis();
 		TaskCacher taskCancher = TaskCacher.getInstance();
 		List<String> typeList = taskCancher.getNotEmptyTypeList();
@@ -61,12 +91,14 @@ public class TaskActionHandler extends AbstractActionHandler {
 				IoRespone ioRespone = new IoRespone();
 				ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
 				ioRespone.setData(taskOffers);
-				ResponeProceser.getInstance().execute(new MessageSender(hObject, ioRespone, ioSession));
+				SendUtils.doSend(hObject, ioRespone, ioSession);
 				sendCount = taskOffers.size();
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s", taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"), JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
+		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
+				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
+				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
 		logger.info(msg);
 		return sendCount;
 	}
@@ -87,23 +119,4 @@ public class TaskActionHandler extends AbstractActionHandler {
 		return limit;
 	}
 
-	@Override
-	public boolean isFilter(JSONObject hObject) {
-		String clientName = JSONUtils.getString(hObject, "name");
-		ActionRecord record = ActionRecorder.getInstance().getRecord(clientName);
-		Integer tactive = JSONUtils.getInteger(hObject, "tactive");
-		Integer tsize = JSONUtils.getInteger(hObject, "tsize");
-		if (tactive + tsize > MIN_TASK_SIZE) {
-			return true;
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append(tactive);
-		sb.append(".");
-		sb.append(tsize);
-		String checkValue = sb.toString();
-		if (checkValue.equals(record.getValue())) {
-			return System.currentTimeMillis() - record.getStamp() < MIN_WAIT_TIME;
-		}
-		return false;
-	}
 }

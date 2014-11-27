@@ -42,10 +42,14 @@ public class ResultFutureStorager implements StorageListener<Future<ResultWritab
 	@Override
 	public void doStorage() {
 		final List<Future<ResultWritable>> copyList = storageBuffer.moveTo();
-		if (CollectionUtils.isEmpty(copyList) && isTimeToSend()) {
-			logger.info("No result to commit,send header to server.");
-			sendHeader();
-			lastSendTime.set(System.currentTimeMillis());
+		if (CollectionUtils.isEmpty(copyList)) {
+			if (isTimeToSend()) {
+				logger.info("No result to commit,send header to server.");
+				sendHeader();
+				lastSendTime.set(System.currentTimeMillis());
+			} else {
+				logger.info("No result to commit,wait a second.");
+			}
 			return;
 		}
 		StorageCaller.getInstance().execute(new ResultFutureClassifier(copyList));

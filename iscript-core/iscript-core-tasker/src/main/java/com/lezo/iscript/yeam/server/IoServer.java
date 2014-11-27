@@ -14,6 +14,7 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory;
+import org.apache.mina.filter.executor.ExecutorFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.json.JSONObject;
@@ -27,14 +28,16 @@ import com.lezo.iscript.service.crawler.service.SessionHisService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
-import com.lezo.iscript.yeam.server.event.MessageAccepter;
-import com.lezo.iscript.yeam.server.event.RequestProceser;
+import com.lezo.iscript.yeam.server.handler.IoConfigHandler;
+import com.lezo.iscript.yeam.server.handler.IoResultHandler;
+import com.lezo.iscript.yeam.server.handler.IoTaskHandler;
+import com.lezo.iscript.yeam.server.handler.MessageHandler;
 import com.lezo.iscript.yeam.server.session.SessionCacher;
 
 public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
-	private RequestProceser requestProceser = RequestProceser.getInstance();
+	private List<MessageHandler> handlers;
 
 	public IoServer(int port) throws IOException {
 		acceptor = new NioSocketAcceptor();
@@ -42,6 +45,7 @@ public class IoServer extends IoHandlerAdapter {
 		if (logger.isDebugEnabled()) {
 			acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		}
+		acceptor.getFilterChain().addLast("exceutor", new ExecutorFilter());
 		acceptor.setHandler(this);
 		acceptor.getSessionConfig().setReadBufferSize(2048);
 		// 读写 通道均在600 秒内无任何操作就进入空闲状态
@@ -49,6 +53,10 @@ public class IoServer extends IoHandlerAdapter {
 		acceptor.bind(new InetSocketAddress(port));
 		resetSessions();
 		resetProxys();
+		this.handlers = new ArrayList<MessageHandler>();
+		this.handlers.add(new IoResultHandler());
+		this.handlers.add(new IoConfigHandler());
+		this.handlers.add(new IoTaskHandler());
 		logger.info("start to listener port:" + port + " for IoServer..");
 	}
 
@@ -60,7 +68,8 @@ public class IoServer extends IoHandlerAdapter {
 	private void resetProxys() {
 		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 		List<Long> idList = new ArrayList<Long>();
-		List<ProxyDetectDto> workList = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE, ProxyDetectDto.STATUS_WORK);
+		List<ProxyDetectDto> workList = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE,
+				ProxyDetectDto.STATUS_WORK);
 		for (ProxyDetectDto dto : workList) {
 			idList.add(dto.getId());
 		}
@@ -72,8 +81,15 @@ public class IoServer extends IoHandlerAdapter {
 		add2Attribute(session, SessionHisDto.REQUEST_SIZE, 1);
 		addNewSession(session, message);
 		// ClientEventNotifier.doNotify(session, message);
-		IoRequest ioRequest = (IoRequest) message;
-		requestProceser.execute(new MessageAccepter(ioRequest, session));
+		// IoRequest ioRequest = (IoRequest) message;
+		// requestProceser.execute(new MessageAccepter(ioRequest, session));
+		callHandlers(session, message);
+	}
+
+	private void callHandlers(IoSession session, Object message) {
+		for (MessageHandler handler : handlers) {
+			handler.handleMessage(session, message);
+		}
 	}
 
 	@Override
@@ -95,7 +111,9 @@ public class IoServer extends IoHandlerAdapter {
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
 		add2Attribute(session, SessionHisDto.ERROR_SIZE, 1);
 		SessionHisDto trackDto = getSessionHisDto(session);
-		logger.warn(String.format("%s,remote:%s,local:%s,cause:", trackDto, session.getRemoteAddress(), session.getLocalAddress()), cause);
+		logger.warn(
+				String.format("%s,remote:%s,local:%s,cause:", trackDto, session.getRemoteAddress(),
+						session.getLocalAddress()), cause);
 	}
 
 	public void add2Attribute(IoSession session, String key, int num) {
@@ -146,9 +164,8 @@ public class IoServer extends IoHandlerAdapter {
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
 		if (session.isBothIdle()) {
-			session.close(true);
 			SessionHisDto sessionDto = getSessionHisDto(session);
-			logger.info(String.format("Close idle session:%s", sessionDto));
+			logger.info(String.format("idle session:%s", sessionDto));
 		}
 	}
 
