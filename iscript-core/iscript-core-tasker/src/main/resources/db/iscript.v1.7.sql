@@ -66,8 +66,7 @@ DROP TABLES IF EXISTS T_PROXY_HOME;
 CREATE TABLE `T_PROXY_HOME` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `HOME_URL` varchar(200) NOT NULL default '' COMMENT '代理源URL',
-  `IP_PARSER` varchar(50) COMMENT 'IP解析器',
-  `NEXT_PARSER` varchar(50) COMMENT '下一页解析器',
+  `CONFIG_PARSER` varchar(50) COMMENT '抓取配置',
   `MAX_PAGE` int NOT NULL default '1' COMMENT '最大页数',
   `IS_DELETE` tinyint NOT NULL default '0' COMMENT '0-否，1-是',
   `STATUS` tinyint NOT NULL default '0' COMMENT '0-等待，1-处理中，2-完成',

@@ -7,8 +7,7 @@ public class ProxyHomeDto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String homeUrl;
-	private String ipParser;
-	private String nextParser;
+	private String configParser;
 	private Integer maxPage;
 	private Integer isDelete;
 	private Integer status;
@@ -29,22 +28,6 @@ public class ProxyHomeDto implements Serializable{
 
 	public void setHomeUrl(String homeUrl) {
 		this.homeUrl = homeUrl;
-	}
-
-	public String getIpParser() {
-		return ipParser;
-	}
-
-	public void setIpParser(String ipParser) {
-		this.ipParser = ipParser;
-	}
-
-	public String getNextParser() {
-		return nextParser;
-	}
-
-	public void setNextParser(String nextParser) {
-		this.nextParser = nextParser;
 	}
 
 	public Integer getMaxPage() {
@@ -85,6 +68,14 @@ public class ProxyHomeDto implements Serializable{
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getConfigParser() {
+		return configParser;
+	}
+
+	public void setConfigParser(String configParser) {
+		this.configParser = configParser;
 	}
 
 }

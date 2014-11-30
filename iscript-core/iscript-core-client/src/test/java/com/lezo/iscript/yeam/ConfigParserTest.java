@@ -371,6 +371,7 @@ public class ConfigParserTest {
 		url = "http://www.xunluw.com/IP/2014/0923/1383.html";
 		url = "http://www.mesk.cn/ip/hongkong/2014/0901/1174.html";
 		url = "http://www.xunluw.com/IP/2014/0726/1074.html";
+		url = "http://www.samair.ru/proxy/";
 		// url = "";
 		try {
 			task.put("url", url);

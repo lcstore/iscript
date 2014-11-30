@@ -6,8 +6,7 @@
 	<resultMap type="ProxyHomeDto" id="RM_ProxyHomeDto">
 		<result column="ID" property="id"/>
 		<result column="HOME_URL" property="homeUrl"/>
-		<result column="IP_PARSER" property="ipParser"/>
-		<result column="NEXT_PARSER" property="nextParser"/>
+		<result column="CONFIG_PARSER" property="configParser"/>
 		<result column="MAX_PAGE" property="maxPage"/>
 		<result column="IS_DELETE" property="isDelete"/>
 		<result column="STATUS" property="status"/>
@@ -16,8 +15,7 @@
 	</resultMap>
 	<sql id="ProxyHomeDto-coloumn-list">
 		HOME_URL
-		,IP_PARSER
-		,NEXT_PARSER
+		,CONFIG_PARSER
 		,MAX_PAGE
 		,IS_DELETE
 		,STATUS
@@ -31,13 +29,13 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.homeUrl},#{item.ipParser},#{item.nextParser},#{item.maxPage},#{item.isDelete},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.homeUrl},#{item.configParser},#{item.maxPage},#{item.isDelete},#{item.status},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyHomeDto">
 		UPDATE T_PROXY_HOME SET
 		HOME_URL=#{homeUrl},
-		IP_PARSER=#{ipParser},
+		CONFIG_PARSER=#{configParser},
 		NEXT_PARSER=#{nextParser},
 		MAX_PAGE=#{maxPage},
 		IS_DELETE=#{isDelete},
@@ -58,6 +56,7 @@
 	  <if test="status != null">
 	    AND STATUS=#{status}
 	  </if>
+	  AND IS_DELETE=0
 	</select>
 	<select id="getProxyHomeDtoByUrl" parameterType="map" resultMap="RM_ProxyHomeDto">
 	  SELECT * FROM T_PROXY_HOME
@@ -67,5 +66,6 @@
 	     #{url}
 	   </foreach>
 	  </if>
+	  AND IS_DELETE=0
 	</select>
 </mapper>
