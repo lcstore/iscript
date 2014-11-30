@@ -41,9 +41,31 @@
 		NEXT_PARSER=#{nextParser},
 		MAX_PAGE=#{maxPage},
 		IS_DELETE=#{isDelete},
-		STATUS=#{status},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		STATUS=#{status}
 		WHERE ID=#{id}
 	</update>
+	<update id="batchUpdateProxyHomeDtoStatus" parameterType="map"> 
+	   UPDATE T_PROXY_HOME
+	   SET STATUS=#{status}
+	   WHERE 1=1
+	   <foreach collection="idList" item="id" open="AND ID IN(" separator="," close=")">
+	     #{id}
+	   </foreach>
+	</update>
+	<select id="getProxyHomeDtoByStatus" parameterType="map" resultMap="RM_ProxyHomeDto">
+	  SELECT * FROM T_PROXY_HOME
+	  WHERE 1=1
+	  <if test="status != null">
+	    AND STATUS=#{status}
+	  </if>
+	</select>
+	<select id="getProxyHomeDtoByUrl" parameterType="map" resultMap="RM_ProxyHomeDto">
+	  SELECT * FROM T_PROXY_HOME
+	  WHERE 1=1
+	  <if test="urlList != null">
+	    <foreach collection="urlList" item="url" open="AND HOME_URL IN(" separator="," close=")">
+	     #{url}
+	   </foreach>
+	  </if>
+	</select>
 </mapper>

@@ -51,11 +51,11 @@
 	<bean id="sorlSearchHandler" class="com.lezo.iscript.yeam.solr.SorlSearchHandler"></bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
-	<task:executor id="executor" pool-size="3" />
-	<task:scheduler id="scheduler" pool-size="10" />
+	<task:executor id="executor" pool-size="10" />
+	<task:scheduler id="scheduler" pool-size="20" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<task:scheduled-tasks scheduler="scheduler">
+<!-- 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
 			cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
@@ -66,7 +66,10 @@
 	 <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="luceneIndexer" method="run"
 			cron="0 20 14 * * ?" />
+	</task:scheduled-tasks> 
+	 -->
+	 <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="sorlSearchHandler" method="run"
-			cron="0/5 * * * * ?" />
+			cron="0/1 * * * * ?" />
 	</task:scheduled-tasks> 
 </beans>

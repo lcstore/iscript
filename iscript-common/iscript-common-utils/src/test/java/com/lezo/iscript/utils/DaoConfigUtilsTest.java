@@ -42,8 +42,8 @@ public class DaoConfigUtilsTest {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_SEARCH_HIS";
-		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.SearchHisDao";
+		String tableName = "T_PROXY_HOME";
+		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.ProxyHomeDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);

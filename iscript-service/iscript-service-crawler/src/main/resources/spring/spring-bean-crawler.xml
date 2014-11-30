@@ -111,4 +111,10 @@
 			value="com.lezo.iscript.service.crawler.dao.SearchHisDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="proxyHomeDao"
+		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.ProxyHomeDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

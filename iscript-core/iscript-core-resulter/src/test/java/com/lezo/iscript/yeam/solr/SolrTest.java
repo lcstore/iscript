@@ -58,8 +58,10 @@ public class SolrTest {
 		queryStr = "productCode:1321297488";
 		queryStr = "copyText:OSCO";
 		queryStr = "copyText:雨伞/雨具";
-		SolrQuery solrQuery = new SolrQuery(queryStr);
-		solrQuery.setFields("siteId", "productCode");
+		queryStr = "copyText:欧德堡";
+		SolrQuery solrQuery = new SolrQuery("{!frange l=0.4}query($qq)");
+		solrQuery.set("qq", queryStr);
+		solrQuery.setFields("*", "score");
 		solrQuery.setStart(0);
 		solrQuery.setRows(10);
 		System.err.println("getQuery:" + solrQuery.getQuery());
