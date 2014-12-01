@@ -9,9 +9,9 @@ import com.lezo.iscript.service.crawler.dto.ProxyHomeDto;
 
 public interface ProxyHomeDao extends BaseDao<ProxyHomeDto> {
 
-	List<ProxyHomeDto> getProxyHomeDtoByStatus(@Param(value = "status") Integer status);
+	List<ProxyHomeDto> getProxyHomeDtoByStatus(@Param("status") Integer status, @Param("isDelete") Integer isDelete);
 
-	void batchUpdateProxyHomeDtoStatus(@Param(value = "idList") List<Long> idList, @Param(value = "status") int status);
+	void batchUpdateProxyHomeDtoStatus(@Param("idList") List<Long> idList, @Param("status") int status);
 
-	List<ProxyHomeDto> getProxyHomeDtoByUrl(@Param("urlList") List<String> urlList);
+	List<ProxyHomeDto> getProxyHomeDtoByUrl(@Param("urlList") List<String> urlList, @Param("isDelete") Integer isDelete);
 }

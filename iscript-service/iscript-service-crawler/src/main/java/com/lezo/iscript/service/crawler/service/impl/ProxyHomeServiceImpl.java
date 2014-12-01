@@ -39,8 +39,8 @@ public class ProxyHomeServiceImpl implements ProxyHomeService {
 	}
 
 	@Override
-	public List<ProxyHomeDto> getProxyHomeDtoByStatus(Integer status) {
-		return proxyHomeDao.getProxyHomeDtoByStatus(status);
+	public List<ProxyHomeDto> getProxyHomeDtoByStatus(Integer status, Integer isDelete) {
+		return proxyHomeDao.getProxyHomeDtoByStatus(status, isDelete);
 	}
 
 	@Override
@@ -52,11 +52,11 @@ public class ProxyHomeServiceImpl implements ProxyHomeService {
 	}
 
 	@Override
-	public List<ProxyHomeDto> getProxyHomeDtoByUrl(List<String> urlList) {
+	public List<ProxyHomeDto> getProxyHomeDtoByUrl(List<String> urlList, Integer isDelete) {
 		if (CollectionUtils.isEmpty(urlList)) {
 			return Collections.emptyList();
 		}
-		return proxyHomeDao.getProxyHomeDtoByUrl(urlList);
+		return proxyHomeDao.getProxyHomeDtoByUrl(urlList, isDelete);
 	}
 
 	public void setProxyHomeDao(ProxyHomeDao proxyHomeDao) {
