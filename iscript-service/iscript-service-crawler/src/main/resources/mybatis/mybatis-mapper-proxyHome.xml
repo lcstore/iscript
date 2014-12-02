@@ -36,7 +36,6 @@
 		UPDATE T_PROXY_HOME SET
 		HOME_URL=#{homeUrl},
 		CONFIG_PARSER=#{configParser},
-		NEXT_PARSER=#{nextParser},
 		MAX_PAGE=#{maxPage},
 		IS_DELETE=#{isDelete},
 		STATUS=#{status}

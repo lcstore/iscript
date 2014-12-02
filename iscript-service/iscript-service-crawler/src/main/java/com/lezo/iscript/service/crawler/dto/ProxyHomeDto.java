@@ -3,14 +3,21 @@ package com.lezo.iscript.service.crawler.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ProxyHomeDto implements Serializable{
+public class ProxyHomeDto implements Serializable {
 	private static final long serialVersionUID = 1L;
+	/**
+	 * 0-等待，1-处理中，2-完成
+	 */
+	public static final int STATUS_DONE = 0;
+	public static final int STATUS_WAIT = 1;
+	public static final int STATUS_DOING = 2;
+
 	private Long id;
 	private String homeUrl;
 	private String configParser;
 	private Integer maxPage;
 	private Integer isDelete;
-	private Integer status;
+	private Integer status = STATUS_WAIT;
 	private Date createTime;
 	private Date updateTime;
 
