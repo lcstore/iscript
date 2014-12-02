@@ -43,6 +43,26 @@ public class ConfigProxyCollector implements ConfigParser {
 			proxySeedList.add("http://mianfeidaili.ttju.cn/getAgent.php?uCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%BA%C5%2C%BF%C9%B2%BB%CC%EE%D0%B4&pCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%C3%DC%2C%BF%C9%B2%BB%CC%EE%D0%B4&Number=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%CA%FD%C1%BF&Area=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B5%D8%C7%F8&Operators=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%D4%CB%D3%AA%C9%CC&port=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B6%CB%BF%DA&list=Blist");
 		}
 		proxySeedList.add("http://www.xici.net.co/");
+		proxySeedList.add("http://www.samair.ru/proxy/");
+		proxySeedList.add("http://www.proxy4free.com/page1.html");
+		proxySeedList.add("http://proxy-list.org/");
+		proxySeedList.add("http://www.cnproxy.com/proxy1.html");
+		proxySeedList.add("http://www.cooleasy.com/");
+		proxySeedList.add("http://tools.rosinstrument.com/proxy/");
+		proxySeedList.add("http://www.socks-proxy.net/");
+		proxySeedList.add("http://free-proxy.cz/en/");
+		proxySeedList.add("http://www.cybersyndrome.net/plr.html");
+		proxySeedList.add("http://www.cybersyndrome.net/pla.html");
+		proxySeedList.add("http://spys.ru/free-proxy-list/CN/");
+		proxySeedList.add("http://www.google-proxy.net/");
+		proxySeedList.add("http://proxylist.hidemyass.com/");
+		proxySeedList.add("http://www.proxynova.com/proxy-server-list/");
+		proxySeedList.add("http://checkerproxy.net/all_proxy");
+		proxySeedList.add("http://www.cool-proxy.net/proxies/http_proxy_list/sort:score/direction:desc");
+		proxySeedList.add("http://www.xroxy.com/proxylist.htm");
+		proxySeedList.add("http://spys.ru/en/free-proxy-list/");
+		proxySeedList.add("https://nordvpn.com/free-proxy-list/");
+		proxySeedList.add("http://sockslist.net/list/proxy-socks-5-list/");
 	}
 
 	@Override

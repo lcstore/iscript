@@ -2,48 +2,83 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyHomeDao">
-	<resultMap type="ProxyHomeDto" id="RM_ProxyHomeDto">
-		<result column="ID" property="id"/>
-		<result column="HOME_URL" property="homeUrl"/>
-		<result column="IP_PARSER" property="ipParser"/>
-		<result column="NEXT_PARSER" property="nextParser"/>
-		<result column="MAX_PAGE" property="maxPage"/>
-		<result column="IS_DELETE" property="isDelete"/>
-		<result column="STATUS" property="status"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+<mapper namespace="com.vipshop.crawler.price.dao.PricingBrandMonitorDao">
+	<resultMap type="PricingBrandMonitorDto" id="RM_PricingBrandMonitorDto">
+		<result column="id" property="id"/>
+		<result column="data_date" property="dataDate"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="brand_name" property="brandName"/>
+		<result column="pt_brand_name" property="ptBrandName"/>
+		<result column="sell_date_start" property="sellDateStart"/>
+		<result column="sell_date_end" property="sellDateEnd"/>
+		<result column="business_owner" property="businessOwner"/>
+		<result column="pricing_owner" property="pricingOwner"/>
+		<result column="site_id" property="siteId"/>
+		<result column="vcode_count" property="vcodeCount"/>
+		<result column="vmatch_count" property="vmatchCount"/>
+		<result column="vwarn_count" property="vwarnCount"/>
+		<result column="ocode_count" property="ocodeCount"/>
+		<result column="oupdate_count" property="oupdateCount"/>
+		<result column="status" property="status"/>
+		<result column="is_handle" property="isHandle"/>
+		<result column="oupdate_time" property="oupdateTime"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
 	</resultMap>
-	<sql id="ProxyHomeDto-coloumn-list">
-		HOME_URL
-		,IP_PARSER
-		,NEXT_PARSER
-		,MAX_PAGE
-		,IS_DELETE
-		,STATUS
-		,CREATE_TIME
-		,UPDATE_TIME
+	<sql id="PricingBrandMonitorDto-coloumn-list">
+		id
+		,data_date
+		,category_name
+		,brand_name
+		,pt_brand_name
+		,sell_date_start
+		,sell_date_end
+		,business_owner
+		,pricing_owner
+		,site_id
+		,vcode_count
+		,vmatch_count
+		,vwarn_count
+		,ocode_count
+		,oupdate_count
+		,status
+		,is_handle
+		,oupdate_time
+		,create_time
+		,update_time
 	</sql>
-	<insert id="batchInsert" parameterType="ProxyHomeDto">
-		INSERT INTO T_PROXY_HOME(
-		<include refid="ProxyHomeDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="PricingBrandMonitorDto">
+		INSERT INTO T_PRICING_BRAND_MONITOR(
+		<include refid="PricingBrandMonitorDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.homeUrl},#{item.ipParser},#{item.nextParser},#{item.maxPage},#{item.isDelete},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.dataDate},#{item.categoryName},#{item.brandName},#{item.ptBrandName},#{item.sellDateStart},#{item.sellDateEnd},#{item.businessOwner},#{item.pricingOwner},#{item.siteId},#{item.vcodeCount},#{item.vmatchCount},#{item.vwarnCount},#{item.ocodeCount},#{item.oupdateCount},#{item.status},#{item.isHandle},#{item.oupdateTime},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="ProxyHomeDto">
-		UPDATE T_PROXY_HOME SET
-		HOME_URL=#{homeUrl},
-		IP_PARSER=#{ipParser},
-		NEXT_PARSER=#{nextParser},
-		MAX_PAGE=#{maxPage},
-		IS_DELETE=#{isDelete},
-		STATUS=#{status},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+	<update id="batchUpdate" parameterType="PricingBrandMonitorDto">
+		UPDATE T_PRICING_BRAND_MONITOR SET
+		id=#{id},
+		data_date=#{dataDate},
+		category_name=#{categoryName},
+		brand_name=#{brandName},
+		pt_brand_name=#{ptBrandName},
+		sell_date_start=#{sellDateStart},
+		sell_date_end=#{sellDateEnd},
+		business_owner=#{businessOwner},
+		pricing_owner=#{pricingOwner},
+		site_id=#{siteId},
+		vcode_count=#{vcodeCount},
+		vmatch_count=#{vmatchCount},
+		vwarn_count=#{vwarnCount},
+		ocode_count=#{ocodeCount},
+		oupdate_count=#{oupdateCount},
+		status=#{status},
+		is_handle=#{isHandle},
+		oupdate_time=#{oupdateTime},
+		create_time=#{createTime},
+		update_time=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 </mapper>

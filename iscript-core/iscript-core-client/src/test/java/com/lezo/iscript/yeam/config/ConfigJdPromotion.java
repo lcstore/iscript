@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam.config;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,26 @@ public class ConfigJdPromotion implements ConfigParser {
 	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private static String promotionScript = null;
 	private ScriptableObject definePromotScriptable;
+	private static Map<String, String> hostIpMap = new HashMap<String, String>();
+	static {
+		hostIpMap.put("item.jd.com", "122.192.30.1");
+		hostIpMap.put("p.3.cn", "111.206.227.153");
+		hostIpMap.put("club.jd.com", "111.206.227.156");
+		hostIpMap.put("st.3.cn", "111.206.227.158");
+	}
+
+	private HttpGet createHttpGetWithIp(String url) throws Exception {
+		URI oUri = new URI(url);
+		String host = oUri.getHost();
+		String oldUrl = oUri.toString();
+		String ip = hostIpMap.get(host);
+		if (ip != null) {
+			url = oldUrl.replace(host, ip);
+		}
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Host", oUri.getHost());
+		return get;
+	}
 
 	@Override
 	public String getName() {
@@ -111,7 +132,7 @@ public class ConfigJdPromotion implements ConfigParser {
 		}
 		scope = null;
 	}
-	
+
 	private void addCookie(DefaultHttpClient client, Scriptable scope) throws Exception {
 		Map<String, String> cookieMap = new HashMap<String, String>();
 		cookieMap.put("__jda", "95931165.580577879.1416135846.1416135846.1416135846.1");
@@ -197,7 +218,7 @@ public class ConfigJdPromotion implements ConfigParser {
 		// http://pi.3.cn/promoinfo/get?id=1095329&area=1_0&origin=1&callback=Promotions.set
 		List<PromotionBean> promotionList = new ArrayList<ConfigJdPromotion.PromotionBean>();
 		String url = (String) task.get("url");
-		HttpGet get = new HttpGet(url);
+		HttpGet get = createHttpGetWithIp(url);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = null;
 		try {
@@ -215,7 +236,7 @@ public class ConfigJdPromotion implements ConfigParser {
 			JSONObject oPromotData = JSONUtils.getJSONObject(sPromotData);
 			System.err.println(oPromotData);
 			String skuid = Context.toString(ScriptableObject.getProperty(scope, "skuid"));
-			scope= null;
+			scope = null;
 			Elements promotAs = dom.select("#product-promotions");
 			if (!promotAs.isEmpty()) {
 				JSONArray promotArray = JSONUtils.get(oPromotData, "promotionInfoList");

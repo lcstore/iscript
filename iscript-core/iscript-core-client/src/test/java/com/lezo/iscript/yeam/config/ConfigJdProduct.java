@@ -1,7 +1,7 @@
 package com.lezo.iscript.yeam.config;
 
-import java.io.File;
 import java.io.StringWriter;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.cookie.Cookie;
@@ -31,7 +30,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
@@ -49,6 +47,26 @@ public class ConfigJdProduct implements ConfigParser {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static int[] stockArr = { 0, -1, 1 };
 	private static Pattern oBarCodeReg = Pattern.compile("条形码[\\s]*([0-9]{13,})");
+	private static Map<String, String> hostIpMap = new HashMap<String, String>();
+	static {
+		hostIpMap.put("item.jd.com", "122.192.30.1");
+		hostIpMap.put("p.3.cn", "111.206.227.153");
+		hostIpMap.put("club.jd.com", "111.206.227.156");
+		hostIpMap.put("st.3.cn", "111.206.227.158");
+	}
+
+	private HttpGet createHttpGetWithIp(String url) throws Exception {
+		URI oUri = new URI(url);
+		String host = oUri.getHost();
+		String oldUrl = oUri.toString();
+		String ip = hostIpMap.get(host);
+		if (ip != null) {
+			url = oldUrl.replace(host, ip);
+		}
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Host", oUri.getHost());
+		return get;
+	}
 
 	@Override
 	public String getName() {
@@ -123,7 +141,7 @@ public class ConfigJdProduct implements ConfigParser {
 	private JSONObject getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		JSONObject itemObject = new JSONObject();
-		HttpGet get = new HttpGet(url);
+		HttpGet get = createHttpGetWithIp(url);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = null;
 		try {
@@ -182,7 +200,7 @@ public class ConfigJdProduct implements ConfigParser {
 	private void addShopInfo(ProductBean tBean, Document dom, TaskWritable task) throws Exception {
 		// http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=1015367811
 		String sUrl = String.format("http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=%s", tBean.getProductCode());
-		HttpGet get = new HttpGet(sUrl);
+		HttpGet get = createHttpGetWithIp(sUrl);
 		String html = HttpClientUtils.getContent(client, get);
 		String source = "function setPopInfo(data){return data;}; ";
 		html = html.replace("setPopInfo", "var oData=setPopInfo");
@@ -253,7 +271,7 @@ public class ConfigJdProduct implements ConfigParser {
 	private void addComment(ProductBean tBean, Document dom) throws Exception {
 		// http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=1095329&callback=getCommentCount
 		String mUrl = String.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount", tBean.getProductCode());
-		HttpGet get = new HttpGet(mUrl);
+		HttpGet get = createHttpGetWithIp(mUrl);
 		get.addHeader("Referer", dom.baseUri());
 		String html = HttpClientUtils.getContent(client, get);
 		System.err.println("cmm:" + html);
@@ -346,7 +364,7 @@ public class ConfigJdProduct implements ConfigParser {
 			return;
 		}
 		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s", tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
-		HttpGet get = new HttpGet(sUrl);
+		HttpGet get = createHttpGetWithIp(sUrl);
 		String html = HttpClientUtils.getContent(client, get);
 		html = html.replaceAll("jsonp[0-9]+", "var oData =callback");
 		html = "function callback(dataArray){return dataArray[0];};" + html;

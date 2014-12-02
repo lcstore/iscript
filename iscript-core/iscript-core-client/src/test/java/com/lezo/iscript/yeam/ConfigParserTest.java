@@ -26,7 +26,6 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
-import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
@@ -59,7 +58,7 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		parser = new ConfigYhdProduct();
+//		parser = new ConfigYhdProduct();
 //		parser = new ConfigYhdPromotion();
 //		parser = new ConfigYhdProduct();
 //		parser = new ConfigYhdPromotList();
@@ -75,6 +74,8 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/633371.html";
 		url = "http://item.jd.com/1132577.html";
 		url = "http://item.yhd.com/item/17220716";
+		url = "http://item.jd.com/550291.html";
+		url = "http://item.jd.com/1239179233.html";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
 //		url = "http://item.yhd.com/item/lp/369182_8382612_1";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";
@@ -403,6 +404,7 @@ public class ConfigParserTest {
 		url = "http://www.yhd.com/ctg/s2/c22882-0/";
 		url = "http://www.yhd.com/ctg/searchPage/c22882-0/b/a-s2-v0-p17-price-d0-f0-m1-rt0-pid-mid0-k?callback=jsonp1407939421186";
 		url = "http://www.yhd.com/ctg/s2/c34032-0-59402/b/a-s2-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k/?tc=3.0.9.59402.3&tp=52.34032.100.0.3.UBdUN8";
+		url = "http://list.yhd.com/c22882-0-59582/b/a-s1-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k/?tc=0.0.16.CatMenu_Site_100000003_9024_13360.3&tp=1.0.158.0.2.Kc9q8F5#page=1&sort=2";
 		ConfigParser parser = new ConfigYhdList();
 		TaskWritable task = new TaskWritable();
 		// url="http://www.yhd.com/ctg/searchPage/c33827-0/a-s2-v0-p26-price-d0-f0-m1-rt0-pid-mid0-k/?callback=jsonp1407815117323";
