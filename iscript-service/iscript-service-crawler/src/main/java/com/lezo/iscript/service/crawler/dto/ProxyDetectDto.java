@@ -1,10 +1,12 @@
 package com.lezo.iscript.service.crawler.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.lezo.iscript.utils.InetAddressUtils;
 
-public class ProxyDetectDto {
+public class ProxyDetectDto implements Serializable {
+	private static final long serialVersionUID = 1L;
 	// 状态,-2:禁用，-1:停用，0:重试，1:可用,2:工作中
 	public static final int STATUS_FORBIDDEN = -2;
 	public static final int STATUS_NONUSE = -1;
