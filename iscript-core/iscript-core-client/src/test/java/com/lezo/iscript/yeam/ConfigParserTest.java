@@ -76,6 +76,7 @@ public class ConfigParserTest {
 		url = "http://item.yhd.com/item/17220716";
 		url = "http://item.jd.com/550291.html";
 		url = "http://item.jd.com/1239179233.html";
+		url = "http://item.jd.com/1251529.html";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
 //		url = "http://item.yhd.com/item/lp/369182_8382612_1";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";

@@ -38,7 +38,7 @@ public class DailyUpdateStrategy implements ResultStrategy, Closeable {
 
 	public DailyUpdateStrategy() {
 		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, 60 * 1000, 8 * 60 * 60 * 1000);
+		this.timer.schedule(task, 60 * 1000, 2 * 60 * 60 * 1000);
 	}
 
 	public Date getSignDate(int addDay, int hour, int minute) {
@@ -66,6 +66,7 @@ public class DailyUpdateStrategy implements ResultStrategy, Closeable {
 				return;
 			}
 			long start = System.currentTimeMillis();
+			int totalCount = 0;
 			try {
 				logger.info("CreateTaskTimer is start...");
 				running = true;
@@ -76,28 +77,30 @@ public class DailyUpdateStrategy implements ResultStrategy, Closeable {
 					int limit = 500;
 					Long fromId = 0L;
 					long startType = System.currentTimeMillis();
+					int typeTaskCount = 0;
 					while (true) {
 						List<ProductDto> dtoList = productService.getProductDtosFromId(fromId, limit, siteId);
-						offerTasks(type, dtoList, fromId);
+						typeTaskCount += offerTasks(type, dtoList, fromId);
 						if (dtoList.size() < limit) {
 							break;
 						} else {
 							fromId = getMaxId(dtoList);
 						}
 					}
+					totalCount += typeTaskCount;
 					long cost = System.currentTimeMillis() - startType;
-					logger.info("Offer task:{},cost:{}", type, cost);
+					logger.info("Offer task:{},taskCount:{},cost:{}", type, typeTaskCount, cost);
 				}
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
 			} finally {
 				long cost = System.currentTimeMillis() - start;
-				logger.info("CreateTaskTimer is done.cost:{}", cost);
+				logger.info("CreateTaskTimer is done.totalCount:{},cost:{}", totalCount, cost);
 				running = false;
 			}
 		}
 
-		private void offerTasks(String type, List<ProductDto> dtoList, Long fromId) {
+		private int offerTasks(String type, List<ProductDto> dtoList, Long fromId) {
 			JSONObject paramObject = new JSONObject();
 			JSONUtils.put(paramObject, "bid", fromId);
 			List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(dtoList.size());
@@ -112,6 +115,7 @@ public class DailyUpdateStrategy implements ResultStrategy, Closeable {
 			}
 			logger.info("Offer new task.type:{},size:{}", type, taskList.size());
 			getTaskPriorityDtoBuffer().addAll(taskList);
+			return taskList.size();
 		}
 
 		private Long getMaxId(List<ProductDto> dtoList) {

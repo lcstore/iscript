@@ -52,12 +52,10 @@
 	</insert>
 	<update id="batchUpdate" parameterType="ProductStatDto">
 		UPDATE T_PRODUCT_STAT_HIS SET
-		SITE_ID=#{siteId},
 		SHOP_ID=#{shopId},
 		PRODUCT_CODE=#{productCode},
 		PRODUCT_NAME=#{productName},
 		PRODUCT_URL=#{productUrl},
-		CATEGORY_NAV=#{categoryNav},
 		MIN_PRICE=#{minPrice},
 		MAX_PRICE=#{maxPrice},
 		PRODUCT_PRICE=#{productPrice},

@@ -405,12 +405,12 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 
 		public String get(String url) throws Exception {
-			HttpGet get = new HttpGet(url);
+			HttpGet get = createHttpGetWithIp(url);
 			return HttpClientUtils.getContent(client, get);
 		}
 
 		public String get(String url, Object args) throws Exception {
-			HttpGet get = new HttpGet(url);
+			HttpGet get = createHttpGetWithIp(url);
 			return HttpClientUtils.getContent(client, get);
 		}
 	}

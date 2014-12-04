@@ -21,19 +21,21 @@ public class ProductStatHisDaoTest {
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		ProductStatHisDao productStatHisDao = SpringBeanUtils.getBean(ProductStatHisDao.class);
 		List<ProductStatDto> dtoList = new ArrayList<ProductStatDto>();
-		ProductStatDto monitorDto = new ProductStatDto();
-		for (Field field : monitorDto.getClass().getDeclaredFields()) {
-			field.setAccessible(true);
-			Class<?> fieldType = field.getType();
-			if (fieldType.equals(Integer.class)) {
-				field.set(monitorDto, 100);
-			} else if (fieldType.equals(String.class)) {
-				field.set(monitorDto, "testString");
-			} else if (fieldType.equals(Date.class)) {
-				field.set(monitorDto, new Date());
+		for (int i = 0; i < 100; i++) {
+			ProductStatDto monitorDto = new ProductStatDto();
+			for (Field field : monitorDto.getClass().getDeclaredFields()) {
+				field.setAccessible(true);
+				Class<?> fieldType = field.getType();
+				if (fieldType.equals(Integer.class)) {
+					field.set(monitorDto, 100);
+				} else if (fieldType.equals(String.class)) {
+					field.set(monitorDto, "testString");
+				} else if (fieldType.equals(Date.class)) {
+					field.set(monitorDto, new Date());
+				}
 			}
+			dtoList.add(monitorDto);
 		}
-		dtoList.add(monitorDto);
 		productStatHisDao.batchInsert(dtoList);
 	}
 }
