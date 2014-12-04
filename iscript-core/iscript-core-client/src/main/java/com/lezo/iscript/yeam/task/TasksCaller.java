@@ -11,8 +11,8 @@ public class TasksCaller {
 	private static final int corePoolSize = Integer.valueOf(ClientPropertiesUtils.getProperty("task_worker_core"));
 	private static final int maximumPoolSize = corePoolSize;
 	private static final long keepAliveTime = 60 * 1000;
-	private static final int capacity = 50;
-	private static final BlockingQueue<Runnable> resultQueue = new ArrayBlockingQueue<Runnable>(capacity);
+	private static final int TASK_CAPACITY = Integer.valueOf(ClientPropertiesUtils.getProperty("task_capacity"));
+	private static final BlockingQueue<Runnable> resultQueue = new ArrayBlockingQueue<Runnable>(TASK_CAPACITY);
 	private final ThreadPoolExecutor caller = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, resultQueue);
 
 	private TasksCaller() {

@@ -4,10 +4,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.lezo.iscript.yeam.mina.utils.ClientPropertiesUtils;
+
 public class StorageCaller {
 	private static final int CORE_SIZE = 1;
 	private static final int MAX_SIZE = CORE_SIZE;
-	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(CORE_SIZE, MAX_SIZE, 60 * 1000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
+	private static final int STORAGE_CAPACITY = Integer.valueOf(ClientPropertiesUtils.getProperty("storage_capacity"));
+	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(CORE_SIZE, MAX_SIZE, 60 * 1000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(STORAGE_CAPACITY));
 	private static final StorageCaller INSTANCE = new StorageCaller();
 
 	private StorageCaller() {

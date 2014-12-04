@@ -4,11 +4,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.lezo.iscript.yeam.mina.utils.ClientPropertiesUtils;
+
 public class PersistentCaller {
 	private static final int CORE_SIZE = 1;
-	private static final int MAX_SIZE = 2;
+	private static final int MAX_SIZE = CORE_SIZE;
+	private static final int PERSISTENT_CAPACITY = Integer.valueOf(ClientPropertiesUtils.getProperty("persistent_capacity"));
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(CORE_SIZE, MAX_SIZE, 60 * 1000L,
-			TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(1000));
+			TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(PERSISTENT_CAPACITY));
 	private static final PersistentCaller INSTANCE = new PersistentCaller();
 
 	private PersistentCaller() {

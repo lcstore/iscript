@@ -22,5 +22,6 @@
 		<mapper resource="mybatis/mybatis-mapper-luceneIndex.xml" />
 		<mapper resource="mybatis/mybatis-mapper-searchHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-proxyHome.xml" />
+		<mapper resource="mybatis/mybatis-mapper-crawlerWarnHis.xml" />
 	</mappers>
 </configuration>
