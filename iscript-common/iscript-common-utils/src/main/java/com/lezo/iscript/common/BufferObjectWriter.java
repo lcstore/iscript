@@ -42,7 +42,6 @@ public class BufferObjectWriter<E> implements ObjectWriter<E> {
 		}
 	}
 
-	@Override
 	public void flush() {
 		synchronized (lock) {
 			if (bList.isEmpty()) {

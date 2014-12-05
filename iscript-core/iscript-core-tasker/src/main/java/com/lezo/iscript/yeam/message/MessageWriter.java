@@ -121,9 +121,4 @@ public class MessageWriter implements ObjectWriter<MessageDto> {
 		return new JSONArray("[" + data + "]");
 	}
 
-	@Override
-	public void flush() {
-
-	}
-
 }

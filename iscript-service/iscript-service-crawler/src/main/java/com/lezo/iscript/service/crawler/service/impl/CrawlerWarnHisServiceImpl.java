@@ -24,17 +24,4 @@ public class CrawlerWarnHisServiceImpl implements CrawlerWarnHisService {
 
 	}
 
-	@Override
-	public void batchUpdateDtos(List<CrawlerWarnHisDto> dtoList) {
-		BatchIterator<CrawlerWarnHisDto> it = new BatchIterator<CrawlerWarnHisDto>(dtoList);
-		while (it.hasNext()) {
-			crawlerWarnHisDao.batchUpdate(it.next());
-		}
-	}
-
-	@Override
-	public void batchSaveDtos(List<CrawlerWarnHisDto> dtoList) {
-
-	}
-
 }

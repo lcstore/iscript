@@ -61,9 +61,4 @@ public class ProxyDetectWriter implements ObjectWriter<ProxyDetectDto> {
 
 	}
 
-	@Override
-	public void flush() {
-
-	}
-
 }

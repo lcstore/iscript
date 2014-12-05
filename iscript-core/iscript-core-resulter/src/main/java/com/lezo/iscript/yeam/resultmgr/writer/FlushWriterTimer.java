@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.common.ObjectWriter;
 
 public class FlushWriterTimer {
@@ -13,11 +14,11 @@ public class FlushWriterTimer {
 
 	public void run() {
 		long start = System.currentTimeMillis();
-		Iterator<Entry<String, ObjectWriter<?>>> it = BufferWriterManager.getInstance().iterator();
+		Iterator<Entry<String, BufferObjectWriter<?>>> it = BufferWriterManager.getInstance().iterator();
 		int size = 0;
 		logger.info("start to flush writer...");
 		while (it.hasNext()) {
-			Entry<String, ObjectWriter<?>> entry = it.next();
+			Entry<String, BufferObjectWriter<?>> entry = it.next();
 			entry.getValue().flush();
 			logger.info("flush writer:{}", entry.getKey());
 			size++;

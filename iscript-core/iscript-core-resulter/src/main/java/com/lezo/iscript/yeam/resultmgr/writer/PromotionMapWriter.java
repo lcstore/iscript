@@ -27,9 +27,4 @@ public class PromotionMapWriter implements ObjectWriter<PromotionMapDto> {
 		}
 	}
 
-	@Override
-	public void flush() {
-
-	}
-
 }

@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.common.ObjectWriter;
 
 public class BufferWriterManager {
-	private Map<String, ObjectWriter<?>> writerMap = new HashMap<String, ObjectWriter<?>>();
+	private Map<String, BufferObjectWriter<?>> writerMap = new HashMap<String, BufferObjectWriter<?>>();
 	private Object addLock = new Object();
 
 	static class InstanceHolder {
@@ -24,14 +25,14 @@ public class BufferWriterManager {
 
 	public void addWriter(String name) {
 		try {
-			ObjectWriter<?> writer = BufferWriterFactory.createBufferObjectWriter(name);
+			BufferObjectWriter<?> writer = BufferWriterFactory.createBufferObjectWriter(name);
 			addWriter(name, writer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void addWriter(String name, ObjectWriter<?> writer) {
+	public void addWriter(String name, BufferObjectWriter<?> writer) {
 		if (name == null || writer == null) {
 			return;
 		}
@@ -54,7 +55,7 @@ public class BufferWriterManager {
 		return writer;
 	}
 
-	public Iterator<Entry<String, ObjectWriter<?>>> iterator() {
+	public Iterator<Entry<String, BufferObjectWriter<?>>> iterator() {
 		return writerMap.entrySet().iterator();
 	}
 }

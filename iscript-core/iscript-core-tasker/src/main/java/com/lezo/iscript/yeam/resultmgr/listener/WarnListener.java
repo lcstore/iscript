@@ -21,7 +21,8 @@ public class WarnListener implements IResultListener {
 		JSONObject gObject = JSONUtils.getJSONObject(result.getResult());
 		JSONObject argsObject = JSONUtils.get(gObject, "args");
 		JSONObject exObject = JSONUtils.get(gObject, "ex");
-		logger.warn(String.format("type:%s,taskId:%s,args:%s,cause:%s.", result.getType(), result.getTaskId(), argsObject, exObject));
+		logger.warn(String.format("type:%s,taskId:%s,args:%s,cause:%s.", result.getType(), result.getTaskId(),
+				argsObject, exObject));
 		Integer retry = JSONUtils.getInteger(argsObject, "retry");
 		retry = retry == null ? 0 : retry;
 		String clienName = JSONUtils.getString(argsObject, "name@client");
@@ -37,5 +38,6 @@ public class WarnListener implements IResultListener {
 		argsObject.remove("name@client");
 		argsObject.remove("bid");
 		argsObject.remove("type");
+		dto.setParam(argsObject.toString());
 	}
 }

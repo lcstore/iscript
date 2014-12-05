@@ -27,9 +27,4 @@ public class ProductStatWriter implements ObjectWriter<ProductStatDto> {
 		}
 	}
 
-	@Override
-	public void flush() {
-
-	}
-
 }

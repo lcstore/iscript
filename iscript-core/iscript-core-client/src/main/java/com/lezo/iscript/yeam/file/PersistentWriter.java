@@ -52,10 +52,4 @@ public class PersistentWriter implements ObjectWriter<JSONObject> {
 		long cost = System.currentTimeMillis() - start;
 		logger.info("persistent result.worker:{},Queue:{},cost:{}", total, caller.getExecutor().getQueue().size(), cost);
 	}
-
-	@Override
-	public void flush() {
-
-	}
-
 }
