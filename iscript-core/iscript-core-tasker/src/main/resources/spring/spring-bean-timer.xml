@@ -56,9 +56,9 @@
 			cron="0 0/5 * * * ?" />
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="messageFlushTimer" method="run"
+		<task:scheduled ref="writeFlushTimer" method="run"
 			cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
-	<bean id="messageFlushTimer" class="com.lezo.iscript.yeam.message.MessageFlushTimer">
+	<bean id="writeFlushTimer" class="com.lezo.iscript.yeam.resultmgr.writer.WriteFlushTimer">
 	</bean>
 </beans>

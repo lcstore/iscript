@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 
 import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.service.crawler.dto.CrawlerWarnHisDto;
+import com.lezo.iscript.service.crawler.dto.MessageDto;
 
 public class WriteNotifyer {
 	private static final WriteNotifyer INSTANCE_NOTIFYER = new WriteNotifyer();
@@ -17,34 +18,36 @@ public class WriteNotifyer {
 	private Map<String, BufferObjectWriter<?>> bufferWriterMap = new HashMap<String, BufferObjectWriter<?>>();
 
 	private WriteNotifyer() {
-		addWriter(CrawlerWarnHisDto.class, new BufferObjectWriter<CrawlerWarnHisDto>(
-				new CrawlerWarnHisWriter(), 200));
+		addWriter(CrawlerWarnHisDto.class, new BufferObjectWriter<CrawlerWarnHisDto>(new CrawlerWarnHisWriter(), 200));
+		addWriter(MessageDto.class, new BufferObjectWriter<MessageDto>(new MessageWriter(), 200));
 	}
 
 	public static WriteNotifyer getInstance() {
 		return INSTANCE_NOTIFYER;
 	}
-	
-	public <T> void addWriter(Class<T> dtoClass,BufferObjectWriter<T> bufferObjectWriter){
+
+	public <T> void addWriter(Class<T> dtoClass, BufferObjectWriter<T> bufferObjectWriter) {
 		addWriter(dtoClass.getSimpleName(), bufferObjectWriter);
 	}
-	public <T> void addWriter(String dtoName,BufferObjectWriter<T> bufferObjectWriter){
+
+	public <T> void addWriter(String dtoName, BufferObjectWriter<T> bufferObjectWriter) {
 		bufferWriterMap.put(dtoName, bufferObjectWriter);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void doNotify(List<Object> dataList) {
+	public <E> void doNotify(List<E> dataList) {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		String name = dataList.get(0).getClass().getSimpleName();
+		List<Object> objectList = (List<Object>) dataList;
+		String name = objectList.get(0).getClass().getSimpleName();
 		BufferObjectWriter<Object> writer = (BufferObjectWriter<Object>) bufferWriterMap.get(name);
-		writer.write(dataList);
+		writer.write(objectList);
 	}
 
 	public void flush() {
 		for (Entry<String, BufferObjectWriter<?>> entry : bufferWriterMap.entrySet()) {
-			logger.info("start to flush.BufferObjectWriter,Object:"+entry.getKey());
+			logger.info("start to flush.BufferObjectWriter,Object:" + entry.getKey());
 			entry.getValue().flush();
 		}
 	}

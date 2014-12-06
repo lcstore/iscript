@@ -26,6 +26,7 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
+import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
@@ -53,7 +54,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotList();
 		parser = new ConfigJdPromotion();
-//		parser = new ConfigJdProduct();
+		parser = new ConfigJdProduct();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
@@ -77,6 +78,8 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/550291.html";
 		url = "http://item.jd.com/1239179233.html";
 		url = "http://item.jd.com/1251529.html";
+		url = "http://item.jd.com/1243811884.html";
+		url = "http://item.jd.com/1114223.html";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
 //		url = "http://item.yhd.com/item/lp/369182_8382612_1";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";

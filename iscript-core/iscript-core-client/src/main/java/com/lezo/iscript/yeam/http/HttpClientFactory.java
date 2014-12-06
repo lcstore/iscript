@@ -15,6 +15,7 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ClientConnectionRequest;
+import org.apache.http.conn.DnsResolver;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -28,6 +29,7 @@ import org.apache.http.cookie.CookieSpecFactory;
 import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.params.BasicHttpParams;
@@ -46,7 +48,7 @@ import com.lezo.iscript.crawler.http.UserAgentManager;
 public class HttpClientFactory {
 	public static DefaultHttpClient createHttpClient() {
 		ClientConnectionManager conman = createClientConnManager();
-		
+
 		HttpParams params = createHttpParams();
 		DefaultHttpClient client = new DefaultHttpClient(conman, params);
 		client.setHttpRequestRetryHandler(new SimpleHttpRequestRetryHandler());
@@ -74,15 +76,16 @@ public class HttpClientFactory {
 	}
 
 	private static ClientConnectionManager createClientConnManager() {
-		SchemeRegistry supportedSchemes = new SchemeRegistry();
-		supportedSchemes.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-		supportedSchemes.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
-		addHttpsTrustStrategy(supportedSchemes);
+		SchemeRegistry schreg = new SchemeRegistry();
+		schreg.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+		schreg.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
+		addHttpsTrustStrategy(schreg);
 		// addHttpsTrustManager(supportedSchemes);
-		ThreadSafeClientConnManager tsconnectionManager = new SimpleClientConnectionManager(supportedSchemes);
-		tsconnectionManager.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
-		tsconnectionManager.setDefaultMaxPerRoute(HttpParamsConstant.MAX_ROUTE_CONNECTIONS);
-		return tsconnectionManager;
+		DnsResolver dnsResolver = new ShuffleCacheDnsResolver();
+		PoolingClientConnectionManager conman = new PoolingClientConnectionManager(schreg, dnsResolver);
+		conman.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
+		conman.setDefaultMaxPerRoute(HttpParamsConstant.MAX_ROUTE_CONNECTIONS);
+		return conman;
 	}
 
 	private static void addHttpsTrustManager(SchemeRegistry supportedSchemes) {
@@ -124,8 +127,7 @@ public class HttpClientFactory {
 					return true;
 				}
 			};
-			SSLSocketFactory sf = new SSLSocketFactory(acceptingTrustStrategy,
-					SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			SSLSocketFactory sf = new SSLSocketFactory(acceptingTrustStrategy, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			supportedSchemes.register(new Scheme("https", 443, sf));
 			// supportedSchemes.register(new Scheme("https", 8443, sf));
 		} catch (Exception e) {
@@ -188,16 +190,14 @@ public class HttpClientFactory {
 		private final int checkIntervalSeconds;
 		private static IdleConnectionMonitorThread thread = null;
 
-		public IdleConnectionMonitorThread(HttpClientFactory.SimpleClientConnectionManager manager,
-				int idleTimeoutSeconds, int checkIntervalSeconds) {
+		public IdleConnectionMonitorThread(HttpClientFactory.SimpleClientConnectionManager manager, int idleTimeoutSeconds, int checkIntervalSeconds) {
 			this.manager = manager;
 			this.idleTimeoutSeconds = idleTimeoutSeconds;
 
 			this.checkIntervalSeconds = checkIntervalSeconds;
 		}
 
-		public static synchronized void ensureRunning(HttpClientFactory.SimpleClientConnectionManager manager,
-				int idleTimeoutSeconds, int checkIntervalSeconds) {
+		public static synchronized void ensureRunning(HttpClientFactory.SimpleClientConnectionManager manager, int idleTimeoutSeconds, int checkIntervalSeconds) {
 			if (thread == null) {
 				thread = new IdleConnectionMonitorThread(manager, idleTimeoutSeconds, checkIntervalSeconds);
 				thread.start();

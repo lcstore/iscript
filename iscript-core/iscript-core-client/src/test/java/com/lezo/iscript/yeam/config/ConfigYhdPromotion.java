@@ -37,12 +37,6 @@ public class ConfigYhdPromotion implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private static Map<String, String> hostIpMap = new HashMap<String, String>();
-	static {
-		hostIpMap.put("item.yhd.com", "180.153.252.38");
-		hostIpMap.put("gps.yihaodian.com", "180.153.252.46");
-		hostIpMap.put("e.yhd.com", "180.153.252.36");
-		hostIpMap.put("item-home.yhd.com", "180.153.252.38");
-	}
 
 	private HttpGet createHttpGetWithIp(String url) throws Exception {
 		URI oUri = new URI(url);

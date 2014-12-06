@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.service.crawler.dto.MessageDto;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.message.MessageCacher;
+import com.lezo.iscript.yeam.resultmgr.writer.WriteNotifyer;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class MessageListener implements IResultListener {
@@ -28,9 +28,9 @@ public class MessageListener implements IResultListener {
 		JSONUtils.put(mObject, "bid", JSONUtils.getString(argsObject, "bid"));
 		JSONUtils.put(mObject, "tid", result.getTaskId());
 		messageDto.setMessage(mObject.toString());
-		List<MessageDto> dataList = new ArrayList<MessageDto>(1);
+		List<Object> dataList = new ArrayList<Object>(1);
 		dataList.add(messageDto);
-		MessageCacher.getInstance().getBufferWriter().write(dataList);
+		WriteNotifyer.getInstance().doNotify(dataList);
 	}
 
 	private MessageDto createMessage(ResultWritable result) {
