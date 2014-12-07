@@ -28,11 +28,15 @@ public class WarnListener implements IResultListener {
 		Integer retry = JSONUtils.getInteger(argsObject, "retry");
 		retry = retry == null ? 0 : retry;
 		String clienName = JSONUtils.getString(argsObject, "name@client");
+		String[] nameArr = clienName.split("@");
 		String processId = JSONUtils.getString(argsObject, "bid");
 		processId = processId == null ? "0" : processId;
 		CrawlerWarnHisDto dto = new CrawlerWarnHisDto();
 		dto.setType(result.getType());
-		dto.setClienName(clienName);
+		dto.setClientName(nameArr[0]);
+		if (nameArr.length > 1) {
+			dto.setMacAddr(nameArr[1]);
+		}
 		dto.setCreateTime(new Date());
 		dto.setUpdateTime(dto.getCreateTime());
 		dto.setTaskId(result.getTaskId());

@@ -1,10 +1,11 @@
-`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `TYPE` varchar(50) NOT NULL COMMENT '任务类型',
-  `CLIEN_NAME` varchar(50) NOT NULL COMMENT '客户端名称',
+  `CLIENT_NAME` varchar(15) NOT NULL default '0' COMMENT '客户端名称',
+  `MAC_ADDR` varchar(12) NOT NULL  default '0' COMMENT 'MAC地址',
   `TASK_ID` bigint(20) NOT NULL default '0'  COMMENT '任务ID',
-  `PROCESS_ID` varchar(50) NOT NULL default '0'  COMMENT '任务ID',
+  `PROCESS_ID` varchar(50) NOT NULL default '0'  COMMENT '进度ID',
   `PARAM` varchar(2000) NOT NULL default '0' COMMENT '任务参数',
   `RETRY` int NOT NULL default '0' COMMENT '重试次数',
   `MESSAGE` text COMMENT '异常信息',
   `CREATE_TIME` timestamp NULL  COMMENT '创建时间',
-  `UPDATE_TIME` timestamp NOT NULL DEFAULT 
+  `UPDATE_TIME` timestamp NOT

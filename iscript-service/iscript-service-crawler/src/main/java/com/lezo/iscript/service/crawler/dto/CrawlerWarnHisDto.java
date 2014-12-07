@@ -5,7 +5,8 @@ import java.util.Date;
 public class CrawlerWarnHisDto {
 	private Long id;
 	private String type;
-	private String clienName;
+	private String clientName;
+	private String macAddr = "0";
 	private Long taskId = 0L;
 	private String processId;
 	private String param;
@@ -20,14 +21,6 @@ public class CrawlerWarnHisDto {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getClienName() {
-		return clienName;
-	}
-
-	public void setClienName(String clienName) {
-		this.clienName = clienName;
 	}
 
 	public Long getTaskId() {
@@ -92,6 +85,22 @@ public class CrawlerWarnHisDto {
 
 	public void setProcessId(String processId) {
 		this.processId = processId;
+	}
+
+	public String getMacAddr() {
+		return macAddr;
+	}
+
+	public void setMacAddr(String macAddr) {
+		this.macAddr = macAddr;
+	}
+
+	public String getClientName() {
+		return clientName;
+	}
+
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 
 }

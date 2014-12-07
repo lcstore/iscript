@@ -3,7 +3,6 @@ package com.lezo.iscript.yeam.http;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -14,9 +13,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.ClientConnectionRequest;
 import org.apache.http.conn.DnsResolver;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -30,7 +27,6 @@ import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -82,7 +78,7 @@ public class HttpClientFactory {
 		addHttpsTrustStrategy(schreg);
 		// addHttpsTrustManager(supportedSchemes);
 		DnsResolver dnsResolver = new ShuffleCacheDnsResolver();
-		PoolingClientConnectionManager conman = new PoolingClientConnectionManager(schreg, dnsResolver);
+		PoolingClientConnectionManager conman = new IdlePoolingClientConnectionManager(schreg, dnsResolver);
 		conman.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		conman.setDefaultMaxPerRoute(HttpParamsConstant.MAX_ROUTE_CONNECTIONS);
 		return conman;
@@ -161,65 +157,5 @@ public class HttpClientFactory {
 		HttpContext localContext = new BasicHttpContext();
 		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 		return localContext;
-	}
-
-	protected static class SimpleClientConnectionManager extends ThreadSafeClientConnManager {
-
-		public SimpleClientConnectionManager() {
-			super();
-		}
-
-		public SimpleClientConnectionManager(SchemeRegistry schreg, long connTTL, TimeUnit connTTLTimeUnit) {
-			super(schreg, connTTL, connTTLTimeUnit);
-		}
-
-		public SimpleClientConnectionManager(SchemeRegistry schreg) {
-			super(schreg);
-		}
-
-		@Override
-		public ClientConnectionRequest requestConnection(HttpRoute route, Object state) {
-			HttpClientFactory.IdleConnectionMonitorThread.ensureRunning(this, 25, 30);
-			return super.requestConnection(route, state);
-		}
-	}
-
-	private static class IdleConnectionMonitorThread extends Thread {
-		private final HttpClientFactory.SimpleClientConnectionManager manager;
-		private final int idleTimeoutSeconds;
-		private final int checkIntervalSeconds;
-		private static IdleConnectionMonitorThread thread = null;
-
-		public IdleConnectionMonitorThread(HttpClientFactory.SimpleClientConnectionManager manager, int idleTimeoutSeconds, int checkIntervalSeconds) {
-			this.manager = manager;
-			this.idleTimeoutSeconds = idleTimeoutSeconds;
-
-			this.checkIntervalSeconds = checkIntervalSeconds;
-		}
-
-		public static synchronized void ensureRunning(HttpClientFactory.SimpleClientConnectionManager manager, int idleTimeoutSeconds, int checkIntervalSeconds) {
-			if (thread == null) {
-				thread = new IdleConnectionMonitorThread(manager, idleTimeoutSeconds, checkIntervalSeconds);
-				thread.start();
-			}
-		}
-
-		public void run() {
-			try {
-				synchronized (this) {
-					super.wait(this.checkIntervalSeconds * 1000);
-				}
-				this.manager.closeExpiredConnections();
-				this.manager.closeIdleConnections(this.idleTimeoutSeconds, TimeUnit.SECONDS);
-				synchronized (IdleConnectionMonitorThread.class) {
-					if (this.manager.getConnectionsInPool() == 0) {
-						thread = null;
-						return;
-					}
-				}
-			} catch (InterruptedException e) {
-				thread = null;
-			}
-		}
 	}
 }

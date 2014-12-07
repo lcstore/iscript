@@ -6,7 +6,8 @@
 	<resultMap type="CrawlerWarnHisDto" id="RM_CrawlerWarnHisDto">
 		<result column="ID" property="id"/>
 		<result column="TYPE" property="type"/>
-		<result column="CLIEN_NAME" property="clienName"/>
+		<result column="CLIENT_NAME" property="clientName"/>
+		<result column="MAC_ADDR" property="macAddr"/>
 		<result column="TASK_ID" property="taskId"/>
 		<result column="PROCESS_ID" property="processId"/>
 		<result column="PARAM" property="param"/>
@@ -17,7 +18,8 @@
 	</resultMap>
 	<sql id="CrawlerWarnHisDto-coloumn-list">
 		TYPE
-		,CLIEN_NAME
+		,CLIENT_NAME
+		,MAC_ADDR
 		,TASK_ID
 		,PROCESS_ID
 		,PARAM
@@ -33,20 +35,19 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.clienName},#{item.taskId},#{item.processId},#{item.param},#{item.retry},#{item.message},#{item.createTime},#{item.updateTime})
+			(#{item.type},#{item.clientName},#{item.macAddr},#{item.taskId},#{item.processId},#{item.param},#{item.retry},#{item.message},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="CrawlerWarnHisDto">
 		UPDATE T_CRAWLER_WARN_HIS SET
 		TYPE=#{type},
-		CLIEN_NAME=#{clienName},
+		CLIENT_NAME=#{clientName},
+		MAC_ADDR=#{macAddr},
 		TASK_ID=#{taskId},
 		PROCESS_ID=#{processId},
 		PARAM=#{param},
 		RETRY=#{retry},
-		MESSAGE=#{message},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		MESSAGE=#{message}
 		WHERE ID=#{id}
 	</update>
 </mapper>
