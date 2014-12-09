@@ -59,7 +59,7 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-//		parser = new ConfigYhdProduct();
+		parser = new ConfigYhdProduct();
 //		parser = new ConfigYhdPromotion();
 //		parser = new ConfigYhdProduct();
 //		parser = new ConfigYhdPromotList();
@@ -81,6 +81,7 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1243811884.html";
 		url = "http://item.jd.com/372834.html";
 		url = "http://item.jd.com/1226088.html";
+		url = "http://item.yhd.com/item/102611";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=54236";
 //		url = "http://item.yhd.com/item/lp/369182_8382612_1";
 //		url = "http://cms.yhd.com/cmsPage/show.do?pageId=108589";
