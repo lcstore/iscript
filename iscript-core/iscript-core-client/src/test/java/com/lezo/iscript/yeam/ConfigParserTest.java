@@ -359,6 +359,8 @@ public class ConfigParserTest {
 			long ip = 1567820005;
 			task.put("ip", "121.12.255.214");
 			task.put("port", 8086);
+			task.put("ip", "77.89.244.62");
+			task.put("port", 80);
 			task.put("url", url);
 			String result = parser.doParse(task);
 			System.out.println(result);

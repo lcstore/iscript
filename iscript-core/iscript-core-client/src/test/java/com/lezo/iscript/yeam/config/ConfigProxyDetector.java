@@ -32,17 +32,21 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
+	private DefaultHttpClient client;
 	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
 		detectUrls = new ArrayList<String>();
-//		detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
-//		detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
+		// detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
+		// detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
 		detectUrls.add("http://www.jd.com/");
 		detectUrls.add("http://item.jd.com/856850.html");
 		detectUrls.add("http://www.yhd.com");
 		detectUrls.add("http://item.yhd.com/item/7381158");
+
+		this.client = HttpClientFactory.createHttpClient();
+		this.client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 	}
 
 	@Override
@@ -82,11 +86,9 @@ public class ConfigProxyDetector implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		long start = System.currentTimeMillis();
 		int status = 0;
-		DefaultHttpClient client = HttpClientFactory.createHttpClient();
-		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 		try {
 			HttpHost proxy = new HttpHost(host, port);
-			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+			get.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
