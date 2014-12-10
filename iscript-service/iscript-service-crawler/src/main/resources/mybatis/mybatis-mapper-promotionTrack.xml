@@ -42,6 +42,13 @@
 			(#{item.siteId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.fromPrice},#{item.targetPrice},#{item.toPrice},#{item.promotionDetail},#{item.fromTime},#{item.toTime},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
+	<insert id="insertPromotionTrackDtoAndSetId" parameterType="PromotionTrackDto" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_PROMOTION_TRACK(
+		<include refid="PromotionTrackDto-coloumn-list" />
+		)
+		VALUES
+			(#{siteId},#{productCode},#{productName},#{productUrl},#{fromPrice},#{targetPrice},#{toPrice},#{promotionDetail},#{fromTime},#{toTime},#{createTime},#{updateTime})
+	</insert>
 	<update id="batchUpdate" parameterType="PromotionTrackDto">
 		UPDATE T_PROMOTION_TRACK SET
 		SITE_ID=#{siteId},
@@ -58,4 +65,19 @@
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	
+	<select id="getPromotionTrackDtoByDate" parameterType="map" resultMap="RM_PromotionTrackDto">
+	   SELECT * FROM T_PROMOTION_TRACK
+	   WHERE 1=1
+	   <if test="siteList !=null and !siteList.isEmpty()">
+	     <foreach collection="siteList" item="siteId" open="AND SITE_ID IN(" close=")" separator=",">
+	       #{siteId}
+	     </foreach>
+	   </if>
+	   <if test="sellDate !=null">
+	    <![CDATA[
+	    AND(  (FROM_TIME<=#{sellDate} AND TO_TIME>=#{sellDate}) OR (TO_TIME>#{sellDate} AND TO_TIME<DATE_ADD(#{sellDate},INTERVAL 1 DAY) ) )
+	    ]]>
+	   </if>
+	</select>
 </mapper>

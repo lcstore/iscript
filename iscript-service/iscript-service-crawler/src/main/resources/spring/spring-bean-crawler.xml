@@ -123,4 +123,10 @@
 			value="com.lezo.iscript.service.crawler.dao.CrawlerWarnHisDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="promotionTrackDao"
+		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.PromotionTrackDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>
