@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.PromotionTrackDao">
+	<resultMap type="PromotionTrackDto" id="RM_PromotionTrackDto">
+		<result column="ID" property="id"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="FROM_PRICE" property="fromPrice"/>
+		<result column="TARGET_PRICE" property="targetPrice"/>
+		<result column="TO_PRICE" property="toPrice"/>
+		<result column="PROMOTION_DETAIL" property="promotionDetail"/>
+		<result column="FROM_TIME" property="fromTime"/>
+		<result column="TO_TIME" property="toTime"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="PromotionTrackDto-coloumn-list">
+		SITE_ID
+		,PRODUCT_CODE
+		,PRODUCT_NAME
+		,PRODUCT_URL
+		,FROM_PRICE
+		,TARGET_PRICE
+		,TO_PRICE
+		,PROMOTION_DETAIL
+		,FROM_TIME
+		,TO_TIME
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="PromotionTrackDto">
+		INSERT INTO T_PROMOTION_TRACK(
+		<include refid="PromotionTrackDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.siteId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.fromPrice},#{item.targetPrice},#{item.toPrice},#{item.promotionDetail},#{item.fromTime},#{item.toTime},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<insert id="insertPromotionTrackDtoAndSetId" parameterType="PromotionTrackDto" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_PROMOTION_TRACK(
+		<include refid="PromotionTrackDto-coloumn-list" />
+		)
+		VALUES
+			(#{siteId},#{productCode},#{productName},#{productUrl},#{fromPrice},#{targetPrice},#{toPrice},#{promotionDetail},#{fromTime},#{toTime},#{createTime},#{updateTime})
+	</insert>
+	<update id="batchUpdate" parameterType="PromotionTrackDto">
+		UPDATE T_PROMOTION_TRACK SET
+		SITE_ID=#{siteId},
+		PRODUCT_CODE=#{productCode},
+		PRODUCT_NAME=#{productName},
+		PRODUCT_URL=#{productUrl},
+		FROM_PRICE=#{fromPrice},
+		TARGET_PRICE=#{targetPrice},
+		TO_PRICE=#{toPrice},
+		PROMOTION_DETAIL=#{promotionDetail},
+		FROM_TIME=#{fromTime},
+		TO_TIME=#{toTime},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	
+	<select id="getPromotionTrackDtoByDate" parameterType="map" resultMap="RM_PromotionTrackDto">
+	   SELECT * FROM T_PROMOTION_TRACK
+	   WHERE 1=1
+	   <if test="siteList !=null and !siteList.isEmpty()">
+	     <foreach collection="siteList" item="siteId" open="AND SITE_ID IN(" close=")" separator=",">
+	       #{siteId}
+	     </foreach>
+	   </if>
+	   <if test="sellDate !=null">
+	    <![CDATA[
+	    AND(  (FROM_TIME<=#{sellDate} AND TO_TIME>=#{sellDate}) OR (TO_TIME>#{sellDate} AND TO_TIME<DATE_ADD(#{sellDate},INTERVAL 1 DAY) ) )
+	    ]]>
+	   </if>
+	</select>
+</mapper>

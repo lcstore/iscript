@@ -38,7 +38,7 @@ public class DailyUpdateStrategy implements ResultStrategy, Closeable {
 
 	public DailyUpdateStrategy() {
 		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, 60 * 1000, 2 * 60 * 60 * 1000);
+		this.timer.schedule(task, 60 * 1000, 4 * 60 * 60 * 1000);
 	}
 
 	public Date getSignDate(int addDay, int hour, int minute) {

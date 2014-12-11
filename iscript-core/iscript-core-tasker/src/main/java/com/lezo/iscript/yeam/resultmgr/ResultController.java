@@ -9,7 +9,9 @@ import com.lezo.iscript.yeam.resultmgr.listener.IResultListener;
 import com.lezo.iscript.yeam.resultmgr.listener.MessageListener;
 import com.lezo.iscript.yeam.resultmgr.listener.RetryListener;
 import com.lezo.iscript.yeam.resultmgr.listener.StrategyListener;
+import com.lezo.iscript.yeam.resultmgr.listener.WarnListener;
 import com.lezo.iscript.yeam.writable.ResultWritable;
+
 public class ResultController implements IResultController {
 	private List<IResultListener> listeners;
 
@@ -24,6 +26,7 @@ public class ResultController implements IResultController {
 		this.listeners.add(new RetryListener());
 		this.listeners.add(new StrategyListener());
 		this.listeners.add(new MessageListener());
+		this.listeners.add(new WarnListener());
 	}
 
 	@Override

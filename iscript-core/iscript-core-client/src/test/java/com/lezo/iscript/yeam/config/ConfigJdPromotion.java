@@ -43,12 +43,6 @@ public class ConfigJdPromotion implements ConfigParser {
 	private static String promotionScript = null;
 	private ScriptableObject definePromotScriptable;
 	private static Map<String, String> hostIpMap = new HashMap<String, String>();
-	static {
-		hostIpMap.put("item.jd.com", "122.192.30.1");
-		hostIpMap.put("p.3.cn", "111.206.227.153");
-		hostIpMap.put("club.jd.com", "111.206.227.156");
-		hostIpMap.put("st.3.cn", "111.206.227.158");
-	}
 
 	private HttpGet createHttpGetWithIp(String url) throws Exception {
 		URI oUri = new URI(url);

@@ -48,12 +48,6 @@ public class ConfigJdProduct implements ConfigParser {
 	private static int[] stockArr = { 0, -1, 1 };
 	private static Pattern oBarCodeReg = Pattern.compile("条形码[\\s]*([0-9]{13,})");
 	private static Map<String, String> hostIpMap = new HashMap<String, String>();
-	static {
-		hostIpMap.put("item.jd.com", "122.192.30.1");
-		hostIpMap.put("p.3.cn", "111.206.227.153");
-		hostIpMap.put("club.jd.com", "111.206.227.156");
-		hostIpMap.put("st.3.cn", "111.206.227.158");
-	}
 
 	private HttpGet createHttpGetWithIp(String url) throws Exception {
 		URI oUri = new URI(url);
@@ -152,7 +146,7 @@ public class ConfigJdProduct implements ConfigParser {
 			Elements scriptAs = dom.select("script[type]");
 			ProductBean tBean = new ProductBean();
 			if (!scriptAs.isEmpty()) {
-				String sMark = "";
+				String sMark = "window.pageConfig";
 				String destScript = null;
 				int size = scriptAs.size();
 				for (int i = 0; i < size; i++) {

@@ -1,12 +1,19 @@
 package com.lezo.iscript.yeam;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -23,13 +30,44 @@ import com.lezo.rest.jos.JosRestClient;
 public class FillUnionTest {
 
 	@Test
+	public void testToken() throws Exception {
+		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
+		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
+		String code = "";
+		String directUrl = "http://www.lezomao.com";
+		// https://auth.360buy.com/oauth/authorize?response_type=code&client_id=6BB6B1912DAB91E14B6ADF6C31A2C023&redirect_uri=http://www.lezomao.com
+		String accessToken = getToken(appKey, appSecret, directUrl, code);
+		System.err.println("token:" + accessToken);
+	}
+
+	private String getToken(String appKey, String appSecret, String directUrl, String code) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		sb.append("https://auth.360buy.com/oauth/token?grant_type=authorization_code&client_id=");
+		sb.append(appKey);
+		sb.append("&redirect_uri=");
+		sb.append(directUrl);
+		sb.append("&code=GET_CODE&state=");
+		sb.append(code);
+		sb.append("&client_secret=");
+		sb.append(appSecret);
+		String tokenUrl = sb.toString();
+		HttpGet get = new HttpGet(tokenUrl);
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse resp = client.execute(get);
+		String result = EntityUtils.toString(resp.getEntity(), "UTF-8");
+		JSONObject rObject = JSONUtils.getJSONObject(result);
+		return JSONUtils.getString(rObject, "access_token");
+	}
+
+	@Test
 	public void testFillUnionUrls() throws Exception {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		ProductDao productDao = SpringBeanUtils.getBean(ProductDao.class);
 		List<String> lineList = FileUtils.readLines(new File("src/test/resources/pmsg.txt"), "UTF-8");
+
 		BatchIterator<String> it = new BatchIterator<String>(lineList, 500);
-		String accessToken = "482f64db-bf61-42a7-a250-f9b1e786d00b";
+		String accessToken = "83de1487-026f-4a60-8dac-a9dd27abfeae";
 		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
 		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);

@@ -139,6 +139,10 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	}
 
 	private void addShopId(Object destObject, JSONObject dataObject, JSONObject argsObject) throws Exception {
+		Integer stockNum = JSONUtils.getInteger(dataObject, "stockNum");
+		if (stockNum != null && stockNum < 0) {
+			return;
+		}
 		String fieldName = "shopId";
 		Method readMd = MethodUtils.getReadMethod(fieldName, destObject.getClass());
 		if (readMd == null) {

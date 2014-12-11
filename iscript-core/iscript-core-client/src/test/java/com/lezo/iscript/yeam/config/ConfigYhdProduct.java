@@ -35,11 +35,6 @@ public class ConfigYhdProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private static Map<String, String> hostIpMap = new HashMap<String, String>();
 	private static final String EMTPY_RESULT = new JSONObject().toString();
-	static {
-		hostIpMap.put("item.yhd.com", "180.153.252.38");
-		hostIpMap.put("gps.yihaodian.com", "180.153.252.46");
-		hostIpMap.put("e.yhd.com", "180.153.252.36");
-	}
 
 	@Override
 	public String getName() {
