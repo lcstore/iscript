@@ -7,7 +7,6 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
