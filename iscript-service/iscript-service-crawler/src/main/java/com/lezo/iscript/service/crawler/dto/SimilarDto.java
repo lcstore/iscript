@@ -1,8 +1,13 @@
 package com.lezo.iscript.service.crawler.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class SimilarDto {
+public class SimilarDto implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Long similarCode;
 	private Integer siteId;

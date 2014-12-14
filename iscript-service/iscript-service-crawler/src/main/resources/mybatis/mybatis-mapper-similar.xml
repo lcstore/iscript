@@ -74,18 +74,87 @@
 	   SELECT ID,<include refid="SimilarDto-coloumn-list"/>
 	   FROM T_SIMILAR
 	   WHERE 1=1
-	   <if test="similarCodeList.isEmpty()">
+	   <if test="similarCodeList ==null or similarCodeList.isEmpty()">
 	     AND 1=0
 	   </if>
-	   <if test="!similarCodeList.isEmpty()">
+	   <if test="similarCodeList !=null and !similarCodeList.isEmpty()">
 		   <foreach collection="similarCodeList" item="similarCode" open="AND SIMILAR_CODE IN(" close=")" separator=",">
 		      #{similarCode}
 		   </foreach>
 	   </if>
-	   <if test="siteIdList !=null">
+	   <if test="siteIdList !=null and !siteIdList.isEmpty()">
 	     <foreach collection="siteIdList" item="siteId" open="AND SITE_ID IN(" close=")" separator=",">
 		      #{siteId}
 		   </foreach>
 	   </if>
+	</select>
+	<select id="getSimilarCodeByCodeAsc" parameterType="map" resultType="Long">
+	   SELECT SIMILAR_CODE
+	   FROM T_SIMILAR
+	   WHERE 1=1
+	   <if test="fromCode!=null">
+	     <![CDATA[
+	     AND SIMILAR_CODE>#{fromCode}
+	     ]]>
+	   </if>
+	   GROUP BY SIMILAR_CODE
+	   ORDER BY SIMILAR_CODE ASC
+	   LIMIT #{limit}
+	</select>
+	<select id="getSimilarDtoByCodeAndPrice" parameterType="map" resultMap="RM_SimilarDto">
+	   SELECT *
+	   FROM T_SIMILAR
+	   <where>
+		   <if test="sCodeList!=null and !sCodeList.isEmpty()">
+		      <foreach collection="sCodeList" item="sCode" open="AND SIMILAR_CODE IN(" separator="," close=")" >
+		        #{sCode}
+		      </foreach>
+		   </if>
+		   <if test="pCodeList!=null and !pCodeList.isEmpty()">
+		      <foreach collection="pCodeList" item="pCode" open="AND PRODUCT_CODE IN(" separator="," close=")" >
+		        #{pCode}
+		      </foreach>
+		   </if>
+		   <if test="fromPrice!=null ">
+		     <![CDATA[
+		     AND PRODUCT_PRICE>=#{fromPrice}
+		     ]]>
+		   </if>
+		   <if test="toPrice!=null ">
+		     <![CDATA[
+		     AND PRODUCT_PRICE<=#{toPrice}
+		     ]]>
+		   </if>
+		   ORDER BY PRODUCT_PRICE ASC
+		   <if test="offset!=null and limit !=null">
+		     LIMIT ${offset},${limit}
+		   </if>
+	   </where>
+	</select>
+	<select id="getCountSimilarDtoByCodeAndPrice" parameterType="map" resultType="Integer">
+	   SELECT COUNT(*)
+	   FROM T_SIMILAR
+	   <where>
+		   <if test="sCodeList!=null and !sCodeList.isEmpty()">
+		      <foreach collection="sCodeList" item="sCode" open="AND SIMILAR_CODE IN(" separator="," close=")" >
+		        #{sCode}
+		      </foreach>
+		   </if>
+		   <if test="pCodeList!=null and !pCodeList.isEmpty()">
+		      <foreach collection="pCodeList" item="pCode" open="AND PRODUCT_CODE IN(" separator="," close=")" >
+		        #{pCode}
+		      </foreach>
+		   </if>
+		   <if test="fromPrice!=null ">
+		     <![CDATA[
+		     AND PRODUCT_PRICE>=#{fromPrice}
+		     ]]>
+		   </if>
+		   <if test="toPrice!=null ">
+		     <![CDATA[
+		     AND PRODUCT_PRICE<=#{toPrice}
+		     ]]>
+		   </if>
+	   </where>
 	</select>
 </mapper>
