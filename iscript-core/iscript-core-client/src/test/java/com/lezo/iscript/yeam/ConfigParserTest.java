@@ -58,12 +58,12 @@ public class ConfigParserTest {
 		parser = new ConfigJdPromotion();
 		parser = new ConfigJdProduct();
 //		parser = new ConfigTmallList();
-//		parser = new ConfigTmallProduct();
+		parser = new ConfigTmallProduct();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		 parser = new ConfigYhdProduct();
+//		 parser = new ConfigYhdProduct();
 		// parser = new ConfigYhdPromotion();
 		// parser = new ConfigYhdProduct();
 		// parser = new ConfigYhdPromotList();
@@ -78,7 +78,7 @@ public class ConfigParserTest {
 //		url = "http://item.jd.com/1226088.html";
 //		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.4.QJ4gy8&q=%D3%F0%C8%DE%B7%FE&sort=d&style=g&from=qRecommend_1_qRecommend&industryCatId=2#J_Filter";
 //		url = "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.tEE8nC&id=35591763765";
-//		url = "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.42.wvi8o3&id=40271259575";
+		url = "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.42.wvi8o3&id=40271259575";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");

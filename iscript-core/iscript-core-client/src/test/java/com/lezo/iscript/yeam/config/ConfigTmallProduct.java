@@ -1,8 +1,6 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +22,6 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.config.ConfigJdPromotion.HttpDirector;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
@@ -35,6 +32,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class ConfigTmallProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private static final String EMTPY_RESULT = new JSONObject().toString();
+	public static final int SITE_ID = 1013;
 
 	@Override
 	public String getName() {
@@ -75,22 +73,52 @@ public class ConfigTmallProduct implements ConfigParser {
 	 */
 	private JSONObject getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
-		JSONObject itemObject = new JSONObject();
 		HttpGet get = new HttpGet(url);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = Jsoup.parse(html);
 		ResultBean rsBean = new ResultBean();
 		ProductBean tBean = new ProductBean();
 		rsBean.getDataList().add(tBean);
-		Elements nameEls = dom.select("#J_DetailMeta div.tb-detail-hd h1");
 		JSONObject oConfig = getConfigObject(dom);
 		JSONObject itemDO = JSONUtils.getJSONObject(oConfig, "itemDO");
 		tBean.setProductCode(JSONUtils.getString(itemDO, "itemId"));
 		tBean.setProductName(JSONUtils.getString(itemDO, "title"));
 		tBean.setProductBrand(JSONUtils.getString(itemDO, "brand"));
 		tBean.setMarketPrice(JSONUtils.getFloat(itemDO, "reservePrice"));
+		tBean.setProductUrl(String.format("http://detail.tmall.com/item.htm?id=%s", tBean.getProductCode()));
+		Boolean hasSku = JSONUtils.get(itemDO, "hasSku");
+		if (hasSku) {
+			tBean.setStockNum(1);
+		} else {
+			tBean.setStockNum(0);
+		}
+		Elements modelEls = dom.select("#J_AttrUL li[title]:contains(货号)");
+		if (!modelEls.isEmpty()) {
+			String sModel = modelEls.first().attr("title");
+			sModel = sModel.replace(" ", "");
+			tBean.setProductModel(sModel.trim());
+		}
+
+		Elements imgEls = dom.select("#J_UlThumb li a img[src]");
+		if (!imgEls.isEmpty()) {
+			String sImgUrl = imgEls.first().attr("src");
+			String sMark = "jpg_";
+			int index = sImgUrl.indexOf(sMark);
+			if (index > 0 && (index + sMark.length() < sImgUrl.length())) {
+				sImgUrl = sImgUrl.substring(0, index + sMark.length() - 1);
+			}
+			tBean.setImgUrl(sImgUrl);
+		}
 
 		tBean.setProductBrand(ascii2native(tBean.getProductBrand()));
+		Elements destEls = dom.select("#shopExtra a.slogo-shopname[href]");
+		if (!destEls.isEmpty()) {
+			tBean.setShopUrl(destEls.first().absUrl("href"));
+			tBean.setShopName(destEls.first().text().trim());
+			String sShopCode = JSONUtils.getString(oConfig, "rstShopId");
+			tBean.setShopCode(sShopCode);
+		}
+
 		String initUrl = JSONUtils.getString(oConfig, "initApi");
 		initUrl += ("&callback=setMdskip&areaId=310100&timestamp=" + System.currentTimeMillis());
 		get = new HttpGet(initUrl);
@@ -109,6 +137,9 @@ public class ConfigTmallProduct implements ConfigParser {
 		JSONArray promotionList = JSONUtils.get(oSkuObject, "promotionList");
 		JSONObject oPromotObject = promotionList.getJSONObject(0);
 		tBean.setProductPrice(JSONUtils.getFloat(oPromotObject, "price"));
+
+		JSONObject sellCountDO = getObjectByLink(oMdskip, "defaultModel.sellCountDO".split("\\."));
+		tBean.setSoldNum(JSONUtils.getInteger(sellCountDO, "sellCount"));
 		System.err.println(oPromotObject.toString());
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
@@ -179,7 +210,7 @@ public class ConfigTmallProduct implements ConfigParser {
 		private String imgUrl;
 		private Date onsailTime;
 
-		private Integer siteId = 1001;
+		private Integer siteId = SITE_ID;
 		private Integer goodComment;
 		private Integer poorComment;
 
