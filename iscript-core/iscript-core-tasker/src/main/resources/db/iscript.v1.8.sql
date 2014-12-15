@@ -60,6 +60,7 @@ CREATE TABLE `T_BRAND_SHOP` (
   `SHOP_NAME` varchar(50) NOT NULL DEFAULT '' COMMENT '店铺名称',
   `SHOP_CODE` varchar(20) NOT NULL DEFAULT '' COMMENT '店铺编码',
   `SHOP_URL` varchar(1000) COMMENT '店铺链接',
+  `SHOP_TYPE` tinyint NOT NULL default '3' COMMENT '0-旗舰店，1-专卖店，2-专营店，3-其他',
   `CREATE_TIME` timestamp NULL  COMMENT '创建时间',
   `UPDATE_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`ID`),

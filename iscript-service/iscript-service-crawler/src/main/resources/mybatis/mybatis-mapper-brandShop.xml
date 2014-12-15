@@ -11,6 +11,7 @@
 		<result column="SHOP_NAME" property="shopName"/>
 		<result column="SHOP_CODE" property="shopCode"/>
 		<result column="SHOP_URL" property="shopUrl"/>
+		<result column="SHOP_TYPE" property="shopType"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
@@ -21,6 +22,7 @@
 		,SHOP_NAME
 		,SHOP_CODE
 		,SHOP_URL
+		,SHOP_TYPE
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
@@ -31,7 +33,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.brandId},#{item.brandName},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.brandId},#{item.brandName},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.shopType},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="BrandShopDto">
@@ -42,6 +44,7 @@
 		SHOP_NAME=#{shopName},
 		SHOP_CODE=#{shopCode},
 		SHOP_URL=#{shopUrl},
+		SHOP_TYPE=#{shopType},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
