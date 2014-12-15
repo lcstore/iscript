@@ -80,6 +80,7 @@ public class ConfigTmallProduct implements ConfigParser {
 		ProductBean tBean = new ProductBean();
 		rsBean.getDataList().add(tBean);
 		JSONObject oConfig = getConfigObject(dom);
+		// System.err.println(oConfig);
 		JSONObject itemDO = JSONUtils.getJSONObject(oConfig, "itemDO");
 		tBean.setProductCode(JSONUtils.getString(itemDO, "itemId"));
 		tBean.setProductName(JSONUtils.getString(itemDO, "title"));
@@ -129,6 +130,10 @@ public class ConfigTmallProduct implements ConfigParser {
 		int toIndex = html.lastIndexOf(")");
 		html = html.substring(fromIndex + sMark.length(), toIndex);
 		JSONObject oMdskip = JSONUtils.getJSONObject(html);
+
+		JSONObject sellCountDO = getObjectByLink(oMdskip, "defaultModel.sellCountDO".split("\\."));
+		tBean.setSoldNum(JSONUtils.getInteger(sellCountDO, "sellCount"));
+
 		// .defaultModel.itemPriceResultDO.priceInfo["68909117510"].suggestivePromotionList[0].price
 		String keyLink = "defaultModel.itemPriceResultDO.priceInfo";
 		String[] keyStrings = keyLink.split("\\.");
@@ -137,14 +142,28 @@ public class ConfigTmallProduct implements ConfigParser {
 		JSONArray promotionList = JSONUtils.get(oSkuObject, "promotionList");
 		JSONObject oPromotObject = promotionList.getJSONObject(0);
 		tBean.setProductPrice(JSONUtils.getFloat(oPromotObject, "price"));
+		// System.err.println(oPromotObject.toString());
 
-		JSONObject sellCountDO = getObjectByLink(oMdskip, "defaultModel.sellCountDO".split("\\."));
-		tBean.setSoldNum(JSONUtils.getInteger(sellCountDO, "sellCount"));
-		System.err.println(oPromotObject.toString());
+		addComment(dom, itemDO, tBean);
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, rsBean);
 		return new JSONObject(writer.toString());
+	}
+
+	private void addComment(Document dom, JSONObject itemDO, ProductBean tBean) throws Exception {
+		// http://dsr.rate.tmall.com/list_dsr_info.htm?itemId=40271259575&spuId=287841148&sellerId=727249233&_ksTS=1418656127500_191&callback=jsonp192
+		String url = String.format("http://dsr.rate.tmall.com/list_dsr_info.htm?itemId=%s&spuId=%s&sellerId=%s&_ksTS=%s_191&callback=jsonp192", tBean.getProductCode(),
+				JSONUtils.getString(itemDO, "spuId"), JSONUtils.getString(itemDO, "sellerId"), System.currentTimeMillis());
+		HttpGet get = new HttpGet(url);
+		get.addHeader("Refer", dom.baseUri());
+		String html = HttpClientUtils.getContent(client, get);
+		int fromIndex = html.indexOf("{");
+		int toIndex = html.lastIndexOf("}");
+		html = html.substring(fromIndex, toIndex + 1);
+		JSONObject mObject = JSONUtils.getJSONObject(html);
+		JSONObject dsr = JSONUtils.getJSONObject(mObject, "dsr");
+		tBean.setCommentNum(JSONUtils.getInteger(dsr, "rateTotal"));
 	}
 
 	public static String ascii2native(String ascii) {

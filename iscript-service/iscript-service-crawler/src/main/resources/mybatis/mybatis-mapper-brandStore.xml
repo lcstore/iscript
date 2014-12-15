@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.BrandStoreDao">
+	<resultMap type="BrandStoreDto" id="RM_BrandStoreDto">
+		<result column="ID" property="id"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="BRAND_CODE" property="brandCode"/>
+		<result column="BRAND_NAME" property="brandName"/>
+		<result column="BRAND_URL" property="brandUrl"/>
+		<result column="SYNONYM" property="synonym"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="BrandStoreDto-coloumn-list">
+		SITE_ID
+		,BRAND_CODE
+		,BRAND_NAME
+		,BRAND_URL
+		,SYNONYM
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="BrandStoreDto">
+		INSERT INTO T_BRAND_STORE(
+		<include refid="BrandStoreDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonym},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="BrandStoreDto">
+		UPDATE T_BRAND_STORE SET
+		SITE_ID=#{siteId},
+		BRAND_CODE=#{brandCode},
+		BRAND_NAME=#{brandName},
+		BRAND_URL=#{brandUrl},
+		SYNONYM=#{synonym},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+</mapper>
