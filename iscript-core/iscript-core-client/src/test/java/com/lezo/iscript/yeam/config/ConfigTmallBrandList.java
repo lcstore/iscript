@@ -2,8 +2,9 @@ package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -44,23 +45,75 @@ public class ConfigTmallBrandList implements ConfigParser {
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		String html = HttpClientUtils.getContent(client, get, "gbk");
-		Document dom = Jsoup.parse(html);
+		Document dom = Jsoup.parse(html, url);
 		ResultBean rsBean = new ResultBean();
 		Elements itemEls = dom.select("#J_SearchResult li a[href][target]");
-		for (Element item : itemEls) {
-			BrandList tBean = new BrandList();
-			tBean.setBrandName(item.ownText().trim());
-			tBean.setBrandUrl(item.absUrl("href"));
-			Element sibEle = item.nextElementSibling();
-			if (sibEle != null && sibEle.hasAttr("data-brandid")) {
-				tBean.setBrandCode(sibEle.attr("data-brandid"));
+		if (itemEls.isEmpty()) {
+			itemEls = dom.select("div.brandItem div.brandItem-info a[href*=brand.tmall.com/brandInfo.htm][target]");
+			Pattern oReg = Pattern.compile("(brandId=)([0-9]+)");
+			for (Element item : itemEls) {
+				BrandList tBean = new BrandList();
+				tBean.setBrandUrl(item.absUrl("href"));
+				Element sibEle = item.nextElementSibling();
+				if (sibEle != null && sibEle.hasText()) {
+					tBean.setBrandName(sibEle.ownText().trim());
+				}
+				Matcher matcher = oReg.matcher(tBean.getBrandUrl());
+				if (matcher.find()) {
+					tBean.setBrandCode(matcher.group(2));
+				}
+				rsBean.getDataList().add(tBean);
 			}
-			rsBean.getDataList().add(tBean);
+		} else {
+			for (Element item : itemEls) {
+				BrandList tBean = new BrandList();
+				tBean.setBrandName(item.ownText().trim());
+				tBean.setBrandUrl(item.absUrl("href"));
+				Element sibEle = item.nextElementSibling();
+				if (sibEle != null && sibEle.hasAttr("data-brandid")) {
+					tBean.setBrandCode(sibEle.attr("data-brandid"));
+				}
+				unifyName(tBean);
+				rsBean.getDataList().add(tBean);
+			}
 		}
+		addNexts(rsBean, dom);
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, rsBean);
 		return new JSONObject(writer.toString());
+	}
+
+	private void unifyName(BrandList tBean) {
+		String brandName = tBean.getBrandName();
+		brandName = brandName.replace("(", "/");
+		brandName = brandName.replace(")", "");
+		tBean.setBrandName(brandName);
+	}
+
+	private void addNexts(ResultBean rsBean, Document dom) {
+		Elements pageEls = dom.select("div#content b.ui-page-s-len:contains(页)");
+		if (pageEls.isEmpty()) {
+			return;
+		}
+		Pattern oReg = Pattern.compile("([0-9]+)/([0-9]+)");
+		Matcher matcher = oReg.matcher(pageEls.first().text());
+		if (!matcher.find()) {
+			return;
+		}
+		Integer curPage = Integer.valueOf(matcher.group(1));
+		if (curPage != 1) {
+			return;
+		}
+		Integer totalPage = Integer.valueOf(matcher.group(2));
+		Elements nextEls = dom.select("#content a.mui-page-next[href*=page=2]");
+		String nextUrl = nextEls.first().absUrl("href");
+		List<Object> nextList = rsBean.getNextList();
+		nextList.add(nextUrl);
+		for (int i = 3; i <= totalPage; i++) {
+			String sNextString = nextUrl.replace("page=2", "page=" + i);
+			nextList.add(sNextString);
+		}
 	}
 
 	private void doCollect(JSONObject dataObject, TaskWritable task) {

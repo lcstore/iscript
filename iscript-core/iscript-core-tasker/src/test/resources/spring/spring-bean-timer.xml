@@ -32,17 +32,22 @@
 	</bean>
 
 	<!-- Enables the Spring Task @Scheduled programming model -->
-	<task:executor id="executor" pool-size="5" />
+	<task:executor id="executor" pool-size="8" />
 	<task:scheduler id="scheduler" pool-size="10" />
-	<task:annotation-driven executor="executor"
+	<!-- <task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<!-- <task:scheduled-tasks scheduler="scheduler">
+	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheConfigTimer" method="run"
-			fixed-delay="60000" />
+			fixed-delay="30000" />
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheTaskTimer" method="run"
+			fixed-delay="30000" />
+	</task:scheduled-tasks>
+
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="taskStorageTimeTrigger" method="doTrigger"
 			fixed-delay="60000" />
 	</task:scheduled-tasks>
 
@@ -51,14 +56,9 @@
 			cron="0 0/5 * * * ?" />
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="messageFlushTimer" method="run"
+		<task:scheduled ref="writeFlushTimer" method="run"
 			cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks> -->
-	
-	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="taskStorageTimeTrigger" method="doTrigger"
-			fixed-delay="60000" />
-	</task:scheduled-tasks>
-	<bean id="messageFlushTimer" class="com.lezo.iscript.yeam.message.MessageFlushTimer">
+	<bean id="writeFlushTimer" class="com.lezo.iscript.yeam.resultmgr.writer.WriteFlushTimer">
 	</bean>
 </beans>
