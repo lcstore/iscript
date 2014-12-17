@@ -10,6 +10,7 @@
 		<result column="BRAND_NAME" property="brandName"/>
 		<result column="BRAND_URL" property="brandUrl"/>
 		<result column="SYNONYM" property="synonym"/>
+		<result column="REGION" property="region"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
@@ -19,6 +20,7 @@
 		,BRAND_NAME
 		,BRAND_URL
 		,SYNONYM
+		,REGION
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
@@ -29,7 +31,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonym},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonym},#{item.region},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="BrandStoreDto">
@@ -39,8 +41,7 @@
 		BRAND_NAME=#{brandName},
 		BRAND_URL=#{brandUrl},
 		SYNONYM=#{synonym},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		REGION=#{region}
 		WHERE ID=#{id}
 	</update>
 </mapper>

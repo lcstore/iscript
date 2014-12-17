@@ -11,6 +11,7 @@ public class BrandStoreDto implements Serializable {
 	private String brandName;
 	private String brandUrl;
 	private String synonym;
+	private String region;
 	private Date createTime;
 	private Date updateTime;
 
@@ -76,6 +77,14 @@ public class BrandStoreDto implements Serializable {
 
 	public void setBrandName(String brandName) {
 		this.brandName = brandName;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
 }
