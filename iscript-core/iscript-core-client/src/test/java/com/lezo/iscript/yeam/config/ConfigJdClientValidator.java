@@ -61,6 +61,11 @@ public class ConfigJdClientValidator implements ConfigParser {
 		int index = 0;
 		ClientValidate cValidate = new ClientValidate();
 		while (true) {
+			if (url.indexOf("?ld_ld=") > 0) {
+				url = url.substring(0, url.indexOf("?ld_ld=")) + "?ld_ld=" + Math.random();
+			} else {
+				url = url + "?ld_ld=" + Math.random();
+			}
 			HttpGet get = new HttpGet(url);
 			System.out.println("url:" + url);
 			get.addHeader("refer", url);
@@ -88,7 +93,7 @@ public class ConfigJdClientValidator implements ConfigParser {
 				cValidate.setReason(rsObject.toString());
 				break;
 			}
-			TimeUnit.MILLISECONDS.sleep(300);
+			TimeUnit.MILLISECONDS.sleep(1000);
 		}
 		ResultBean rsBean = new ResultBean();
 		rsBean.getDataList().add(cValidate);
