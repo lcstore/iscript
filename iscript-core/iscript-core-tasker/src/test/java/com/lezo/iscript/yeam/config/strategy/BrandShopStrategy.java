@@ -26,7 +26,6 @@ import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.writable.ResultWritable;
@@ -37,17 +36,10 @@ public class BrandShopStrategy implements ResultStrategy, Closeable {
 	private static volatile boolean running = false;
 	private Timer timer;
 
-	static {
-		typeMap.put("jd.com-product", "ConfigJdProduct");
-		typeMap.put("jd.com-promotion", "ConfigJdPromotion");
-		typeMap.put("yhd.com-product", "ConfigYhdProduct");
-		typeMap.put("yhd.com-promotion", "ConfigYhdPromotion");
-	}
-
 	public BrandShopStrategy() {
 		CreateTaskTimer task = new CreateTaskTimer();
-		// this.timer = new Timer("CreateTaskTimer");
-		// this.timer.schedule(task, 60 * 1000, 2 * 60 * 60 * 1000);
+		this.timer = new Timer("CreateTaskTimer");
+		this.timer.schedule(task, 60 * 1000, 2 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {
@@ -56,19 +48,11 @@ public class BrandShopStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
-			urlSet.add("http://xuan.jd.com/youhui/1-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/2-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/3-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/4-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/5-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/6-0-0-1.html");
-			urlSet.add("http://xuan.jd.com/youhui/7-0-0-1.html");
-
-			typeMap.put("ConfigJdPromotList", urlSet);
-
-			urlSet = new HashSet<String>();
-			urlSet.add("http://www.yhd.com");
-			typeMap.put("ConfigYhdPromotList", urlSet);
+			for (int i = 65; i <= 90; i++) {
+				char word = (char) i;
+				urlSet.add("http://brand.tmall.com/azIndexInside.htm?firstLetter=" + word);
+			}
+			typeMap.put("ConfigTmallBrandList", urlSet);
 		}
 
 		@Override
@@ -121,6 +105,7 @@ public class BrandShopStrategy implements ResultStrategy, Closeable {
 			JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
 			try {
 				argsObject.remove("name@client");
+				argsObject.remove("target");
 				addOthers(rWritable, rsObject, argsObject);
 				addNextTasks(rsObject, argsObject);
 			} catch (Exception e) {

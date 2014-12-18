@@ -53,6 +53,11 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class ConfigParserTest {
 
 	@Test
+	public void testWord() {
+		System.err.println((int) 'Z');
+	}
+
+	@Test
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotList();
@@ -87,11 +92,13 @@ public class ConfigParserTest {
 		url = "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.42.wvi8o3&id=40271259575";
 		url = "http://brand.tmall.com/azIndexInside.htm?spm=a3200.2787281.0.0.fOBcJo&firstLetter=A";
 		url = "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
-//		url = "http://brand.tmall.com/categoryIndex.htm?page=24&type=#J_NavTag";
-//		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
-		// url = "http://iclient.jd-app.com/";
-		// url = "http://idober.jd-app.com/";
-		url = "http://jd1001.jd-app.com/";
+		// url =
+		// "http://brand.tmall.com/categoryIndex.htm?page=24&type=#J_NavTag";
+		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
+		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=3406935&type=0&scm=1048.1.1.6";
+		url = "http://iclient.jd-app.com/";
+//		 url = "http://idober.jd-app.com/";
+//		 url = "http://jd1001.jd-app.com/";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
