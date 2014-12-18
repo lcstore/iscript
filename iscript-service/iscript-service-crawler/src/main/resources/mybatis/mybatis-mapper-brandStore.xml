@@ -44,4 +44,35 @@
 		REGION=#{region}
 		WHERE ID=#{id}
 	</update>
+	<select id="getBrandStoreDtoByCodes" parameterType="map" resultMap="RM_BrandStoreDto">
+	    SELECT * FROM T_BRAND_STORE
+	    <where>
+	      <if test="brandCodeList!=null and !brandCodeList.isEmpty()">
+	        <foreach collection="brandCodeList" item="code" open="AND BRAND_CODE IN(" separator="," close=")"> 
+	          #{code}
+	        </foreach>
+	      </if>
+	      <if test="brandNameList!=null and !brandNameList.isEmpty()">
+	        <foreach collection="brandNameList" item="name" open="AND BRAND_NAME IN(" separator="," close=")"> 
+	          #{name}
+	        </foreach>
+	      </if>
+	      <if test="siteId!=null">
+	        AND SITE_ID=#{siteId}
+	      </if>
+	    </where>
+	</select>
+	<select id="getBrandStoreDtoByIds" parameterType="map" resultMap="RM_BrandStoreDto">
+	    SELECT * FROM T_BRAND_STORE
+	    <where>
+	      <if test="idList!=null and !idList.isEmpty()">
+	        <foreach collection="idList" item="id" open="AND ID IN(" separator="," close=")"> 
+	          #{id}
+	        </foreach>
+	      </if>
+	      <if test="idList==null || idList.isEmpty()">
+	        AND 1=0
+	      </if>
+	    </where>
+	</select>
 </mapper>
