@@ -34,6 +34,13 @@
 			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonym},#{item.region},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
+	<insert id="insertBrandStoreDtoAndSetId" parameterType="BrandStoreDto" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_BRAND_STORE(
+		<include refid="BrandStoreDto-coloumn-list" />
+		)
+		VALUES
+			(#{siteId},#{brandCode},#{brandName},#{brandUrl},#{synonym},#{region},#{createTime},#{updateTime})
+	</insert>
 	<update id="batchUpdate" parameterType="BrandStoreDto">
 		UPDATE T_BRAND_STORE SET
 		SITE_ID=#{siteId},

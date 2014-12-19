@@ -97,8 +97,9 @@ public class ConfigParserTest {
 		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
 		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=3406935&type=0&scm=1048.1.1.6";
 		url = "http://iclient.jd-app.com/";
-//		 url = "http://idober.jd-app.com/";
+		 url = "http://idober.jd-app.com/";
 //		 url = "http://jd1001.jd-app.com/";
+//		 url = "http://jda1001.jd-app.com/";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");

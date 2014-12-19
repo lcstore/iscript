@@ -25,5 +25,6 @@
 		<mapper resource="mybatis/mybatis-mapper-luceneIndex.xml" />
 		<mapper resource="mybatis/mybatis-mapper-searchHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-brandStore.xml" />
+		<mapper resource="mybatis/mybatis-mapper-brandShop.xml" />
 	</mappers>
 </configuration>

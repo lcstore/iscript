@@ -6,7 +6,7 @@
 	<resultMap type="BrandShopDto" id="RM_BrandShopDto">
 		<result column="ID" property="id"/>
 		<result column="SITE_ID" property="siteId"/>
-		<result column="BRAND_ID" property="brandId"/>
+		<result column="BRAND_CODE" property="brandCode"/>
 		<result column="BRAND_NAME" property="brandName"/>
 		<result column="SHOP_NAME" property="shopName"/>
 		<result column="SHOP_CODE" property="shopCode"/>
@@ -17,7 +17,7 @@
 	</resultMap>
 	<sql id="BrandShopDto-coloumn-list">
 		SITE_ID
-		,BRAND_ID
+		,BRAND_CODE
 		,BRAND_NAME
 		,SHOP_NAME
 		,SHOP_CODE
@@ -33,20 +33,37 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.brandId},#{item.brandName},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.shopType},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.shopType},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="BrandShopDto">
 		UPDATE T_BRAND_SHOP SET
 		SITE_ID=#{siteId},
-		BRAND_ID=#{brandId},
+		BRAND_CODE=#{brandCode},
 		BRAND_NAME=#{brandName},
 		SHOP_NAME=#{shopName},
 		SHOP_CODE=#{shopCode},
 		SHOP_URL=#{shopUrl},
-		SHOP_TYPE=#{shopType},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		SHOP_TYPE=#{shopType}
 		WHERE ID=#{id}
 	</update>
+	
+	<select id="getBrandShopDtoByShopNameList" parameterType="map" resultMap="RM_BrandShopDto">
+	   SELECT * FROM T_BRAND_SHOP
+	   <where>
+	      <if test="shopNameList!=null and !shopNameList.isEmpty()">
+	        <foreach collection="shopNameList" item="shopName" open="AND SHOP_NAME IN(" separator="," close=")"> 
+	          #{shopName}
+	        </foreach>
+	      </if>
+	      <if test="brandCodeList!=null and !brandCodeList.isEmpty()">
+	        <foreach collection="brandCodeList" item="code" open="AND BRAND_CODE IN(" separator="," close=")"> 
+	          #{code}
+	        </foreach>
+	      </if>
+	      <if test="siteId!=null">
+	        AND SITE_ID=#{siteId}
+	      </if>
+	    </where>
+	</select>
 </mapper>

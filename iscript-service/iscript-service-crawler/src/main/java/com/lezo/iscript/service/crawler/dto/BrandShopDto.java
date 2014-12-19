@@ -7,7 +7,7 @@ public class BrandShopDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;
-	private String brandId;
+	private String brandCode;
 	private String brandName;
 	private String shopName;
 	private String shopCode;
@@ -29,14 +29,6 @@ public class BrandShopDto implements Serializable {
 
 	public void setSiteId(Integer siteId) {
 		this.siteId = siteId;
-	}
-
-	public String getBrandId() {
-		return brandId;
-	}
-
-	public void setBrandId(String brandId) {
-		this.brandId = brandId;
 	}
 
 	public String getBrandName() {
@@ -85,6 +77,14 @@ public class BrandShopDto implements Serializable {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getBrandCode() {
+		return brandCode;
+	}
+
+	public void setBrandCode(String brandCode) {
+		this.brandCode = brandCode;
 	}
 
 }

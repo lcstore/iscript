@@ -57,7 +57,7 @@ public class ConfigJdClientValidator implements ConfigParser {
 
 	private JSONObject getDataObject(TaskWritable task, JSONObject gObject) throws Exception {
 		String url = (String) task.get("url");
-		int max = 5;
+		int max = 15;
 		int index = 0;
 		ClientValidate cValidate = new ClientValidate();
 		while (true) {
@@ -86,12 +86,10 @@ public class ConfigJdClientValidator implements ConfigParser {
 				break;
 			}
 			if (++index == max) {
-				cValidate.setStatus(0);
 				JSONObject rsObject = new JSONObject();
 				JSONUtils.put(rsObject, "retry", index);
 				JSONUtils.put(rsObject, "html", html);
-				cValidate.setReason(rsObject.toString());
-				break;
+				throw new HttpStatusException("retry fail,reason:" + rsObject.toString(), resp.getStatusLine().getStatusCode(), url);
 			}
 			TimeUnit.MILLISECONDS.sleep(1000);
 		}
