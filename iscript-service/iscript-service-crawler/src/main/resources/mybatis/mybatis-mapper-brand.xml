@@ -2,8 +2,8 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.BrandStoreDao">
-	<resultMap type="BrandStoreDto" id="RM_BrandStoreDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.BrandDao">
+	<resultMap type="BrandDto" id="RM_BrandDto">
 		<result column="ID" property="id"/>
 		<result column="SITE_ID" property="siteId"/>
 		<result column="BRAND_CODE" property="brandCode"/>
@@ -14,7 +14,7 @@
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="BrandStoreDto-coloumn-list">
+	<sql id="BrandDto-coloumn-list">
 		SITE_ID
 		,BRAND_CODE
 		,BRAND_NAME
@@ -24,9 +24,9 @@
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="BrandStoreDto">
-		INSERT INTO T_BRAND_STORE(
-		<include refid="BrandStoreDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="BrandDto">
+		INSERT INTO T_BRAND(
+		<include refid="BrandDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
@@ -34,15 +34,15 @@
 			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonym},#{item.region},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<insert id="insertBrandStoreDtoAndSetId" parameterType="BrandStoreDto" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO T_BRAND_STORE(
-		<include refid="BrandStoreDto-coloumn-list" />
+	<insert id="insertBrandDtoAndSetId" parameterType="BrandDto" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO T_BRAND(
+		<include refid="BrandDto-coloumn-list" />
 		)
 		VALUES
 			(#{siteId},#{brandCode},#{brandName},#{brandUrl},#{synonym},#{region},#{createTime},#{updateTime})
 	</insert>
-	<update id="batchUpdate" parameterType="BrandStoreDto">
-		UPDATE T_BRAND_STORE SET
+	<update id="batchUpdate" parameterType="BrandDto">
+		UPDATE T_BRAND SET
 		SITE_ID=#{siteId},
 		BRAND_CODE=#{brandCode},
 		BRAND_NAME=#{brandName},
@@ -51,8 +51,8 @@
 		REGION=#{region}
 		WHERE ID=#{id}
 	</update>
-	<select id="getBrandStoreDtoByCodes" parameterType="map" resultMap="RM_BrandStoreDto">
-	    SELECT * FROM T_BRAND_STORE
+	<select id="getBrandDtoByCodes" parameterType="map" resultMap="RM_BrandDto">
+	    SELECT * FROM T_BRAND
 	    <where>
 	      <if test="brandCodeList!=null and !brandCodeList.isEmpty()">
 	        <foreach collection="brandCodeList" item="code" open="AND BRAND_CODE IN(" separator="," close=")"> 
@@ -69,8 +69,8 @@
 	      </if>
 	    </where>
 	</select>
-	<select id="getBrandStoreDtoByIds" parameterType="map" resultMap="RM_BrandStoreDto">
-	    SELECT * FROM T_BRAND_STORE
+	<select id="getBrandDtoByIds" parameterType="map" resultMap="RM_BrandDto">
+	    SELECT * FROM T_BRAND
 	    <where>
 	      <if test="idList!=null and !idList.isEmpty()">
 	        <foreach collection="idList" item="id" open="AND ID IN(" separator="," close=")"> 

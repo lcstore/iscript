@@ -3,7 +3,7 @@ package com.lezo.iscript.service.crawler.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-public class BrandStoreDto implements Serializable {
+public class BrandDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;
