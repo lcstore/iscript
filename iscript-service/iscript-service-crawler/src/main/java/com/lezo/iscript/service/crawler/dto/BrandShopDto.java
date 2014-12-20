@@ -1,9 +1,10 @@
 package com.lezo.iscript.service.crawler.dto;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class BrandShopDto implements Serializable {
+import com.lezo.iscript.common.CloneSerializeObject;
+
+public class BrandShopDto extends CloneSerializeObject {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;

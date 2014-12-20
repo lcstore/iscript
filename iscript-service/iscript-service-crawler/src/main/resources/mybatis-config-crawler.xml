@@ -24,7 +24,7 @@
 		<mapper resource="mybatis/mybatis-mapper-proxyHome.xml" />
 		<mapper resource="mybatis/mybatis-mapper-crawlerWarnHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-promotionTrack.xml" />
-		<mapper resource="mybatis/mybatis-mapper-brandStore.xml" />
+		<mapper resource="mybatis/mybatis-mapper-brand.xml" />
 		<mapper resource="mybatis/mybatis-mapper-brandShop.xml" />
 	</mappers>
 </configuration>

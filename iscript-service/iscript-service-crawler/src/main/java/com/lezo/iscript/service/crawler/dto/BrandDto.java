@@ -1,9 +1,10 @@
 package com.lezo.iscript.service.crawler.dto;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class BrandDto implements Serializable {
+import com.lezo.iscript.common.CloneSerializeObject;
+
+public class BrandDto extends CloneSerializeObject {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;
@@ -85,6 +86,12 @@ public class BrandDto implements Serializable {
 
 	public void setRegion(String region) {
 		this.region = region;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
 	}
 
 }
