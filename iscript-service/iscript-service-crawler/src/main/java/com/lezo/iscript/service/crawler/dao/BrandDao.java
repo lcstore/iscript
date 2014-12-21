@@ -10,7 +10,7 @@ import com.lezo.iscript.service.crawler.dto.BrandDto;
 public interface BrandDao extends BaseDao<BrandDto> {
 	void insertBrandStoreDtoAndSetId(BrandDto dto);
 
-	List<BrandDto> getBrandStoreDtoByCodes(@Param("brandCodeList")List<String> brandCodeList,@Param("brandNameList") List<String> brandNameList, @Param("siteId")Integer siteId);
+	List<BrandDto> getBrandDtoByCodes(@Param("brandCodeList")List<String> brandCodeList,@Param("brandNameList") List<String> brandNameList, @Param("siteId")Integer siteId);
 
-	List<BrandDto> getBrandStoreDtoByIds(@Param("idList")List<Long> idList);
+	List<BrandDto> getBrandDtoByIds(@Param("idList")List<Long> idList);
 }

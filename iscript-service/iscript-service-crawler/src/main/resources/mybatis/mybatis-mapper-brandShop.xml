@@ -44,7 +44,9 @@
 		SHOP_NAME=#{shopName},
 		SHOP_CODE=#{shopCode},
 		SHOP_URL=#{shopUrl},
-		SHOP_TYPE=#{shopType}
+		SHOP_TYPE=#{shopType},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 	

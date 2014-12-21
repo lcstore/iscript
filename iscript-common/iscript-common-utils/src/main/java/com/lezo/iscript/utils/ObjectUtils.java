@@ -9,11 +9,29 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
+import com.lezo.iscript.common.CloneSerializeObject;
+
 public class ObjectUtils {
+	private static final ConcurrentHashMap<String, Object> BEAN_MAP = new ConcurrentHashMap<String, Object>();
+
+	@SuppressWarnings("unchecked")
+	public static <T> T newCopyObject(Class<T> clazz) throws Exception {
+		Object baseObject = BEAN_MAP.get(clazz.getName());
+		if (baseObject == null) {
+			baseObject = newObject(clazz);
+			BEAN_MAP.put(clazz.getName(), baseObject);
+			return (T) baseObject;
+		} else if (baseObject instanceof CloneSerializeObject) {
+			CloneSerializeObject cloneObject = (CloneSerializeObject) baseObject;
+			return (T) cloneObject.clone();
+		}
+		return newObject(clazz);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T newObject(Class<T> clazz, Object... args) throws Exception {
@@ -37,8 +55,7 @@ public class ObjectUtils {
 						continue;
 					}
 					// if is subClass
-					if (!pClsArray[i].isAssignableFrom(args[i].getClass())
-							&& !args[i].getClass().isAssignableFrom(pClsArray[i])) {
+					if (!pClsArray[i].isAssignableFrom(args[i].getClass()) && !args[i].getClass().isAssignableFrom(pClsArray[i])) {
 						// if is Integer,Float,Long?
 						if (args[i] instanceof Number && args[i] instanceof Comparable) {
 							Field typeField = args[i].getClass().getField("TYPE");
@@ -142,15 +159,13 @@ public class ObjectUtils {
 			writeMethod.invoke(target, valueObject);
 			return target;
 		}
-		Method valueOfMd = org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod(targetParamClass,
-				"valueOf", valueObject.getClass());
+		Method valueOfMd = org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod(targetParamClass, "valueOf", valueObject.getClass());
 		if (valueOfMd != null) {
 			valueObject = valueOfMd.invoke(targetParamClass, valueObject);
 			writeMethod.invoke(target, valueObject);
 			return target;
 		}
-		valueOfMd = org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod(targetParamClass, "valueOf",
-				String.class);
+		valueOfMd = org.apache.commons.lang3.reflect.MethodUtils.getAccessibleMethod(targetParamClass, "valueOf", String.class);
 		if (valueOfMd != null) {
 			valueObject = valueOfMd.invoke(targetParamClass, valueObject.toString());
 			writeMethod.invoke(target, valueObject);
@@ -163,8 +178,7 @@ public class ObjectUtils {
 		try {
 			writeMethod.invoke(target, valueObject);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("invoke field:" + writeMethod.getName() + ",destParams:"
-					+ targetParamClass + ",srcParam:" + valueObject.getClass() + ",cause:", e);
+			throw new IllegalArgumentException("invoke field:" + writeMethod.getName() + ",destParams:" + targetParamClass + ",srcParam:" + valueObject.getClass() + ",cause:", e);
 		}
 		return target;
 	}

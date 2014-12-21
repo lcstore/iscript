@@ -12,11 +12,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 
+import com.lezo.iscript.crawler.http.HttpClientUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.Config1688Category;
@@ -67,7 +73,7 @@ public class ConfigParserTest {
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
 //		parser = new ConfigTmallBrandShop();
-		parser = new ConfigJdClientValidator();
+//		parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
@@ -97,9 +103,10 @@ public class ConfigParserTest {
 		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
 		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=3406935&type=0&scm=1048.1.1.6";
 		url = "http://iclient.jd-app.com/";
-		 url = "http://idober.jd-app.com/";
-//		 url = "http://jd1001.jd-app.com/";
-//		 url = "http://jda1001.jd-app.com/";
+		url = "http://idober.jd-app.com/";
+		url = "http://jd1001.jd-app.com/";
+		url = "http://jda1001.jd-app.com/";
+		url = "http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030213&etgId=121";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -119,7 +126,24 @@ public class ConfigParserTest {
 			e.printStackTrace();
 			throw e;
 		}
-		System.err.println("Date:" + new Date(1414638164360L).toLocaleString());
+		// parserUrls();
+	}
+
+	private void parserUrls() throws Exception {
+		DefaultHttpClient client = HttpClientUtils.createHttpClient();
+		HttpGet get = new HttpGet("http://brand.tmall.com/categoryIndex.htm?spm=a3200.2192449.0.0.zOf1Lh&industryId=111");
+		String html = HttpClientUtils.getContent(client, get, "gbk");
+		Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
+		Elements destEls = dom.select("#content div.brandCon ul.brandTab li a[href*=brand.tmall.com/categoryIndex]");
+		for (Element ele : destEls) {
+			get = new HttpGet(ele.absUrl("href"));
+			html = HttpClientUtils.getContent(client, get, "gbk");
+			dom = Jsoup.parse(html, get.getURI().toURL().toString());
+			Elements brandUrlEls = dom.select("div#content div.brandCon div.catFilter dl.cf-catList:contains(类目) dd a[href]");
+			for (Element bele : brandUrlEls) {
+				System.err.println("urlSet.add(\"" + bele.attr("href") + "\")");
+			}
+		}
 	}
 
 	private List<String> getUrlList() throws Exception {

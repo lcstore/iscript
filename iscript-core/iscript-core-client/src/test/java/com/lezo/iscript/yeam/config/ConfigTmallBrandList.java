@@ -107,6 +107,9 @@ public class ConfigTmallBrandList implements ConfigParser {
 		}
 		Integer totalPage = Integer.valueOf(matcher.group(2));
 		Elements nextEls = dom.select("#content a.mui-page-next[href*=page=2]");
+		if (nextEls.isEmpty()) {
+			return;
+		}
 		String nextUrl = nextEls.first().absUrl("href");
 		List<Object> nextList = rsBean.getNextList();
 		nextList.add(nextUrl);

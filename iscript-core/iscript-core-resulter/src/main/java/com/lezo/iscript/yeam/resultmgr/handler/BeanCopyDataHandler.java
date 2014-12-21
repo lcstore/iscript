@@ -82,8 +82,9 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	}
 
 	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
+		clsName = clsName.replace("BrandStoreDto", "BrandDto");
 		Class<?> dtoClass = getDtoClass(clsName);
-		Object destObject = ObjectUtils.newObject(dtoClass);
+		Object destObject = ObjectUtils.newCopyObject(dtoClass);
 		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());
 		if (writer == null) {
 			logger.warn("type:{},can not found writer:{}", type, destObject.getClass().getSimpleName());

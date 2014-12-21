@@ -32,14 +32,13 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class BrandShopStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(BrandShopStrategy.class);
-	private static Map<String, String> typeMap = new HashMap<String, String>();
 	private static volatile boolean running = false;
 	private Timer timer;
 
 	public BrandShopStrategy() {
 		CreateTaskTimer task = new CreateTaskTimer();
 		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, 60 * 1000, 2 * 60 * 60 * 1000);
+		this.timer.schedule(task, 60 * 1000, 12 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {
@@ -48,11 +47,108 @@ public class BrandShopStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
-			for (int i = 65; i <= 90; i++) {
-				char word = (char) i;
-				urlSet.add("http://brand.tmall.com/azIndexInside.htm?firstLetter=" + word);
-			}
+			// for (int i = 65; i <= 90; i++) {
+			// char word = (char) i;
+			// urlSet.add("http://brand.tmall.com/azIndexInside.htm?firstLetter="
+			// + word);
+			// }
 			typeMap.put("ConfigTmallBrandList", urlSet);
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=100&categoryId=50025135&etgId=59");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=100&categoryId=50025174&etgId=58");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=100&categoryId=50023887&etgId=60");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=100&categoryId=50025983&etgId=61");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=109&categoryId=50025829&etgId=64");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=109&categoryId=50026637&etgId=63");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=109&categoryId=51052003&etgId=65");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=109&categoryId=51042006&etgId=66");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=109&categoryId=50072916&etgId=188");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=109&categoryId=50095658&etgId=68");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=111&categoryId=50108176&etgId=190");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=111&categoryId=50026474&etgId=74");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=111&categoryId=50026478&etgId=78");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=111&categoryId=50026461&etgId=80");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=111&categoryId=50023064&etgId=82");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50026502&etgId=70");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50026391&etgId=69");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50026506&etgId=73");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50026505&etgId=71");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50026426&etgId=72");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50026393&etgId=187");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=101&categoryId=50043479&etgId=138");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=110&categoryId=50020894&etgId=83");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=110&categoryId=50020909&etgId=84");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=110&categoryId=50043669&etgId=194");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=110&categoryId=50022787&etgId=195");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024400&etgId=99");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024399&etgId=100");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024401&etgId=101");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50047403&etgId=103");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50047396&etgId=110");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024407&etgId=102");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024406&etgId=104");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50043917&etgId=105");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50099232&etgId=106");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024410&etgId=107");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50094901&etgId=108");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=108&categoryId=50024411&etgId=109");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=103&categoryId=50900004&etgId=94");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=103&categoryId=50892008&etgId=95");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=103&categoryId=50902003&etgId=96");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=103&categoryId=50886005&etgId=97");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=103&categoryId=50894004&etgId=98");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030787&etgId=111");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50067162&etgId=112");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50067174&etgId=113");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50051691&etgId=114");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50097362&etgId=115");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030207&etgId=116");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030215&etgId=117");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030223&etgId=118");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030221&etgId=119");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030212&etgId=120");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030213&etgId=121");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030204&etgId=122");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030220&etgId=124");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50030203&etgId=125");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50069204&etgId=126");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50069234&etgId=127");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=102&categoryId=50067917&etgId=128");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50024531&etgId=129");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50068087&etgId=130");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50072436&etgId=133");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50068090&etgId=131");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50036568&etgId=134");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50067939&etgId=132");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50036640&etgId=135");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50034368&etgId=136");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=104&categoryId=50072285&etgId=137");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50100151&etgId=174");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50072046&etgId=168");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50072044&etgId=169");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50100152&etgId=175");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50100153&etgId=176");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50100154&etgId=177");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50099890&etgId=178");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50074901&etgId=171");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50099887&etgId=179");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50100167&etgId=180");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50100166&etgId=181");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50099298&etgId=182");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50074804&etgId=170");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50074917&etgId=172");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=107&categoryId=50074933&etgId=173");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=105&categoryId=50025137&etgId=139");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=105&categoryId=50023647&etgId=148");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=105&categoryId=50029253&etgId=152");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=105&categoryId=50036697&etgId=147");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=105&categoryId=50024803&etgId=191");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=105&categoryId=50033500&etgId=193");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=106&categoryId=50106135&etgId=155");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=106&categoryId=50029838&etgId=157");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=106&categoryId=50029836&etgId=158");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=106&categoryId=50029852&etgId=159");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=106&categoryId=50029840&etgId=162");
+			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=106&categoryId=50044102&etgId=163");
 		}
 
 		@Override
@@ -192,8 +288,10 @@ public class BrandShopStrategy implements ResultStrategy, Closeable {
 
 	@Override
 	public void close() throws IOException {
-		this.timer.cancel();
-		this.timer = null;
+		if (this.timer != null) {
+			this.timer.cancel();
+			this.timer = null;
+		}
 		logger.info("close " + getName() + " strategy..");
 	}
 }

@@ -1,22 +1,20 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lezo.iscript.service.crawler.dao.BrandShopDao;
-import com.lezo.iscript.service.crawler.dto.BrandShopDto;
-import com.lezo.iscript.service.crawler.dto.BrandShopDto;
 import com.lezo.iscript.service.crawler.dto.BrandShopDto;
 import com.lezo.iscript.service.crawler.service.BrandShopService;
 import com.lezo.iscript.utils.BatchIterator;
@@ -28,14 +26,39 @@ public class BrandShopServiceImpl implements BrandShopService {
 
 	@Override
 	public void batchInsertDtos(List<BrandShopDto> dtoList) {
+		convertNullToDefault(dtoList);
 		BatchIterator<BrandShopDto> it = new BatchIterator<BrandShopDto>(dtoList);
 		while (it.hasNext()) {
 			brandShopDao.batchInsert(it.next());
 		}
 	}
 
+	private void convertNullToDefault(List<BrandShopDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return;
+		}
+		for (BrandShopDto dto : dtoList) {
+			if (dto.getBrandCode() == null) {
+				dto.setBrandCode(StringUtils.EMPTY);
+			}
+			if (dto.getBrandName() == null) {
+				dto.setBrandName(StringUtils.EMPTY);
+			}
+			if (dto.getShopName() == null) {
+				dto.setShopName(StringUtils.EMPTY);
+			}
+			if (dto.getShopCode() == null) {
+				dto.setShopCode(StringUtils.EMPTY);
+			}
+			if (dto.getShopUrl() == null) {
+				dto.setShopUrl(StringUtils.EMPTY);
+			}
+		}
+	}
+
 	@Override
 	public void batchUpdateDtos(List<BrandShopDto> dtoList) {
+		convertNullToDefault(dtoList);
 		BatchIterator<BrandShopDto> it = new BatchIterator<BrandShopDto>(dtoList);
 		while (it.hasNext()) {
 			brandShopDao.batchUpdate(it.next());

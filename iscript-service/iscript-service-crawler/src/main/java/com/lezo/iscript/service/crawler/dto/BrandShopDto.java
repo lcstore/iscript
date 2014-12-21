@@ -6,6 +6,11 @@ import com.lezo.iscript.common.CloneSerializeObject;
 
 public class BrandShopDto extends CloneSerializeObject {
 	private static final long serialVersionUID = 1L;
+	public static final int TYPE_FLAGSHIP = 0;
+	public static final int TYPE_SPECIALITY = 1;
+	public static final int TYPE_EXCLUSIVE = 2;
+	public static final int TYPE_UNKNOWN = 3;
+	// shopType
 	private Long id;
 	private Integer siteId;
 	private String brandCode;
@@ -13,6 +18,10 @@ public class BrandShopDto extends CloneSerializeObject {
 	private String shopName;
 	private String shopCode;
 	private String shopUrl;
+	/**
+	 * 0-旗舰店，1-专卖店，2-专营店，3-其他
+	 */
+	private Integer shopType = TYPE_UNKNOWN;
 	private Date createTime;
 	private Date updateTime;
 
@@ -30,6 +39,14 @@ public class BrandShopDto extends CloneSerializeObject {
 
 	public void setSiteId(Integer siteId) {
 		this.siteId = siteId;
+	}
+
+	public String getBrandCode() {
+		return brandCode;
+	}
+
+	public void setBrandCode(String brandCode) {
+		this.brandCode = brandCode;
 	}
 
 	public String getBrandName() {
@@ -80,12 +97,12 @@ public class BrandShopDto extends CloneSerializeObject {
 		this.updateTime = updateTime;
 	}
 
-	public String getBrandCode() {
-		return brandCode;
+	public Integer getShopType() {
+		return shopType;
 	}
 
-	public void setBrandCode(String brandCode) {
-		this.brandCode = brandCode;
+	public void setShopType(Integer shopType) {
+		this.shopType = shopType;
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public void batchInsertDtos(List<BrandDto> dtoList) {
+		convertNullToDefault(dtoList);
 		BatchIterator<BrandDto> it = new BatchIterator<BrandDto>(dtoList);
 		while (it.hasNext()) {
 			brandDao.batchInsert(it.next());
@@ -32,8 +34,32 @@ public class BrandServiceImpl implements BrandService {
 
 	}
 
+	private void convertNullToDefault(List<BrandDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return;
+		}
+		for (BrandDto dto : dtoList) {
+			if (dto.getBrandCode() == null) {
+				dto.setBrandCode(StringUtils.EMPTY);
+			}
+			if (dto.getBrandName() == null) {
+				dto.setBrandName(StringUtils.EMPTY);
+			}
+			if (dto.getBrandUrl() == null) {
+				dto.setBrandUrl(StringUtils.EMPTY);
+			}
+			if (dto.getSynonym() == null) {
+				dto.setSynonym(StringUtils.EMPTY);
+			}
+			if (dto.getRegion() == null) {
+				dto.setRegion(StringUtils.EMPTY);
+			}
+		}
+	}
+
 	@Override
 	public void batchUpdateDtos(List<BrandDto> dtoList) {
+		convertNullToDefault(dtoList);
 		BatchIterator<BrandDto> it = new BatchIterator<BrandDto>(dtoList);
 		while (it.hasNext()) {
 			brandDao.batchUpdate(it.next());
@@ -73,7 +99,7 @@ public class BrandServiceImpl implements BrandService {
 				String key = dto.getBrandCode() + "-" + dto.getBrandName();
 				codeNameMap.put(key, dto);
 			}
-			List<BrandDto> hasList = brandDao.getBrandStoreDtoByCodes(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), entry.getKey());
+			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), entry.getKey());
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandDto oldDto : hasList) {
 				String key = oldDto.getBrandCode() + "-" + oldDto.getBrandName();
@@ -106,7 +132,7 @@ public class BrandServiceImpl implements BrandService {
 		if (CollectionUtils.isEmpty(brandCodeList)) {
 			return Collections.emptyList();
 		}
-		return this.brandDao.getBrandStoreDtoByCodes(brandCodeList, brandNameList, siteId);
+		return this.brandDao.getBrandDtoByCodes(brandCodeList, brandNameList, siteId);
 	}
 
 	@Override
@@ -114,7 +140,7 @@ public class BrandServiceImpl implements BrandService {
 		if (CollectionUtils.isEmpty(idList)) {
 			return Collections.emptyList();
 		}
-		return this.brandDao.getBrandStoreDtoByIds(idList);
+		return this.brandDao.getBrandDtoByIds(idList);
 	}
 
 }
