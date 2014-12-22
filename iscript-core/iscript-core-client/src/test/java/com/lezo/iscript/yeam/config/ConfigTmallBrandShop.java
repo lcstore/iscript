@@ -62,7 +62,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 			for (Element item : itemEls) {
 				ShopVo shopVo = new ShopVo();
 				shopVo.setShopUrl(item.attr("href"));
-				shopVo.setShopName(item.text().trim());
+				shopVo.setShopName(item.select("h3").first().text().trim());
 				parserType(shopVo);
 				shopVo.setBrandName(mainBrand);
 				shopVo.setBrandUrl(url);
@@ -183,8 +183,8 @@ public class ConfigTmallBrandShop implements ConfigParser {
 		private String brandUrl;
 		private String synonym;
 		private String region;
-		private Date createTime;
-		private Date updateTime;
+		// private Date createTime;
+		// private Date updateTime;
 		private String shopName;
 		private String shopUrl;
 		private Integer shopType = 3;
@@ -259,22 +259,6 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 		public void setRegion(String region) {
 			this.region = region;
-		}
-
-		public Date getCreateTime() {
-			return createTime;
-		}
-
-		public void setCreateTime(Date createTime) {
-			this.createTime = createTime;
-		}
-
-		public Date getUpdateTime() {
-			return updateTime;
-		}
-
-		public void setUpdateTime(Date updateTime) {
-			this.updateTime = updateTime;
 		}
 	}
 

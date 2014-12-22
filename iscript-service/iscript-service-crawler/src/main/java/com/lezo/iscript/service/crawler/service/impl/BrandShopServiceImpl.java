@@ -101,7 +101,7 @@ public class BrandShopServiceImpl implements BrandShopService {
 			List<BrandShopDto> hasList = getBrandShopDtoByShopNameList(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), entry.getKey());
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandShopDto oldDto : hasList) {
-				String key = oldDto.getBrandCode() + "-" + oldDto.getBrandName();
+				String key = oldDto.getBrandCode() + "-" + oldDto.getShopName();
 				BrandShopDto newDto = codeNameMap.get(key);
 				if (newDto != null) {
 					newDto.setId(oldDto.getId());

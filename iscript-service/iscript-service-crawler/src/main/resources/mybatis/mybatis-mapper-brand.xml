@@ -9,7 +9,7 @@
 		<result column="BRAND_CODE" property="brandCode"/>
 		<result column="BRAND_NAME" property="brandName"/>
 		<result column="BRAND_URL" property="brandUrl"/>
-		<result column="SYNONYM" property="synonym"/>
+		<result column="SYNONYM_CODE" property="synonymCode"/>
 		<result column="REGION" property="region"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
@@ -19,7 +19,7 @@
 		,BRAND_CODE
 		,BRAND_NAME
 		,BRAND_URL
-		,SYNONYM
+		,SYNONYM_CODE
 		,REGION
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -31,7 +31,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonym},#{item.region},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonymCode},#{item.region},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<insert id="insertBrandDtoAndSetId" parameterType="BrandDto" useGeneratedKeys="true" keyProperty="id">
@@ -39,7 +39,7 @@
 		<include refid="BrandDto-coloumn-list" />
 		)
 		VALUES
-			(#{siteId},#{brandCode},#{brandName},#{brandUrl},#{synonym},#{region},#{createTime},#{updateTime})
+			(#{siteId},#{brandCode},#{brandName},#{brandUrl},#{synonymCode},#{region},#{createTime},#{updateTime})
 	</insert>
 	<update id="batchUpdate" parameterType="BrandDto">
 		UPDATE T_BRAND SET
@@ -47,7 +47,7 @@
 		BRAND_CODE=#{brandCode},
 		BRAND_NAME=#{brandName},
 		BRAND_URL=#{brandUrl},
-		SYNONYM=#{synonym},
+		SYNONYM_CODE=#{synonymCode},
 		REGION=#{region}
 		WHERE ID=#{id}
 	</update>

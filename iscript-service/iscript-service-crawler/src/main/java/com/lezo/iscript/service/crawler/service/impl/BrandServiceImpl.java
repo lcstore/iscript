@@ -48,8 +48,8 @@ public class BrandServiceImpl implements BrandService {
 			if (dto.getBrandUrl() == null) {
 				dto.setBrandUrl(StringUtils.EMPTY);
 			}
-			if (dto.getSynonym() == null) {
-				dto.setSynonym(StringUtils.EMPTY);
+			if (dto.getSynonymCode() == null) {
+				dto.setSynonymCode(StringUtils.EMPTY);
 			}
 			if (dto.getRegion() == null) {
 				dto.setRegion(StringUtils.EMPTY);

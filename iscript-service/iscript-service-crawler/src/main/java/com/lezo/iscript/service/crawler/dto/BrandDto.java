@@ -11,7 +11,7 @@ public class BrandDto extends CloneSerializeObject {
 	private String brandCode;
 	private String brandName;
 	private String brandUrl;
-	private String synonym;
+	private String synonymCode;
 	private String region;
 	private Date createTime;
 	private Date updateTime;
@@ -46,14 +46,6 @@ public class BrandDto extends CloneSerializeObject {
 
 	public void setBrandUrl(String brandUrl) {
 		this.brandUrl = brandUrl;
-	}
-
-	public String getSynonym() {
-		return synonym;
-	}
-
-	public void setSynonym(String synonym) {
-		this.synonym = synonym;
 	}
 
 	public Date getCreateTime() {
@@ -92,6 +84,14 @@ public class BrandDto extends CloneSerializeObject {
 	public Object clone() throws CloneNotSupportedException {
 		// TODO Auto-generated method stub
 		return super.clone();
+	}
+
+	public String getSynonymCode() {
+		return synonymCode;
+	}
+
+	public void setSynonymCode(String synonymCode) {
+		this.synonymCode = synonymCode;
 	}
 
 }
