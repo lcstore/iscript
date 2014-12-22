@@ -47,11 +47,10 @@ public class BrandShopStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
-			// for (int i = 65; i <= 90; i++) {
-			// char word = (char) i;
-			// urlSet.add("http://brand.tmall.com/azIndexInside.htm?firstLetter="
-			// + word);
-			// }
+			for (int i = 65; i <= 90; i++) {
+				char word = (char) i;
+				urlSet.add("http://brand.tmall.com/azIndexInside.htm?firstLetter=" + word);
+			}
 			typeMap.put("ConfigTmallBrandList", urlSet);
 			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=100&categoryId=50025135&etgId=59");
 			urlSet.add("http://brand.tmall.com/categoryIndex.htm?industryId=100&categoryId=50025174&etgId=58");
