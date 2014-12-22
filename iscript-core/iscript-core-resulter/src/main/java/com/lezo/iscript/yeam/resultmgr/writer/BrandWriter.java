@@ -1,5 +1,6 @@
 package com.lezo.iscript.yeam.resultmgr.writer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -8,23 +9,53 @@ import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.BrandDto;
 import com.lezo.iscript.service.crawler.service.BrandService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.yeam.resultmgr.vo.BrandConfigVo;
 
 /**
  * @author lezo
  * @email lcstore@126.com
  * @since 2014年9月26日
  */
-public class BrandWriter implements ObjectWriter<BrandDto> {
+public class BrandWriter implements ObjectWriter<BrandConfigVo> {
 	private BrandService brandService = SpringBeanUtils.getBean(BrandService.class);
 
 	@Override
-	public void write(List<BrandDto> dataList) {
+	public void write(List<BrandConfigVo> dataList) {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		synchronized (this) {
-			brandService.batchSaveDtos(dataList);
+		try {
+			List<BrandDto> brandList = convertDto(dataList);
+			synchronized (this) {
+				brandService.batchSaveDtos(brandList);
+			}
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
 		}
+	}
+
+	private List<BrandDto> convertDto(List<BrandConfigVo> dataList) throws CloneNotSupportedException {
+		List<BrandDto> brandList = new ArrayList<BrandDto>(dataList.size());
+		for (BrandConfigVo brandVo : dataList) {
+			String[] synStrings = brandVo.getSynonyms().split(",");
+			String synCode = "" + System.currentTimeMillis();
+			BrandDto baseDto = new BrandDto();
+			baseDto.setBrandCode(brandVo.getBrandCode());
+			baseDto.setBrandUrl(brandVo.getBrandUrl());
+			baseDto.setRegion(brandVo.getRegion());
+			baseDto.setCreateTime(brandVo.getCreateTime());
+			baseDto.setUpdateTime(brandVo.getUpdateTime());
+			baseDto.setSiteId(brandVo.getSiteId());
+			baseDto.setSynonymCode(synCode);
+			baseDto.setBrandName(synStrings[0]);
+			brandList.add(baseDto);
+			for (int i = 1; i < synStrings.length; i++) {
+				BrandDto cloneDto = (BrandDto) baseDto.clone();
+				cloneDto.setBrandName(synStrings[i]);
+				brandList.add(cloneDto);
+			}
+		}
+		return brandList;
 	}
 
 }

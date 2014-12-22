@@ -2,6 +2,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +89,7 @@ public class BrandServiceImpl implements BrandService {
 			}
 			dataList.add(dto);
 		}
-
+		Map<String, List<BrandDto>> synCodeMap = toSame(dtoList);
 		for (Entry<Integer, List<BrandDto>> entry : siteMap.entrySet()) {
 			Set<String> codeSet = new HashSet<String>();
 			Set<String> nameSet = new HashSet<String>();
@@ -117,6 +118,55 @@ public class BrandServiceImpl implements BrandService {
 				insertList.add(cnEntry.getValue());
 			}
 		}
+	}
+
+	private Map<String, List<BrandDto>> toSame(List<BrandDto> dtoList) {
+		Map<String, List<BrandDto>> synCodeMap = new HashMap<String, List<BrandDto>>();
+		for (BrandDto dto : dtoList) {
+			List<BrandDto> dataList = synCodeMap.get(dto.getSynonymCode());
+			if (dataList == null) {
+				dataList = new ArrayList<BrandDto>();
+				synCodeMap.put(dto.getSynonymCode(), dataList);
+			}
+			dataList.add(dto);
+		}
+		Map<String, Set<String>> synNameMap = new HashMap<String, Set<String>>();
+		for (BrandDto dto : dtoList) {
+			Set<String> nameSet = synNameMap.get(dto.getSynonymCode());
+			if (nameSet == null) {
+				nameSet = new HashSet<String>();
+				synNameMap.put(dto.getSynonymCode(), nameSet);
+			}
+			nameSet.add(dto.getBrandName());
+		}
+		List<Entry<String, Set<String>>> entryList = new ArrayList<Map.Entry<String, Set<String>>>(synNameMap.entrySet());
+		Collections.sort(entryList, new Comparator<Entry<String, Set<String>>>() {
+			@Override
+			public int compare(Entry<String, Set<String>> o1, Entry<String, Set<String>> o2) {
+				return o1.getKey().compareTo(o2.getKey());
+			}
+		});
+//	    Map<String, V>
+		for (Entry<String, Set<String>> entry : entryList) {
+			for (Entry<String, Set<String>> inEntry : entryList) {
+				if (entry == inEntry) {
+					continue;
+				}
+				boolean bSame = false;
+				for (String brandName : inEntry.getValue()) {
+					if (entry.getValue().contains(brandName)) {
+						bSame = true;
+						break;
+					}
+				}
+				if (bSame) {
+					entry.getValue().addAll(inEntry.getValue());
+					List<BrandDto> brandList = synCodeMap.get(entry.getKey());
+					List<BrandDto> saveList = synCodeMap.get(inEntry.getKey());
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

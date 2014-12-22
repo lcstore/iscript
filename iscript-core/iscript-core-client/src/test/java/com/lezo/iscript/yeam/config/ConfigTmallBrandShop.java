@@ -2,7 +2,6 @@ package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
-		return itemObject.toString();
+		return EMTPY_RESULT;
 	}
 
 	private JSONObject getDataObject(TaskWritable task) throws Exception {
@@ -67,7 +66,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 				shopVo.setBrandName(mainBrand);
 				shopVo.setBrandUrl(url);
 				shopVo.setBrandCode(brandCode == null ? getHashCode(mainBrand) : brandCode);
-				shopVo.setSynonym(synonym);
+				shopVo.setSynonyms(synonym);
 				shopVo.setRegion(region);
 				rsBean.getDataList().add(shopVo);
 			}
@@ -164,7 +163,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
 
 		JSONArray tArray = new JSONArray();
-		tArray.put("BrandStoreDto");
+		tArray.put("BrandConfigVo");
 		tArray.put("BrandShopDto");
 		JSONUtils.put(argsObject, "target", tArray);
 		JSONUtils.put(gObject, "args", argsObject);
@@ -181,7 +180,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 		private String brandCode;
 		private String brandName;
 		private String brandUrl;
-		private String synonym;
+		private String synonyms;
 		private String region;
 		// private Date createTime;
 		// private Date updateTime;
@@ -245,20 +244,20 @@ public class ConfigTmallBrandShop implements ConfigParser {
 			this.brandUrl = brandUrl;
 		}
 
-		public String getSynonym() {
-			return synonym;
-		}
-
-		public void setSynonym(String synonym) {
-			this.synonym = synonym;
-		}
-
 		public String getRegion() {
 			return region;
 		}
 
 		public void setRegion(String region) {
 			this.region = region;
+		}
+
+		public String getSynonyms() {
+			return synonyms;
+		}
+
+		public void setSynonyms(String synonyms) {
+			this.synonyms = synonyms;
 		}
 	}
 

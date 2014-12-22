@@ -18,6 +18,7 @@ import com.lezo.iscript.service.crawler.utils.ShopCacher;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.MethodUtils;
 import com.lezo.iscript.utils.ObjectUtils;
+import com.lezo.iscript.yeam.resultmgr.ConfigClassUtils;
 import com.lezo.iscript.yeam.resultmgr.writer.BufferWriterManager;
 
 @Component
@@ -82,8 +83,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	}
 
 	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
-		clsName = clsName.replace("BrandStoreDto", "BrandDto");
-		Class<?> dtoClass = getDtoClass(clsName);
+		Class<?> dtoClass = ConfigClassUtils.getDtoClass(clsName);
 		Object destObject = ObjectUtils.newCopyObject(dtoClass);
 		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());
 		if (writer == null) {
@@ -200,13 +200,6 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		}
 		String msg = String.format("can not set siteId.args:%s,data:%s", argsObject, dataObject);
 		throw new IllegalAccessException(msg);
-	}
-
-	private Class<?> getDtoClass(String name) throws ClassNotFoundException {
-		if (name.indexOf('.') < 0) {
-			name = "com.lezo.iscript.service.crawler.dto." + name;
-		}
-		return Thread.currentThread().getContextClassLoader().loadClass(name);
 	}
 
 }

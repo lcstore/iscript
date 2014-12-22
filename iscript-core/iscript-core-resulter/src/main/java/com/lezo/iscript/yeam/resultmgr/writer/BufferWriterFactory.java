@@ -5,13 +5,13 @@ import java.util.Map;
 
 import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.common.ObjectWriter;
-import com.lezo.iscript.service.crawler.dto.BrandDto;
 import com.lezo.iscript.service.crawler.dto.BrandShopDto;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 import com.lezo.iscript.service.crawler.dto.PromotionMapDto;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.utils.ObjectUtils;
+import com.lezo.iscript.yeam.resultmgr.vo.BrandConfigVo;
 
 public class BufferWriterFactory {
 
@@ -21,7 +21,7 @@ public class BufferWriterFactory {
 		addWriter(ProductStatDto.class, new ProductStatWriter(), 200);
 		addWriter(PromotionMapDto.class, new PromotionMapWriter(), 200);
 		addWriter(ProxyDetectDto.class, new ProxyDetectWriter(), 200);
-		addWriter(BrandDto.class, new BrandWriter(), 200);
+		addWriter(BrandConfigVo.class, new BrandWriter(), 200);
 		addWriter(BrandShopDto.class, new BrandShopWriter(), 200);
 	}
 
