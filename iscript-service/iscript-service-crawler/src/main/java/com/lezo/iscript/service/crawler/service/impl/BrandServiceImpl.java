@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,30 +140,44 @@ public class BrandServiceImpl implements BrandService {
 			}
 			nameSet.add(dto.getBrandName());
 		}
-		List<Entry<String, Set<String>>> entryList = new ArrayList<Map.Entry<String, Set<String>>>(synNameMap.entrySet());
-		Collections.sort(entryList, new Comparator<Entry<String, Set<String>>>() {
+		List<String> synCodeList = new ArrayList<String>(synNameMap.keySet());
+		Collections.sort(synCodeList, new Comparator<String>() {
 			@Override
-			public int compare(Entry<String, Set<String>> o1, Entry<String, Set<String>> o2) {
-				return o1.getKey().compareTo(o2.getKey());
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
 			}
 		});
-//	    Map<String, V>
-		for (Entry<String, Set<String>> entry : entryList) {
-			for (Entry<String, Set<String>> inEntry : entryList) {
-				if (entry == inEntry) {
+
+		for (String synCode : synCodeList) {
+			Set<String> nameSet = synNameMap.get(synCode);
+			if (nameSet == null) {
+				continue;
+			}
+			Iterator<Entry<String, Set<String>>> it = synNameMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<String, Set<String>> inEntry = it.next();
+				if (synCode.equals(inEntry.getKey())) {
 					continue;
 				}
 				boolean bSame = false;
 				for (String brandName : inEntry.getValue()) {
-					if (entry.getValue().contains(brandName)) {
+					if (nameSet.contains(brandName)) {
 						bSame = true;
 						break;
 					}
 				}
 				if (bSame) {
-					entry.getValue().addAll(inEntry.getValue());
-					List<BrandDto> brandList = synCodeMap.get(entry.getKey());
-					List<BrandDto> saveList = synCodeMap.get(inEntry.getKey());
+					nameSet.addAll(inEntry.getValue());
+					List<BrandDto> brandList = synCodeMap.get(synCode);
+					List<BrandDto> sameList = synCodeMap.get(inEntry.getKey());
+					if (sameList != null) {
+						for (BrandDto sameDto : sameList) {
+							sameDto.setSynonymCode(synCode);
+						}
+						brandList.addAll(sameList);
+					}
+					it.remove();
+					synCodeMap.remove(inEntry.getKey());
 				}
 			}
 		}
