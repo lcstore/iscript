@@ -81,17 +81,8 @@ public class BrandServiceImpl implements BrandService {
 	}
 
 	private void doAssort(List<BrandDto> dtoList, List<BrandDto> updateList, List<BrandDto> insertList) {
-		Map<Integer, List<BrandDto>> siteMap = new HashMap<Integer, List<BrandDto>>();
-		for (BrandDto dto : dtoList) {
-			List<BrandDto> dataList = siteMap.get(dto.getSiteId());
-			if (dataList == null) {
-				dataList = new ArrayList<BrandDto>();
-				siteMap.put(dto.getSiteId(), dataList);
-			}
-			dataList.add(dto);
-		}
-		Map<String, List<BrandDto>> synCodeMap = toSame(dtoList);
-		for (Entry<Integer, List<BrandDto>> entry : siteMap.entrySet()) {
+		Map<String, List<BrandDto>> synCodeMap = toSameSynCode(dtoList);
+		for (Entry<String, List<BrandDto>> entry : synCodeMap.entrySet()) {
 			Set<String> codeSet = new HashSet<String>();
 			Set<String> nameSet = new HashSet<String>();
 			Map<String, BrandDto> codeNameMap = new HashMap<String, BrandDto>();
@@ -101,7 +92,7 @@ public class BrandServiceImpl implements BrandService {
 				String key = dto.getBrandCode() + "-" + dto.getBrandName();
 				codeNameMap.put(key, dto);
 			}
-			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), entry.getKey());
+			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), null);
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandDto oldDto : hasList) {
 				String key = oldDto.getBrandCode() + "-" + oldDto.getBrandName();
@@ -112,16 +103,20 @@ public class BrandServiceImpl implements BrandService {
 					updateList.add(newDto);
 				}
 			}
+			BrandDto oldBaseDto = hasList.isEmpty() ? null : hasList.get(0);
 			for (Entry<String, BrandDto> cnEntry : codeNameMap.entrySet()) {
 				if (hasSet.contains(cnEntry.getKey())) {
 					continue;
+				}
+				if (oldBaseDto != null) {
+					cnEntry.getValue().setSynonymCode(oldBaseDto.getSynonymCode());
 				}
 				insertList.add(cnEntry.getValue());
 			}
 		}
 	}
 
-	private Map<String, List<BrandDto>> toSame(List<BrandDto> dtoList) {
+	private Map<String, List<BrandDto>> toSameSynCode(List<BrandDto> dtoList) {
 		Map<String, List<BrandDto>> synCodeMap = new HashMap<String, List<BrandDto>>();
 		for (BrandDto dto : dtoList) {
 			List<BrandDto> dataList = synCodeMap.get(dto.getSynonymCode());
@@ -181,7 +176,7 @@ public class BrandServiceImpl implements BrandService {
 				}
 			}
 		}
-		return null;
+		return synCodeMap;
 	}
 
 	@Override

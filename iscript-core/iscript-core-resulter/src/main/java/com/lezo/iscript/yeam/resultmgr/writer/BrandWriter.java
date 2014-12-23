@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.BrandDto;
@@ -37,7 +38,16 @@ public class BrandWriter implements ObjectWriter<BrandConfigVo> {
 	private List<BrandDto> convertDto(List<BrandConfigVo> dataList) throws CloneNotSupportedException {
 		List<BrandDto> brandList = new ArrayList<BrandDto>(dataList.size());
 		for (BrandConfigVo brandVo : dataList) {
-			String[] synStrings = brandVo.getSynonyms().split(",");
+			if (StringUtils.isEmpty(brandVo.getSynonyms())) {
+				continue;
+			}
+			String sSynonyms = brandVo.getSynonyms();
+			int fromIndex = sSynonyms.indexOf("[");
+			int toIndex = sSynonyms.indexOf("]");
+			fromIndex = fromIndex < 0 ? 0 : fromIndex + 1;
+			toIndex = toIndex < 0 ? sSynonyms.length() : toIndex;
+			sSynonyms = sSynonyms.substring(fromIndex, toIndex);
+			String[] synStrings = sSynonyms.split(",");
 			String synCode = "" + System.currentTimeMillis();
 			BrandDto baseDto = new BrandDto();
 			baseDto.setBrandCode(brandVo.getBrandCode());
