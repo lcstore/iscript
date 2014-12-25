@@ -49,20 +49,17 @@ public class BrandWriter implements ObjectWriter<BrandConfigVo> {
 			sSynonyms = sSynonyms.substring(fromIndex, toIndex);
 			String[] synStrings = sSynonyms.split(",");
 			String synCode = "" + System.currentTimeMillis();
-			BrandDto baseDto = new BrandDto();
-			baseDto.setBrandCode(brandVo.getBrandCode());
-			baseDto.setBrandUrl(brandVo.getBrandUrl());
-			baseDto.setRegion(brandVo.getRegion());
-			baseDto.setCreateTime(brandVo.getCreateTime());
-			baseDto.setUpdateTime(brandVo.getUpdateTime());
-			baseDto.setSiteId(brandVo.getSiteId());
-			baseDto.setSynonymCode(synCode);
-			baseDto.setBrandName(synStrings[0]);
-			brandList.add(baseDto);
-			for (int i = 1; i < synStrings.length; i++) {
-				BrandDto cloneDto = (BrandDto) baseDto.clone();
-				cloneDto.setBrandName(synStrings[i]);
-				brandList.add(cloneDto);
+			for (int i = 0; i < synStrings.length; i++) {
+				BrandDto baseDto = new BrandDto();
+				baseDto.setBrandName(synStrings[i]);
+				baseDto.setBrandCode(brandVo.getBrandCode());
+				baseDto.setBrandUrl(brandVo.getBrandUrl());
+				baseDto.setRegion(brandVo.getRegion());
+				baseDto.setCreateTime(brandVo.getCreateTime());
+				baseDto.setUpdateTime(brandVo.getUpdateTime());
+				baseDto.setSiteId(brandVo.getSiteId());
+				baseDto.setSynonymCode(synCode);
+				brandList.add(baseDto);
 			}
 		}
 		return brandList;
