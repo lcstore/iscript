@@ -36,13 +36,14 @@
 		<property name="maxPathCount" value="100" />
 		<property name="nameList">
 			<list>
-				<!-- <value>ConfigYhdProduct</value>
+				<value>ConfigYhdProduct</value>
 				<value>ConfigJdProduct</value>
 				<value>ConfigJdPromotion</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyCollector</value>
-				<value>ConfigYhdPromotion</value> -->
-				<value>ConfigTmallBrandShop</value>
+				<value>ConfigYhdPromotion</value>
+				
+				<!-- <value>ConfigTmallBrandShop</value> -->
 			</list>
 		</property>
 	</bean>

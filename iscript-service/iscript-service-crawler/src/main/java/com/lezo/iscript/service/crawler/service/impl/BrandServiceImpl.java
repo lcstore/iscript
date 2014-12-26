@@ -80,6 +80,7 @@ public class BrandServiceImpl implements BrandService {
 	}
 
 	private void doAssort(List<BrandDto> dtoList, List<BrandDto> updateList, List<BrandDto> insertList) {
+		dtoList = removeDumplication(dtoList);
 		Map<String, List<BrandDto>> synCodeMap = toSameSynCode(dtoList);
 		for (Entry<String, List<BrandDto>> entry : synCodeMap.entrySet()) {
 			Set<String> codeSet = new HashSet<String>();
@@ -113,6 +114,24 @@ public class BrandServiceImpl implements BrandService {
 				insertList.add(cnEntry.getValue());
 			}
 		}
+	}
+
+	private List<BrandDto> removeDumplication(List<BrandDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return Collections.emptyList();
+		}
+		Map<String, BrandDto> dtoMap = new HashMap<String, BrandDto>();
+		for (BrandDto dto : dtoList) {
+			String key = getDtoKey(dto);
+			if (!dtoMap.containsKey(key)) {
+				dtoMap.put(key, dto);
+			}
+		}
+		return new ArrayList<BrandDto>(dtoMap.values());
+	}
+
+	private String getDtoKey(BrandDto dto) {
+		return dto.getSiteId() + "-" + dto.getBrandCode();
 	}
 
 	private Map<String, List<BrandDto>> toSameSynCode(List<BrandDto> dtoList) {

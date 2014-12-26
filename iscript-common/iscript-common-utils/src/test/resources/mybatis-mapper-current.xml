@@ -2,51 +2,50 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.BrandShopDao">
-	<resultMap type="BrandShopDto" id="RM_BrandShopDto">
-		<result column="ID" property="id"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="BRAND_CODE" property="brandCode"/>
-		<result column="BRAND_NAME" property="brandName"/>
-		<result column="SHOP_NAME" property="shopName"/>
-		<result column="SHOP_CODE" property="shopCode"/>
-		<result column="SHOP_URL" property="shopUrl"/>
-		<result column="SHOP_TYPE" property="shopType"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+<mapper namespace="com.vipshop.dp.core.productdatamgr.dao.PricingShopDao">
+	<resultMap type="PricingShopDto" id="RM_PricingShopDto">
+		<result column="id" property="id"/>
+		<result column="shop_name" property="shopName"/>
+		<result column="shop_url" property="shopUrl"/>
+		<result column="shop_type" property="shopType"/>
+		<result column="shop_code" property="shopCode"/>
+		<result column="site_id" property="siteId"/>
+		<result column="lastest_start_time" property="lastestStartTime"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
 	</resultMap>
-	<sql id="BrandShopDto-coloumn-list">
-		SITE_ID
-		,BRAND_CODE
-		,BRAND_NAME
-		,SHOP_NAME
-		,SHOP_CODE
-		,SHOP_URL
-		,SHOP_TYPE
-		,CREATE_TIME
-		,UPDATE_TIME
+	<sql id="PricingShopDto-coloumn-list">
+		id
+		,shop_name
+		,shop_url
+		,shop_type
+		,shop_code
+		,site_id
+		,lastest_start_time
+		,create_time
+		,update_time
 	</sql>
-	<insert id="batchInsert" parameterType="BrandShopDto">
-		INSERT INTO T_BRAND_SHOP(
-		<include refid="BrandShopDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="PricingShopDto">
+		INSERT INTO T_PRICING_SHOP(
+		<include refid="PricingShopDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.shopName},#{item.shopCode},#{item.shopUrl},#{item.shopType},#{item.createTime},#{item.updateTime})
+			(#{item.shopName},#{item.shopUrl},#{item.shopType},#{item.shopCode},#{item.siteId},#{item.lastestStartTime},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="BrandShopDto">
-		UPDATE T_BRAND_SHOP SET
-		SITE_ID=#{siteId},
-		BRAND_CODE=#{brandCode},
-		BRAND_NAME=#{brandName},
-		SHOP_NAME=#{shopName},
-		SHOP_CODE=#{shopCode},
-		SHOP_URL=#{shopUrl},
-		SHOP_TYPE=#{shopType},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+	<update id="batchUpdate" parameterType="PricingShopDto">
+		UPDATE T_PRICING_SHOP SET
+		id=#{id},
+		shop_name=#{shopName},
+		shop_url=#{shopUrl},
+		shop_type=#{shopType},
+		shop_code=#{shopCode},
+		site_id=#{siteId},
+		lastest_start_time=#{lastestStartTime},
+		create_time=#{createTime},
+		update_time=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 </mapper>
