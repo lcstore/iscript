@@ -1,6 +1,7 @@
 package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.lezo.iscript.common.CloneSerializeObject;
 
@@ -92,6 +93,15 @@ public class BrandDto extends CloneSerializeObject {
 
 	public void setSynonymCode(String synonymCode) {
 		this.synonymCode = synonymCode;
+	}
+
+	public static String randomSynonymCode() {
+		String synCode = UUID.randomUUID().toString();
+		int hCode = synCode.hashCode();
+		if (hCode < 0) {
+			return "H" + (-hCode);
+		}
+		return "" + hCode;
 	}
 
 }

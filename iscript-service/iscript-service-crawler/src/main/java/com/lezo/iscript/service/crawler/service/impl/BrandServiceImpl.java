@@ -131,7 +131,7 @@ public class BrandServiceImpl implements BrandService {
 	}
 
 	private String getDtoKey(BrandDto dto) {
-		return dto.getSiteId() + "-" + dto.getBrandCode();
+		return dto.getSiteId() + "-" + dto.getBrandCode() + "-" + dto.getBrandName();
 	}
 
 	private Map<String, List<BrandDto>> toSameSynCode(List<BrandDto> dtoList) {
@@ -214,6 +214,10 @@ public class BrandServiceImpl implements BrandService {
 			return Collections.emptyList();
 		}
 		return this.brandDao.getBrandDtoByIds(idList);
+	}
+
+	public void setBrandDao(BrandDao brandDao) {
+		this.brandDao = brandDao;
 	}
 
 }

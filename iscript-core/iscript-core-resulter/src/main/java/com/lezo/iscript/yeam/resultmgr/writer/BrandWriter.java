@@ -57,10 +57,10 @@ public class BrandWriter implements ObjectWriter<BrandConfigVo> {
 			toIndex = toIndex < 0 ? sSynonyms.length() : toIndex;
 			sSynonyms = sSynonyms.substring(fromIndex, toIndex);
 			String[] synStrings = sSynonyms.split(",");
-			String synCode = UUID.randomUUID().toString();
+			String synCode = BrandDto.randomSynonymCode();
 
 			BrandDto baseDto = new BrandDto();
-			baseDto.setBrandName(synStrings[0]);
+			baseDto.setBrandName(synStrings[0].trim());
 			baseDto.setBrandCode(brandVo.getBrandCode());
 			baseDto.setBrandUrl(brandVo.getBrandUrl());
 			baseDto.setRegion(brandVo.getRegion());
@@ -71,7 +71,7 @@ public class BrandWriter implements ObjectWriter<BrandConfigVo> {
 			brandList.add(baseDto);
 			for (int i = 1; i < synStrings.length; i++) {
 				BrandDto cloneDto = (BrandDto) baseDto.clone();
-				cloneDto.setBrandName(synStrings[i]);
+				cloneDto.setBrandName(synStrings[i].trim());
 				brandList.add(cloneDto);
 			}
 		}

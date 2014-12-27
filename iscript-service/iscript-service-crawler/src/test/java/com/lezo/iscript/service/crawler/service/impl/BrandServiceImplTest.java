@@ -28,7 +28,8 @@ public class BrandServiceImplTest {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		BrandDao brandDao = SpringBeanUtils.getBean(BrandDao.class);
-		BrandService brandService = new BrandServiceImpl();
+		BrandServiceImpl brandService = new BrandServiceImpl();
+		brandService.setBrandDao(brandDao);
 		String type = "";
 		List<String> lineList = FileUtils.readLines(new File("src/test/resources/nav.txt"), "UTF-8");
 		List<BrandDto> dataList = new ArrayList<BrandDto>();
@@ -54,8 +55,7 @@ public class BrandServiceImplTest {
 		toIndex = toIndex < 0 ? sSynonyms.length() : toIndex;
 		sSynonyms = sSynonyms.substring(fromIndex, toIndex);
 		String[] synStrings = sSynonyms.split(",");
-		String synCode = "" + UUID.randomUUID().toString();
-
+		String synCode = BrandDto.randomSynonymCode();
 		for (int i = 0; i < synStrings.length; i++) {
 			BrandDto baseDto = new BrandDto();
 			baseDto.setBrandCode(brandVo.getBrandCode());
