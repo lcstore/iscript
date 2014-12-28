@@ -270,6 +270,14 @@ public class ConfigYhdProduct implements ConfigParser {
 		client.getCookieStore().addCookie(cookie);
 		cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
 		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("i2042", "_");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("newUserFlag", "1");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("test_cookie", "1");
+		client.getCookieStore().addCookie(cookie);
+		cookie = new BasicClientCookie("msessionid", "1PJ241E6A15H8896SR8M7ANCZBRWJX14");
+		client.getCookieStore().addCookie(cookie);
 	}
 
 	private class ProductBean {

@@ -32,6 +32,8 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
+import com.lezo.iscript.yeam.config.ConfigJdBrandList;
+import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
 import com.lezo.iscript.yeam.config.ConfigJdClientValidator;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
@@ -75,6 +77,8 @@ public class ConfigParserTest {
 		parser = new ConfigTmallBrandList();
 		parser = new ConfigTmallBrandShop();
 		parser = new ConfigJdClientValidator();
+		parser = new ConfigJdBrandList();
+		parser = new ConfigJdBrandShop();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
@@ -104,16 +108,25 @@ public class ConfigParserTest {
 		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
 		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=3406935&type=0&scm=1048.1.1.6";
 		url = "http://iclient.jd-app.com/";
-//		url = "http://idober.jd-app.com/";
+		// url = "http://idober.jd-app.com/";
 		url = "http://jd1001.jd-app.com/";
-//		url = "http://jda1001.jd-app.com/";
-//		url = "http://mybrand.tmall.com/brandInfo.htm?spm=a3200.2192457.0.0.bKhQoJ&brandId=36795434&type=0&scm=1048.1.1.6";
-//		url = "http://brand.tmall.com/brandInfo.htm?spm=a3200.2192449.0.0.1NxsU7&brandId=21459&type=0&scm=1048.1.1.6";
+		// url = "http://jda1001.jd-app.com/";
+		// url =
+		// "http://mybrand.tmall.com/brandInfo.htm?spm=a3200.2192457.0.0.bKhQoJ&brandId=36795434&type=0&scm=1048.1.1.6";
+		// url =
+		// "http://brand.tmall.com/brandInfo.htm?spm=a3200.2192449.0.0.1NxsU7&brandId=21459&type=0&scm=1048.1.1.6";
+		url = "http://list.jd.com/list.html?cat=1620,1624,1656";
+		url = "http://list.jd.com/6233-6291-6308.html";
+		// url =
+		// "http://search.jd.com/search?keyword=%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89&enc=utf-8&qr=&qrst=UNEXPAND&rt=1&vt=3&sttr=1&ev=exbrand%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89_%40&page=2";
+		url = "http://list.jd.com/6233-6291-6308.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
 		// task.put("barCode", "9787807514398");
 		// task.put("barCode", "6903148018194");
+		task.put("brandName", "圣卡罗");
+		task.put("brandCode", "15637");
 		task.put("url", url);
 		String result = parser.doParse(task);
 		System.out.println("result:" + result);
@@ -128,23 +141,17 @@ public class ConfigParserTest {
 			e.printStackTrace();
 			throw e;
 		}
-		// parserUrls();
 	}
 
-	private void parserUrls() throws Exception {
+	@Test
+	public void parserUrls() throws Exception {
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
-		HttpGet get = new HttpGet("http://brand.tmall.com/categoryIndex.htm?spm=a3200.2192449.0.0.zOf1Lh&industryId=111");
+		HttpGet get = new HttpGet("http://www.jd.com/allSort.aspx");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
 		Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
-		Elements destEls = dom.select("#content div.brandCon ul.brandTab li a[href*=brand.tmall.com/categoryIndex]");
+		Elements destEls = dom.select("#allsort div.fl div.m div.mc dd em a[href]");
 		for (Element ele : destEls) {
-			get = new HttpGet(ele.absUrl("href"));
-			html = HttpClientUtils.getContent(client, get, "gbk");
-			dom = Jsoup.parse(html, get.getURI().toURL().toString());
-			Elements brandUrlEls = dom.select("div#content div.brandCon div.catFilter dl.cf-catList:contains(类目) dd a[href]");
-			for (Element bele : brandUrlEls) {
-				System.err.println("urlSet.add(\"" + bele.attr("href") + "\")");
-			}
+			System.err.println("urlSet.add(\"" + ele.absUrl("href") + "\")");
 		}
 	}
 

@@ -1,7 +1,9 @@
 package com.lezo.iscript.yeam;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.junit.Test;
 
@@ -18,6 +20,14 @@ public class UrlTest {
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testDns() throws Exception {
+		InetAddress[] intAddrs = InetAddress.getAllByName("e.yhd.com");
+		for(InetAddress addr:intAddrs){
+			System.err.println(addr);
 		}
 	}
 }

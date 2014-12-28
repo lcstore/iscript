@@ -83,16 +83,14 @@ public class BrandServiceImpl implements BrandService {
 		dtoList = removeDumplication(dtoList);
 		Map<String, List<BrandDto>> synCodeMap = toSameSynCode(dtoList);
 		for (Entry<String, List<BrandDto>> entry : synCodeMap.entrySet()) {
-			Set<String> codeSet = new HashSet<String>();
 			Set<String> nameSet = new HashSet<String>();
 			Map<String, BrandDto> codeNameMap = new HashMap<String, BrandDto>();
 			for (BrandDto dto : entry.getValue()) {
-				codeSet.add(dto.getBrandCode());
 				nameSet.add(dto.getBrandName());
 				String key = dto.getBrandCode() + "-" + dto.getBrandName();
 				codeNameMap.put(key, dto);
 			}
-			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), null);
+			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(null, new ArrayList<String>(nameSet), null);
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandDto oldDto : hasList) {
 				String key = oldDto.getBrandCode() + "-" + oldDto.getBrandName();

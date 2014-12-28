@@ -79,6 +79,7 @@ public class BrandShopServiceImpl implements BrandShopService {
 	}
 
 	private void doAssort(List<BrandShopDto> dtoList, List<BrandShopDto> updateList, List<BrandShopDto> insertList) {
+		dtoList = removeDumplcation(dtoList);
 		Map<Integer, List<BrandShopDto>> siteMap = new HashMap<Integer, List<BrandShopDto>>();
 		for (BrandShopDto dto : dtoList) {
 			List<BrandShopDto> dataList = siteMap.get(dto.getSiteId());
@@ -98,7 +99,7 @@ public class BrandShopServiceImpl implements BrandShopService {
 				String key = dto.getBrandCode() + "-" + dto.getShopName();
 				codeNameMap.put(key, dto);
 			}
-			List<BrandShopDto> hasList = getBrandShopDtoByShopNameList(new ArrayList<String>(codeSet), new ArrayList<String>(nameSet), entry.getKey());
+			List<BrandShopDto> hasList = getBrandShopDtoByShopNameList(new ArrayList<String>(nameSet), new ArrayList<String>(codeSet), entry.getKey());
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandShopDto oldDto : hasList) {
 				String key = oldDto.getBrandCode() + "-" + oldDto.getShopName();
@@ -117,6 +118,24 @@ public class BrandShopServiceImpl implements BrandShopService {
 			}
 		}
 
+	}
+
+	private List<BrandShopDto> removeDumplcation(List<BrandShopDto> dtoList) {
+		List<BrandShopDto> resultList = new ArrayList<BrandShopDto>(dtoList.size());
+		Set<String> hasKeySet = new HashSet<String>();
+		for (BrandShopDto shopDto : dtoList) {
+			String key = getDtoKey(shopDto);
+			if (!hasKeySet.contains(key)) {
+				hasKeySet.add(key);
+				resultList.add(shopDto);
+			}
+		}
+		return resultList;
+	}
+
+	private String getDtoKey(BrandShopDto shopDto) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

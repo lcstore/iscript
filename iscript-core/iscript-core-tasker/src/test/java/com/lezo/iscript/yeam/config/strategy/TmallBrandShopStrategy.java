@@ -30,12 +30,12 @@ import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
-public class BrandShopStrategy implements ResultStrategy, Closeable {
-	private static Logger logger = LoggerFactory.getLogger(BrandShopStrategy.class);
+public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
+	private static Logger logger = LoggerFactory.getLogger(TmallBrandShopStrategy.class);
 	private static volatile boolean running = false;
 	private Timer timer;
 
-	public BrandShopStrategy() {
+	public TmallBrandShopStrategy() {
 		CreateTaskTimer task = new CreateTaskTimer();
 		this.timer = new Timer("CreateTaskTimer");
 		this.timer.schedule(task, 60 * 1000, 12 * 60 * 60 * 1000);

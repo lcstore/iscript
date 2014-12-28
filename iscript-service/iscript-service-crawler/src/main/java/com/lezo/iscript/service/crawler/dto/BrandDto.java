@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.lezo.iscript.common.CloneSerializeObject;
 
-public class BrandDto extends CloneSerializeObject {
+public class BrandDto extends CloneSerializeObject<BrandDto> {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;
@@ -79,12 +79,6 @@ public class BrandDto extends CloneSerializeObject {
 
 	public void setRegion(String region) {
 		this.region = region;
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return super.clone();
 	}
 
 	public String getSynonymCode() {
