@@ -120,6 +120,7 @@ public class ConfigParserTest {
 		// url =
 		// "http://search.jd.com/search?keyword=%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89&enc=utf-8&qr=&qrst=UNEXPAND&rt=1&vt=3&sttr=1&ev=exbrand%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89_%40&page=2";
 		url = "http://list.jd.com/list.html?cat=1315,1343,1354";
+		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";//brand shop
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
