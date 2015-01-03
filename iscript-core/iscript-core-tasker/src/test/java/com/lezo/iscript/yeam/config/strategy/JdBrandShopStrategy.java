@@ -493,10 +493,10 @@ public class JdBrandShopStrategy implements ResultStrategy, Closeable {
 			try {
 				logger.info("CreateTaskTimer is start...");
 				running = true;
-				List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
 				JSONObject argsObject = new JSONObject();
 				JSONUtils.put(argsObject, "strategy", getName());
 				for (Entry<String, Set<String>> entry : typeMap.entrySet()) {
+					List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
 					String taskId = UUID.randomUUID().toString();
 					JSONUtils.put(argsObject, "bid", taskId);
 					String type = entry.getKey();

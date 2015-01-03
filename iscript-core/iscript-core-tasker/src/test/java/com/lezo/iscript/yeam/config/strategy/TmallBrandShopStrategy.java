@@ -36,9 +36,9 @@ public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public TmallBrandShopStrategy() {
-		CreateTaskTimer task = new CreateTaskTimer();
-		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, 60 * 1000, 12 * 60 * 60 * 1000);
+//		CreateTaskTimer task = new CreateTaskTimer();
+//		this.timer = new Timer("CreateTaskTimer");
+//		this.timer.schedule(task, 60 * 1000, 12 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {
@@ -160,10 +160,10 @@ public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
 			try {
 				logger.info("CreateTaskTimer is start...");
 				running = true;
-				List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
 				JSONObject argsObject = new JSONObject();
 				JSONUtils.put(argsObject, "strategy", getName());
 				for (Entry<String, Set<String>> entry : typeMap.entrySet()) {
+					List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
 					String taskId = UUID.randomUUID().toString();
 					JSONUtils.put(argsObject, "bid", taskId);
 					String type = entry.getKey();

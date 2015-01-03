@@ -39,6 +39,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
+		//brand shop list. http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
 		return EMTPY_RESULT;
@@ -117,19 +118,21 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 	private Set<String> getBrandSet(Document dom, TaskWritable task) {
 		Elements destEls = dom.select("div.brandWiki ul.brandWiki-con li:contains(品牌名) em");
-		String sText = destEls.first().ownText();
 		// Bejirog/北极绒
 		Set<String> brandSet = new HashSet<String>();
-		String[] sArr = sText.split("/");
-		for (String sUnit : sArr) {
-			brandSet.add(sUnit.toLowerCase());
+		if (!destEls.isEmpty()) {
+			String sText = destEls.first().ownText();
+			String[] sArr = sText.split("/");
+			for (String sUnit : sArr) {
+				brandSet.add(sUnit.toLowerCase());
+			}
 		}
 		String brandName = (String) task.get("brandName");
 		if (StringUtils.isNotEmpty(brandName)) {
 			// 夏新(Amoi)
 			int fromIndex = brandName.indexOf("(");
 			if (fromIndex < 0) {
-				sArr = brandName.split("/");
+				String[] sArr = brandName.split("/");
 				for (String sUnit : sArr) {
 					brandSet.add(sUnit.toLowerCase());
 				}

@@ -134,8 +134,7 @@ public class BrandShopServiceImpl implements BrandShopService {
 	}
 
 	private String getDtoKey(BrandShopDto shopDto) {
-		// TODO Auto-generated method stub
-		return null;
+		return shopDto.getBrandCode() + "-" + shopDto.getShopCode() + "-" + shopDto.getSiteId();
 	}
 
 	@Override

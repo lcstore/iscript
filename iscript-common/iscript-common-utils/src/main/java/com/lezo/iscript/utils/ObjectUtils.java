@@ -27,7 +27,7 @@ public class ObjectUtils {
 			BEAN_MAP.put(clazz.getName(), baseObject);
 			return (T) baseObject;
 		} else if (baseObject instanceof CloneSerializeObject) {
-			CloneSerializeObject cloneObject = (CloneSerializeObject) baseObject;
+			CloneSerializeObject<T> cloneObject = (CloneSerializeObject<T>) baseObject;
 			return (T) cloneObject.clone();
 		}
 		return newObject(clazz);

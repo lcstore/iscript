@@ -76,9 +76,8 @@ public class ConfigParserTest {
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
 		parser = new ConfigTmallBrandShop();
-		parser = new ConfigJdClientValidator();
-		parser = new ConfigJdBrandList();
-//		parser = new ConfigJdBrandShop();
+		parser = new ConfigJdBrandShop();
+//		parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
@@ -121,13 +120,14 @@ public class ConfigParserTest {
 		// "http://search.jd.com/search?keyword=%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89&enc=utf-8&qr=&qrst=UNEXPAND&rt=1&vt=3&sttr=1&ev=exbrand%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89_%40&page=2";
 		url = "http://list.jd.com/list.html?cat=1315,1343,1354";
 		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";//brand shop
+		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";//brand shop
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
 		// task.put("barCode", "9787807514398");
 		// task.put("barCode", "6903148018194");
-		task.put("brandName", "圣卡罗");
-		task.put("brandCode", "15637");
+		task.put("brandName", "尚朋堂");
+		task.put("brandCode", "1000");
 		task.put("url", url);
 		String result = parser.doParse(task);
 		System.out.println("result:" + result);
