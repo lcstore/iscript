@@ -8,6 +8,7 @@ CREATE TABLE `T_CRAWLER_WARN_HIS` (
   `PROCESS_ID` varchar(50) NOT NULL default '0'  COMMENT '进度ID',
   `PARAM` varchar(2000) NOT NULL default '0' COMMENT '任务参数',
   `RETRY` int NOT NULL default '0' COMMENT '重试次数',
+  `WARN_NAME` varchar(200) NOT NULL default '' COMMENT '异常名称',
   `MESSAGE` text COMMENT '异常信息',
   `CREATE_TIME` timestamp NULL  COMMENT '创建时间',
   `UPDATE_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

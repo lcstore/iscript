@@ -13,6 +13,7 @@
 		<result column="PARAM" property="param"/>
 		<result column="RETRY" property="retry"/>
 		<result column="MESSAGE" property="message"/>
+		<result column="WARN_NAME" property="warnName"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
@@ -24,6 +25,7 @@
 		,PROCESS_ID
 		,PARAM
 		,RETRY
+		,WARN_NAME
 		,MESSAGE
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -35,7 +37,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.clientName},#{item.macAddr},#{item.taskId},#{item.processId},#{item.param},#{item.retry},#{item.message},#{item.createTime},#{item.updateTime})
+			(#{item.type},#{item.clientName},#{item.macAddr},#{item.taskId},#{item.processId},#{item.param},#{item.retry},#{item.warnName},#{item.message},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="CrawlerWarnHisDto">
@@ -47,6 +49,7 @@
 		PROCESS_ID=#{processId},
 		PARAM=#{param},
 		RETRY=#{retry},
+		WARN_NAME=#{warnName},
 		MESSAGE=#{message}
 		WHERE ID=#{id}
 	</update>

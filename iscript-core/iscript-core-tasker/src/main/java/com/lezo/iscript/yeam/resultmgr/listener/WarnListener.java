@@ -42,7 +42,8 @@ public class WarnListener implements IResultListener {
 		dto.setTaskId(result.getTaskId());
 		dto.setProcessId(processId);
 		dto.setRetry(retry);
-		dto.setMessage(exObject.toString());
+		dto.setWarnName(JSONUtils.getString(exObject, "name"));
+		dto.setMessage(JSONUtils.getString(exObject, "stack"));
 		argsObject.remove("name@client");
 		argsObject.remove("bid");
 		argsObject.remove("type");

@@ -11,6 +11,7 @@ public class CrawlerWarnHisDto {
 	private String processId;
 	private String param;
 	private Integer retry = 0;
+	private String warnName = "";
 	private String message;
 	private Date createTime;
 	private Date updateTime;
@@ -101,6 +102,14 @@ public class CrawlerWarnHisDto {
 
 	public void setClientName(String clientName) {
 		this.clientName = clientName;
+	}
+
+	public String getWarnName() {
+		return warnName;
+	}
+
+	public void setWarnName(String warnName) {
+		this.warnName = warnName;
 	}
 
 }
