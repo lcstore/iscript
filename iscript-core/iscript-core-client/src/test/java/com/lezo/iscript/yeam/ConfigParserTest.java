@@ -150,9 +150,9 @@ public class ConfigParserTest {
 		HttpGet get = new HttpGet("http://www.jd.com/allSort.aspx");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
 		Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
-		Elements destEls = dom.select("#allsort div.fl div.m div.mc dd em a[href]");
+		Elements destEls = dom.select("#allsort div.mc dd em a[href]");
 		for (Element ele : destEls) {
-			System.err.println("urlSet.add(\"" + ele.absUrl("href") + "\")");
+			System.err.println("urlSet.add(\"" + ele.absUrl("href") + "\");");
 		}
 	}
 
