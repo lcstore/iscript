@@ -25,7 +25,7 @@ public class UrlTest {
 
 	@Test
 	public void testDns() throws Exception {
-		InetAddress[] intAddrs = InetAddress.getAllByName("e.yhd.com");
+		InetAddress[] intAddrs = InetAddress.getAllByName("gps.yihaodian.com");
 		for(InetAddress addr:intAddrs){
 			System.err.println(addr);
 		}

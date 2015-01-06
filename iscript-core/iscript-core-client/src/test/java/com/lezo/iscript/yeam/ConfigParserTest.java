@@ -76,7 +76,7 @@ public class ConfigParserTest {
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
 		parser = new ConfigTmallBrandShop();
-		parser = new ConfigJdBrandShop();
+//		parser = new ConfigJdBrandShop();
 //		parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
@@ -126,8 +126,8 @@ public class ConfigParserTest {
 		// task.put("barCode", "6900068005020");
 		// task.put("barCode", "9787807514398");
 		// task.put("barCode", "6903148018194");
-		task.put("brandName", "尚朋堂");
-		task.put("brandCode", "1000");
+//		task.put("brandName", "尚朋堂");
+		task.put("brandCode", "95023");
 		task.put("url", url);
 		String result = parser.doParse(task);
 		System.out.println("result:" + result);
