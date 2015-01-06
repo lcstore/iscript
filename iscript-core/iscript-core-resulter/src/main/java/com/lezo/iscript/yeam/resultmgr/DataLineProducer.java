@@ -38,11 +38,13 @@ public class DataLineProducer implements Runnable {
 	private Mac mac = SpringBeanUtils.getBean(Mac.class);
 	private ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("dataConsumeExecutor");
 	private String domain = "istore.qiniudn.com";
+	private String bucketName;
 	private final String dataPath;
 	private final Date stamp;
 
-	public DataLineProducer(String dataPath, Date stamp) {
+	public DataLineProducer(String bucketName, String dataPath, Date stamp) {
 		super();
+		this.bucketName = bucketName;
 		this.dataPath = dataPath;
 		this.stamp = stamp;
 	}
@@ -59,7 +61,7 @@ public class DataLineProducer implements Runnable {
 		int limit = 50;
 		int retry = 0;
 		while (true) {
-			ret = client.listPrifix("istore", key, marker, limit);
+			ret = client.listPrifix(this.bucketName, key, marker, limit);
 			if (ret.statusCode >= 200 && ret.statusCode < 300) {
 				marker = ret.marker;
 				addAccepts(ret.results, cacheObject, itemList);

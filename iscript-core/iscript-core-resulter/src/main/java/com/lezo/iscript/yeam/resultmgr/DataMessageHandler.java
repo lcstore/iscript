@@ -39,6 +39,7 @@ public class DataMessageHandler {
 	private List<String> nameList;
 	private Integer limit = 50;
 	private Integer maxPathCount = 100;
+	private String bucketName;
 
 	public void run() {
 		if (running.get()) {
@@ -53,8 +54,7 @@ public class DataMessageHandler {
 			Map<String, Date> dirMap = new HashMap<String, Date>();
 			while (true) {
 				List<MessageDto> dtoList = messageService.getMessageDtos(nameList, 0, limit);
-				logger.info("Query.name:{},limit:{},query:{},size:{},last.path:{}.", nameList, limit, ++query,
-						dtoList.size(), dirMap.size());
+				logger.info("Query.name:{},limit:{},query:{},size:{},last.path:{}.", nameList, limit, ++query, dtoList.size(), dirMap.size());
 				Set<Long> idSet = new HashSet<Long>(dtoList.size());
 				for (MessageDto dto : dtoList) {
 					idSet.add(dto.getId());
@@ -88,13 +88,11 @@ public class DataMessageHandler {
 			}
 			buildeProducer(dirMap);
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,dir:%s,cost:%s.", nameList, limit,
-					query, dirMap.size(), cost);
+			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,dir:%s,cost:%s.", nameList, limit, query, dirMap.size(), cost);
 			logger.info(msg);
 		} catch (Exception e) {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,cost:%s.Cause:", nameList, limit,
-					query, cost);
+			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,cost:%s.Cause:", nameList, limit, query, cost);
 			logger.warn(msg, e);
 		} finally {
 			running.set(false);
@@ -103,7 +101,7 @@ public class DataMessageHandler {
 
 	private void buildeProducer(Map<String, Date> dirMap) {
 		for (Entry<String, Date> entry : dirMap.entrySet()) {
-			executor.execute(new DataLineProducer(entry.getKey(), entry.getValue()));
+			executor.execute(new DataLineProducer(this.bucketName, entry.getKey(), entry.getValue()));
 		}
 	}
 
@@ -154,5 +152,9 @@ public class DataMessageHandler {
 
 	public void setMaxPathCount(Integer maxPathCount) {
 		this.maxPathCount = maxPathCount;
+	}
+
+	public void setBucketName(String bucketName) {
+		this.bucketName = bucketName;
 	}
 }

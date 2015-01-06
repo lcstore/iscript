@@ -46,7 +46,7 @@ public class QiniuCloud {
 		String bucketName = "istore";
 		RSClient rs = new RSClient(mac);
 		RSFClient client = new RSFClient(mac);
-		String key = "iscript/201409";
+		String key = "iscript/201410";
 		String marker = "";
 		ListPrefixRet ret = null;
 		while (true) {

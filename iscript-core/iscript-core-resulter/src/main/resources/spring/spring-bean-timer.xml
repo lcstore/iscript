@@ -32,6 +32,7 @@
 		<constructor-arg name="secretKey" value="${qiniu_secretKey}" />
 	</bean>
 	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
+		<property name="bucketName" value="${qiniu_bucket}" />
 		<property name="limit" value="100" />
 		<property name="maxPathCount" value="100" />
 		<property name="nameList">
