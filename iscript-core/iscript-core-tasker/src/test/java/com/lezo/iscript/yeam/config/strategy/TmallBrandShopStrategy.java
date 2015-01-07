@@ -36,9 +36,9 @@ public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public TmallBrandShopStrategy() {
-//		CreateTaskTimer task = new CreateTaskTimer();
-//		this.timer = new Timer("CreateTaskTimer");
-//		this.timer.schedule(task, 60 * 1000, 12 * 60 * 60 * 1000);
+		CreateTaskTimer task = new CreateTaskTimer();
+		this.timer = new Timer("CreateTaskTimer");
+		this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {
@@ -47,6 +47,7 @@ public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
+			urlSet.add("http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL");
 			for (int i = 65; i <= 90; i++) {
 				char word = (char) i;
 				urlSet.add("http://brand.tmall.com/azIndexInside.htm?firstLetter=" + word);

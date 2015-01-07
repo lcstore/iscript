@@ -78,10 +78,44 @@ public class ConfigTmallBrandList implements ConfigParser {
 			}
 		}
 		addNexts(rsBean, dom);
+		addHomeBrand(rsBean, dom);
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, rsBean);
 		return new JSONObject(writer.toString());
+	}
+
+	private void addHomeBrand(ResultBean rsBean, Document dom) {
+		addBrands(rsBean, dom);
+		Elements areaEls = dom.select("div.brandFp div.brand-right div.j_BrandFloor textarea");
+		if (!areaEls.isEmpty()) {
+			for (Element ele : areaEls) {
+				Document subDom = Jsoup.parse(ele.text());
+				addBrands(rsBean, subDom);
+			}
+		}
+	}
+
+	private void addBrands(ResultBean rsBean, Document dom) {
+		Elements brandList = dom.select("li.bFlis-con-list a.bFlis-con-mask");
+		for (Element bEle : brandList) {
+			BrandList tBean = new BrandList();
+			tBean.setBrandName(bEle.select(".bFlisc-mask-shop").first().text());
+			tBean.setBrandCode(bEle.select(".bFlisc-mask-add[data-brandid]").first().attr("data-brandid"));
+			unifyName(tBean);
+			tBean.setBrandUrl(String.format("http://brand.tmall.com/brandInfo.htm?brandId=%s&type=0", tBean.getBrandCode()));
+			rsBean.getDataList().add(tBean);
+		}
+		brandList = dom.select("a.bFlil-link[title][href]");
+		for (Element bEle : brandList) {
+			BrandList tBean = new BrandList();
+			tBean.setBrandName(bEle.attr("title"));
+			Elements idEls = bEle.select("b[data-brandid]");
+			tBean.setBrandCode(idEls.first().attr("data-brandid"));
+			unifyName(tBean);
+			tBean.setBrandUrl(String.format("http://brand.tmall.com/brandInfo.htm?brandId=%s&type=0", tBean.getBrandCode()));
+			rsBean.getDataList().add(tBean);
+		}
 	}
 
 	private void unifyName(BrandList tBean) {

@@ -75,7 +75,7 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
-		parser = new ConfigTmallBrandShop();
+//		parser = new ConfigTmallBrandShop();
 //		parser = new ConfigJdBrandShop();
 //		parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
@@ -101,7 +101,6 @@ public class ConfigParserTest {
 		// "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.tEE8nC&id=35591763765";
 		url = "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.42.wvi8o3&id=40271259575";
 		url = "http://brand.tmall.com/azIndexInside.htm?spm=a3200.2787281.0.0.fOBcJo&firstLetter=A";
-		url = "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
 		// url =
 		// "http://brand.tmall.com/categoryIndex.htm?page=24&type=#J_NavTag";
 		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
@@ -121,6 +120,8 @@ public class ConfigParserTest {
 		url = "http://list.jd.com/list.html?cat=1315,1343,1354";
 		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";//brand shop
 		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";//brand shop
+		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";//brand shop
+//		url = "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
