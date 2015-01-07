@@ -1,11 +1,15 @@
 package com.lezo.iscript.yeam.mina;
 
+import org.apache.mina.core.future.IoFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
 
 import com.lezo.iscript.yeam.io.IoRequest;
 
 public class SessionSender {
+	private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SessionSender.class);
 	private static SessionSender instance;
 	private IoClient ioClient;
 
@@ -26,7 +30,15 @@ public class SessionSender {
 
 	public void send(IoRequest request) {
 		WriteFuture wfuture = ioClient.getSession().write(request);
-		wfuture.awaitUninterruptibly();
+		// wfuture.awaitUninterruptibly();
+		wfuture.addListener(new IoFutureListener<IoFuture>() {
+			@Override
+			public void operationComplete(IoFuture future) {
+				if (!future.isDone()) {
+					logger.warn("not done.msg:" + future);
+				}
+			}
+		});
 	}
 
 	public boolean send(IoRequest request, long timeoutMillis) {
