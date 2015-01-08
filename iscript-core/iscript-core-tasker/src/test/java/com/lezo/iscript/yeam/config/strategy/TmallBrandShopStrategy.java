@@ -167,6 +167,7 @@ public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
 					List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
 					String taskId = UUID.randomUUID().toString();
 					JSONUtils.put(argsObject, "bid", taskId);
+					JSONUtils.put(argsObject, "retry", 0);
 					String type = entry.getKey();
 					for (String url : entry.getValue()) {
 						TaskPriorityDto taskDto = createPriorityDto(url, type, argsObject);
