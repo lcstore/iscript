@@ -37,8 +37,8 @@ public class DataLineProducer implements Runnable {
 	private static final String CHARSET_NAME = "UTF-8";
 	private Mac mac = SpringBeanUtils.getBean(Mac.class);
 	private ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("dataConsumeExecutor");
-	private String domain = "istore.qiniudn.com";
 	private String bucketName;
+	private String domain = ".qiniudn.com";
 	private final String dataPath;
 	private final Date stamp;
 
@@ -137,7 +137,8 @@ public class DataLineProducer implements Runnable {
 	}
 
 	private List<String> downData(ListItem item) throws EncoderException, AuthException {
-		String baseUrl = URLUtils.makeBaseUrl(domain, item.key);
+		String bucketDomain = bucketName + domain;
+		String baseUrl = URLUtils.makeBaseUrl(bucketDomain, item.key);
 		GetPolicy getPolicy = new GetPolicy();
 		String downloadUrl = getPolicy.makeRequest(baseUrl, mac);
 		HttpGet fileGet = new HttpGet(downloadUrl);
