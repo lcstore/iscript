@@ -84,6 +84,9 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 
 	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
 		clsName = clsName.replace("BrandStoreDto", "BrandConfigVo");
+		if (type.equals("ConfigProxyCollector")) {
+			clsName = clsName.replace("ProxyDetectDto", "ProxyAddrDto");
+		}
 		Class<?> dtoClass = ConfigClassUtils.getDtoClass(clsName);
 		Object destObject = ObjectUtils.newCopyObject(dtoClass);
 		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());

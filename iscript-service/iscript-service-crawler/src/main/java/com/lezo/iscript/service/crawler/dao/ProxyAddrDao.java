@@ -11,7 +11,5 @@ public interface ProxyAddrDao {
 
 	void batchUpdate(List<ProxyAddrDto> dtoList);
 
-	ProxyAddrDto getProxyAddrDto(@Param(value = "ip") Long ip, @Param(value = "port") int port);
-
-	List<ProxyAddrDto> getProxyAddrDtos(List<Integer> ipList);
+	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(@Param("addrCodeList") List<String> addrCodeList);
 }

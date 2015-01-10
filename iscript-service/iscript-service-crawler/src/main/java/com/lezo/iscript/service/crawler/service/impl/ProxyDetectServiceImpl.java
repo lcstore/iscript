@@ -51,8 +51,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		logger.info("save ProxyDetectDto.insert:{},total:{}", insertDtos.size(), dtoList.size());
 	}
 
-	private void doAbsentAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos,
-			List<ProxyDetectDto> updateDtos) {
+	private void doAbsentAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos, List<ProxyDetectDto> updateDtos) {
 		Set<Long> ipSet = new HashSet<Long>();
 		Set<Integer> portSet = new HashSet<Integer>();
 		Map<String, ProxyDetectDto> dtoMap = new HashMap<String, ProxyDetectDto>();
@@ -62,8 +61,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 			String key = getDtoKey(dto);
 			dtoMap.put(key, dto);
 		}
-		List<ProxyDetectDto> hasDtos = getProxyDetectDtos(new ArrayList<Long>(ipSet), new ArrayList<Integer>(portSet),
-				null);
+		List<ProxyDetectDto> hasDtos = getProxyDetectDtos(new ArrayList<Long>(ipSet), new ArrayList<Integer>(portSet), null);
 		Set<String> hasCodeSet = new HashSet<String>();
 		for (ProxyDetectDto oldDto : hasDtos) {
 			String key = getDtoKey(oldDto);
@@ -101,8 +99,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 			String key = getDtoKey(dto);
 			dtoMap.put(key, dto);
 		}
-		List<ProxyDetectDto> hasDtos = getProxyDetectDtos(new ArrayList<Long>(ipSet), new ArrayList<Integer>(portSet),
-				null);
+		List<ProxyDetectDto> hasDtos = getProxyDetectDtos(new ArrayList<Long>(ipSet), new ArrayList<Integer>(portSet), null);
 		Set<String> hasCodeSet = new HashSet<String>();
 		for (ProxyDetectDto oldDto : hasDtos) {
 			String key = getDtoKey(oldDto);
@@ -121,8 +118,12 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 			}
 			if (1 == newDto.getStatus()) {
 				newDto.setStatus(ProxyDetectDto.STATUS_USABLE);
+				newDto.setSuccessCount(oldDto.getSuccessCount() + 1);
+				newDto.setLastSuccessCount(oldDto.getLastSuccessCount() + 1);
 				newDto.setRetryTimes(0);
 			} else if (0 == newDto.getStatus()) {
+				newDto.setFailCount(oldDto.getFailCount() + 1);
+				newDto.setLastSuccessCount(0);
 				newDto.setRetryTimes(oldDto.getRetryTimes() + 1);
 				if (newDto.getRetryTimes() >= ProxyDetectDto.MAX_RETRY_TIMES) {
 					newDto.setRetryTimes(0);
@@ -138,6 +139,12 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 				continue;
 			}
 			ProxyDetectDto newDto = entry.getValue();
+			if (1 == newDto.getStatus()) {
+				newDto.setSuccessCount(1);
+				newDto.setLastSuccessCount(1);
+			} else if (0 == newDto.getStatus()) {
+				newDto.setFailCount(1);
+			}
 			newDto.setMaxCost(newDto.getCurCost());
 			newDto.setMinCost(newDto.getCurCost());
 			insertDtos.add(newDto);

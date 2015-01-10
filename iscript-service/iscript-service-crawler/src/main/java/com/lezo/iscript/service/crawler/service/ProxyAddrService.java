@@ -9,7 +9,7 @@ public interface ProxyAddrService {
 
 	void batchUpdateProxyAddrs(List<ProxyAddrDto> dtoList);
 
-	ProxyAddrDto getProxyAddrDto(String ipString, int port);
-	
-	ProxyAddrDto getProxyAddrDto(Long ipValue, int port);
+	void batchSaveProxyAddrs(List<ProxyAddrDto> dtoList);
+
+	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(List<String> addrCodeList);
 }

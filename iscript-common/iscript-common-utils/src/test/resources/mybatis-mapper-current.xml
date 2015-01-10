@@ -2,50 +2,51 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.vipshop.dp.core.productdatamgr.dao.PricingShopDao">
-	<resultMap type="PricingShopDto" id="RM_PricingShopDto">
-		<result column="id" property="id"/>
-		<result column="shop_name" property="shopName"/>
-		<result column="shop_url" property="shopUrl"/>
-		<result column="shop_type" property="shopType"/>
-		<result column="shop_code" property="shopCode"/>
-		<result column="site_id" property="siteId"/>
-		<result column="lastest_start_time" property="lastestStartTime"/>
-		<result column="create_time" property="createTime"/>
-		<result column="update_time" property="updateTime"/>
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyAddrDao">
+	<resultMap type="ProxyAddrDto" id="RM_ProxyAddrDto">
+		<result column="ID" property="id"/>
+		<result column="IP" property="ip"/>
+		<result column="PORT" property="port"/>
+		<result column="ADDR_CODE" property="addrCode"/>
+		<result column="SOURCE" property="source"/>
+		<result column="REGION_NAME" property="regionName"/>
+		<result column="ISP_NAME" property="ispName"/>
+		<result column="IS_DELETE" property="isDelete"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="PricingShopDto-coloumn-list">
-		id
-		,shop_name
-		,shop_url
-		,shop_type
-		,shop_code
-		,site_id
-		,lastest_start_time
-		,create_time
-		,update_time
+	<sql id="ProxyAddrDto-coloumn-list">
+		IP
+		,PORT
+		,ADDR_CODE
+		,SOURCE
+		,REGION_NAME
+		,ISP_NAME
+		,IS_DELETE
+		,CREATE_TIME
+		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="PricingShopDto">
-		INSERT INTO T_PRICING_SHOP(
-		<include refid="PricingShopDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="ProxyAddrDto">
+		INSERT INTO T_PROXY_ADDR(
+		<include refid="ProxyAddrDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.shopName},#{item.shopUrl},#{item.shopType},#{item.shopCode},#{item.siteId},#{item.lastestStartTime},#{item.createTime},#{item.updateTime})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="PricingShopDto">
-		UPDATE T_PRICING_SHOP SET
-		id=#{id},
-		shop_name=#{shopName},
-		shop_url=#{shopUrl},
-		shop_type=#{shopType},
-		shop_code=#{shopCode},
-		site_id=#{siteId},
-		lastest_start_time=#{lastestStartTime},
-		create_time=#{createTime},
-		update_time=#{updateTime}
+	<update id="batchUpdate" parameterType="ProxyAddrDto">
+		UPDATE T_PROXY_ADDR SET
+		IP=#{ip},
+		PORT=#{port},
+		ADDR_CODE=#{addrCode},
+		SOURCE=#{source},
+		REGION_NAME=#{regionName},
+		ISP_NAME=#{ispName},
+		IS_DELETE=#{isDelete},
+		CREATE_TIME=#{createTime},
+		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 </mapper>

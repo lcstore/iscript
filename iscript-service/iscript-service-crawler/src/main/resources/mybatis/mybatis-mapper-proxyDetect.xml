@@ -17,10 +17,13 @@
 		<result column="STATUS" property="status" />
 		<result column="CREATE_TIME" property="createTime" />
 		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="FAIL_COUNT" property="failCount" />
+		<result column="SUCCESS_COUNT" property="successCount" />
+		<result column="LAST_SUCCESS_COUNT" property="lastSuccessCount" />
 	</resultMap>
 	<sql id="ProxyDetectDto-coloumn-list">
 		IP ,PORT ,DOMAIN ,URL ,DETECTOR ,CUR_COST ,MIN_COST
-		,MAX_COST ,RETRY_TIMES ,STATUS ,CREATE_TIME ,UPDATE_TIME
+		,MAX_COST ,RETRY_TIMES ,STATUS ,CREATE_TIME ,UPDATE_TIME,FAIL_COUNT,SUCCESS_COUNT,LAST_SUCCESS_COUNT
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyDetectDto">
 		INSERT INTO T_PROXY_DETECT(
@@ -29,14 +32,24 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},
+			#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime},#{item.failCount},#{item.successCount},#{item.lastSuccessCount})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyDetectDto">
 		UPDATE T_PROXY_DETECT SET
-		DOMAIN =#{domain},URL =#{url},DETECTOR =#{detector},
-		CUR_COST=#{curCost}, MIN_COST=#{minCost}, MAX_COST=#{maxCost},
-		RETRY_TIMES=#{retryTimes}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+		DOMAIN =#{domain},
+		URL =#{url},
+		DETECTOR =#{detector},
+		CUR_COST=#{curCost}, 
+		MIN_COST=#{minCost},
+		 MAX_COST=#{maxCost},
+		RETRY_TIMES=#{retryTimes}, 
+		STATUS=#{status},
+		UPDATE_TIME=#{updateTime},
+		FAIL_COUNT=#{failCount},
+		SUCCESS_COUNT=#{successCount},
+		LAST_SUCCESS_COUNT=#{lastSuccessCount}
 		WHERE ID=#{id}
 	</update>
 	<update id="batchUpdateProxyStatus" parameterType="map">

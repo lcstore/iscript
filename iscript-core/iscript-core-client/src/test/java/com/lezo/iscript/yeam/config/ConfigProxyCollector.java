@@ -151,7 +151,7 @@ public class ConfigProxyCollector implements ConfigParser {
 		// {"target":[],"data":{},"nexts":[]}
 		JSONObject dataObject = itemObject;
 		JSONArray tArray = new JSONArray();
-		tArray.put("ProxyDetectDto");
+		tArray.put("ProxyAddrDto");
 		JSONUtils.put(dataObject, "target", tArray);
 
 		JSONUtils.put(dataObject, "nextList", nextArray);

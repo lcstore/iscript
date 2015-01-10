@@ -4,18 +4,24 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyAddrDao">
 	<resultMap type="ProxyAddrDto" id="RM_ProxyAddrDto">
-		<result column="ID" property="id"/>
-		<result column="IP" property="ip"/>
-		<result column="PORT" property="port"/>
-		<result column="SOURCE" property="source"/>
-		<result column="IS_DELETE" property="isDelete"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="IP" property="ip" />
+		<result column="PORT" property="port" />
+		<result column="ADDR_CODE" property="addrCode" />
+		<result column="SOURCE" property="source" />
+		<result column="REGION_NAME" property="regionName" />
+		<result column="ISP_NAME" property="ispName" />
+		<result column="IS_DELETE" property="isDelete" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="ProxyAddrDto-coloumn-list">
 		IP
 		,PORT
+		,ADDR_CODE
 		,SOURCE
+		,REGION_NAME
+		,ISP_NAME
 		,IS_DELETE
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -27,30 +33,29 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.source},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyAddrDto">
 		UPDATE T_PROXY_ADDR SET
 		IP=#{ip},
 		PORT=#{port},
+		ADDR_CODE=#{addrCode},
 		SOURCE=#{source},
-		IS_DELETE=#{isDelete},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		REGION_NAME=#{regionName},
+		ISP_NAME=#{ispName},
+		IS_DELETE=#{isDelete}
 		WHERE ID=#{id}
 	</update>
-	<select id="getProxyAddrDto" parameterType="map" resultMap="RM_ProxyAddrDto">
-	  SELECT ID,<include refid="ProxyAddrDto-coloumn-list"/>
-	  WHERE IP=#{ip} AND PORT=#{port}
-	  LIMIT 1
-	</select>
-	<select id="getProxyAddrDtos" parameterType="map" resultMap="RM_ProxyAddrDto">
-	  SELECT ID,<include refid="ProxyAddrDto-coloumn-list"/>
-	  <where>
-	    <foreach collection="ipList" item="ipValue" open="IP IN(" close=")" separator=",">
-	      #{ipValue}
-	    </foreach>
-	  </where>
+	<select id="getProxyAddrDtosByAddrCodes" parameterType="map" resultMap="RM_ProxyAddrDto">
+		SELECT ID,
+		<include refid="ProxyAddrDto-coloumn-list" />
+		FROM T_PROXY_ADDR
+		<where>
+			<foreach collection="addrCodeList" item="addrCode" open="ADDR_CODE IN("
+				close=")" separator=",">
+				#{addrCode}
+			</foreach>
+		</where>
 	</select>
 </mapper>

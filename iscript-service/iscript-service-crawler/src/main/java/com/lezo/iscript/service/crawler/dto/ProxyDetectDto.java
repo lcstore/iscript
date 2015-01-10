@@ -28,6 +28,10 @@ public class ProxyDetectDto implements Serializable {
 	private Date createTime;
 	private Date updateTime;
 
+	private int failCount;
+	private int successCount;
+	private int lastSuccessCount;
+
 	public Long getId() {
 		return id;
 	}
@@ -138,6 +142,30 @@ public class ProxyDetectDto implements Serializable {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public int getFailCount() {
+		return failCount;
+	}
+
+	public void setFailCount(int failCount) {
+		this.failCount = failCount;
+	}
+
+	public int getSuccessCount() {
+		return successCount;
+	}
+
+	public void setSuccessCount(int successCount) {
+		this.successCount = successCount;
+	}
+
+	public int getLastSuccessCount() {
+		return lastSuccessCount;
+	}
+
+	public void setLastSuccessCount(int lastSuccessCount) {
+		this.lastSuccessCount = lastSuccessCount;
 	}
 
 }

@@ -9,6 +9,9 @@ public class ProxyAddrDto {
 	private Long ip;
 	private Integer port;
 	private String source;
+	private String addrCode;
+	private String regionName;
+	private String ispName;
 	private Integer isDelete = 0;
 	private Date createTime;
 	private Date updateTime;
@@ -75,6 +78,30 @@ public class ProxyAddrDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getRegionName() {
+		return regionName;
+	}
+
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
+
+	public String getIspName() {
+		return ispName;
+	}
+
+	public void setIspName(String ispName) {
+		this.ispName = ispName;
+	}
+
+	public String getAddrCode() {
+		return addrCode;
+	}
+
+	public void setAddrCode(String addrCode) {
+		this.addrCode = addrCode;
 	}
 
 }

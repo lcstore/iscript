@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.crawler.http.HttpClientUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
@@ -52,7 +53,7 @@ public class ConfigProxyChecher implements ConfigParser {
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		JSONObject gObject = new JSONObject();
-		JSONObject itemObject = getDataObject(task, gObject); 
+		JSONObject itemObject = getDataObject(task, gObject);
 		System.out.println(itemObject);
 		JSONUtils.put(gObject, "rs", itemObject.toString());
 		doCollect(gObject, task);
@@ -78,22 +79,18 @@ public class ConfigProxyChecher implements ConfigParser {
 		Integer port = (Integer) task.get("port");
 		String host = getHost(task);
 		String url = getDetectUrl(task);
+		url = "http://1111.ip138.com/ic.asp";
 		HttpGet get = new HttpGet(url);
 		long start = System.currentTimeMillis();
 		int status = 0;
 		try {
 			HttpHost proxy = new HttpHost(host, port);
+			get.addHeader("Accept-Encoding", "gzip, deflate");
 			get.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
-			// HttpHost proxyHost = (HttpHost)
-			// context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
-			// JSONUtils.put(itemObject, "host", proxyHost.getHostName());
-			// JSONUtils.put(itemObject, "port", proxyHost.getPort());
-			int statusCode = res.getStatusLine().getStatusCode();
-			String html = EntityUtils.toString(res.getEntity());
-			status = getStatus(statusCode, html);
+			String html = HttpClientUtils.getContent(client, get, "gb2312");
 		} catch (Exception e) {
 			status = 0;
 			String msg = ExceptionUtils.getStackTrace(e);
