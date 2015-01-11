@@ -12,4 +12,6 @@ public interface ProxyAddrDao {
 	void batchUpdate(List<ProxyAddrDto> dtoList);
 
 	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(@Param("addrCodeList") List<String> addrCodeList);
+
+	List<ProxyAddrDto> getNullRegionProxyAddrDtos(@Param("type") Integer type);
 }

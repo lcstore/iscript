@@ -137,55 +137,6 @@ public class CachePoolingClientConnectionManagerTest {
 
 	}
 
-	static class MyConnectionSocketFactory implements SchemeSocketFactory {
-		@Override
-		public Socket createSocket(HttpParams params) throws IOException {
-			InetSocketAddress socksaddr = (InetSocketAddress) params.getParameter("socks.address");
-			Proxy proxy = new Proxy(Proxy.Type.SOCKS, socksaddr);
-			return new Socket(proxy);
-		}
-
-		@Override
-		public Socket connectSocket(Socket sock, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpParams params) throws IOException, UnknownHostException, ConnectTimeoutException {
-			if (remoteAddress == null) {
-				throw new IllegalArgumentException("Remote address may not be null");
-			}
-			if (params == null) {
-				throw new IllegalArgumentException("HTTP parameters may not be null");
-			}
-			if (sock == null) {
-				sock = createSocket(params);
-			}
-			if (localAddress != null) {
-				sock.setReuseAddress(HttpConnectionParams.getSoReuseaddr(params));
-				sock.bind(localAddress);
-			}
-			int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
-			int soTimeout = HttpConnectionParams.getSoTimeout(params);
-
-			try {
-				sock.setSoTimeout(soTimeout);
-				sock.connect(remoteAddress, connTimeout);
-			} catch (SocketTimeoutException ex) {
-				throw new ConnectTimeoutException("Connect to " + remoteAddress + " timed out");
-			}
-			return sock;
-		}
-
-		@Override
-		public boolean isSecure(Socket sock) throws IllegalArgumentException {
-			if (sock == null) {
-				throw new IllegalArgumentException("Socket may not be null.");
-			}
-			// This check is performed last since it calls a method implemented
-			// by the argument object. getClass() is final in java.lang.Object.
-			if (sock.isClosed()) {
-				throw new IllegalArgumentException("Socket is closed.");
-			}
-			return false;
-		}
-	}
-
 	static class FakeDnsResolver implements DnsResolver {
 		@Override
 		public InetAddress[] resolve(String host) throws UnknownHostException {
@@ -198,7 +149,9 @@ public class CachePoolingClientConnectionManagerTest {
 	@Test
 	public void testSocketProxy() throws Exception {
 		SchemeRegistry schreg = new SchemeRegistry();
-		schreg.register(new Scheme("http", 80, new MyConnectionSocketFactory()));
+		// schreg.register(new Scheme("http", 80, new
+		// MyConnectionSocketFactory()));
+		schreg.register(new Scheme("http", 80, new ProxySocketFactory()));
 		schreg.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		addHttpsTrustStrategy(schreg);
 
@@ -218,17 +171,16 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("73.44.169.43", 34689);
 		socksaddr = new InetSocketAddress("61.147.67.2", 9123);
 		socksaddr = new InetSocketAddress("122.14.166.37", 1080);
-		socksaddr = new InetSocketAddress("75.143.226.46", 30323);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);
 		// socksaddr = new InetSocketAddress("124.42.127.221", 1080);
-		socksaddr = new InetSocketAddress("180.153.139.246", 8888);
+		// socksaddr = new InetSocketAddress("180.153.139.246", 8888);
 		String url = "http://item.yhd.com/item/102301?tp=1.0.61.0.9.Kcjj6mx";
 		url = "http://1111.ip138.com/ic.asp";
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
-		get.getParams().setParameter("socks.address", socksaddr);
+		get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));
 		HttpResponse resp = client.execute(get);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);
@@ -251,11 +203,13 @@ public class CachePoolingClientConnectionManagerTest {
 	public void testHttpProxy() throws Exception {
 		URI uri = new URI("http://1111.ip138.com/ic.asp");
 		DefaultHttpClient client = new DefaultHttpClient();
-//		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("107.182.17.243", 7808, "http"));
+		// client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new
+		// HttpHost("107.182.17.243", 7808, "http"));
 		client.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, SSLSocketFactory.getSystemSocketFactory()));
 
 		HttpUriRequest request = new HttpGet(uri);
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("107.182.17.243", 7808, "http"));
+//		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("107.182.17.243", 7808, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("183.250.179.29", 80, "http"));
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

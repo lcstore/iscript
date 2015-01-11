@@ -3,16 +3,20 @@ package com.lezo.iscript.yeam.mina;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
+
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.common.storage.StorageTimeTrigger;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.storage.ResultFutureStorager;
 
 public class ClientMain {
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ClientMain.class);
 
-//	public static void main(String[] args) {
-//		new ClientMain().start();
-//	}
+	// public static void main(String[] args) {
+	// new ClientMain().start();
+	// }
 
 	public void start() {
 		IoClient ioClient = new IoClient();
@@ -26,13 +30,21 @@ public class ClientMain {
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
-				timeTrigger.doTrigger();
+				try {
+					timeTrigger.doTrigger();
+				} catch (Exception e) {
+					logger.warn("trigger storage,cause:", e);
+				}
 			}
 		}, delay, period);
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
-				PersistentCollector.getInstance().getBufferWriter().flush();
+				try {
+					PersistentCollector.getInstance().getBufferWriter().flush();
+				} catch (Exception e) {
+					logger.warn("flush persistent,cause:", e);
+				}
 			}
 		}, 60000L, 1000L);
 	}

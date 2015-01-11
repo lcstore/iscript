@@ -32,6 +32,10 @@ public class ProxyDetectDto implements Serializable {
 	private int successCount;
 	private int lastSuccessCount;
 
+	private String addrCode;
+	private Integer verifyStatus = 0;
+	private String remark;
+
 	public Long getId() {
 		return id;
 	}
@@ -166,6 +170,30 @@ public class ProxyDetectDto implements Serializable {
 
 	public void setLastSuccessCount(int lastSuccessCount) {
 		this.lastSuccessCount = lastSuccessCount;
+	}
+
+	public Integer getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(Integer verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
+
+	public String getAddrCode() {
+		return addrCode;
+	}
+
+	public void setAddrCode(String addrCode) {
+		this.addrCode = addrCode;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 }

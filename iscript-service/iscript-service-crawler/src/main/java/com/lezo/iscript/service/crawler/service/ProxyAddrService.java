@@ -12,4 +12,6 @@ public interface ProxyAddrService {
 	void batchSaveProxyAddrs(List<ProxyAddrDto> dtoList);
 
 	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(List<String> addrCodeList);
+
+	List<ProxyAddrDto> getNullRegionProxyAddrDtos(Integer type);
 }

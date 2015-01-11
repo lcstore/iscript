@@ -4,26 +4,45 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyDetectDao">
 	<resultMap type="ProxyDetectDto" id="RM_ProxyDetectDto">
-		<result column="ID" property="id" />
-		<result column="IP" property="ip" />
-		<result column="PORT" property="port" />
-		<result column="DOMAIN" property="domain" />
-		<result column="URL" property="url" />
-		<result column="DETECTOR" property="detector" />
-		<result column="CUR_COST" property="curCost" />
-		<result column="MIN_COST" property="minCost" />
-		<result column="MAX_COST" property="maxCost" />
-		<result column="RETRY_TIMES" property="retryTimes" />
-		<result column="STATUS" property="status" />
-		<result column="CREATE_TIME" property="createTime" />
-		<result column="UPDATE_TIME" property="updateTime" />
-		<result column="FAIL_COUNT" property="failCount" />
-		<result column="SUCCESS_COUNT" property="successCount" />
-		<result column="LAST_SUCCESS_COUNT" property="lastSuccessCount" />
+		<result column="ID" property="id"/>
+		<result column="ADDR_CODE" property="addrCode"/>
+		<result column="IP" property="ip"/>
+		<result column="PORT" property="port"/>
+		<result column="DOMAIN" property="domain"/>
+		<result column="URL" property="url"/>
+		<result column="DETECTOR" property="detector"/>
+		<result column="CUR_COST" property="curCost"/>
+		<result column="MIN_COST" property="minCost"/>
+		<result column="MAX_COST" property="maxCost"/>
+		<result column="RETRY_TIMES" property="retryTimes"/>
+		<result column="STATUS" property="status"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="FAIL_COUNT" property="failCount"/>
+		<result column="SUCCESS_COUNT" property="successCount"/>
+		<result column="LAST_SUCCESS_COUNT" property="lastSuccessCount"/>
+		<result column="VERIFY_STATUS" property="verifyStatus"/>
+		<result column="REMARK" property="remark"/>
 	</resultMap>
 	<sql id="ProxyDetectDto-coloumn-list">
-		IP ,PORT ,DOMAIN ,URL ,DETECTOR ,CUR_COST ,MIN_COST
-		,MAX_COST ,RETRY_TIMES ,STATUS ,CREATE_TIME ,UPDATE_TIME,FAIL_COUNT,SUCCESS_COUNT,LAST_SUCCESS_COUNT
+		ADDR_CODE
+		,IP
+		,PORT
+		,DOMAIN
+		,URL
+		,DETECTOR
+		,CUR_COST
+		,MIN_COST
+		,MAX_COST
+		,RETRY_TIMES
+		,STATUS
+		,CREATE_TIME
+		,UPDATE_TIME
+		,FAIL_COUNT
+		,SUCCESS_COUNT
+		,LAST_SUCCESS_COUNT
+		,VERIFY_STATUS
+		,REMARK
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyDetectDto">
 		INSERT INTO T_PROXY_DETECT(
@@ -32,24 +51,24 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},
-			#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime},#{item.failCount},#{item.successCount},#{item.lastSuccessCount})
+			(#{item.addrCode},#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime},#{item.failCount},#{item.successCount},#{item.lastSuccessCount},#{item.verifyStatus},#{item.remark})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyDetectDto">
 		UPDATE T_PROXY_DETECT SET
-		DOMAIN =#{domain},
-		URL =#{url},
-		DETECTOR =#{detector},
-		CUR_COST=#{curCost}, 
+		DOMAIN=#{domain},
+		URL=#{url},
+		DETECTOR=#{detector},
+		CUR_COST=#{curCost},
 		MIN_COST=#{minCost},
-		 MAX_COST=#{maxCost},
-		RETRY_TIMES=#{retryTimes}, 
+		MAX_COST=#{maxCost},
+		RETRY_TIMES=#{retryTimes},
 		STATUS=#{status},
-		UPDATE_TIME=#{updateTime},
 		FAIL_COUNT=#{failCount},
 		SUCCESS_COUNT=#{successCount},
-		LAST_SUCCESS_COUNT=#{lastSuccessCount}
+		LAST_SUCCESS_COUNT=#{lastSuccessCount},
+		VERIFY_STATUS=#{verifyStatus},
+		REMARK=#{remark}
 		WHERE ID=#{id}
 	</update>
 	<update id="batchUpdateProxyStatus" parameterType="map">

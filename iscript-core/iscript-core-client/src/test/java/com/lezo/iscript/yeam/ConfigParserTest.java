@@ -22,6 +22,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
+import com.lezo.iscript.crawler.http.HttpClientFactory;
 import com.lezo.iscript.crawler.http.HttpClientUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
@@ -32,10 +33,11 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
+import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
-import com.lezo.iscript.yeam.config.ConfigProxyChecher;
+import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandList;
@@ -52,7 +54,6 @@ import com.lezo.iscript.yeam.config.LatestSohuNews;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
 import com.lezo.iscript.yeam.config.StringLinker;
 import com.lezo.iscript.yeam.config.ZYueSigner;
-import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -72,7 +73,7 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
-		parser = new ConfigProxyChecher();
+		parser = new ConfigProxyChecker();
 //		parser = new ConfigTmallBrandShop();
 //		parser = new ConfigJdBrandShop();
 //		parser = new ConfigJdClientValidator();
@@ -125,11 +126,15 @@ public class ConfigParserTest {
 		// task.put("barCode", "6900068005020");
 		// task.put("barCode", "9787807514398");
 		// task.put("barCode", "6903148018194");
-//		task.put("brandName", "尚朋堂");
-		task.put("brandCode", "95023");
+		task.put("brandName", "尚朋堂");
+		task.put("brandCode", "75609");
 		task.put("url", url);
+		
 		task.put("ip", "2030763147");
 		task.put("port", 3128);
+		
+		task.put("ip", "122.14.166.37");
+		task.put("port", 1080);
 		String result = parser.doParse(task);
 		System.out.println("result:" + result);
 		try {

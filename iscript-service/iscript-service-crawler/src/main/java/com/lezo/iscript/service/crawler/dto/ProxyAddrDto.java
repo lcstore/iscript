@@ -5,16 +5,21 @@ import java.util.Date;
 import com.lezo.iscript.utils.InetAddressUtils;
 
 public class ProxyAddrDto {
+	public static final int TYPE_UNKNOWN = 0;
+	public static final int TYPE_HTTP = 1;
+	public static final int TYPE_SOCKET = 2;
 	private Long id;
 	private Long ip;
 	private Integer port;
-	private String source;
 	private String addrCode;
+	private String source;
 	private String regionName;
 	private String ispName;
 	private Integer isDelete = 0;
 	private Date createTime;
 	private Date updateTime;
+	private Integer type = TYPE_UNKNOWN;
+	private String remark;
 
 	public Long getId() {
 		return id;
@@ -102,6 +107,22 @@ public class ProxyAddrDto {
 
 	public void setAddrCode(String addrCode) {
 		this.addrCode = addrCode;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 }

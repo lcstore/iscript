@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.IoFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -47,8 +49,7 @@ public class IoClient extends IoHandlerAdapter {
 	private void configConnector() {
 		this.connector = new NioSocketConnector();
 		this.connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
-		this.connector.getFilterChain()
-				.addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
+		this.connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
 		if (logger.isDebugEnabled()) {
 			this.connector.getFilterChain().addLast("logger", new LoggingFilter());
 		}
@@ -72,13 +73,14 @@ public class IoClient extends IoHandlerAdapter {
 	}
 
 	private IoSession reConnect() {
+		long timeoutMillis = 30000;
 		for (;;) {
 			try {
 				ConnectFuture future = connector.connect(new InetSocketAddress(host, this.port));
-				future.awaitUninterruptibly();
+				future.awaitUninterruptibly(timeoutMillis);
 				return future.getSession();
-			} catch (RuntimeIoException e) {
-				logger.warn("Can not connect to " + host + ":" + port);
+			} catch (Exception e) {
+				logger.warn("Can not connect to " + host + ":" + port, e);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {

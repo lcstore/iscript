@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 
 	@Override
 	public void batchInsertProxyDetectDtos(List<ProxyDetectDto> dtoList) {
+		ensureAddrCodeFilled(dtoList);
 		BatchIterator<ProxyDetectDto> it = new BatchIterator<ProxyDetectDto>(dtoList);
 		while (it.hasNext()) {
 			proxyDetectDao.batchInsert(it.next());
@@ -37,14 +39,33 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 
 	@Override
 	public void batchUpdateProxyDetectDtos(List<ProxyDetectDto> dtoList) {
+		ensureAddrCodeFilled(dtoList);
 		BatchIterator<ProxyDetectDto> it = new BatchIterator<ProxyDetectDto>(dtoList);
 		while (it.hasNext()) {
 			proxyDetectDao.batchUpdate(it.next());
 		}
 	}
 
+	private void ensureAddrCodeFilled(List<ProxyDetectDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return;
+		}
+		if (StringUtils.isNotEmpty(dtoList.get(0).getAddrCode())) {
+			return;
+		}
+		for (ProxyDetectDto dto : dtoList) {
+			String addrCode = getAddrCode(dto);
+			dto.setAddrCode(addrCode);
+		}
+	}
+
+	private String getAddrCode(ProxyDetectDto dto) {
+		return dto.getIp() + "" + dto.getPort();
+	}
+
 	@Override
 	public void batchInsertIfAbsent(List<ProxyDetectDto> dtoList) {
+		ensureAddrCodeFilled(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		doAbsentAssort(dtoList, insertDtos, null);
 		batchInsertProxyDetectDtos(insertDtos);

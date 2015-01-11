@@ -14,6 +14,8 @@
 		<result column="IS_DELETE" property="isDelete"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="TYPE" property="type"/>
+		<result column="REMARK" property="remark"/>
 	</resultMap>
 	<sql id="ProxyAddrDto-coloumn-list">
 		IP
@@ -25,6 +27,8 @@
 		,IS_DELETE
 		,CREATE_TIME
 		,UPDATE_TIME
+		,TYPE
+		,REMARK
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyAddrDto">
 		INSERT INTO T_PROXY_ADDR(
@@ -33,7 +37,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyAddrDto">
@@ -46,7 +50,9 @@
 		ISP_NAME=#{ispName},
 		IS_DELETE=#{isDelete},
 		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		UPDATE_TIME=#{updateTime},
+		TYPE=#{type},
+		REMARK=#{remark}
 		WHERE ID=#{id}
 	</update>
 </mapper>
