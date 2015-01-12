@@ -64,7 +64,7 @@ public class ConfigProxyChecker implements ConfigParser {
 		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
 
 		JSONArray tArray = new JSONArray();
-		tArray.put("ProxyDetectDto");
+		tArray.put("ProxyAddrDto");
 		JSONUtils.put(argsObject, "target", tArray);
 		JSONUtils.put(gObject, "args", argsObject);
 
@@ -75,9 +75,11 @@ public class ConfigProxyChecker implements ConfigParser {
 	}
 
 	private JSONObject getDataObject(TaskWritable task, JSONObject gObject) throws Exception {
+		Long id = (Long) task.get("id");
 		Integer port = (Integer) task.get("port");
 		String proxyIp = getHost(task);
 		ProxyAddrDto tBean = new ProxyAddrDto();
+		tBean.setId(id);
 		findRegin(tBean, proxyIp, port);
 		findProxyType(tBean, proxyIp, port);
 		ResultBean rsBean = new ResultBean();
@@ -202,6 +204,7 @@ public class ConfigProxyChecker implements ConfigParser {
 		public static final int TYPE_UNKNOWN = 0;
 		public static final int TYPE_HTTP = 1;
 		public static final int TYPE_SOCKET = 2;
+		private Long id;
 		private Long ip;
 		private Integer port;
 		private String regionName;
@@ -246,6 +249,14 @@ public class ConfigProxyChecker implements ConfigParser {
 
 		public void setType(Integer type) {
 			this.type = type;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
 		}
 
 	}

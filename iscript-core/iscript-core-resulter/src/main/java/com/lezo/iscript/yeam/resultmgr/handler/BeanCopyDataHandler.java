@@ -26,8 +26,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"dataList":[],"nextList":[]}, args:
-	 * {"target":[]}|{"target":"Class"}
+	 * data struct: {"dataList":[],"nextList":[]}, args: {"target":[]}|{"target":"Class"}
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
@@ -85,6 +84,9 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
 		clsName = clsName.replace("BrandStoreDto", "BrandConfigVo");
 		if (type.equals("ConfigProxyCollector")) {
+			clsName = clsName.replace("ProxyDetectDto", "ProxyAddrDto");
+		}
+		if (type.equals("ConfigProxyChecker")) {
 			clsName = clsName.replace("ProxyDetectDto", "ProxyAddrDto");
 		}
 		Class<?> dtoClass = ConfigClassUtils.getDtoClass(clsName);

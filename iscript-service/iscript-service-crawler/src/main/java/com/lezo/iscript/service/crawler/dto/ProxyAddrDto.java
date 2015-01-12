@@ -19,7 +19,7 @@ public class ProxyAddrDto {
 	private Date createTime;
 	private Date updateTime;
 	private Integer type = TYPE_UNKNOWN;
-	private String remark;
+	private String remark = "";
 
 	public Long getId() {
 		return id;

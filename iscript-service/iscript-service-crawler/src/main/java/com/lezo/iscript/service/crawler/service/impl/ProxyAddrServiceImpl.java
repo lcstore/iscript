@@ -105,6 +105,12 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 		if (StringUtils.isEmpty(newDto.getIspName())) {
 			newDto.setIspName(oldDto.getIspName());
 		}
+		if (StringUtils.isEmpty(newDto.getRemark())) {
+			newDto.setRemark(oldDto.getRemark());
+		}
+		if (newDto.getType() == null) {
+			newDto.setType(oldDto.getType());
+		}
 	}
 
 	@Override
