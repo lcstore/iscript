@@ -37,7 +37,7 @@ public class ProxyAddrDto {
 		return InetAddressUtils.inet_ntoa(ip);
 	}
 
-	public void SetIpString(String ipString) {
+	public void setIpString(String ipString) {
 		setIp(InetAddressUtils.inet_aton(ipString));
 	}
 

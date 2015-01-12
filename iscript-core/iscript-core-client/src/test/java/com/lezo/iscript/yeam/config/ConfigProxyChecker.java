@@ -133,8 +133,6 @@ public class ConfigProxyChecker implements ConfigParser {
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
-			String html = EntityUtils.toString(res.getEntity(), "gbk");
-			System.err.println(html);
 			if (res.getStatusLine().getStatusCode() == 200) {
 				return true;
 			}

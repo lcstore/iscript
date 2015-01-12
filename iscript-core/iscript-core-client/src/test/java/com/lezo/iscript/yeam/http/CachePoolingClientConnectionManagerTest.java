@@ -167,7 +167,7 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("61.147.67.2", 9123);
 		socksaddr = new InetSocketAddress("122.14.166.37", 1080);
 
-		socksaddr = new InetSocketAddress("1.0.131.190", 8080);
+		socksaddr = new InetSocketAddress("76.233.192.215", 31258);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);
