@@ -167,7 +167,7 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("61.147.67.2", 9123);
 		socksaddr = new InetSocketAddress("122.14.166.37", 1080);
 
-		socksaddr = new InetSocketAddress("1.0.131.190", 8080);
+		socksaddr = new InetSocketAddress("76.233.192.215", 31258);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);
@@ -207,6 +207,7 @@ public class CachePoolingClientConnectionManagerTest {
 		HttpUriRequest request = new HttpGet(uri);
 //		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("107.182.17.243", 7808, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("183.250.179.29", 80, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("74.50.126.249", 3127, "http"));
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

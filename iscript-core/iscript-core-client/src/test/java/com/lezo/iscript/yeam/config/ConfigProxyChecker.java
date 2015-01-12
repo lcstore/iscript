@@ -12,12 +12,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -111,8 +111,7 @@ public class ConfigProxyChecker implements ConfigParser {
 			HttpHost proxy = new HttpHost(proxyIp, port);
 			get.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 			// ExecutionContext.HTTP_PROXY_HOST
-			HttpContext context = new BasicHttpContext();
-			HttpResponse res = client.execute(get, context);
+			HttpResponse res = client.execute(get);
 			if (res.getStatusLine().getStatusCode() == 200) {
 				return true;
 			}
@@ -131,10 +130,7 @@ public class ConfigProxyChecker implements ConfigParser {
 			InetSocketAddress socksaddr = new InetSocketAddress(proxyIp, port);
 			get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));
 			// ExecutionContext.HTTP_PROXY_HOST
-			HttpContext context = new BasicHttpContext();
-			HttpResponse res = client.execute(get, context);
-			String html = EntityUtils.toString(res.getEntity(), "gbk");
-			System.err.println(html);
+			HttpResponse res = client.execute(get);
 			if (res.getStatusLine().getStatusCode() == 200) {
 				return true;
 			}
@@ -149,6 +145,10 @@ public class ConfigProxyChecker implements ConfigParser {
 	private void findRegin(ProxyAddrDto tBean, String proxyIp, Integer port) throws Exception {
 		tBean.setIp(InetAddressUtils.inet_aton(proxyIp));
 		tBean.setPort(port);
+		if (isGetRegion(tBean, proxyIp, port)) {
+			return;
+		}
+
 		HttpGet get = new HttpGet("http://opendata.baidu.com/api.php?query=" + proxyIp + "&co=&resource_id=6006&ie=utf8&oe=gbk&cb=op_aladdin_callback&format=json&tn=baidu");
 		get.addHeader("Referer", "http://www.baidu.com/s?wd=ip&rsv_spt=1&issp=1&f=8&rsv_bp=0&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&rsv_sug3=3&rsv_sug4=186&rsv_sug1=1&rsv_sug2=0&inputT=617");
 		String html = HttpClientUtils.getContent(client, get);
@@ -169,6 +169,39 @@ public class ConfigProxyChecker implements ConfigParser {
 		if (txtArr.length > 1) {
 			tBean.setIspName(txtArr[1].trim());
 		}
+	}
+
+	private boolean isGetRegion(ProxyAddrDto tBean, String proxyIp, Integer port) {
+		HttpGet get = new HttpGet("http://www.ip138.com/ips138.asp?ip=" + proxyIp + "&action=2");
+		get.addHeader("Referer", "http://www.ip138.com/");
+		try {
+			String html = HttpClientUtils.getContent(client, get, "gbk");
+			Document dom = Jsoup.parse(html);
+			Elements elements = dom.select("table td ul.ul1 li:contains(本站主数据)");
+			if (elements.isEmpty()) {
+				return false;
+			}
+			String sContent = elements.first().ownText();
+			System.err.println(sContent);
+			String sMark = "本站主数据：";
+			int index = sContent.indexOf(sMark);
+			sContent = sContent.substring(index + sMark.length());
+			String[] txtArr = sContent.split("\\s");
+			if (txtArr != null && txtArr.length >= 1) {
+				tBean.setRegionName(txtArr[0].trim());
+				if (txtArr.length > 1) {
+					tBean.setIspName(txtArr[1].trim());
+				}
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (!get.isAborted()) {
+				get.abort();
+			}
+		}
+		return false;
 	}
 
 	private String getHost(TaskWritable task) {
