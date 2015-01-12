@@ -42,11 +42,11 @@
 				<value>ConfigJdPromotion</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigYhdPromotion</value> 
+				-->
 				<value>ConfigTmallBrandShop</value>
 				<value>ConfigJdBrandShop</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyCollector</value>
-				-->
 				<value>ConfigProxyChecker</value>
 			</list>
 		</property>

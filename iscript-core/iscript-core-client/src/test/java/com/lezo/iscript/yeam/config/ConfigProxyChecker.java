@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,11 +76,13 @@ public class ConfigProxyChecker implements ConfigParser {
 	}
 
 	private JSONObject getDataObject(TaskWritable task, JSONObject gObject) throws Exception {
-		Long id = (Long) task.get("id");
+		Object idObject = task.get("id");
 		Integer port = (Integer) task.get("port");
 		String proxyIp = getHost(task);
 		ProxyAddrDto tBean = new ProxyAddrDto();
-		tBean.setId(id);
+		if (idObject != null) {
+			tBean.setId(Long.valueOf(idObject.toString()));
+		}
 		findRegin(tBean, proxyIp, port);
 		findProxyType(tBean, proxyIp, port);
 		ResultBean rsBean = new ResultBean();
@@ -130,6 +133,8 @@ public class ConfigProxyChecker implements ConfigParser {
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
+			String html = EntityUtils.toString(res.getEntity(), "gbk");
+			System.err.println(html);
 			if (res.getStatusLine().getStatusCode() == 200) {
 				return true;
 			}

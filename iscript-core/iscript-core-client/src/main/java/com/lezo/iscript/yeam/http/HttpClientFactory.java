@@ -73,7 +73,7 @@ public class HttpClientFactory {
 
 	private static ClientConnectionManager createClientConnManager() {
 		SchemeRegistry schreg = new SchemeRegistry();
-		schreg.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+		schreg.register(new Scheme("http", 80, new ProxySocketFactory()));
 		schreg.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		addHttpsTrustStrategy(schreg);
 		// addHttpsTrustManager(supportedSchemes);

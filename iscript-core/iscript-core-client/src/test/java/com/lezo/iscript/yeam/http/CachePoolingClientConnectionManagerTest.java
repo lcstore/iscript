@@ -1,11 +1,8 @@
 package com.lezo.iscript.yeam.http;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
@@ -17,13 +14,11 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.DnsResolver;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.cookie.Cookie;
@@ -171,6 +166,8 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("73.44.169.43", 34689);
 		socksaddr = new InetSocketAddress("61.147.67.2", 9123);
 		socksaddr = new InetSocketAddress("122.14.166.37", 1080);
+
+		socksaddr = new InetSocketAddress("1.0.131.190", 8080);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);

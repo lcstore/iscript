@@ -33,7 +33,6 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
-import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigJdPromotion;
@@ -117,9 +116,9 @@ public class ConfigParserTest {
 		// url =
 		// "http://search.jd.com/search?keyword=%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89&enc=utf-8&qr=&qrst=UNEXPAND&rt=1&vt=3&sttr=1&ev=exbrand%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89_%40&page=2";
 		url = "http://list.jd.com/list.html?cat=1315,1343,1354";
-		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";//brand shop
-		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";//brand shop
-		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";//brand shop
+		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";// brand shop
+		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";// brand shop
+		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";// brand shop
 //		url = "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
@@ -129,12 +128,14 @@ public class ConfigParserTest {
 		task.put("brandName", "尚朋堂");
 		task.put("brandCode", "75609");
 		task.put("url", url);
-		
+
 		task.put("ip", "2030763147");
 		task.put("port", 3128);
-		
+
 		task.put("ip", "122.14.166.37");
 		task.put("port", 1080);
+		task.put("ip", "1.0.131.190");
+		task.put("port", 8080);
 		String result = parser.doParse(task);
 		System.out.println("result:" + result);
 		try {
