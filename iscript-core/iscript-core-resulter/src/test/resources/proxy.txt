@@ -1,0 +1,96 @@
+
+Free Proxy List
+Tweet 4.7K
+
+    Products
+    Contact
+
+    Home
+    Web Proxy
+    SSL Proxy
+    US Proxy
+    UK Proxy
+    Socks Proxy
+    Google Proxy
+    Anonymous Proxy
+
+Google Proxy List
+Fresh Google Proxy List
+
+Here are some Google proxies that are just checked and added into our proxy list. We update the proxy list every 10 minutes to keep the free proxies fresh. These free proxies are public http proxy. Please check the proxies by our free proxy software before using them. If you need stable proxy, please try our Multi-IP free Web Proxy or proxy software My IP Hide.
+Buy Proxy
+Buy Proxy List
+My IP Hide
+Hide IP Software
+Elite Proxy Switcher
+Proxy Checker
+Hide My IP
+Hide My IP
+Show entries
+Search all columns:
+IP Address
+	
+Port
+	
+Code
+	
+Country
+	
+Anonymity
+	
+Google
+	
+Https
+	
+Last Checked
+							
+114.40.129.214	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.40.125.51	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.40.153.20	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.40.41.70	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+1.162.97.72	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+36.228.229.130	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+1.161.118.115	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.40.180.46	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.40.202.77	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+124.11.211.96	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+124.9.128.35	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+36.230.106.115	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+36.229.103.226	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+61.228.175.80	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.37.207.170	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.38.51.56	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+118.167.0.53	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.39.162.90	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+118.161.196.248	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+114.27.234.90	8088	TW	Taiwan	elite proxy	yes	no	10 minutes ago
+Showing 81 to 100 of 100 entries
+FirstPrevious12NextLast
+How to use the proxy?
+
+All the browsers (chrome, firefox, ie, opera, safari and others) support the proxy option. When you set a proxy in browser, the proxy will fetch the web pages for your browser. The webistes regard the IP of proxy as your IP so it cannot trace your real IP. We recommend using Elite Proxy Switcher to set the proxy for your browsers.
+What is the proxy anonymity?
+
+There are 3 levels of proxies according to their anonymity.
+
+    Level 1 - Elite Proxy / Highly Anonymous Proxy: The web server can't detect whether you are using a proxy.
+    Level 2 - Anonymous Proxy: The web server can know you are using a proxy, but it can't know your real IP.
+    Level 3 - Transparent Proxy: The web server can know you are using a proxy and it can also know your real IP.
+
+How to check the proxy speed?
+
+You can use our free software Elite Proxy Switcher to test the proxy speed. We don't show the speed in the proxy list. It's because one proxy may have different speed for different users. For example, a proxy which is fast for USA users may be slow for European users. So check it by yourself.
+What is Google proxy?
+
+Proxies that support searching on Google are called Google proxy. Some programs need them to make large number of queries on Google. View details about Google proxy on our blog.
+What is HTTPS / SSL proxy?
+
+Secure websites whose url starts with https:// instead of http:// (ex. https://www.paypal.com) use the encrypted (SSL/HTTPS) connections between its web server and the visitors. Some proxies only support ordinary http sites and can't surf https sites. Elite Proxy Switcher can test whether a proxy supports https sites.
+
+Free Proxy List Proxy Sites Free Web Proxy
+
+Copyrights © 2014 Didsoft. All rights reserved.
+
+Hide IP | Proxy Sites | Proxy Youtube | Contact
+AddThis Sharing
+FacebookTwitterEmailPrintMore

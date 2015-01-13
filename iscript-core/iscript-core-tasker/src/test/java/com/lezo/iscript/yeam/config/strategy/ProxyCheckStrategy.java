@@ -32,7 +32,7 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 	public ProxyCheckStrategy() {
 		ProxyDetectTimer task = new ProxyDetectTimer();
 		this.timer = new Timer(this.getName());
-		this.timer.schedule(task, 1 * 60 * 1000, 5 * 60 * 60 * 1000);
+		this.timer.schedule(task, 1 * 60 * 1000, 12 * 60 * 60 * 1000);
 	}
 
 	@Override
