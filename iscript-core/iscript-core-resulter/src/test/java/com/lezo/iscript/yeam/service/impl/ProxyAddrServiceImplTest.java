@@ -38,6 +38,7 @@ public class ProxyAddrServiceImplTest {
 			try {
 				// String url =
 				// String.format("http://www.proxy.com.ru/list_%s.html", i);
+//				String url = String.format("http://www.cybersyndrome.net/pla.html");
 				String url = String.format("http://www.proxylist.ro/free-proxy-list-widget.js?size=20");
 				System.err.println("start to parser:" + url);
 				byte[] byteArray = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate").userAgent("Mozilla").referrer(url).method(Method.GET).execute().bodyAsBytes();

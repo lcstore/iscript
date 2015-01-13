@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -132,6 +133,7 @@ public class ConfigProxyChecker implements ConfigParser {
 			// ExecutionContext.HTTP_PROXY_HOST
 			HttpResponse res = client.execute(get);
 			if (res.getStatusLine().getStatusCode() == 200) {
+				EntityUtils.consumeQuietly(res.getEntity());
 				return true;
 			}
 		} catch (Exception e) {
