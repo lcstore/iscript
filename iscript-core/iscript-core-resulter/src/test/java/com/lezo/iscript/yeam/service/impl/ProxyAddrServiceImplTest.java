@@ -25,7 +25,6 @@ import com.lezo.iscript.service.crawler.service.impl.ProxyAddrServiceImpl;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.sun.xml.internal.ws.developer.MemberSubmissionEndpointReference.Elements;
 
 public class ProxyAddrServiceImplTest {
 
@@ -36,7 +35,7 @@ public class ProxyAddrServiceImplTest {
 		ProxyAddrDao proxyAddrDao = SpringBeanUtils.getBean(ProxyAddrDao.class);
 		ProxyAddrServiceImpl brandService = new ProxyAddrServiceImpl();
 		brandService.setProxyAddrDao(proxyAddrDao);
-		int maxCount = 142;
+		int maxCount = 174;
 		for (int i = 1; i <= maxCount; i++) {
 			try {
 				// String url =
@@ -53,12 +52,16 @@ public class ProxyAddrServiceImplTest {
 				// String url =
 				// String.format("http://proxy-list.org/english/index.php?p=%d",
 				// i);
-				String url = String.format("http://free-proxy.cz/en/proxylist/main/%d", i);
+				// String url =
+				// String.format("http://free-proxy.cz/en/proxylist/main/%d",
+				// i);
+//				String url = String.format("http://www.blackhatworld.com/blackhat-seo/proxy-lists/354949-200-scrapebox-passed-http-proxies-freshly-verified-w-screenshot-daily-updates-%d.html", i);
+				String url = String.format("http://socks5proxies.com/index.php?page=%d&action=freeproxy", i);
 				// String url =
 				// String.format("http://www.samair.ru/proxy/proxy-%s.htm", i <
 				// 10 ? "0" + i : i);
 				System.err.println("start to parser:" + url);
-				byte[] byteArray = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate").userAgent("Mozilla").referrer(url).method(Method.GET).execute().bodyAsBytes();
+				byte[] byteArray = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate").timeout(120000).userAgent("Mozilla").referrer(url).method(Method.GET).execute().bodyAsBytes();
 				String source = new String(byteArray, "gbk");
 				List<ProxyAddrDto> pageList = findProxy(source);
 				if (pageList.size() < 5) {
