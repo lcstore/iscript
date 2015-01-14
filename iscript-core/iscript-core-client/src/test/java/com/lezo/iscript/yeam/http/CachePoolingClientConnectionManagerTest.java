@@ -168,10 +168,14 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("122.14.166.37", 1080);
 
 		socksaddr = new InetSocketAddress("76.233.192.215", 31258);
-		
-		//http://fastproxyservers.org/socks5-servers.htm
+
+		// http://fastproxyservers.org/socks5-servers.htm
 		socksaddr = new InetSocketAddress("202.38.95.66", 1080);
 		socksaddr = new InetSocketAddress("207.255.105.53", 36006);
+
+		socksaddr = new InetSocketAddress("115.112.189.79", 8080);
+		socksaddr = new InetSocketAddress("37.228.134.52", 7808);
+		socksaddr = new InetSocketAddress("110.139.128.4", 80);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);

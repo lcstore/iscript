@@ -108,7 +108,7 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 		if (StringUtils.isEmpty(newDto.getRemark())) {
 			newDto.setRemark(oldDto.getRemark());
 		}
-		if (newDto.getType() == null) {
+		if (newDto.getType() == null || newDto.getType() == ProxyAddrDto.TYPE_UNKNOWN) {
 			newDto.setType(oldDto.getType());
 		}
 	}
