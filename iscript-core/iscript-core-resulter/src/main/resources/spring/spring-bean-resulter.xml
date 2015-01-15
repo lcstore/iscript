@@ -6,29 +6,36 @@
 
 	<bean name="blockPolicy" class="com.lezo.iscript.common.BlockPolicy" />
 
-	<bean id="dataProduceExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
+	<bean id="fileProduceExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
 		<constructor-arg name="corePoolSize" value="2" />
 		<constructor-arg name="maximumPoolSize" value="3" />
 		<constructor-arg name="keepAliveTime" value="60000" />
 		<constructor-arg name="capacity" value="100" />
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
-	<bean id="dataConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
+	<bean id="fileConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
 		<constructor-arg name="corePoolSize" value="5" />
 		<constructor-arg name="maximumPoolSize" value="5" />
 		<constructor-arg name="keepAliveTime" value="60000" />
 		<constructor-arg name="capacity" value="1000" />
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
+	<bean id="dataConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
+		<constructor-arg name="corePoolSize" value="5" />
+		<constructor-arg name="maximumPoolSize" value="5" />
+		<constructor-arg name="keepAliveTime" value="60000" />
+		<constructor-arg name="capacity" value="10000" />
+		<constructor-arg name="handler" ref="blockPolicy" />
+	</bean>
 
-	<bean name="threadPoolManager" class="com.lezo.iscript.common.ThreadPoolManager">
+<!-- 	<bean name="threadPoolManager" class="com.lezo.iscript.common.ThreadPoolManager">
 		<constructor-arg>
 			<map>
-				<entry key="dataProducer">
-					<ref bean="dataProduceExecutor" />
+				<entry key="fileProducer">
+					<ref bean="fileProduceExecutor" />
 				</entry>
 			</map>
 		</constructor-arg>
 	</bean>
-	
+ -->
 </beans>

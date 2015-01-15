@@ -33,7 +33,7 @@ public class DataMessageHandler {
 	@Autowired
 	private MessageService messageService;
 	@Autowired
-	@Qualifier("dataProduceExecutor")
+	@Qualifier("fileProduceExecutor")
 	private ThreadPoolExecutor executor;
 
 	private List<String> nameList;
@@ -101,7 +101,7 @@ public class DataMessageHandler {
 
 	private void buildeProducer(Map<String, Date> dirMap) {
 		for (Entry<String, Date> entry : dirMap.entrySet()) {
-			executor.execute(new DataLineProducer(this.bucketName, entry.getKey(), entry.getValue()));
+			executor.execute(new DataFileProducer(this.bucketName, entry.getKey(), entry.getValue()));
 		}
 	}
 

@@ -68,11 +68,11 @@ public class ConfigParserTest {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotList();
 		parser = new ConfigJdPromotion();
-		parser = new ConfigJdProduct();
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
 		parser = new ConfigProxyChecker();
+		parser = new ConfigJdProduct();
 //		parser = new ConfigTmallBrandShop();
 //		parser = new ConfigJdBrandShop();
 //		parser = new ConfigJdClientValidator();
@@ -120,6 +120,7 @@ public class ConfigParserTest {
 		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";// brand shop
 		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";// brand shop
 //		url = "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
+		url = "http://item.jd.com/1226984.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
