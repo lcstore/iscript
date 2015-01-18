@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,18 @@ public class MessageListener implements IResultListener {
 		JSONObject gObject = JSONUtils.getJSONObject(result.getResult());
 		JSONObject argsObject = JSONUtils.get(gObject, "args");
 		JSONObject mObject = new JSONObject();
-		JSONUtils.put(mObject, "bid", JSONUtils.getString(argsObject, "bid"));
 		JSONUtils.put(mObject, "tid", result.getTaskId());
+		JSONUtils.put(mObject, "bid", JSONUtils.getString(argsObject, "bid"));
 		messageDto.setMessage(mObject.toString());
+		messageDto.setDataBucket(JSONUtils.getString(argsObject, "data_bucket"));
+		messageDto.setDataDomain(JSONUtils.getString(argsObject, "data_domain"));
+		messageDto.setDataCount(1);
+		if (StringUtils.isEmpty(messageDto.getDataBucket())) {
+			messageDto.setDataBucket("");
+		}
+		if (StringUtils.isEmpty(messageDto.getDataDomain())) {
+			messageDto.setDataDomain("");
+		}
 		List<Object> dataList = new ArrayList<Object>(1);
 		dataList.add(messageDto);
 		WriteNotifyer.getInstance().doNotify(dataList);

@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
-import com.lezo.iscript.common.CloneSerializeObject;
+import com.lezo.iscript.common.CloneObject;
 
 public class ObjectUtils {
 	private static final ConcurrentHashMap<String, Object> BEAN_MAP = new ConcurrentHashMap<String, Object>();
@@ -26,8 +26,8 @@ public class ObjectUtils {
 			baseObject = newObject(clazz);
 			BEAN_MAP.put(clazz.getName(), baseObject);
 			return (T) baseObject;
-		} else if (baseObject instanceof CloneSerializeObject) {
-			CloneSerializeObject<T> cloneObject = (CloneSerializeObject<T>) baseObject;
+		} else if (baseObject instanceof CloneObject) {
+			CloneObject<T> cloneObject = (CloneObject<T>) baseObject;
 			return (T) cloneObject.clone();
 		}
 		return newObject(clazz);

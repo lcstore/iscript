@@ -24,11 +24,11 @@ import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdProduct implements ConfigParser {
@@ -44,34 +44,26 @@ public class ConfigYhdProduct implements ConfigParser {
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		addCookie();
-		JSONObject itemObject = getDataObject(task);
-		doCollect(itemObject, task);
-		return EMTPY_RESULT;
+		DataBean dataBean = getDataObject(task);
+		return convert2TaskCallBack(dataBean, task);
 	}
 
-	private void doCollect(JSONObject itemObject, TaskWritable task) {
-		JSONObject gObject = new JSONObject();
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+		dataBean.getTargetList().add("ProductDto");
+		dataBean.getTargetList().add("ProductStatDto");
 
-		JSONUtils.put(gObject, "args", argsObject);
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, dataBean);
+		String dataString = writer.toString();
 
-		// {"target":[],"dataList":[],"nextList":[]}
-		JSONObject dataObject = itemObject;
-		JSONArray tArray = new JSONArray();
-		tArray.put("ProductDto");
-		tArray.put("ProductStatDto");
-		JSONUtils.put(dataObject, "target", tArray);
-		System.err.println(dataObject);
-
-		JSONUtils.put(gObject, "rs", dataObject.toString());
-
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		return returnObject.toString();
 	}
 
-	private JSONObject getDataObject(TaskWritable task) throws Exception {
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = (String) task.get("url");
 		String refer = url;
 		int index = url.indexOf("?");
@@ -81,9 +73,9 @@ public class ConfigYhdProduct implements ConfigParser {
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
 		Elements oHomeAs = dom.select("div.layout_wrap.crumbbox div.crumb");
-		ResultBean resultBean = new ResultBean();
+		DataBean dataBean = new DataBean();
 		ProductBean productBean = new ProductBean();
-		resultBean.getDataList().add(productBean);
+		dataBean.getDataList().add(productBean);
 		String barCode = (String) task.get("barCode");
 		if (BarCodeUtils.isBarCode(barCode)) {
 			productBean.setBarCode(barCode);
@@ -99,7 +91,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		}
 		if (oHomeAs.isEmpty()) {
 			productBean.setSoldNum(-1);
-			return doReturn(resultBean);
+			return dataBean;
 		}
 		String detailUrl = String.format("http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s", productBean.getProductCode(), System.currentTimeMillis());
 		HttpGet dGet = createHttpGetWithIp(detailUrl);
@@ -188,7 +180,9 @@ public class ConfigYhdProduct implements ConfigParser {
 		}
 		Elements pidAs = dom.select("#productId[value]");
 		String productId = pidAs.first().attr("value");
-		String mUrl = String.format("http://e.yhd.com/front-pe/productExperience/proExperienceAction!ajaxView_pe.do?product.id=%s&merchantId=%s&pagenationVO.currentPage=1&pagenationVO.rownumperpage=5&currSiteId=1&f=1&currSiteType=%s&callback=flightHtmlHandler", productId, productBean.getShopCode(), siteType);
+		String mUrl = String
+				.format("http://e.yhd.com/front-pe/productExperience/proExperienceAction!ajaxView_pe.do?product.id=%s&merchantId=%s&pagenationVO.currentPage=1&pagenationVO.rownumperpage=5&currSiteId=1&f=1&currSiteType=%s&callback=flightHtmlHandler",
+						productId, productBean.getShopCode(), siteType);
 		HttpGet mGet = createHttpGetWithIp(mUrl);
 		dGet.addHeader("Refer", url);
 		html = HttpClientUtils.getContent(client, mGet, "UTF-8");
@@ -233,14 +227,7 @@ public class ConfigYhdProduct implements ConfigParser {
 		pidAs = null;
 		oHomeAs = null;
 		dom = null;
-		return doReturn(resultBean);
-	}
-
-	private JSONObject doReturn(Object rsObject) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsObject);
-		return new JSONObject(writer.toString());
+		return dataBean;
 	}
 
 	private HttpGet createHttpGetWithIp(String url) throws Exception {

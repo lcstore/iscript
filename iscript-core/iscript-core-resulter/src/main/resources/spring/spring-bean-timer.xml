@@ -27,29 +27,19 @@
 	</bean>
 
 
-	<bean id="qiniuMac" class="com.qiniu.api.auth.digest.Mac">
-		<constructor-arg name="accessKey" value="${qiniu_accessKey}" />
-		<constructor-arg name="secretKey" value="${qiniu_secretKey}" />
-	</bean>
 	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
-		<property name="bucketName" value="${qiniu_bucket}" />
-		<property name="limit" value="100" />
-		<property name="maxPathCount" value="100" />
+		<property name="limit" value="3000" />
 		<property name="nameList">
 			<list>
-				<!-- 
-				
 				<value>ConfigJdProduct</value>
 				<value>ConfigJdPromotion</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigYhdPromotion</value> 
-				
 				<value>ConfigTmallBrandShop</value>
 				<value>ConfigJdBrandShop</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyCollector</value>
 				<value>ConfigYhdProduct</value>
-				-->
 				<value>ConfigProxyChecker</value>
 			</list>
 		</property>
@@ -72,12 +62,12 @@
 		<task:scheduled ref="flushWriterTimer" method="run"
 			cron="0 0/2 * * * ?" />
 	</task:scheduled-tasks>
-	<task:scheduled-tasks scheduler="scheduler">
+	<!-- <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="luceneIndexer" method="run"
 			cron="0 20 14 * * ?" />
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="sorlSearchHandler" method="run"
 			cron="0/1 * * * * ?" />
-	</task:scheduled-tasks>
+	</task:scheduled-tasks> -->
 </beans>

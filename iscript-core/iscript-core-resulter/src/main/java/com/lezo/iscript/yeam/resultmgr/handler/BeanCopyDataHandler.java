@@ -26,13 +26,11 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyDataHandler.class);
 
 	/**
-	 * data struct: {"dataList":[],"nextList":[]}, args: {"target":[]}|{"target":"Class"}
+	 * data struct: {"dataList":[],"nextList":[],"targetList":[]}, args:
 	 */
 	@Override
 	protected void doHanlde(String type, JSONObject gObject) throws Exception {
-
 		JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
-		rsObject = rsObject == null ? JSONUtils.getJSONObject(gObject, "dataString") : rsObject;
 		JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
 		JSONArray tArray = getTargetArray(rsObject, argsObject);
 		if (tArray == null) {
@@ -40,7 +38,6 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			return;
 		}
 		Object dataObject = JSONUtils.get(rsObject, "dataList");
-		dataObject = dataObject != null ? dataObject : JSONUtils.get(rsObject, "data");
 		JSONArray dataArray = null;
 		if (dataObject instanceof JSONArray) {
 			dataArray = (JSONArray) dataObject;
@@ -67,8 +64,11 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	}
 
 	private JSONArray getTargetArray(JSONObject rsObject, JSONObject argsObject) {
-		Object tObject = JSONUtils.get(argsObject, "target");
-		tObject = tObject == null ? JSONUtils.get(rsObject, "target") : tObject;
+		Object tObject = JSONUtils.get(rsObject, "targetList");
+		tObject = tObject == null ? JSONUtils.get(argsObject, "target") : tObject;
+		if (tObject == null) {
+			return null;
+		}
 		JSONArray dataArray = null;
 		if (tObject instanceof JSONArray) {
 			dataArray = (JSONArray) tObject;

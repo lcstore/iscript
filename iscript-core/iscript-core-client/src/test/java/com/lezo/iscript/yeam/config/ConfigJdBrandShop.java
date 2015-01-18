@@ -2,11 +2,8 @@ package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -27,16 +24,15 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigJdBrandShop implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	private static final String EMTPY_RESULT = new JSONObject().toString();
 	public static final int SITE_ID = 1001;
 
 	@Override
@@ -46,12 +42,28 @@ public class ConfigJdBrandShop implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		JSONObject itemObject = getDataObject(task);
-		doCollect(itemObject, task);
-		return EMTPY_RESULT;
+		DataBean itemObject = getDataObject(task);
+		return convert2TaskCallBack(itemObject, task);
 	}
 
-	private JSONObject getDataObject(TaskWritable task) throws Exception {
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		if (dataBean != null) {
+			dataBean.getTargetList().add("BrandConfigVo");
+			dataBean.getTargetList().add("BrandShopDto");
+
+			ObjectMapper mapper = new ObjectMapper();
+			StringWriter writer = new StringWriter();
+			mapper.writeValue(writer, dataBean);
+			String dataString = writer.toString();
+
+			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		}
+		return returnObject.toString();
+	}
+
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = getUrl(task);
 		HttpGet get = new HttpGet(url);
 		get.addHeader(
@@ -61,7 +73,7 @@ public class ConfigJdBrandShop implements ConfigParser {
 		System.err.println(url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
-		ResultBean rsBean = new ResultBean();
+		DataBean rsBean = new DataBean();
 		Elements itemEls = dom.select("div.shop[shop-id]");
 		if (!itemEls.isEmpty()) {
 			String region = "";
@@ -114,10 +126,7 @@ public class ConfigJdBrandShop implements ConfigParser {
 			}
 		}
 		addNextPages(dom, rsBean);
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsBean);
-		return new JSONObject(writer.toString());
+		return rsBean;
 	}
 
 	private String getUrl(TaskWritable task) throws UnsupportedEncodingException {
@@ -129,7 +138,7 @@ public class ConfigJdBrandShop implements ConfigParser {
 		return "http://www.jd.com/pinpai/" + brandCode + ".html?enc=utf-8&vt=3#filter";
 	}
 
-	private void addNextPages(Document body, ResultBean rsBean) {
+	private void addNextPages(Document body, DataBean rsBean) {
 		Elements oCurAs = body.select("#pagin-btm a.current[href]");
 		if (oCurAs.isEmpty()) {
 			return;
@@ -260,24 +269,6 @@ public class ConfigJdBrandShop implements ConfigParser {
 		}
 	}
 
-	private void doCollect(JSONObject dataObject, TaskWritable task) {
-		JSONObject gObject = new JSONObject();
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
-
-		JSONArray tArray = new JSONArray();
-		tArray.put("BrandConfigVo");
-		tArray.put("BrandShopDto");
-		JSONUtils.put(argsObject, "target", tArray);
-		JSONUtils.put(gObject, "args", argsObject);
-
-		JSONUtils.put(gObject, "rs", dataObject.toString());
-		System.err.println("data:" + dataObject);
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
-	}
-
 	private static class ShopVo {
 		private Integer siteId = SITE_ID;
 		private String brandCode;
@@ -380,27 +371,5 @@ public class ConfigJdBrandShop implements ConfigParser {
 		public void setShopCode(String shopCode) {
 			this.shopCode = shopCode;
 		}
-	}
-
-	private final static class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
-
-		public List<Object> getDataList() {
-			return dataList;
-		}
-
-		public void setDataList(List<Object> dataList) {
-			this.dataList = dataList;
-		}
-
-		public List<Object> getNextList() {
-			return nextList;
-		}
-
-		public void setNextList(List<Object> nextList) {
-			this.nextList = nextList;
-		}
-
 	}
 }

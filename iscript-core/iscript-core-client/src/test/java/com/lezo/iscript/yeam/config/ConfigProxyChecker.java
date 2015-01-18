@@ -3,8 +3,6 @@ package com.lezo.iscript.yeam.config;
 import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -29,17 +27,16 @@ import com.lezo.iscript.crawler.http.HttpClientUtils;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.http.ProxySocketFactory;
-import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyChecker implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyChecker.class);
 	private DefaultHttpClient client;
-	private static final String EMTPY_RESULT = new JSONObject().toString();
 
 	public ConfigProxyChecker() {
 		this.client = HttpClientFactory.createHttpClient();
@@ -53,30 +50,25 @@ public class ConfigProxyChecker implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		JSONObject gObject = new JSONObject();
-		JSONObject itemObject = getDataObject(task, gObject);
-		System.out.println(itemObject);
-		JSONUtils.put(gObject, "rs", itemObject.toString());
-		doCollect(gObject, task);
-		return EMTPY_RESULT;
+		DataBean dataBean = getDataObject(task);
+		return convert2TaskCallBack(dataBean, task);
 	}
 
-	private void doCollect(JSONObject gObject, TaskWritable task) {
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+		dataBean.getTargetList().add("ProxyAddrDto");
 
-		JSONArray tArray = new JSONArray();
-		tArray.put("ProxyAddrDto");
-		JSONUtils.put(argsObject, "target", tArray);
-		JSONUtils.put(gObject, "args", argsObject);
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, dataBean);
+		String dataString = writer.toString();
 
-		System.err.println("gObject:" + gObject);
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		return returnObject.toString();
 	}
 
-	private JSONObject getDataObject(TaskWritable task, JSONObject gObject) throws Exception {
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		Object idObject = task.get("id");
 		Integer port = (Integer) task.get("port");
 		String proxyIp = getHost(task);
@@ -86,12 +78,9 @@ public class ConfigProxyChecker implements ConfigParser {
 		}
 		findRegin(tBean, proxyIp, port);
 		findProxyType(tBean, proxyIp, port);
-		ResultBean rsBean = new ResultBean();
+		DataBean rsBean = new DataBean();
 		rsBean.getDataList().add(tBean);
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsBean);
-		return new JSONObject(writer.toString());
+		return rsBean;
 	}
 
 	private void findProxyType(ProxyAddrDto tBean, String proxyIp, Integer port) {
@@ -216,28 +205,6 @@ public class ConfigProxyChecker implements ConfigParser {
 			Long ipLong = Long.valueOf(ipString);
 			return InetAddressUtils.inet_ntoa(ipLong);
 		}
-	}
-
-	private final class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
-
-		public List<Object> getDataList() {
-			return dataList;
-		}
-
-		public void setDataList(List<Object> dataList) {
-			this.dataList = dataList;
-		}
-
-		public List<Object> getNextList() {
-			return nextList;
-		}
-
-		public void setNextList(List<Object> nextList) {
-			this.nextList = nextList;
-		}
-
 	}
 
 	private class ProxyAddrDto {

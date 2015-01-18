@@ -30,11 +30,13 @@ import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigJdPromotion implements ConfigParser {
@@ -76,7 +78,7 @@ public class ConfigJdPromotion implements ConfigParser {
 			}
 		}
 		if (!hasAddCookie) {
-//			Scriptable scope = EnvjsUtils.initStandardObjects(null);
+			// Scriptable scope = EnvjsUtils.initStandardObjects(null);
 			Scriptable scope = null;
 			addCookie(client, scope);
 		}
@@ -144,24 +146,22 @@ public class ConfigJdPromotion implements ConfigParser {
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
 		ensureCookie();
-		JSONObject itemObject = getDataObject(task);
-		doCollect(itemObject, task);
-		return EMTPY_RESULT;
+		DataBean dataBean = getDataObject(task);
+		return convert2TaskCallBack(dataBean,task);
 	}
-
-	private void doCollect(JSONObject dataObject, TaskWritable task) {
-		JSONObject gObject = new JSONObject();
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
-		JSONUtils.put(argsObject, "target", "PromotionMapDto");
-
-		JSONUtils.put(gObject, "args", argsObject);
-
-		JSONUtils.put(gObject, "rs", dataObject.toString());
-		System.err.println(dataObject);
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		
+		if(dataBean != null){
+			dataBean.getTargetList().add("PromotionMapDto");
+			ObjectMapper mapper = new ObjectMapper();
+			StringWriter writer = new StringWriter();
+			mapper.writeValue(writer, dataBean);
+			String dataString = writer.toString();
+			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		}
+		return returnObject.toString();
 	}
 
 	/**
@@ -171,17 +171,14 @@ public class ConfigJdPromotion implements ConfigParser {
 	 * @return
 	 * @throws Exception
 	 */
-	private JSONObject getDataObject(TaskWritable task) throws Exception {
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		List<PromotionBean> promotList = getPromotions(task);
 		if (!promotList.isEmpty()) {
-			ResultBean rsBean = new ResultBean();
+			DataBean rsBean = new DataBean();
 			rsBean.getDataList().addAll(promotList);
-			ObjectMapper mapper = new ObjectMapper();
-			StringWriter writer = new StringWriter();
-			mapper.writeValue(writer, rsBean);
-			return new JSONObject(writer.toString());
+			return rsBean;
 		}
-		return new JSONObject();
+		return null;
 	}
 
 	private String getPromotionScript(String url) {
@@ -379,7 +376,7 @@ public class ConfigJdPromotion implements ConfigParser {
 				return this.definePromotScriptable;
 			}
 			try {
-				String source = "debug.canDebug=true;\r\nwindow = {};\r\nvar oEles = $('head script');\r\nvar len = oEles.length;\r\nfor (var i = 0; i < len; i++) {\r\n	var script = oEles.get(i).html();\r\n	if (script.indexOf('window.pageConfig') >= 0) {\r\n		eval('' + script);\r\n		break;\r\n	}\r\n}\r\ntoGlobal(window);\r\nvar oGlobal = {};\r\noGlobal.cat = pageConfig.product.cat;\r\noGlobal.getNewUserLevel = function(t) {\r\n	switch (t) {\r\n	case 50:\r\n		return \"注册用户\";\r\n	case 56:\r\n		return \"铜牌用户\";\r\n	case 59:\r\n		return \"注册用户\";\r\n	case 60:\r\n		return \"银牌用户\";\r\n	case 61:\r\n		return \"银牌用户\";\r\n	case 62:\r\n		return \"金牌用户\";\r\n	case 63:\r\n		return \"钻石用户\";\r\n	case 64:\r\n		return \"经销商\";\r\n	case 110:\r\n		return \"VIP\";\r\n	case 66:\r\n		return \"京东员工\";\r\n	case -1:\r\n		return \"未注册\";\r\n	case 88:\r\n		return \"钻石用户\";\r\n	case 90:\r\n		return \"企业用户\";\r\n	case 103:\r\n		return \"钻石用户\";\r\n	case 104:\r\n		return \"钻石用户\";\r\n	case 105:\r\n		return \"钻石用户\"\r\n	}\r\n	return \"未知\";\r\n}\r\nfunction readCookie(key) {\r\n	return '1-72-4137-0';\r\n}\r\n\r\ntry {\r\n	String.prototype.process = function(oPromot, b) {\r\n		var res = '';\r\n		if (oPromot && oPromot.adwordGiftSkuList) {\r\n			var adwordGiftSkuList = oPromot.adwordGiftSkuList;\r\n			var len = adwordGiftSkuList.length;\r\n			for (var i = 0; i < len; i++) {\r\n				var item = adwordGiftSkuList[i];\r\n				if (item.giftType == 2) {\r\n					res += '<div class=\"li-img\"><a target=\"_blank\" href=\"http://item.jd.com/'\r\n							+ item.skuId + '.html\">';\r\n					if (item.imagePath !== \"\") {\r\n						res += '<img src=\"http://img11.360buyimg.com/n5/'\r\n								+ item.imagePath + ' width=\"25\" height=\"25\" />';\r\n					} else {\r\n						res += '<img src=\"http://misc.360buyimg.com/product/skin/2012/i/gift.png\" width=\"25\" height=\"25\" />';\r\n					}\r\n					res += item.name;\r\n					res += '</a><em class=\"hl_red\"> ×' + item.number\r\n							+ '</em></div>\\n';\r\n				}\r\n			}\r\n		}\r\n		debug.log(this);\r\n		debug.log('ddd:' + res);\r\n		return res;\r\n	}\r\n} catch (e) {\r\n}";
+				String source = "debug.canDebug=true;\r\nwindow = {};\r\nvar oEles = $('head script');\r\nvar len = oEles.length;\r\nfor (var i = 0; i < len; i++) {\r\n	var script = oEles.get(i).html();\r\n	if (script.indexOf('var pageConfig') >= 0) {\r\n		eval('' + script);\r\n		break;\r\n	}\r\n}\r\ntoGlobal(window);\r\nvar oGlobal = {};\r\noGlobal.cat = pageConfig.product.cat;\r\noGlobal.getNewUserLevel = function(t) {\r\n	switch (t) {\r\n	case 50:\r\n		return \"注册用户\";\r\n	case 56:\r\n		return \"铜牌用户\";\r\n	case 59:\r\n		return \"注册用户\";\r\n	case 60:\r\n		return \"银牌用户\";\r\n	case 61:\r\n		return \"银牌用户\";\r\n	case 62:\r\n		return \"金牌用户\";\r\n	case 63:\r\n		return \"钻石用户\";\r\n	case 64:\r\n		return \"经销商\";\r\n	case 110:\r\n		return \"VIP\";\r\n	case 66:\r\n		return \"京东员工\";\r\n	case -1:\r\n		return \"未注册\";\r\n	case 88:\r\n		return \"钻石用户\";\r\n	case 90:\r\n		return \"企业用户\";\r\n	case 103:\r\n		return \"钻石用户\";\r\n	case 104:\r\n		return \"钻石用户\";\r\n	case 105:\r\n		return \"钻石用户\"\r\n	}\r\n	return \"未知\";\r\n}\r\nfunction readCookie(key) {\r\n	return '1-72-4137-0';\r\n}\r\n\r\ntry {\r\n	String.prototype.process = function(oPromot, b) {\r\n		var res = '';\r\n		if (oPromot && oPromot.adwordGiftSkuList) {\r\n			var adwordGiftSkuList = oPromot.adwordGiftSkuList;\r\n			var len = adwordGiftSkuList.length;\r\n			for (var i = 0; i < len; i++) {\r\n				var item = adwordGiftSkuList[i];\r\n				if (item.giftType == 2) {\r\n					res += '<div class=\"li-img\"><a target=\"_blank\" href=\"http://item.jd.com/'\r\n							+ item.skuId + '.html\">';\r\n					if (item.imagePath !== \"\") {\r\n						res += '<img src=\"http://img11.360buyimg.com/n5/'\r\n								+ item.imagePath + ' width=\"25\" height=\"25\" />';\r\n					} else {\r\n						res += '<img src=\"http://misc.360buyimg.com/product/skin/2012/i/gift.png\" width=\"25\" height=\"25\" />';\r\n					}\r\n					res += item.name;\r\n					res += '</a><em class=\"hl_red\"> ×' + item.number\r\n							+ '</em></div>\\n';\r\n				}\r\n			}\r\n		}\r\n		debug.log(this);\r\n		debug.log('ddd:' + res);\r\n		return res;\r\n	}\r\n} catch (e) {\r\n}";
 				source += getPromotionScript(dom.baseUri());
 				source += "var oldPromotions = Promotions; Promotions={};";
 				source += "var sPromotData; Promotions.set =function(result){sPromotData=JSON.stringify(result);oldPromotions.set(result);};";
@@ -543,28 +540,6 @@ public class ConfigJdPromotion implements ConfigParser {
 
 	interface ScopeCallBack {
 		void doCallBack(ScriptableObject scope, Object targetObject);
-	}
-
-	final class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
-
-		public List<Object> getDataList() {
-			return dataList;
-		}
-
-		public void setDataList(List<Object> dataList) {
-			this.dataList = dataList;
-		}
-
-		public List<Object> getNextList() {
-			return nextList;
-		}
-
-		public void setNextList(List<Object> nextList) {
-			this.nextList = nextList;
-		}
-
 	}
 
 }

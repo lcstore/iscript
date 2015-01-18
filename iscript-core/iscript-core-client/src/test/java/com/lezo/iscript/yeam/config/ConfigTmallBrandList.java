@@ -17,6 +17,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
@@ -26,7 +27,6 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigTmallBrandList implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	private static final String EMTPY_RESULT = new JSONObject().toString();
 
 	@Override
 	public String getName() {
@@ -37,7 +37,14 @@ public class ConfigTmallBrandList implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		JSONObject itemObject = getDataObject(task);
 		doCollect(itemObject, task);
-		return itemObject.toString();
+		return convertToDest(itemObject);
+	}
+
+	private String convertToDest(JSONObject itemObject) {
+		JSONObject destObject = new JSONObject();
+		JSONUtils.put(destObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		JSONUtils.put(destObject, ClientConstant.KEY_STORAGE_RESULT, itemObject);
+		return destObject.toString();
 	}
 
 	private JSONObject getDataObject(TaskWritable task) throws Exception {

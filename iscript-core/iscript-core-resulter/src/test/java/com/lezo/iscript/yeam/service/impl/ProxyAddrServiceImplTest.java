@@ -35,7 +35,7 @@ public class ProxyAddrServiceImplTest {
 		ProxyAddrDao proxyAddrDao = SpringBeanUtils.getBean(ProxyAddrDao.class);
 		ProxyAddrServiceImpl brandService = new ProxyAddrServiceImpl();
 		brandService.setProxyAddrDao(proxyAddrDao);
-		int maxCount = 174;
+		int maxCount = 1;
 		for (int i = 1; i <= maxCount; i++) {
 			try {
 				// String url =
@@ -55,8 +55,8 @@ public class ProxyAddrServiceImplTest {
 				// String url =
 				// String.format("http://free-proxy.cz/en/proxylist/main/%d",
 				// i);
-//				String url = String.format("http://www.blackhatworld.com/blackhat-seo/proxy-lists/354949-200-scrapebox-passed-http-proxies-freshly-verified-w-screenshot-daily-updates-%d.html", i);
-				String url = String.format("http://socks5proxies.com/index.php?page=%d&action=freeproxy", i);
+				String url = String.format("http://www.blackhatworld.com/blackhat-seo/proxy-lists/354949-200-scrapebox-passed-http-proxies-freshly-verified-w-screenshot-daily-updates-%d.html", i);
+//				String url = String.format("http://socks5proxies.com/index.php?page=%d&action=freeproxy", i);
 				// String url =
 				// String.format("http://www.samair.ru/proxy/proxy-%s.htm", i <
 				// 10 ? "0" + i : i);

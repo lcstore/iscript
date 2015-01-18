@@ -3,9 +3,9 @@ package com.lezo.iscript.service.crawler.dto;
 import java.util.Date;
 import java.util.UUID;
 
-import com.lezo.iscript.common.CloneSerializeObject;
+import com.lezo.iscript.common.CloneObject;
 
-public class BrandDto extends CloneSerializeObject<BrandDto> {
+public class BrandDto extends CloneObject<BrandDto> {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;

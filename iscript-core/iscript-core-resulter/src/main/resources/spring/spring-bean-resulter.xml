@@ -14,10 +14,10 @@
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
 	<bean id="fileConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
-		<constructor-arg name="corePoolSize" value="5" />
-		<constructor-arg name="maximumPoolSize" value="5" />
+		<constructor-arg name="corePoolSize" value="10" />
+		<constructor-arg name="maximumPoolSize" value="10" />
 		<constructor-arg name="keepAliveTime" value="60000" />
-		<constructor-arg name="capacity" value="1000" />
+		<constructor-arg name="capacity" value="5000" />
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
 	<bean id="dataConsumeExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
@@ -27,15 +27,22 @@
 		<constructor-arg name="capacity" value="10000" />
 		<constructor-arg name="handler" ref="blockPolicy" />
 	</bean>
-
-<!-- 	<bean name="threadPoolManager" class="com.lezo.iscript.common.ThreadPoolManager">
-		<constructor-arg>
+	<bean id="qiniuMacFactory" class="com.lezo.iscript.yeam.resultmgr.QiniuMacFactory">
+		<property name="macMap">
 			<map>
-				<entry key="fileProducer">
-					<ref bean="fileProduceExecutor" />
+				<entry key="d1001.qiniudn.com">
+					<bean class="com.qiniu.api.auth.digest.Mac">
+						<constructor-arg name="accessKey" value="${qiniu_accessKey_d1001}" />
+						<constructor-arg name="secretKey" value="${qiniu_secretKey_d1001}" />
+					</bean>
+				</entry>
+				<entry key="d1002.qiniudn.com">
+					<bean class="com.qiniu.api.auth.digest.Mac">
+						<constructor-arg name="accessKey" value="${qiniu_accessKey_d1002}" />
+						<constructor-arg name="secretKey" value="${qiniu_secretKey_d1002}" />
+					</bean>
 				</entry>
 			</map>
-		</constructor-arg>
+		</property>
 	</bean>
- -->
 </beans>

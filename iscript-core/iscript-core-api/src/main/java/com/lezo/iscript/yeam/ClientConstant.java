@@ -39,4 +39,7 @@ public class ClientConstant {
 	public static final String CLIENT_WORK_SPACE = "workspace";
 	public static final String CLIENT_NAME = CLIENT_ENV_HEAD + "name";
 	public static final String CLIENT_VERSION = CLIENT_ENV_HEAD + "version";
+
+	public static final String KEY_CALLBACK_RESULT = "callback";
+	public static final String KEY_STORAGE_RESULT = "storage";
 }

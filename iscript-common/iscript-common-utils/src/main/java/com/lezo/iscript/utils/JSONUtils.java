@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class JSONUtils {
 	private static Logger log = LoggerFactory.getLogger(JSONUtils.class);
+	public static final String EMPTY_JSONOBJECT = new JSONObject().toString();
 
 	public static JSONObject getJSONObject(Object content) {
 		if (content == null) {

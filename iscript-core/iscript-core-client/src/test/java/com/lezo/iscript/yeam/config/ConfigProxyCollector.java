@@ -1,5 +1,6 @@
 package com.lezo.iscript.yeam.config;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -21,11 +23,13 @@ import org.jsoup.select.Elements;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyCollector implements ConfigParser {
@@ -40,7 +44,8 @@ public class ConfigProxyCollector implements ConfigParser {
 		proxySeedList.add("http://www.mrhinkydink.com/proxies.htm");
 		proxySeedList.add("https://nordvpn.com/free-proxy-list/1/?allc=all&allp=all&port&sortby=0&way=1&pp=1");
 		for (int i = 0; i < 10; i++) {
-			proxySeedList.add("http://mianfeidaili.ttju.cn/getAgent.php?uCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%BA%C5%2C%BF%C9%B2%BB%CC%EE%D0%B4&pCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%C3%DC%2C%BF%C9%B2%BB%CC%EE%D0%B4&Number=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%CA%FD%C1%BF&Area=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B5%D8%C7%F8&Operators=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%D4%CB%D3%AA%C9%CC&port=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B6%CB%BF%DA&list=Blist");
+			proxySeedList
+					.add("http://mianfeidaili.ttju.cn/getAgent.php?uCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%BA%C5%2C%BF%C9%B2%BB%CC%EE%D0%B4&pCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%C3%DC%2C%BF%C9%B2%BB%CC%EE%D0%B4&Number=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%CA%FD%C1%BF&Area=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B5%D8%C7%F8&Operators=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%D4%CB%D3%AA%C9%CC&port=%C7%EB%CC%EE%D0%B4%CB%F9%D0%E8%B5%C4%B6%CB%BF%DA&list=Blist");
 		}
 		proxySeedList.add("http://www.xici.net.co/");
 		proxySeedList.add("http://www.samair.ru/proxy/");
@@ -95,11 +100,17 @@ public class ConfigProxyCollector implements ConfigParser {
 				}
 			}
 		}
-		doCollect(jObject, nextArray, task);
+		JSONArray tArray = new JSONArray();
+		tArray.put("ProxyAddrDto");
+		JSONUtils.put(jObject, "targetList", tArray);
 
 		JSONObject taskObject = new JSONObject();
 		JSONUtils.put(taskObject, "nextList", nextArray);
-		return taskObject.toString();
+
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, taskObject);
+		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, jObject);
+		return returnObject.toString();
 	}
 
 	private void offerNexts(JSONArray nextArray) throws Exception {
@@ -139,30 +150,6 @@ public class ConfigProxyCollector implements ConfigParser {
 			nextArray.put(newUrl);
 		}
 
-	}
-
-	private void doCollect(JSONObject itemObject, JSONArray nextArray, TaskWritable task) {
-		JSONObject gObject = new JSONObject();
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
-
-		JSONUtils.put(gObject, "args", argsObject);
-
-		// {"target":[],"data":{},"nexts":[]}
-		JSONObject dataObject = itemObject;
-		JSONArray tArray = new JSONArray();
-		tArray.put("ProxyAddrDto");
-		JSONUtils.put(dataObject, "target", tArray);
-
-		JSONUtils.put(dataObject, "nextList", nextArray);
-
-		JSONUtils.put(gObject, "rs", dataObject.toString());
-
-		System.out.println("file.content:" + gObject);
-
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
 	}
 
 	private List<String> handleUrl(String url, JSONObject jObject, DefaultHttpClient client) throws Exception {

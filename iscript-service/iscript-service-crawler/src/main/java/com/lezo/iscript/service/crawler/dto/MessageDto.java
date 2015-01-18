@@ -2,7 +2,9 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-public class MessageDto implements Cloneable {
+import com.lezo.iscript.common.CloneObject;
+
+public class MessageDto extends CloneObject<MessageDto> {
 	public static final int NEW_MESSGE = 0;
 	private Long id;
 	private String name;
@@ -13,6 +15,10 @@ public class MessageDto implements Cloneable {
 	private Integer sortCode;
 	private Date createTime;
 	private Date updateTime;
+
+	private String dataBucket;
+	private String dataDomain;
+	private int dataCount;
 
 	public Long getId() {
 		return id;
@@ -86,15 +92,28 @@ public class MessageDto implements Cloneable {
 		this.updateTime = updateTime;
 	}
 
-	@Override
-	public MessageDto clone() {
-		MessageDto cloneDto = null;
-		try {
-			cloneDto = (MessageDto) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return cloneDto;
+	public String getDataBucket() {
+		return dataBucket;
+	}
+
+	public void setDataBucket(String dataBucket) {
+		this.dataBucket = dataBucket;
+	}
+
+	public String getDataDomain() {
+		return dataDomain;
+	}
+
+	public void setDataDomain(String dataDomain) {
+		this.dataDomain = dataDomain;
+	}
+
+	public int getDataCount() {
+		return dataCount;
+	}
+
+	public void setDataCount(int dataCount) {
+		this.dataCount = dataCount;
 	}
 
 }

@@ -2,57 +2,57 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyAddrDao">
-	<resultMap type="ProxyAddrDto" id="RM_ProxyAddrDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.MessageDao">
+	<resultMap type="MessageDto" id="RM_MessageDto">
 		<result column="ID" property="id"/>
-		<result column="IP" property="ip"/>
-		<result column="PORT" property="port"/>
-		<result column="ADDR_CODE" property="addrCode"/>
+		<result column="NAME" property="name"/>
+		<result column="MESSAGE" property="message"/>
 		<result column="SOURCE" property="source"/>
-		<result column="REGION_NAME" property="regionName"/>
-		<result column="ISP_NAME" property="ispName"/>
-		<result column="IS_DELETE" property="isDelete"/>
+		<result column="REMARK" property="remark"/>
+		<result column="STATUS" property="status"/>
+		<result column="SORT_CODE" property="sortCode"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
-		<result column="TYPE" property="type"/>
-		<result column="REMARK" property="remark"/>
+		<result column="DATA_BUCKET" property="dataBucket"/>
+		<result column="DATA_DOMAIN" property="dataDomain"/>
+		<result column="DATA_COUNT" property="dataCount"/>
 	</resultMap>
-	<sql id="ProxyAddrDto-coloumn-list">
-		IP
-		,PORT
-		,ADDR_CODE
+	<sql id="MessageDto-coloumn-list">
+		NAME
+		,MESSAGE
 		,SOURCE
-		,REGION_NAME
-		,ISP_NAME
-		,IS_DELETE
+		,REMARK
+		,STATUS
+		,SORT_CODE
 		,CREATE_TIME
 		,UPDATE_TIME
-		,TYPE
-		,REMARK
+		,DATA_BUCKET
+		,DATA_DOMAIN
+		,DATA_COUNT
 	</sql>
-	<insert id="batchInsert" parameterType="ProxyAddrDto">
-		INSERT INTO T_PROXY_ADDR(
-		<include refid="ProxyAddrDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="MessageDto">
+		INSERT INTO T_MESSAGE(
+		<include refid="MessageDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark})
+			(#{item.name},#{item.message},#{item.source},#{item.remark},#{item.status},#{item.sortCode},#{item.createTime},#{item.updateTime},#{item.dataBucket},#{item.dataDomain},#{item.dataCount})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="ProxyAddrDto">
-		UPDATE T_PROXY_ADDR SET
-		IP=#{ip},
-		PORT=#{port},
-		ADDR_CODE=#{addrCode},
+	<update id="batchUpdate" parameterType="MessageDto">
+		UPDATE T_MESSAGE SET
+		NAME=#{name},
+		MESSAGE=#{message},
 		SOURCE=#{source},
-		REGION_NAME=#{regionName},
-		ISP_NAME=#{ispName},
-		IS_DELETE=#{isDelete},
+		REMARK=#{remark},
+		STATUS=#{status},
+		SORT_CODE=#{sortCode},
 		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime},
-		TYPE=#{type},
-		REMARK=#{remark}
+		DATA_BUCKET=#{dataBucket},
+		DATA_DOMAIN=#{dataDomain},
+		DATA_COUNT=#{dataCount}
 		WHERE ID=#{id}
 	</update>
 </mapper>

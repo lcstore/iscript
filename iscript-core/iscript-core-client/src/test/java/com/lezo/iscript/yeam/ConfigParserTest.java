@@ -67,15 +67,17 @@ public class ConfigParserTest {
 	public void testConfig() throws Exception {
 		ConfigParser parser = new StringLinker();
 		parser = new ConfigJdPromotList();
-		parser = new ConfigJdPromotion();
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigTmallBrandList();
 		parser = new ConfigProxyChecker();
+		parser = new ConfigProxyDetector();
+		parser = new ConfigProxyCollector();
 		parser = new ConfigJdProduct();
-//		parser = new ConfigTmallBrandShop();
-//		parser = new ConfigJdBrandShop();
-//		parser = new ConfigJdClientValidator();
+		parser = new ConfigJdPromotion();
+		// parser = new ConfigTmallBrandShop();
+		// parser = new ConfigJdBrandShop();
+		// parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
@@ -116,10 +118,16 @@ public class ConfigParserTest {
 		// url =
 		// "http://search.jd.com/search?keyword=%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89&enc=utf-8&qr=&qrst=UNEXPAND&rt=1&vt=3&sttr=1&ev=exbrand%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89_%40&page=2";
 		url = "http://list.jd.com/list.html?cat=1315,1343,1354";
-		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";// brand shop
-		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";// brand shop
-		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";// brand shop
-//		url = "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
+		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";// brand
+																																	// shop
+		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";// brand
+																								// shop
+		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";// brand
+																					// shop
+		// url =
+		// "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
+		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";
+		url = "http://item.yhd.com/item/36177809";
 		url = "http://item.jd.com/1226984.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
@@ -137,19 +145,8 @@ public class ConfigParserTest {
 		task.put("port", 1080);
 		task.put("ip", "1.0.131.190");
 		task.put("port", 8080);
-		String result = parser.doParse(task);
-		System.out.println("result:" + result);
-		try {
-			// List<String> urlList = getUrlList();
-			// for (String sUrl : urlList) {
-			// System.out.println("sUrl:" + sUrl);
-			// String result = parser.doParse(task);
-			// System.out.println("result:" + result);
-			// }
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		String returnObject = parser.doParse(task);
+		System.out.println("result:" + returnObject);
 	}
 
 	@Test
@@ -218,7 +215,7 @@ public class ConfigParserTest {
 		// task.put("x", "i am lezo");
 		// task.put("y", "i am lezo");
 		// try {
-		// String result = parser.doParse(task);
+		// String result = (String) parser.doParse(task);
 		// System.out.println(result);
 		// } catch (Exception e) {
 		// e.printStackTrace();
@@ -236,7 +233,7 @@ public class ConfigParserTest {
 		task.put("user", "pis1002@163.com");
 		task.put("pwd", "pis1234");
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -252,7 +249,7 @@ public class ConfigParserTest {
 		task.put("x", null);
 		task.put("y", "i am lezo");
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			JSONObject jObject = new JSONObject(result);
 			jObject = JSONUtils.get(jObject, "args");
 			System.out.println(result);
@@ -270,7 +267,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new JDCid2PList();
 		TaskWritable task = new TaskWritable();
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -284,7 +281,7 @@ public class ConfigParserTest {
 		task.put("user", "lc");
 		task.put("pwd", "fd");
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -299,7 +296,7 @@ public class ConfigParserTest {
 		task.put("user", "l");
 		task.put("pwd", "3");
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -313,7 +310,7 @@ public class ConfigParserTest {
 		task.put("user", "");
 		task.put("pwd", "");
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -327,7 +324,7 @@ public class ConfigParserTest {
 		task.put("user", "");
 		task.put("pwd", "");
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -339,7 +336,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new Latest163News();
 		TaskWritable task = new TaskWritable();
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,7 +348,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new LatestSohuNews();
 		TaskWritable task = new TaskWritable();
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -365,7 +362,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		try {
 			task.put("url", url);
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -379,7 +376,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		try {
 			task.put("url", url);
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -395,7 +392,7 @@ public class ConfigParserTest {
 		TaskWritable task = new TaskWritable();
 		try {
 			task.put("url", url);
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -416,7 +413,7 @@ public class ConfigParserTest {
 			task.put("ip", "77.89.244.62");
 			task.put("port", 80);
 			task.put("url", url);
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -439,7 +436,7 @@ public class ConfigParserTest {
 		// url = "";
 		try {
 			task.put("url", url);
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -452,7 +449,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigEtaoSimilar();
 		TaskWritable task = new TaskWritable();
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -474,7 +471,7 @@ public class ConfigParserTest {
 		try {
 			task.put("url", url);
 			task.put("bid", "");
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -493,7 +490,7 @@ public class ConfigParserTest {
 			url = "http://item.yhd.com/item/2099463";
 			url = "http://item.yhd.com/item/4609570";
 			task.put("url", url);
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -505,7 +502,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigYhdCategory();
 		TaskWritable task = new TaskWritable();
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -517,7 +514,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new ConfigClientWake();
 		TaskWritable task = new TaskWritable();
 		try {
-			// String result = parser.doParse(task);
+			// String result = (String) parser.doParse(task);
 			// System.out.println(result);
 			Thread.currentThread().join();
 		} catch (Exception e) {
@@ -544,7 +541,7 @@ public class ConfigParserTest {
 		ConfigParser parser = new Config360Uploader();
 		TaskWritable task = new TaskWritable();
 		try {
-			String result = parser.doParse(task);
+			String result = (String) parser.doParse(task);
 			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +17,12 @@ import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.MessageDto;
 import com.lezo.iscript.service.crawler.service.MessageService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.utils.BatchIterator;
 import com.lezo.iscript.utils.JSONUtils;
 
 public class MessageWriter implements ObjectWriter<MessageDto> {
 	private static Logger logger = LoggerFactory.getLogger(MessageWriter.class);
-	private static final int MAX_MSG_LEN = 2000;
+	private static final int MAX_MSG_LEN = 50;
 
 	@Override
 	public void write(List<MessageDto> dataList) {
@@ -39,86 +40,55 @@ public class MessageWriter implements ObjectWriter<MessageDto> {
 		}
 		List<MessageDto> mergeList = new ArrayList<MessageDto>(dataList.size() >> 1);
 		for (Entry<String, List<MessageDto>> entry : typeMap.entrySet()) {
-			Map<String, StringBuilder> bidMap = new HashMap<String, StringBuilder>(entry.getValue().size() >> 1);
-			MessageDto typeDto = null;
-			for (MessageDto mDto : entry.getValue()) {
-				JSONObject mObject = JSONUtils.getJSONObject(mDto.getMessage());
-				String key = JSONUtils.getString(mObject, "bid");
-				key = key == null ? "-" : key;
-				StringBuilder sb = bidMap.get(key);
-				if (sb == null) {
-					sb = new StringBuilder();
-					bidMap.put(key, sb);
-					typeDto = mDto;
-				}
-				Object tObject = JSONUtils.getObject(mObject, "tid");
-				tObject = tObject == null ? "" : tObject;
-				int mLen = sb.length() + tObject.toString().length() + key.length() + 10;
-				if (mLen > MAX_MSG_LEN) {
-					JSONObject newObject = new JSONObject();
-					MessageDto cloneDto = newMessage(typeDto, newObject, key, sb);
-					sb = new StringBuilder();
-					bidMap.put(key, sb);
-					sb.append(tObject);
-					mergeList.add(cloneDto);
-				} else {
-					if (sb.length() > 0) {
-						sb.append(",");
+			Map<String, List<MessageDto>> sameKeyMap = toSameKeyMap(entry.getValue());
+			for (Entry<String, List<MessageDto>> sEntry : sameKeyMap.entrySet()) {
+				List<MessageDto> sameList = sEntry.getValue();
+				BatchIterator<MessageDto> it = new BatchIterator<MessageDto>(sameList, MAX_MSG_LEN);
+				while (it.hasNext()) {
+					List<MessageDto> batchList = it.next();
+					JSONObject mObject = new JSONObject();
+					JSONArray idArray = new JSONArray();
+					for (MessageDto curDto : batchList) {
+						JSONObject curObject = JSONUtils.getJSONObject(curDto.getMessage());
+						Object tObject = JSONUtils.getObject(curObject, "tid");
+						idArray.put(tObject);
 					}
-					sb.append(tObject);
+					MessageDto mergeDto = batchList.get(0);
+					JSONObject oneObject = JSONUtils.getJSONObject(mergeDto.getMessage());
+					String bid = unifyString(JSONUtils.getString(oneObject, "bid"), "-");
+					JSONUtils.put(mObject, bid, idArray);
+					mergeDto.setMessage(mObject.toString());
+					mergeDto.setDataCount(batchList.size());
+					mergeList.add(mergeDto);
 				}
 			}
-			mergeMsg(mergeList, bidMap, typeDto);
 		}
 		SpringBeanUtils.getBean(MessageService.class).batchSaveDtos(mergeList);
 	}
 
-	private void mergeMsg(List<MessageDto> mergeList, Map<String, StringBuilder> bidMap, MessageDto typeDto) {
-		JSONObject newObject = new JSONObject();
-		int len = 0;
-		for (Entry<String, StringBuilder> bEntry : bidMap.entrySet()) {
-			String msg = bEntry.getValue().toString();
-			int addNew = msg.length() + bEntry.getKey().length() + 10;
-			len += addNew;
-			if (len > MAX_MSG_LEN) {
-				MessageDto cloneDto = (MessageDto) typeDto.clone();
-				cloneDto.setMessage(newObject.toString());
-				mergeList.add(cloneDto);
-				newObject = new JSONObject();
-				len = 0;
-			} else {
-				JSONArray mArray = null;
-				try {
-					mArray = newArrayObject(msg);
-				} catch (JSONException e) {
-					logger.warn(String.format("type:%s,bid:%s,idArray:%s", typeDto.getName(), bEntry.getKey(), msg), e);
-				}
-				JSONUtils.put(newObject, bEntry.getKey(), mArray);
+	private Map<String, List<MessageDto>> toSameKeyMap(List<MessageDto> dtoList) {
+		Map<String, List<MessageDto>> sameKeyMap = new HashMap<String, List<MessageDto>>();
+		for (MessageDto mDto : dtoList) {
+			JSONObject mObject = JSONUtils.getJSONObject(mDto.getMessage());
+			StringBuilder sb = new StringBuilder();
+			sb.append(unifyString(mDto.getDataBucket(), ""));
+			sb.append(".");
+			sb.append(unifyString(mDto.getDataDomain(), ""));
+			sb.append(".");
+			sb.append(unifyString(JSONUtils.getString(mObject, "bid"), "-"));
+			String key = sb.toString();
+			List<MessageDto> sameList = sameKeyMap.get(key);
+			if (sameList == null) {
+				sameList = new ArrayList<MessageDto>();
+				sameKeyMap.put(key, sameList);
 			}
-
+			sameList.add(mDto);
 		}
-		if (len > 0) {
-			MessageDto cloneDto = (MessageDto) typeDto.clone();
-			cloneDto.setMessage(newObject.toString());
-			mergeList.add(cloneDto);
-		}
+		return sameKeyMap;
 	}
 
-	private MessageDto newMessage(MessageDto typeDto, JSONObject mObject, String key, StringBuilder sb) {
-		JSONArray mArray = null;
-		try {
-			mArray = newArrayObject(sb.toString());
-		} catch (JSONException e) {
-			logger.warn(String.format("type:%s,bid:%s,idArray:%s", typeDto.getName(), key, sb), e);
-		}
-		JSONUtils.put(mObject, key, mArray);
-		MessageDto cloneDto = (MessageDto) typeDto.clone();
-		cloneDto.setMessage(mObject.toString());
-		return cloneDto;
-	}
-
-	private JSONArray newArrayObject(String data) throws JSONException {
-		return new JSONArray("[" + data + "]");
+	private String unifyString(String value, String defaultValue) {
+		return StringUtils.isEmpty(value) ? defaultValue : value;
 	}
 
 }

@@ -4,15 +4,18 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.MessageDao">
 	<resultMap type="MessageDto" id="RM_MessageDto">
-		<result column="ID" property="id" />
-		<result column="NAME" property="name" />
-		<result column="MESSAGE" property="message" />
-		<result column="SOURCE" property="source" />
-		<result column="REMARK" property="remark" />
-		<result column="STATUS" property="status" />
-		<result column="SORT_CODE" property="sortCode" />
-		<result column="CREATE_TIME" property="createTime" />
-		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="ID" property="id"/>
+		<result column="NAME" property="name"/>
+		<result column="MESSAGE" property="message"/>
+		<result column="SOURCE" property="source"/>
+		<result column="REMARK" property="remark"/>
+		<result column="STATUS" property="status"/>
+		<result column="SORT_CODE" property="sortCode"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="DATA_BUCKET" property="dataBucket"/>
+		<result column="DATA_DOMAIN" property="dataDomain"/>
+		<result column="DATA_COUNT" property="dataCount"/>
 	</resultMap>
 	<sql id="MessageDto-coloumn-list">
 		NAME
@@ -23,6 +26,9 @@
 		,SORT_CODE
 		,CREATE_TIME
 		,UPDATE_TIME
+		,DATA_BUCKET
+		,DATA_DOMAIN
+		,DATA_COUNT
 	</sql>
 	<insert id="batchInsert" parameterType="MessageDto">
 		INSERT INTO T_MESSAGE(
@@ -31,7 +37,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.name},#{item.message},#{item.source},#{item.remark},#{item.status},#{item.sortCode},#{item.createTime},#{item.updateTime})
+			(#{item.name},#{item.message},#{item.source},#{item.remark},#{item.status},#{item.sortCode},#{item.createTime},#{item.updateTime},#{item.dataBucket},#{item.dataDomain},#{item.dataCount})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="MessageDto">
@@ -42,8 +48,9 @@
 		REMARK=#{remark},
 		STATUS=#{status},
 		SORT_CODE=#{sortCode},
-		CREATE_TIME=#{createTime},
-		UPDATE_TIME=#{updateTime}
+		DATA_BUCKET=#{dataBucket},
+		DATA_DOMAIN=#{dataDomain},
+		DATA_COUNT=#{dataCount}
 		WHERE ID=#{id}
 	</update>
 	<update id="batchUpdateStatus" parameterType="map">

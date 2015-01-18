@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -16,7 +15,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +22,16 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
-import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
 	private DefaultHttpClient client;
-	private static final String EMTPY_RESULT = new JSONObject().toString();
 	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
@@ -56,30 +54,25 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		JSONObject gObject = new JSONObject();
-		JSONObject itemObject = getDataObject(task, gObject);
-		System.out.println(itemObject);
-		JSONUtils.put(gObject, "rs", itemObject.toString());
-		doCollect(gObject, task);
-		return EMTPY_RESULT;
+		DataBean dataBean = getDataObject(task);
+		return convert2TaskCallBack(dataBean, task);
 	}
 
-	private void doCollect(JSONObject gObject, TaskWritable task) {
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+		dataBean.getTargetList().add("ProxyDetectDto");
 
-		JSONArray tArray = new JSONArray();
-		tArray.put("ProxyDetectDto");
-		JSONUtils.put(argsObject, "target", tArray);
-		JSONUtils.put(gObject, "args", argsObject);
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, dataBean);
+		String dataString = writer.toString();
 
-		System.err.println("gObject:" + gObject);
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		return returnObject.toString();
 	}
 
-	private JSONObject getDataObject(TaskWritable task, JSONObject gObject) throws Exception {
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
 		String host = getHost(task);
 		String url = getDetectUrl(task);
@@ -101,9 +94,7 @@ public class ConfigProxyDetector implements ConfigParser {
 			status = getStatus(statusCode, html);
 		} catch (Exception e) {
 			status = 0;
-			String msg = ExceptionUtils.getStackTrace(e);
-			JSONUtils.put(gObject, "ex", msg);
-			logger.warn(String.format("detect url:%s,cause:%s", url, msg));
+			logger.warn("detect url:" + url + ",cause:", e);
 		} finally {
 			if (get != null && !get.isAborted()) {
 				get.abort();
@@ -123,12 +114,9 @@ public class ConfigProxyDetector implements ConfigParser {
 		tBean.setCurCost(cost);
 		tBean.setDomain(URLUtils.getRootHost(url));
 		tBean.setUrl(url);
-		ResultBean rsBean = new ResultBean();
+		DataBean rsBean = new DataBean();
 		rsBean.getDataList().add(tBean);
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsBean);
-		return new JSONObject(writer.toString());
+		return rsBean;
 	}
 
 	private String getHost(TaskWritable task) {
@@ -160,28 +148,6 @@ public class ConfigProxyDetector implements ConfigParser {
 		return detectUrls.get(index);
 	}
 
-	private final class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
-
-		public List<Object> getDataList() {
-			return dataList;
-		}
-
-		public void setDataList(List<Object> dataList) {
-			this.dataList = dataList;
-		}
-
-		public List<Object> getNextList() {
-			return nextList;
-		}
-
-		public void setNextList(List<Object> nextList) {
-			this.nextList = nextList;
-		}
-
-	}
-
 	private class ProxyDetectDto {
 		private Long ip;
 		private int port;
@@ -190,62 +156,49 @@ public class ConfigProxyDetector implements ConfigParser {
 		private String detector;
 		private Long curCost;
 		private int status = 0;
-
 		public Long getIp() {
 			return ip;
 		}
-
 		public void setIp(Long ip) {
 			this.ip = ip;
 		}
-
 		public int getPort() {
 			return port;
 		}
-
 		public void setPort(int port) {
 			this.port = port;
 		}
-
 		public String getDomain() {
 			return domain;
 		}
-
 		public void setDomain(String domain) {
 			this.domain = domain;
 		}
-
 		public String getUrl() {
 			return url;
 		}
-
 		public void setUrl(String url) {
 			this.url = url;
 		}
-
 		public String getDetector() {
 			return detector;
 		}
-
 		public void setDetector(String detector) {
 			this.detector = detector;
 		}
-
 		public Long getCurCost() {
 			return curCost;
 		}
-
 		public void setCurCost(Long curCost) {
 			this.curCost = curCost;
 		}
-
 		public int getStatus() {
 			return status;
 		}
-
 		public void setStatus(int status) {
 			this.status = status;
 		}
+
 
 	}
 }

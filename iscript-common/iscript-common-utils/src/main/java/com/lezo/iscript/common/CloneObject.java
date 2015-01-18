@@ -1,14 +1,12 @@
 package com.lezo.iscript.common;
 
-import java.io.Serializable;
 
 /**
  * @author lezo
  * @email lcstore@126.com
  * @since 2014年12月20日
  */
-public class CloneSerializeObject<T> implements Cloneable, Serializable {
-	private static final long serialVersionUID = 1L;
+public class CloneObject<T> implements Cloneable {
 
 	@Override
 	public T clone() {

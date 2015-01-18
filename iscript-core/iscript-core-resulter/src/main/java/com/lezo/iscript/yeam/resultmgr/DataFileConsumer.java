@@ -53,7 +53,7 @@ public class DataFileConsumer implements Runnable {
 	}
 
 	private List<String> downData() throws EncoderException, AuthException {
-		String bucketDomain = dataFileWrapper.getBucketName() + dataFileWrapper.getDomain();
+		String bucketDomain = dataFileWrapper.getBucketName() + "." + dataFileWrapper.getDomain();
 		String baseUrl = URLUtils.makeBaseUrl(bucketDomain, dataFileWrapper.getItem().key);
 		GetPolicy getPolicy = new GetPolicy();
 		String downloadUrl = getPolicy.makeRequest(baseUrl, dataFileWrapper.getMac());

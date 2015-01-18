@@ -1,15 +1,19 @@
 package com.lezo.iscript.yeam.resultmgr;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.yeam.resultmgr.directory.DirectoryDescriptor;
+import com.lezo.iscript.yeam.resultmgr.directory.DirectoryLockUtils;
+import com.lezo.iscript.yeam.resultmgr.directory.DirectoryTracker;
 import com.qiniu.api.auth.digest.Mac;
 import com.qiniu.api.rsf.ListItem;
 import com.qiniu.api.rsf.ListPrefixRet;
@@ -19,38 +23,56 @@ import com.qiniu.api.rsf.RSFEofException;
 public class DataFileProducer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(DataFileProducer.class);
 	private static final String DIR_SEPARATOR = "/";
-	private Mac mac = SpringBeanUtils.getBean(Mac.class);
 	private ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("fileConsumeExecutor");
-	private String bucketName;
-	private String domain = ".qiniudn.com";
-	private final String dataPath;
-	private final Date stamp;
+	private DirectoryTracker tracker;
 
-	public DataFileProducer(String bucketName, String dataPath, Date stamp) {
-		super();
-		this.bucketName = bucketName;
-		this.dataPath = dataPath;
-		this.stamp = stamp;
+	public DataFileProducer(DirectoryTracker tracker) {
+		this.tracker = tracker;
 	}
 
 	@Override
 	public void run() {
-		String type = getTypeFromPath(dataPath);
-		CacheObject cacheObject = newIfAbsent(dataPath);
-		String key = cacheObject.getKey();
+		DirectoryDescriptor descriptor = this.tracker.getDescriptor();
+		Mac mac = getMac(descriptor);
+		if (mac == null) {
+			throw new IllegalArgumentException("can not get QiniuMac:" + descriptor.getBucketName() + "." + descriptor.getDomain());
+		}
+		Lock locker = DirectoryLockUtils.findLock(descriptor.getDirectoryKey());
+		if (locker == null) {
+			throw new IllegalArgumentException("can not get locker:" + descriptor.getDirectoryKey());
+		}
+		if (locker.tryLock()) {
+			try {
+				locker.lock();
+				doWork(descriptor, mac);
+			} catch (Exception e) {
+				logger.warn("do file produce.cause:", e);
+			} finally {
+				locker.unlock();
+			}
+		} else {
+			logger.warn(descriptor.getDirectoryKey() + " is running...");
+		}
+	}
+
+	private void doWork(DirectoryDescriptor descriptor, Mac mac) {
 		RSFClient client = new RSFClient(mac);
-		String marker = cacheObject.getValue().toString();
+		String marker = this.tracker.getMarker();
+		long stamp = this.tracker.getStamp();
 		List<ListItem> itemList = new ArrayList<ListItem>();
 		ListPrefixRet ret = null;
-		int limit = 50;
+		int limit = 100;
 		int retry = 0;
+		int count = 0;
 		while (true) {
-			ret = client.listPrifix(this.bucketName, key, marker, limit);
+			ret = client.listPrifix(descriptor.getBucketName(), descriptor.getDataPath(), marker, limit);
 			if (ret.statusCode >= 200 && ret.statusCode < 300) {
 				marker = ret.marker;
-				addAccepts(ret.results, cacheObject, itemList);
-				if (!CollectionUtils.isEmpty(ret.results)) {
-					itemList.addAll(ret.results);
+				List<ListItem> acceptList = getAccepts(ret.results, stamp);
+				if (!CollectionUtils.isEmpty(acceptList)) {
+					count += acceptList.size();
+					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + count + ",newCount:" + acceptList.size());
+					createDataFileConsumer(descriptor, mac, acceptList);
 				}
 				if (ret.results.size() < limit) {
 					break;
@@ -68,18 +90,21 @@ public class DataFileProducer implements Runnable {
 			}
 
 		}
-		if (marker != null && !marker.equals(cacheObject.getValue().toString())) {
-			cacheObject.setValue(marker);
+		if (!itemList.isEmpty()) {
+			this.tracker.setMarker(marker);
+			this.tracker.setFileCount(this.tracker.getFileCount() + count);
+			this.tracker.setStamp(getMaxStamp(itemList));
 		}
-		createDataFileConsumer(type, itemList);
+		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
 	}
 
-	private void createDataFileConsumer(String type, List<ListItem> itemList) {
+	private void createDataFileConsumer(DirectoryDescriptor descriptor, Mac mac, List<ListItem> itemList) {
+		String type = getTypeFromPath(descriptor.getDataPath());
 		for (ListItem item : itemList) {
 			try {
 				DataFileWrapper dataFileWrapper = new DataFileWrapper();
-				dataFileWrapper.setBucketName(this.bucketName);
-				dataFileWrapper.setDomain(this.domain);
+				dataFileWrapper.setBucketName(descriptor.getBucketName());
+				dataFileWrapper.setDomain(descriptor.getDomain());
 				dataFileWrapper.setItem(item);
 				dataFileWrapper.setMac(mac);
 				executor.execute(new DataFileConsumer(type, dataFileWrapper));
@@ -87,24 +112,36 @@ public class DataFileProducer implements Runnable {
 				logger.warn("File:" + item.key + ",cause:", e);
 			}
 		}
-
 	}
 
-	private void addAccepts(List<ListItem> results, CacheObject cacheObject, List<ListItem> itemList) {
-		if (CollectionUtils.isEmpty(results)) {
-			return;
-		}
-		long maxStamp = cacheObject.getStamp();
-		for (ListItem rs : results) {
+	private Mac getMac(DirectoryDescriptor descriptor) {
+		QiniuMacFactory qiniuMacFactory = SpringBeanUtils.getBean(QiniuMacFactory.class);
+		String host = descriptor.getBucketName() + "." + descriptor.getDomain();
+		return qiniuMacFactory.getMac(host);
+	}
 
-			if (maxStamp < rs.putTime) {
-				itemList.add(rs);
-				maxStamp = rs.putTime;
+	private long getMaxStamp(List<ListItem> itemList) {
+		long max = 0L;
+		for (ListItem item : itemList) {
+			if (max < item.putTime) {
+				max = item.putTime;
 			}
 		}
-		if (cacheObject.getStamp() != maxStamp) {
-			cacheObject.setStamp(maxStamp);
+		return max;
+	}
+
+	private List<ListItem> getAccepts(List<ListItem> results, long stamp) {
+		if (CollectionUtils.isEmpty(results)) {
+			return Collections.emptyList();
 		}
+		List<ListItem> itemList = new ArrayList<ListItem>(results.size());
+		for (ListItem rs : results) {
+			if (stamp > rs.putTime) {
+				continue;
+			}
+			itemList.add(rs);
+		}
+		return itemList;
 	}
 
 	private String getTypeFromPath(String dataPath) {
@@ -113,29 +150,4 @@ public class DataFileProducer implements Runnable {
 		int toIndex = dataPath.indexOf(DIR_SEPARATOR, fromIndex);
 		return dataPath.substring(fromIndex, toIndex);
 	}
-
-	private CacheObject newIfAbsent(String dataPath) {
-		CacheObjectController controller = CacheObjectController.getInstance();
-		CacheObject cacheObject = controller.getValidValue(dataPath);
-		if (cacheObject == null) {
-			synchronized (controller) {
-				cacheObject = new CacheObject(dataPath, "", this.stamp.getTime(), controller.getNextTimeOut());
-				controller.addValidValue(dataPath, cacheObject);
-			}
-		}
-		return cacheObject;
-	}
-
-	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	public void setMac(Mac mac) {
-		this.mac = mac;
-	}
-
 }
