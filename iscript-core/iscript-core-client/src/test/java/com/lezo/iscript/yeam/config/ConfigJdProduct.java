@@ -4,11 +4,9 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +19,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,10 +31,8 @@ import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -105,21 +100,23 @@ public class ConfigJdProduct implements ConfigParser {
 	public String doParse(TaskWritable task) throws Exception {
 		ensureCookie();
 		DataBean dataBean = getDataObject(task);
-		return convert2TaskCallBack(dataBean,task);
+		return convert2TaskCallBack(dataBean, task);
 	}
-	
+
 	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
-		dataBean.getTargetList().add("ProductDto");
-		dataBean.getTargetList().add("ProductStatDto");
-
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, dataBean);
-		String dataString = writer.toString();
-
 		JSONObject returnObject = new JSONObject();
 		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
-		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		if (dataBean != null) {
+			dataBean.getTargetList().add("ProductDto");
+			dataBean.getTargetList().add("ProductStatDto");
+
+			ObjectMapper mapper = new ObjectMapper();
+			StringWriter writer = new StringWriter();
+			mapper.writeValue(writer, dataBean);
+			String dataString = writer.toString();
+
+			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		}
 		return returnObject.toString();
 	}
 
@@ -174,12 +171,18 @@ public class ConfigJdProduct implements ConfigParser {
 					addShopInfo(tBean, dom, task);
 				}
 
-				DataBean rsBean = new DataBean();
-				rsBean.getDataList().add(tBean);
-				return rsBean;
+			} else {
+				tBean.setProductUrl(url);
+				tBean.setSoldNum(-1);
+				Pattern oReg = Pattern.compile("([0-9]+)\\.html");
+				Matcher matcher = oReg.matcher(url);
+				if (matcher.find()) {
+					tBean.setProductCode(matcher.group(1));
+				}
 			}
-			scriptAs = null;
-			return null;
+			DataBean rsBean = new DataBean();
+			rsBean.getDataList().add(tBean);
+			return rsBean;
 		} finally {
 			closeDocument(dom);
 		}
