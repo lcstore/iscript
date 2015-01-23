@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -90,7 +91,14 @@ public class ConfigYhdProduct implements ConfigParser {
 			productBean.setProductCode(oElements.first().attr("value").trim());
 		}
 		if (oHomeAs.isEmpty()) {
-			productBean.setSoldNum(-1);
+			if (StringUtils.isEmpty(productBean.getProductCode())) {
+				Pattern oReg = Pattern.compile("item/([0-9]{5,})");
+				Matcher matcher = oReg.matcher(url);
+				if (matcher.find()) {
+					productBean.setProductCode(matcher.group(1));
+				}
+			}
+			productBean.setStockNum(-1);
 			return dataBean;
 		}
 		String detailUrl = String.format("http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s", productBean.getProductCode(), System.currentTimeMillis());
