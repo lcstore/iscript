@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,12 @@ public class WarnListener implements IResultListener {
 		argsObject.remove("name@client");
 		argsObject.remove("bid");
 		argsObject.remove("type");
+		if (StringUtils.isEmpty(dto.getProcessId())) {
+			dto.setProcessId("");
+		}
+		if (null == dto.getTaskId()) {
+			dto.setTaskId(0L);
+		}
 		dto.setParam(argsObject.toString());
 		List<Object> dataList = new ArrayList<Object>(1);
 		dataList.add(dto);
