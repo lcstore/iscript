@@ -48,8 +48,10 @@ public class DataMessageHandler {
 			logger.info("Query.name:{},limit:{},size:{}.", nameList, limit, dtoList.size());
 			Set<Long> idSet = new HashSet<Long>(dtoList.size());
 			Map<String, DirectoryDescriptor> keyDirectoryMap = new HashMap<String, DirectoryDescriptor>(getCapacity(dtoList.size()));
+			Set<Long> emptyHostSet = new HashSet<Long>(dtoList.size());
 			for (MessageDto dto : dtoList) {
 				if (StringUtils.isEmpty(dto.getDataBucket()) || StringUtils.isEmpty(dto.getDataDomain())) {
+					emptyHostSet.add(dto.getId());
 					continue;
 				}
 				idSet.add(dto.getId());
@@ -81,6 +83,7 @@ public class DataMessageHandler {
 			}
 			logger.info("directory.count:" + keyDirectoryMap.size() + ",affectCount:" + idSet.size() + ",totalCount:" + dtoList.size());
 			messageService.batchUpdateStatus(new ArrayList<Long>(idSet), -1, "size:" + idSet.size());
+			messageService.batchUpdateStatus(new ArrayList<Long>(emptyHostSet), -2, "emptyHost.size:" + emptyHostSet.size());
 			buildeProducer(keyDirectoryMap);
 			long cost = System.currentTimeMillis() - start;
 			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,dir:%s,cost:%s.", nameList, limit, query, keyDirectoryMap.size(), cost);

@@ -20,16 +20,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigTmallBrandShop implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	private static final String EMTPY_RESULT = new JSONObject().toString();
 	public static final int SITE_ID = 1013;
 
 	@Override
@@ -39,19 +40,35 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		//brand shop list. http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter
-		JSONObject itemObject = getDataObject(task);
-		doCollect(itemObject, task);
-		return EMTPY_RESULT;
+		// brand shop list. http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter
+		DataBean itemObject = getDataObject(task);
+		return convert2TaskCallBack(itemObject, task);
 	}
 
-	private JSONObject getDataObject(TaskWritable task) throws Exception {
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+		if (dataBean != null) {
+			dataBean.getTargetList().add("BrandConfigVo");
+			dataBean.getTargetList().add("BrandShopDto");
+
+			ObjectMapper mapper = new ObjectMapper();
+			StringWriter writer = new StringWriter();
+			mapper.writeValue(writer, dataBean);
+			String dataString = writer.toString();
+
+			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		}
+		return returnObject.toString();
+	}
+
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		String html = HttpClientUtils.getContent(client, get, "gbk");
 		Document dom = Jsoup.parse(html, url);
-		ResultBean rsBean = new ResultBean();
+		DataBean rsBean = new DataBean();
 		Elements itemEls = dom.select("div.brandShop ul.brandShop-slide-list a[href][target]");
 		if (!itemEls.isEmpty()) {
 			String region = getRegion(dom);
@@ -72,10 +89,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 				rsBean.getDataList().add(shopVo);
 			}
 		}
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsBean);
-		return new JSONObject(writer.toString());
+		return rsBean;
 	}
 
 	private String getHashCode(String mainBrand) {

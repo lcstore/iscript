@@ -40,6 +40,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandList;
+import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
@@ -69,20 +70,20 @@ public class ConfigParserTest {
 		parser = new ConfigJdPromotList();
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
-		parser = new ConfigTmallBrandList();
 		parser = new ConfigProxyChecker();
 		parser = new ConfigProxyDetector();
 		parser = new ConfigProxyCollector();
-		parser = new ConfigJdProduct();
 		parser = new ConfigJdPromotion();
-		// parser = new ConfigTmallBrandShop();
+		parser = new ConfigTmallBrandList();
+		parser = new ConfigTmallBrandShop();
 		// parser = new ConfigJdBrandShop();
 		// parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		// parser = new ConfigYhdProduct();
+		parser = new ConfigYhdProduct();
+		parser = new ConfigJdProduct();
 		// parser = new ConfigYhdPromotion();
 		// parser = new ConfigYhdProduct();
 		// parser = new ConfigYhdPromotList();
@@ -126,9 +127,12 @@ public class ConfigParserTest {
 																					// shop
 		// url =
 		// "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
-		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";
 		url = "http://item.yhd.com/item/36177809";
 		url = "http://item.jd.com/1226984.html";
+		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";
+		url = "http://brand.tmall.com/brandInfo.htm?brandId=31674&type=0";
+		url = "http://item.yhd.com/item/9105839";
+		url = "http://item.jd.com/1264683.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");

@@ -26,5 +26,4 @@ public class ProductStatWriter implements ObjectWriter<ProductStatDto> {
 			productStatService.batchSaveProductStatDtos(dataList);
 		}
 	}
-
 }

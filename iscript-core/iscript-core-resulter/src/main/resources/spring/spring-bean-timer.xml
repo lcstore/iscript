@@ -62,12 +62,12 @@
 		<task:scheduled ref="flushWriterTimer" method="run"
 			cron="0 0/2 * * * ?" />
 	</task:scheduled-tasks>
-	<!-- <task:scheduled-tasks scheduler="scheduler">
+	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="luceneIndexer" method="run"
 			cron="0 20 14 * * ?" />
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="sorlSearchHandler" method="run"
 			cron="0/1 * * * * ?" />
-	</task:scheduled-tasks> -->
+	</task:scheduled-tasks>
 </beans>
