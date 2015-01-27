@@ -133,6 +133,7 @@ public class ConfigParserTest {
 		url = "http://brand.tmall.com/brandInfo.htm?brandId=31674&type=0";
 		url = "http://item.yhd.com/item/9105839";
 		url = "http://item.jd.com/1264683.html";
+		url = "http://item.jd.com/1166371.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");

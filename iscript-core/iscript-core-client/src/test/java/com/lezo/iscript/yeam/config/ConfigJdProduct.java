@@ -170,7 +170,10 @@ public class ConfigJdProduct implements ConfigParser {
 					addStock(tBean, dom, task);
 					addShopInfo(tBean, dom, task);
 				}
-
+				Elements noStockEls = dom.select("div.itemover-title h3 strong:contains(该商品已下柜)");
+				if (!noStockEls.isEmpty()) {
+					tBean.setStockNum(-1);
+				}
 			} else {
 				tBean.setProductUrl(url);
 				tBean.setSoldNum(-1);
