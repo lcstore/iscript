@@ -71,19 +71,19 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
-		parser = new ConfigProxyDetector();
-		parser = new ConfigProxyCollector();
-		parser = new ConfigJdPromotion();
-		parser = new ConfigTmallBrandList();
-		parser = new ConfigTmallBrandShop();
+//		parser = new ConfigProxyDetector();
+//		parser = new ConfigProxyCollector();
+//		parser = new ConfigJdPromotion();
+//		parser = new ConfigTmallBrandList();
+//		parser = new ConfigTmallBrandShop();
 		// parser = new ConfigJdBrandShop();
 		// parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		parser = new ConfigYhdProduct();
-		parser = new ConfigJdProduct();
+//		parser = new ConfigYhdProduct();
+//		parser = new ConfigJdProduct();
 		// parser = new ConfigYhdPromotion();
 		// parser = new ConfigYhdProduct();
 		// parser = new ConfigYhdPromotList();
@@ -148,7 +148,7 @@ public class ConfigParserTest {
 
 		task.put("ip", "122.14.166.37");
 		task.put("port", 1080);
-		task.put("ip", "1.0.131.190");
+		task.put("ip", "187.188.195.66");
 		task.put("port", 8080);
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
