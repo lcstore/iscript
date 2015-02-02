@@ -106,11 +106,13 @@ public class ProductStatServiceImpl implements ProductStatService {
 			for (ProductStatDto oldDto : hasDtos) {
 				String key = getDtoKey(oldDto);
 				ProductStatDto newDto = dtoMap.get(key);
+				if (newDto == null) {
+					continue;
+				}
 				hasCodeSet.add(oldDto.getProductCode());
-				newDto.setId(oldDto.getId());
+				keepProperty(newDto, oldDto);
 				doPriceStatistic(newDto, oldDto);
 				updateDtos.add(newDto);
-				fixedPrice(newDto, oldDto);
 				if (isChange(oldDto, newDto)) {
 					insertStatHisDtos.add(newDto);
 				}
@@ -133,14 +135,16 @@ public class ProductStatServiceImpl implements ProductStatService {
 
 	}
 
-	private void fixedPrice(ProductStatDto newDto, ProductStatDto oldDto) {
-		if (newDto.getStockNum() == null || newDto.getProductPrice() >= 0) {
-			return;
+	private void keepProperty(ProductStatDto newDto, ProductStatDto oldDto) {
+		newDto.setId(oldDto.getId());
+		if (newDto.getShopId() == null) {
+			newDto.setShopId(oldDto.getShopId());
 		}
-		if (newDto.getStockNum() <= 0 && newDto.getProductPrice() < 0) {
+		if (newDto.getStockNum() != null && newDto.getStockNum() < 0 && (newDto.getProductPrice() == null || newDto.getProductPrice() < 0)) {
 			newDto.setProductPrice(oldDto.getProductPrice());
+		} else if (newDto.getStockNum() == null) {
+			logger.warn("error StockNum.url:" + newDto.getProductUrl());
 		}
-
 	}
 
 	private String getDtoKey(ProductStatDto dto) {

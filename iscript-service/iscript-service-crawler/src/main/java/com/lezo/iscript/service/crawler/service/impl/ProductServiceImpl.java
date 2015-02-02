@@ -132,5 +132,8 @@ public class ProductServiceImpl implements ProductService {
 		if (BarCodeUtils.isBarCode(oldDto.getBarCode()) && !BarCodeUtils.isBarCode(newDto.getBarCode())) {
 			newDto.setBarCode(oldDto.getBarCode());
 		}
+		if (newDto.getShopId() == null) {
+			newDto.setShopId(oldDto.getShopId());
+		}
 	}
 }
