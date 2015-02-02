@@ -1,9 +1,8 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -24,6 +23,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientFactory;
+import com.lezo.iscript.yeam.http.ProxySocketFactory;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
@@ -32,17 +32,8 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class ConfigProxyDetector implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigProxyDetector.class);
 	private DefaultHttpClient client;
-	private List<String> detectUrls;
 
 	public ConfigProxyDetector() {
-		detectUrls = new ArrayList<String>();
-		// detectUrls.add("http://www.baidu.com/index.php?tn=19045005_6_pg");
-		// detectUrls.add("http://detail.tmall.com/item.htm?id=17031847966");
-		detectUrls.add("http://www.jd.com/");
-		detectUrls.add("http://item.jd.com/856850.html");
-		detectUrls.add("http://www.yhd.com");
-		detectUrls.add("http://item.yhd.com/item/7381158");
-
 		this.client = HttpClientFactory.createHttpClient();
 		this.client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(2, false));
 	}
@@ -74,26 +65,40 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
-		String host = getHost(task);
+		Integer type = (Integer) task.get("type");
+		String proxyIp = getHost(task);
 		String url = getDetectUrl(task);
-		HttpGet get = new HttpGet(url);
+		ProxyDetectDto tBean = null;
+		if (2 == type) {
+			tBean = getSocketProxyDetectDto(url, proxyIp, port);
+			tBean.setType(2);
+		} else {
+			tBean = getHttpProxyDetectDto(url, proxyIp, port);
+			if (tBean.getStatus() == 1) {
+				tBean.setType(1);
+			}
+		}
+		DataBean rsBean = new DataBean();
+		rsBean.getDataList().add(tBean);
+		return rsBean;
+	}
+
+	private ProxyDetectDto getSocketProxyDetectDto(String url, String proxyIp, Integer port) {
 		long start = System.currentTimeMillis();
-		int status = 0;
+		HttpGet get = newSocketProxyGet(url, proxyIp, port);
+		String domain = URLUtils.getRootHost(url);
+
+		ProxyDetectDto tBean = new ProxyDetectDto();
+		tBean.setIp(InetAddressUtils.inet_aton(proxyIp));
+		tBean.setPort(port);
+		tBean.setDetector(HeaderUtils.CLIENT_NAME);
+		tBean.setDomain(domain);
+		tBean.setUrl(url);
 		try {
-			HttpHost proxy = new HttpHost(host, port);
-			get.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-			// ExecutionContext.HTTP_PROXY_HOST
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
-			// HttpHost proxyHost = (HttpHost)
-			// context.getAttribute(ExecutionContext.HTTP_PROXY_HOST);
-			// JSONUtils.put(itemObject, "host", proxyHost.getHostName());
-			// JSONUtils.put(itemObject, "port", proxyHost.getPort());
-			int statusCode = res.getStatusLine().getStatusCode();
-			String html = EntityUtils.toString(res.getEntity());
-			status = getStatus(statusCode, html);
+			fillStatus(tBean, res, domain);
 		} catch (Exception e) {
-			status = 0;
 			logger.warn("detect url:" + url + ",cause:", e);
 		} finally {
 			if (get != null && !get.isAborted()) {
@@ -104,19 +109,60 @@ public class ConfigProxyDetector implements ConfigParser {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		ProxyDetectDto tBean = new ProxyDetectDto();
-		tBean.setIp(InetAddressUtils.inet_aton(host));
-		tBean.setPort(JSONUtils.getInteger(argsObject, "port"));
-
-		tBean.setDetector(HeaderUtils.CLIENT_NAME);
-		tBean.setStatus(status);
 		tBean.setCurCost(cost);
-		tBean.setDomain(URLUtils.getRootHost(url));
+		return tBean;
+	}
+
+	private ProxyDetectDto getHttpProxyDetectDto(String url, String proxyIp, Integer port) {
+		long start = System.currentTimeMillis();
+		HttpGet get = newHttpProxyGet(url, proxyIp, port);
+		String domain = URLUtils.getRootHost(url);
+		ProxyDetectDto tBean = new ProxyDetectDto();
+		tBean.setIp(InetAddressUtils.inet_aton(proxyIp));
+		tBean.setPort(port);
+		tBean.setDetector(HeaderUtils.CLIENT_NAME);
+		tBean.setDomain(domain);
 		tBean.setUrl(url);
-		DataBean rsBean = new DataBean();
-		rsBean.getDataList().add(tBean);
-		return rsBean;
+		try {
+			HttpContext context = new BasicHttpContext();
+			HttpResponse res = client.execute(get, context);
+			fillStatus(tBean, res, domain);
+		} catch (Exception e) {
+			logger.warn("detect url:" + url + ",cause:", e);
+		} finally {
+			if (get != null && !get.isAborted()) {
+				get.abort();
+			}
+			if (client != null) {
+				client.getConnectionManager().shutdown();
+			}
+		}
+		long cost = System.currentTimeMillis() - start;
+		tBean.setCurCost(cost);
+		return tBean;
+	}
+
+	private void fillStatus(ProxyDetectDto tBean, HttpResponse res, String domain) throws Exception {
+		int statusCode = res.getStatusLine().getStatusCode();
+		String html = EntityUtils.toString(res.getEntity());
+		if (statusCode < 200 || statusCode >= 300) {
+			if (html != null && html.indexOf(domain) > 0) {
+				tBean.setVerifyStatus(1);
+				tBean.setStatus(1);
+				return;
+			} else {
+				if (html != null) {
+					int maxLen = 95;
+					int len = html.length() > maxLen ? maxLen : html.length();
+					html = html.substring(0, len);
+					tBean.setRemark(html);
+				} else {
+					tBean.setRemark("html is null");
+				}
+				tBean.setVerifyStatus(-1);
+			}
+		}
+		tBean.setStatus(0);
 	}
 
 	private String getHost(TaskWritable task) {
@@ -131,21 +177,27 @@ public class ConfigProxyDetector implements ConfigParser {
 		}
 	}
 
-	private int getStatus(int statusCode, String html) {
-		if (statusCode < 200 || statusCode >= 300) {
-			return 0;
-		}
-		return 1;
-	}
-
 	private String getDetectUrl(TaskWritable task) {
 		Object urlObject = task.get("url");
 		if (urlObject != null) {
 			return urlObject.toString();
+		} else {
+			return "http://www.baidu.com/";
 		}
-		Random rand = new Random();
-		int index = rand.nextInt(detectUrls.size());
-		return detectUrls.get(index);
+	}
+
+	public HttpGet newHttpProxyGet(String url, String proxyIp, Integer port) {
+		HttpGet get = new HttpGet(url);
+		HttpHost proxy = new HttpHost(proxyIp, port);
+		get.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		return get;
+	}
+
+	public HttpGet newSocketProxyGet(String url, String proxyIp, Integer port) {
+		HttpGet get = new HttpGet(url);
+		InetSocketAddress socksaddr = new InetSocketAddress(proxyIp, port);
+		get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));
+		return get;
 	}
 
 	private class ProxyDetectDto {
@@ -156,49 +208,90 @@ public class ConfigProxyDetector implements ConfigParser {
 		private String detector;
 		private Long curCost;
 		private int status = 0;
+
+		private Integer verifyStatus = 0;
+		private String remark;
+		private Integer type = 0;
+
 		public Long getIp() {
 			return ip;
 		}
+
 		public void setIp(Long ip) {
 			this.ip = ip;
 		}
+
 		public int getPort() {
 			return port;
 		}
+
 		public void setPort(int port) {
 			this.port = port;
 		}
+
 		public String getDomain() {
 			return domain;
 		}
+
 		public void setDomain(String domain) {
 			this.domain = domain;
 		}
+
 		public String getUrl() {
 			return url;
 		}
+
 		public void setUrl(String url) {
 			this.url = url;
 		}
+
 		public String getDetector() {
 			return detector;
 		}
+
 		public void setDetector(String detector) {
 			this.detector = detector;
 		}
+
 		public Long getCurCost() {
 			return curCost;
 		}
+
 		public void setCurCost(Long curCost) {
 			this.curCost = curCost;
 		}
+
 		public int getStatus() {
 			return status;
 		}
+
 		public void setStatus(int status) {
 			this.status = status;
 		}
 
+		public String getRemark() {
+			return remark;
+		}
+
+		public void setRemark(String remark) {
+			this.remark = remark;
+		}
+
+		public Integer getType() {
+			return type;
+		}
+
+		public void setType(Integer type) {
+			this.type = type;
+		}
+
+		public Integer getVerifyStatus() {
+			return verifyStatus;
+		}
+
+		public void setVerifyStatus(Integer verifyStatus) {
+			this.verifyStatus = verifyStatus;
+		}
 
 	}
 }

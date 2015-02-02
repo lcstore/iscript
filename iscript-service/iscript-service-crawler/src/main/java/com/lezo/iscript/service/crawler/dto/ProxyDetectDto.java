@@ -14,6 +14,14 @@ public class ProxyDetectDto implements Serializable {
 	public static final int STATUS_USABLE = 1;
 	public static final int STATUS_WORK = 2;
 	public static final int MAX_RETRY_TIMES = 3;
+
+	/**
+	 * 验证状态,0:未知,1:成功,-1:失败
+	 */
+	public static final int CONTENT_VERIFY_UNKNOWN = 0;
+	public static final int CONTENT_VERIFY_SUCCESS = 1;
+	public static final int CONTENT_VERIFY_FAIL = -1;
+
 	private Long id;
 	private Long ip;
 	private int port;
@@ -36,7 +44,7 @@ public class ProxyDetectDto implements Serializable {
 	/**
 	 * 内容验证
 	 */
-	private Integer verifyStatus = 0;
+	private Integer verifyStatus = CONTENT_VERIFY_UNKNOWN;
 	private String remark;
 	private Integer type = ProxyAddrDto.TYPE_UNKNOWN;
 

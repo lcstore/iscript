@@ -11,14 +11,17 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
+import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
+import com.lezo.iscript.service.crawler.service.ProxyAddrService;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
@@ -30,6 +33,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(ProxyDetectStrategy.class);
+	private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
 	private static volatile boolean running = false;
 	private Timer timer;
 
@@ -122,6 +126,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 
 	private class ProxyDetectTimer extends TimerTask {
 		private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
+		private ProxyAddrService proxyAddrService = SpringBeanUtils.getBean(ProxyAddrService.class);
 		private List<Integer> checkStatusList;
 
 		public ProxyDetectTimer() {
@@ -149,6 +154,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 					offerDetectTasks(dtoList, taskId);
 					JSONUtils.put(statusObject, "" + status, dtoList.size());
 				}
+				offerNewProxy(taskId);
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
 			} finally {
@@ -160,6 +166,37 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 
 		}
 
+		private void offerNewProxy(String taskId) {
+			String type = "ConfigProxyDetector";
+			JSONObject argsObject = new JSONObject();
+			Date afterTime = new Date();
+			afterTime = DateUtils.setHours(afterTime, 0);
+			afterTime = DateUtils.setMinutes(afterTime, 0);
+			afterTime = DateUtils.setSeconds(afterTime, 0);
+			afterTime = DateUtils.setMilliseconds(afterTime, 0);
+			List<ProxyAddrDto> dtoList = proxyAddrService.getProxyAddrDtosByCreateTime(afterTime);
+			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>(dtoList.size());
+			for (ProxyAddrDto dto : dtoList) {
+				JSONUtils.put(argsObject, "id", dto.getId());
+				JSONUtils.put(argsObject, "ip", dto.getIp());
+				JSONUtils.put(argsObject, "port", dto.getPort());
+				JSONUtils.put(argsObject, "type", dto.getType());
+				JSONUtils.put(argsObject, "url", DEFAULT_DETECT_URL);
+
+				TaskPriorityDto taskDto = new TaskPriorityDto();
+				taskDto.setBatchId(taskId);
+				taskDto.setType(type);
+				taskDto.setLevel(1);
+				taskDto.setSource(getName());
+				taskDto.setCreatTime(new Date());
+				taskDto.setStatus(TaskConstant.TASK_NEW);
+				taskDto.setParams(argsObject.toString());
+				taskDtos.add(taskDto);
+			}
+			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+			logger.info(String.format("add task to buffer,new task size:%d", taskDtos.size()));
+		}
+
 		private void offerDetectTasks(List<ProxyDetectDto> dtoList, String taskId) {
 			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>();
 			JSONObject argsObject = new JSONObject();
@@ -168,13 +205,15 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 				JSONUtils.put(argsObject, "id", dto.getId());
 				JSONUtils.put(argsObject, "ip", dto.getIp());
 				JSONUtils.put(argsObject, "port", dto.getPort());
-
+				JSONUtils.put(argsObject, "type", dto.getType());
 				TaskPriorityDto taskDto = new TaskPriorityDto();
 				taskDto.setBatchId(taskId);
 				taskDto.setType("ConfigProxyDetector");
 				// nonuse status,change url to get a chance.
 				if (dto.getRetryTimes() > 0) {
 					taskDto.setUrl(dto.getUrl());
+				} else {
+					taskDto.setUrl(DEFAULT_DETECT_URL);
 				}
 				taskDto.setLevel(1);
 				taskDto.setSource("tasker");

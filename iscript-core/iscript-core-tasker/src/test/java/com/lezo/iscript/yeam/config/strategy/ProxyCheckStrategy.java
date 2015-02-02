@@ -96,26 +96,8 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 				taskDto.setParams(argsObject.toString());
 				taskDtos.add(taskDto);
 			}
-			String url = "http://www.baidu.com/";
-			type = "ConfigProxyDetector";
-			for (ProxyAddrDto dto : dtoList) {
-				JSONUtils.put(argsObject, "id", dto.getId());
-				JSONUtils.put(argsObject, "ip", dto.getIp());
-				JSONUtils.put(argsObject, "port", dto.getPort());
-				JSONUtils.put(argsObject, "url", url);
-
-				TaskPriorityDto taskDto = new TaskPriorityDto();
-				taskDto.setBatchId(taskId);
-				taskDto.setType(type);
-				taskDto.setLevel(1);
-				taskDto.setSource(getName());
-				taskDto.setCreatTime(new Date());
-				taskDto.setStatus(TaskConstant.TASK_NEW);
-				taskDto.setParams(argsObject.toString());
-				taskDtos.add(taskDto);
-			}
 			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
-			logger.info(String.format("add task[ConfigProxyChecker,ConfigProxyDetector] to buffer,size:%d", taskDtos.size()));
+			logger.info(String.format("add task[ConfigProxyChecker] to buffer,size:%d", taskDtos.size()));
 		}
 
 	}
