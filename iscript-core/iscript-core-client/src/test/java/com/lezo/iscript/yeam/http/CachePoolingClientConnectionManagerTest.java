@@ -177,14 +177,14 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("37.228.134.52", 7808);
 		socksaddr = new InetSocketAddress("110.139.128.4", 80);
 		socksaddr = new InetSocketAddress("209.141.9.201", 1080);
-		socksaddr = new InetSocketAddress("92.62.57.5", 1080);
+		socksaddr = new InetSocketAddress("183.228.72.120", 8123);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);
 		// socksaddr = new InetSocketAddress("124.42.127.221", 1080);
 		// socksaddr = new InetSocketAddress("180.153.139.246", 8888);
 		String url = "http://item.yhd.com/item/102301?tp=1.0.61.0.9.Kcjj6mx";
-//		url = "http://1111.ip138.com/ic.asp";
+		url = "http://1111.ip138.com/ic.asp";
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));
@@ -218,6 +218,9 @@ public class CachePoolingClientConnectionManagerTest {
 //		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("107.182.17.243", 7808, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("183.250.179.29", 80, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("74.50.126.249", 3127, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("187.188.195.66", 8080, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("118.175.93.243", 80, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("121.199.34.212", 80, "http"));
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

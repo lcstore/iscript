@@ -84,53 +84,56 @@ public class ConfigProxyChecker implements ConfigParser {
 	}
 
 	private void findProxyType(ProxyAddrDto tBean, String proxyIp, Integer port) {
-		if (isHttpProxy(proxyIp, port)) {
+		int status = isHttpProxy(proxyIp, port);
+		if (status == 1) {
 			tBean.setType(ProxyAddrDto.TYPE_HTTP);
-			return;
-		}
-		if (isSocketProxy(proxyIp, port)) {
-			tBean.setType(ProxyAddrDto.TYPE_SOCKET);
-			return;
+		} else if (status == -1) {
+			status = isSocketProxy(proxyIp, port);
+			if (status == 1) {
+				tBean.setType(ProxyAddrDto.TYPE_SOCKET);
+			}
 		}
 	}
 
-	private boolean isHttpProxy(String proxyIp, Integer port) {
+	private int isHttpProxy(String proxyIp, Integer port) {
 		String url = "http://doshome.com/yj/";
 		HttpGet get = new HttpGet(url);
 		try {
 			HttpHost proxy = new HttpHost(proxyIp, port);
 			get.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 			// ExecutionContext.HTTP_PROXY_HOST
-			HttpResponse res = client.execute(get);
-			if (res.getStatusLine().getStatusCode() == 200) {
-				return true;
+			String html = HttpClientUtils.getContent(client, get, "gbk");
+			if (html != null && html.indexOf("DOS之家 2000-2015") > 0) {
+				return 1;
+			} else {
+				return 0;
 			}
 		} catch (Exception e) {
 			logger.warn("isHttpProxy,cause:", e);
 		} finally {
 			get.abort();
 		}
-		return false;
+		return -1;
 	}
 
-	private boolean isSocketProxy(String proxyIp, Integer port) {
+	private int isSocketProxy(String proxyIp, Integer port) {
 		String url = "http://doshome.com/yj/";
 		HttpGet get = new HttpGet(url);
 		try {
 			InetSocketAddress socksaddr = new InetSocketAddress(proxyIp, port);
 			get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));
-			// ExecutionContext.HTTP_PROXY_HOST
-			HttpResponse res = client.execute(get);
-			if (res.getStatusLine().getStatusCode() == 200) {
-				EntityUtils.consumeQuietly(res.getEntity());
-				return true;
+			String html = HttpClientUtils.getContent(client, get, "gbk");
+			if (html != null && html.indexOf("DOS之家 2000-2015") > 0) {
+				return 1;
+			} else {
+				return 0;
 			}
 		} catch (Exception e) {
 			logger.warn("isSocketProxy,cause:", e);
 		} finally {
 			get.abort();
 		}
-		return false;
+		return -1;
 	}
 
 	private void findRegin(ProxyAddrDto tBean, String proxyIp, Integer port) throws Exception {

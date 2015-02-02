@@ -34,12 +34,9 @@ import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
-import com.lezo.iscript.yeam.config.ConfigJdPromotion;
 import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
-import com.lezo.iscript.yeam.config.ConfigTmallBrandList;
-import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
@@ -70,11 +67,11 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
-		parser = new ConfigProxyDetector();
-		parser = new ConfigProxyCollector();
-		parser = new ConfigJdPromotion();
-		parser = new ConfigTmallBrandList();
-		parser = new ConfigTmallBrandShop();
+//		parser = new ConfigProxyDetector();
+//		parser = new ConfigProxyCollector();
+//		parser = new ConfigJdPromotion();
+//		parser = new ConfigTmallBrandList();
+//		parser = new ConfigTmallBrandShop();
 		// parser = new ConfigJdBrandShop();
 		// parser = new ConfigJdClientValidator();
 		// parser = new ConfigBaiduDoc();
@@ -148,7 +145,7 @@ public class ConfigParserTest {
 
 		task.put("ip", "122.14.166.37");
 		task.put("port", 1080);
-		task.put("ip", "1.0.131.190");
+		task.put("ip", "187.188.195.66");
 		task.put("port", 8080);
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
