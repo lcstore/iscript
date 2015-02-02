@@ -4,18 +4,18 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyAddrDao">
 	<resultMap type="ProxyAddrDto" id="RM_ProxyAddrDto">
-		<result column="ID" property="id"/>
-		<result column="IP" property="ip"/>
-		<result column="PORT" property="port"/>
-		<result column="ADDR_CODE" property="addrCode"/>
-		<result column="SOURCE" property="source"/>
-		<result column="REGION_NAME" property="regionName"/>
-		<result column="ISP_NAME" property="ispName"/>
-		<result column="IS_DELETE" property="isDelete"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
-		<result column="TYPE" property="type"/>
-		<result column="REMARK" property="remark"/>
+		<result column="ID" property="id" />
+		<result column="IP" property="ip" />
+		<result column="PORT" property="port" />
+		<result column="ADDR_CODE" property="addrCode" />
+		<result column="SOURCE" property="source" />
+		<result column="REGION_NAME" property="regionName" />
+		<result column="ISP_NAME" property="ispName" />
+		<result column="IS_DELETE" property="isDelete" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="TYPE" property="type" />
+		<result column="REMARK" property="remark" />
 	</resultMap>
 	<sql id="ProxyAddrDto-coloumn-list">
 		IP
@@ -53,7 +53,8 @@
 		REMARK=#{remark}
 		WHERE ID=#{id}
 	</update>
-	<select id="getProxyAddrDtosByAddrCodes" parameterType="map" resultMap="RM_ProxyAddrDto">
+	<select id="getProxyAddrDtosByAddrCodes" parameterType="map"
+		resultMap="RM_ProxyAddrDto">
 		SELECT ID,
 		<include refid="ProxyAddrDto-coloumn-list" />
 		FROM T_PROXY_ADDR
@@ -64,14 +65,26 @@
 			</foreach>
 		</where>
 	</select>
-	<select id="getNullRegionProxyAddrDtos" parameterType="map" resultMap="RM_ProxyAddrDto">
+	<select id="getNullRegionProxyAddrDtos" parameterType="map"
+		resultMap="RM_ProxyAddrDto">
 		SELECT ID,
 		<include refid="ProxyAddrDto-coloumn-list" />
 		FROM T_PROXY_ADDR
 		<where>
-		    REGION_NAME IS NULL
+			REGION_NAME IS NULL
 			<if test="type !=null">
-			  AND TYPE=#{type}
+				AND TYPE=#{type}
+			</if>
+		</where>
+	</select>
+	<select id="getProxyAddrDtosByCreateTime" parameterType="map"
+		resultMap="RM_ProxyAddrDto">
+		SELECT ID,
+		<include refid="ProxyAddrDto-coloumn-list" />
+		FROM T_PROXY_ADDR
+		<where>
+			<if test="afterTime !=null">
+				CREATE_TIME>#{afterTime}
 			</if>
 		</where>
 	</select>

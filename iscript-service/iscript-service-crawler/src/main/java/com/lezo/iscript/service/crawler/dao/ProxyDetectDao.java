@@ -28,4 +28,6 @@ public interface ProxyDetectDao {
 			@Param(value = "status") Integer status, @Param(value = "limit") int limit);
 
 	void batchUpdateProxyStatus(@Param(value = "idList") List<Long> idList, @Param(value = "status") Integer status);
+
+	List<ProxyDetectDto> getProxyDetectDtosByCodeList(@Param("addrCodeList") List<String> addrCodeList, @Param("domain") String domain, @Param("status") Integer status);
 }

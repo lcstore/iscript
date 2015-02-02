@@ -2,6 +2,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +131,11 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	@Override
 	public List<ProxyAddrDto> getNullRegionProxyAddrDtos(Integer type) {
 		return proxyAddrDao.getNullRegionProxyAddrDtos(type);
+	}
+
+	@Override
+	public List<ProxyAddrDto> getProxyAddrDtosByCreateTime(Date afterTime) {
+		return proxyAddrDao.getProxyAddrDtosByCreateTime(afterTime);
 	}
 
 }

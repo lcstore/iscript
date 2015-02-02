@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
@@ -14,4 +15,6 @@ public interface ProxyAddrService {
 	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(List<String> addrCodeList);
 
 	List<ProxyAddrDto> getNullRegionProxyAddrDtos(Integer type);
+
+	List<ProxyAddrDto> getProxyAddrDtosByCreateTime(Date afterTime);
 }

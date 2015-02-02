@@ -33,8 +33,12 @@ public class ProxyDetectDto implements Serializable {
 	private int lastSuccessCount;
 
 	private String addrCode;
+	/**
+	 * 内容验证
+	 */
 	private Integer verifyStatus = 0;
 	private String remark;
+	private Integer type = ProxyAddrDto.TYPE_UNKNOWN;
 
 	public Long getId() {
 		return id;
@@ -194,6 +198,14 @@ public class ProxyDetectDto implements Serializable {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 }

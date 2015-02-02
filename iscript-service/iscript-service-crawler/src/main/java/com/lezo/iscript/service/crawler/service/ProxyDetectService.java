@@ -10,9 +10,10 @@ public interface ProxyDetectService {
 
 	void batchUpdateProxyDetectDtos(List<ProxyDetectDto> dtoList);
 
+	@Deprecated
 	void batchInsertIfAbsent(List<ProxyDetectDto> dtoList);
 
-	void batchSaveAfterDetect(List<ProxyDetectDto> dtoList);
+	void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList);
 
 	List<ProxyDetectDto> getProxyDetectDtos(List<Long> ipLongs, List<Integer> portList, Integer status);
 
@@ -25,4 +26,6 @@ public interface ProxyDetectService {
 	List<ProxyDetectDto> getUnionProxyDetectDtoFromDomain(List<String> domainList, Integer status, int limit);
 
 	void batchUpdateProxyStatus(List<Long> idList, Integer status);
+
+	List<ProxyDetectDto> getProxyDetectDtosByCodeList(List<String> addrCodeList, String domain, Integer status);
 }

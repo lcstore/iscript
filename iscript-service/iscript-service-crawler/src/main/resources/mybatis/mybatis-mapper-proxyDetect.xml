@@ -23,6 +23,7 @@
 		<result column="LAST_SUCCESS_COUNT" property="lastSuccessCount"/>
 		<result column="VERIFY_STATUS" property="verifyStatus"/>
 		<result column="REMARK" property="remark"/>
+		<result column="TYPE" property="type"/>
 	</resultMap>
 	<sql id="ProxyDetectDto-coloumn-list">
 		ADDR_CODE
@@ -43,6 +44,7 @@
 		,LAST_SUCCESS_COUNT
 		,VERIFY_STATUS
 		,REMARK
+		,TYPE
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyDetectDto">
 		INSERT INTO T_PROXY_DETECT(
@@ -51,7 +53,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.addrCode},#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime},#{item.failCount},#{item.successCount},#{item.lastSuccessCount},#{item.verifyStatus},#{item.remark})
+			(#{item.addrCode},#{item.ip},#{item.port},#{item.domain},#{item.url},#{item.detector},#{item.curCost},#{item.minCost},#{item.maxCost},#{item.retryTimes},#{item.status},#{item.createTime},#{item.updateTime},#{item.failCount},#{item.successCount},#{item.lastSuccessCount},#{item.verifyStatus},#{item.remark},#{item.type})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyDetectDto">
@@ -68,7 +70,8 @@
 		SUCCESS_COUNT=#{successCount},
 		LAST_SUCCESS_COUNT=#{lastSuccessCount},
 		VERIFY_STATUS=#{verifyStatus},
-		REMARK=#{remark}
+		REMARK=#{remark},
+		TYPE=#{type}
 		WHERE ID=#{id}
 	</update>
 	<update id="batchUpdateProxyStatus" parameterType="map">
@@ -98,6 +101,23 @@
 		</if>
 		<if test="status!=null">
 			AND STATUS=#{status}
+		</if>
+	</select>
+	<select id="getProxyDetectDtosByCodeList" parameterType="map"
+		resultMap="RM_ProxyDetectDto">
+		SELECT * FROM T_PROXY_DETECT
+		WHERE 1=1
+		<if test="addrCodeList!=null and !addrCodeList.isEmpty()">
+			<foreach collection="addrCodeList" item="code" open="AND ADDR_CODE IN("
+				close=")" separator=",">
+				#{code}
+			</foreach>
+		</if>
+		<if test="status!=null">
+			AND STATUS=#{status}
+		</if>
+		<if test="domain!=null">
+			AND DOMAIN=#{domain}
 		</if>
 	</select>
 	<select id="getProxyDetectDtosFromId" parameterType="map"

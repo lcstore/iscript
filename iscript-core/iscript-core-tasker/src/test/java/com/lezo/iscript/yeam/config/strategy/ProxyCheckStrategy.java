@@ -32,7 +32,7 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 	public ProxyCheckStrategy() {
 		ProxyDetectTimer task = new ProxyDetectTimer();
 		this.timer = new Timer(this.getName());
-		this.timer.schedule(task, 1 * 60 * 1000, 12 * 60 * 60 * 1000);
+		this.timer.schedule(task, 1 * 60 * 1000, 5 * 60 * 60 * 1000);
 	}
 
 	@Override
@@ -78,9 +78,9 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 		private void offerDetectTasks(List<ProxyAddrDto> dtoList, String taskId) {
 			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>();
 			JSONObject argsObject = new JSONObject();
-			String type = "ConfigProxyChecker";
 			JSONUtils.put(argsObject, "strategy", getName());
 			JSONUtils.put(argsObject, "retry", 0);
+			String type = "ConfigProxyChecker";
 			for (ProxyAddrDto dto : dtoList) {
 				JSONUtils.put(argsObject, "id", dto.getId());
 				JSONUtils.put(argsObject, "ip", dto.getIp());
@@ -96,8 +96,26 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 				taskDto.setParams(argsObject.toString());
 				taskDtos.add(taskDto);
 			}
+			String url = "http://www.baidu.com/";
+			type = "ConfigProxyDetector";
+			for (ProxyAddrDto dto : dtoList) {
+				JSONUtils.put(argsObject, "id", dto.getId());
+				JSONUtils.put(argsObject, "ip", dto.getIp());
+				JSONUtils.put(argsObject, "port", dto.getPort());
+				JSONUtils.put(argsObject, "url", url);
+
+				TaskPriorityDto taskDto = new TaskPriorityDto();
+				taskDto.setBatchId(taskId);
+				taskDto.setType(type);
+				taskDto.setLevel(1);
+				taskDto.setSource(getName());
+				taskDto.setCreatTime(new Date());
+				taskDto.setStatus(TaskConstant.TASK_NEW);
+				taskDto.setParams(argsObject.toString());
+				taskDtos.add(taskDto);
+			}
 			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
-			logger.info(String.format("add task[%s] to buffer,size:%d", type, taskDtos.size()));
+			logger.info(String.format("add task[ConfigProxyChecker,ConfigProxyDetector] to buffer,size:%d", taskDtos.size()));
 		}
 
 	}

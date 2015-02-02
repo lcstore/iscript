@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -14,4 +15,6 @@ public interface ProxyAddrDao {
 	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(@Param("addrCodeList") List<String> addrCodeList);
 
 	List<ProxyAddrDto> getNullRegionProxyAddrDtos(@Param("type") Integer type);
+
+	List<ProxyAddrDto> getProxyAddrDtosByCreateTime(@Param("afterTime") Date afterTime);
 }

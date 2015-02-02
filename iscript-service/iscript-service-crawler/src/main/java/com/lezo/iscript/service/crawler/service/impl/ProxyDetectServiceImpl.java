@@ -101,7 +101,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	}
 
 	@Override
-	public void batchSaveAfterDetect(List<ProxyDetectDto> dtoList) {
+	public void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList) {
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		List<ProxyDetectDto> updateDtos = new ArrayList<ProxyDetectDto>();
 		doAssort(dtoList, insertDtos, updateDtos);
@@ -111,69 +111,81 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	}
 
 	private void doAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos, List<ProxyDetectDto> updateDtos) {
-		Set<Long> ipSet = new HashSet<Long>();
-		Set<Integer> portSet = new HashSet<Integer>();
-		Map<String, ProxyDetectDto> dtoMap = new HashMap<String, ProxyDetectDto>();
+		Map<String, List<ProxyDetectDto>> domainDetectMap = new HashMap<String, List<ProxyDetectDto>>();
 		for (ProxyDetectDto dto : dtoList) {
-			ipSet.add(dto.getIp());
-			portSet.add(dto.getPort());
-			String key = getDtoKey(dto);
-			dtoMap.put(key, dto);
+			List<ProxyDetectDto> domainList = domainDetectMap.get(dto.getDomain());
+			if (domainList == null) {
+				domainList = new ArrayList<ProxyDetectDto>();
+				domainDetectMap.put(dto.getDomain(), domainList);
+			}
+			domainList.add(dto);
+
 		}
-		List<ProxyDetectDto> hasDtos = getProxyDetectDtos(new ArrayList<Long>(ipSet), new ArrayList<Integer>(portSet), null);
-		Set<String> hasCodeSet = new HashSet<String>();
-		for (ProxyDetectDto oldDto : hasDtos) {
-			String key = getDtoKey(oldDto);
-			hasCodeSet.add(key);
-			ProxyDetectDto newDto = dtoMap.get(key);
-			if (newDto == null) {
-				continue;
+		for (Entry<String, List<ProxyDetectDto>> entry : domainDetectMap.entrySet()) {
+			Set<String> codeSet = new HashSet<String>();
+			Map<String, ProxyDetectDto> dtoKeyMap = new HashMap<String, ProxyDetectDto>();
+			for (ProxyDetectDto detectDto : entry.getValue()) {
+				codeSet.add(detectDto.getAddrCode());
+				dtoKeyMap.put(getDtoKey(detectDto), detectDto);
 			}
-			newDto.setMaxCost(newDto.getCurCost());
-			newDto.setMinCost(newDto.getCurCost());
-			if (oldDto.getMaxCost() != null && newDto.getMaxCost() < oldDto.getMaxCost()) {
-				newDto.setMaxCost(oldDto.getMaxCost());
-			}
-			if (oldDto.getMinCost() != null && newDto.getMinCost() > oldDto.getMinCost()) {
-				newDto.setMinCost(oldDto.getMinCost());
-			}
-			if (1 == newDto.getStatus()) {
-				newDto.setStatus(ProxyDetectDto.STATUS_USABLE);
-				newDto.setSuccessCount(oldDto.getSuccessCount() + 1);
-				newDto.setLastSuccessCount(oldDto.getLastSuccessCount() + 1);
-				newDto.setRetryTimes(0);
-			} else if (0 == newDto.getStatus()) {
-				newDto.setFailCount(oldDto.getFailCount() + 1);
-				newDto.setLastSuccessCount(0);
-				newDto.setRetryTimes(oldDto.getRetryTimes() + 1);
-				if (newDto.getRetryTimes() >= ProxyDetectDto.MAX_RETRY_TIMES) {
-					newDto.setRetryTimes(0);
-					newDto.setStatus(oldDto.getStatus() - 1);
+			String domain = entry.getKey();
+			List<String> addrCodeList = new ArrayList<String>(codeSet);
+			List<ProxyDetectDto> hasDtos = getProxyDetectDtosByCodeList(addrCodeList, domain, null);
+			Set<String> hasCodeSet = new HashSet<String>();
+			for (ProxyDetectDto oldDto : hasDtos) {
+				String key = getDtoKey(oldDto);
+				hasCodeSet.add(key);
+				ProxyDetectDto newDto = dtoKeyMap.get(key);
+				if (newDto == null) {
+					continue;
 				}
+				newDto.setMaxCost(newDto.getCurCost());
+				newDto.setMinCost(newDto.getCurCost());
+				if (oldDto.getMaxCost() != null && newDto.getMaxCost() < oldDto.getMaxCost()) {
+					newDto.setMaxCost(oldDto.getMaxCost());
+				}
+				if (oldDto.getMinCost() != null && newDto.getMinCost() > oldDto.getMinCost()) {
+					newDto.setMinCost(oldDto.getMinCost());
+				}
+				if (1 == newDto.getStatus()) {
+					newDto.setStatus(ProxyDetectDto.STATUS_USABLE);
+					newDto.setSuccessCount(oldDto.getSuccessCount() + 1);
+					newDto.setLastSuccessCount(oldDto.getLastSuccessCount() + 1);
+					newDto.setRetryTimes(0);
+				} else if (0 == newDto.getStatus()) {
+					newDto.setFailCount(oldDto.getFailCount() + 1);
+					newDto.setLastSuccessCount(0);
+					newDto.setRetryTimes(oldDto.getRetryTimes() + 1);
+					if (newDto.getRetryTimes() >= ProxyDetectDto.MAX_RETRY_TIMES) {
+						newDto.setRetryTimes(0);
+						newDto.setStatus(oldDto.getStatus() - 1);
+					}
+				}
+				newDto.setId(oldDto.getId());
+				newDto.setCreateTime(oldDto.getCreateTime());
+				updateDtos.add(newDto);
 			}
-			newDto.setId(oldDto.getId());
-			newDto.setCreateTime(oldDto.getCreateTime());
-			updateDtos.add(newDto);
+			for (Entry<String, ProxyDetectDto> keyEntry : dtoKeyMap.entrySet()) {
+				if (hasCodeSet.contains(keyEntry.getKey())) {
+					continue;
+				}
+				ProxyDetectDto newDto = keyEntry.getValue();
+				if (1 == newDto.getStatus()) {
+					newDto.setSuccessCount(1);
+					newDto.setLastSuccessCount(1);
+				} else if (0 == newDto.getStatus()) {
+					newDto.setFailCount(1);
+				}
+				newDto.setMaxCost(newDto.getCurCost());
+				newDto.setMinCost(newDto.getCurCost());
+				insertDtos.add(newDto);
+			}
 		}
-		for (Entry<String, ProxyDetectDto> entry : dtoMap.entrySet()) {
-			if (hasCodeSet.contains(entry.getKey())) {
-				continue;
-			}
-			ProxyDetectDto newDto = entry.getValue();
-			if (1 == newDto.getStatus()) {
-				newDto.setSuccessCount(1);
-				newDto.setLastSuccessCount(1);
-			} else if (0 == newDto.getStatus()) {
-				newDto.setFailCount(1);
-			}
-			newDto.setMaxCost(newDto.getCurCost());
-			newDto.setMinCost(newDto.getCurCost());
-			insertDtos.add(newDto);
-		}
+
 	}
 
 	private String getDtoKey(ProxyDetectDto dto) {
-		String key = dto.getIp() + "-" + dto.getPort();
+		String key = dto.getAddrCode() + "-" + dto.getDomain();
 		return key;
 	}
 
@@ -242,6 +254,14 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		while (it.hasNext()) {
 			proxyDetectDao.batchUpdateProxyStatus(it.next(), status);
 		}
+	}
+
+	@Override
+	public List<ProxyDetectDto> getProxyDetectDtosByCodeList(List<String> addrCodeList, String domain, Integer status) {
+		if (CollectionUtils.isEmpty(addrCodeList)) {
+			return Collections.emptyList();
+		}
+		return proxyDetectDao.getProxyDetectDtosByCodeList(addrCodeList, domain, status);
 	}
 
 }
