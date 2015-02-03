@@ -66,16 +66,25 @@ public class ConfigProxyDetector implements ConfigParser {
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
 		Integer type = (Integer) task.get("type");
+		type = type == null ? 0 : type;
 		String proxyIp = getHost(task);
 		String url = getDetectUrl(task);
 		ProxyDetectDto tBean = null;
 		if (2 == type) {
 			tBean = getSocketProxyDetectDto(url, proxyIp, port);
-			tBean.setType(2);
+			tBean.setType(type);
+		} else if (1 == type) {
+			tBean = getHttpProxyDetectDto(url, proxyIp, port);
+			tBean.setType(type);
 		} else {
 			tBean = getHttpProxyDetectDto(url, proxyIp, port);
 			if (tBean.getStatus() == 1) {
 				tBean.setType(1);
+			} else {
+				tBean = getSocketProxyDetectDto(url, proxyIp, port);
+				if (tBean.getStatus() == 1) {
+					tBean.setType(2);
+				}
 			}
 		}
 		DataBean rsBean = new DataBean();
@@ -99,13 +108,10 @@ public class ConfigProxyDetector implements ConfigParser {
 			HttpResponse res = client.execute(get, context);
 			fillStatus(tBean, res, domain);
 		} catch (Exception e) {
-			logger.warn("detect url:" + url + ",cause:", e);
+			logger.warn("SocketProxy url:" + url + ",cause:", e);
 		} finally {
 			if (get != null && !get.isAborted()) {
 				get.abort();
-			}
-			if (client != null) {
-				client.getConnectionManager().shutdown();
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
@@ -128,13 +134,10 @@ public class ConfigProxyDetector implements ConfigParser {
 			HttpResponse res = client.execute(get, context);
 			fillStatus(tBean, res, domain);
 		} catch (Exception e) {
-			logger.warn("detect url:" + url + ",cause:", e);
+			logger.warn("HttpProxy url:" + url + ",cause:", e);
 		} finally {
 			if (get != null && !get.isAborted()) {
 				get.abort();
-			}
-			if (client != null) {
-				client.getConnectionManager().shutdown();
 			}
 		}
 		long cost = System.currentTimeMillis() - start;

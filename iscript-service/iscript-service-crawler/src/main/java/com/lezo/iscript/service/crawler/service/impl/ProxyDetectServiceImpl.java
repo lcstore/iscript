@@ -67,37 +67,51 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	public void batchInsertIfAbsent(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
-		doAbsentAssort(dtoList, insertDtos, null);
+		doAbsentAssort(dtoList, insertDtos);
 		batchInsertProxyDetectDtos(insertDtos);
-		logger.info("save ProxyDetectDto.insert:{},total:{}", insertDtos.size(), dtoList.size());
+		logger.info("save ProxyDetectDto.batchInsertIfAbsent:{},total:{}", insertDtos.size(), dtoList.size());
 	}
 
-	private void doAbsentAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos, List<ProxyDetectDto> updateDtos) {
-		Set<Long> ipSet = new HashSet<Long>();
-		Set<Integer> portSet = new HashSet<Integer>();
-		Map<String, ProxyDetectDto> dtoMap = new HashMap<String, ProxyDetectDto>();
+	private void doAbsentAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos) {
+		Map<String, List<ProxyDetectDto>> domainDetectMap = new HashMap<String, List<ProxyDetectDto>>();
 		for (ProxyDetectDto dto : dtoList) {
-			ipSet.add(dto.getIp());
-			portSet.add(dto.getPort());
-			String key = getDtoKey(dto);
-			dtoMap.put(key, dto);
-		}
-		List<ProxyDetectDto> hasDtos = getProxyDetectDtos(new ArrayList<Long>(ipSet), new ArrayList<Integer>(portSet), null);
-		Set<String> hasCodeSet = new HashSet<String>();
-		for (ProxyDetectDto oldDto : hasDtos) {
-			String key = getDtoKey(oldDto);
-			hasCodeSet.add(key);
-		}
-		for (Entry<String, ProxyDetectDto> entry : dtoMap.entrySet()) {
-			if (hasCodeSet.contains(entry.getKey())) {
-				continue;
+			List<ProxyDetectDto> domainList = domainDetectMap.get(dto.getDomain());
+			if (domainList == null) {
+				domainList = new ArrayList<ProxyDetectDto>();
+				domainDetectMap.put(dto.getDomain(), domainList);
 			}
-			ProxyDetectDto newDto = entry.getValue();
-			newDto.setMaxCost(newDto.getCurCost());
-			newDto.setMinCost(newDto.getCurCost());
-			insertDtos.add(newDto);
-		}
+			domainList.add(dto);
 
+		}
+		for (Entry<String, List<ProxyDetectDto>> entry : domainDetectMap.entrySet()) {
+			Set<String> codeSet = new HashSet<String>();
+			for (ProxyDetectDto detectDto : entry.getValue()) {
+				codeSet.add(detectDto.getAddrCode());
+			}
+			String domain = entry.getKey();
+			List<String> addrCodeList = new ArrayList<String>(codeSet);
+			List<ProxyDetectDto> hasDtos = getProxyDetectDtosByCodeList(addrCodeList, domain, null);
+			Set<String> hasCodeSet = new HashSet<String>();
+			for (ProxyDetectDto oldDto : hasDtos) {
+				String key = getDtoKey(oldDto);
+				hasCodeSet.add(key);
+			}
+			for (ProxyDetectDto newDto : entry.getValue()) {
+				String key = getDtoKey(newDto);
+				if (hasCodeSet.contains(key)) {
+					continue;
+				}
+				if (1 == newDto.getStatus()) {
+					newDto.setSuccessCount(1);
+					newDto.setLastSuccessCount(1);
+				} else if (0 == newDto.getStatus()) {
+					newDto.setFailCount(1);
+				}
+				newDto.setMaxCost(newDto.getCurCost());
+				newDto.setMinCost(newDto.getCurCost());
+				insertDtos.add(newDto);
+			}
+		}
 	}
 
 	@Override

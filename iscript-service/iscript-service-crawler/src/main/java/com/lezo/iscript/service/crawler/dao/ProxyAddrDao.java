@@ -17,4 +17,6 @@ public interface ProxyAddrDao {
 	List<ProxyAddrDto> getNullRegionProxyAddrDtos(@Param("type") Integer type);
 
 	List<ProxyAddrDto> getProxyAddrDtosByCreateTime(@Param("afterTime") Date afterTime);
+
+	List<ProxyAddrDto> getProxyAddrDtosByFromId(@Param("fromId") Long fromId, @Param("limit") Integer limit);
 }

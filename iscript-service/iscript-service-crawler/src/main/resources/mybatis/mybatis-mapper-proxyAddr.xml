@@ -88,4 +88,11 @@
 			</if>
 		</where>
 	</select>
+	<select id="getProxyAddrDtosByFromId" parameterType="map"
+		resultMap="RM_ProxyAddrDto">
+		SELECT ID,
+		<include refid="ProxyAddrDto-coloumn-list" />
+		FROM T_PROXY_ADDR
+		WHERE  ID > #{fromId} LIMIT #{limit}
+	</select>
 </mapper>

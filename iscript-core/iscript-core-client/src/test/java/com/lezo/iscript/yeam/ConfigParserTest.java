@@ -67,7 +67,7 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
-//		parser = new ConfigProxyDetector();
+		parser = new ConfigProxyDetector();
 //		parser = new ConfigProxyCollector();
 //		parser = new ConfigJdPromotion();
 //		parser = new ConfigTmallBrandList();
@@ -78,7 +78,7 @@ public class ConfigParserTest {
 		// parser = new ConfigBarCodeCollector();
 		// parser = new ConfigBaiduDoc();
 		// parser = new ConfigBarCodeMatcher();
-		parser = new ConfigYhdProduct();
+//		parser = new ConfigYhdProduct();
 //		parser = new ConfigJdProduct();
 		// parser = new ConfigYhdPromotion();
 		// parser = new ConfigYhdProduct();
@@ -131,6 +131,7 @@ public class ConfigParserTest {
 		url = "http://item.jd.com/1264683.html";
 		url = "http://item.jd.com/1166371.html";
 		url = "http://item.yhd.com/item/992913";
+		url = "http://www.baidu.com/";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -143,10 +144,15 @@ public class ConfigParserTest {
 		task.put("ip", "2030763147");
 		task.put("port", 3128);
 
-		task.put("ip", "122.14.166.37");
-		task.put("port", 1080);
-		task.put("ip", "187.188.195.66");
-		task.put("port", 8080);
+		// http
+		task.put("ip", "111.1.36.130");
+		task.put("port", 80);
+		task.put("ip", "180.168.217.86");
+		task.put("port", 8081);
+		// socket
+		task.put("ip", "218.166.41.56");
+		task.put("port", 8088);
+		task.put("type", 2);
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}

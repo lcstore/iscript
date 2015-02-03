@@ -3,6 +3,7 @@ package com.lezo.iscript.service.crawler.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.lezo.iscript.common.UnifyValueAnnotation;
 import com.lezo.iscript.utils.InetAddressUtils;
 
 public class ProxyDetectDto implements Serializable {
@@ -25,6 +26,7 @@ public class ProxyDetectDto implements Serializable {
 	private Long id;
 	private Long ip;
 	private int port;
+	@UnifyValueAnnotation("baidu.com")
 	private String domain;
 	private String url;
 	private String detector;
@@ -32,6 +34,7 @@ public class ProxyDetectDto implements Serializable {
 	private Long minCost;
 	private Long maxCost;
 	private int retryTimes;
+	@UnifyValueAnnotation("0")
 	private int status = STATUS_RETRY;
 	private Date createTime;
 	private Date updateTime;
@@ -44,8 +47,11 @@ public class ProxyDetectDto implements Serializable {
 	/**
 	 * 内容验证
 	 */
+	@UnifyValueAnnotation("0")
 	private Integer verifyStatus = CONTENT_VERIFY_UNKNOWN;
+	@UnifyValueAnnotation("")
 	private String remark;
+	@UnifyValueAnnotation("0")
 	private Integer type = ProxyAddrDto.TYPE_UNKNOWN;
 
 	public Long getId() {

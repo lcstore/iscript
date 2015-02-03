@@ -11,14 +11,11 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.common.storage.StorageBuffer;
 import com.lezo.iscript.common.storage.StorageBufferFactory;
-import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.ProxyAddrService;
@@ -74,28 +71,6 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			// }
 		}
 
-	}
-
-	private void addResults(JSONObject rootObject, JSONObject argsObject, List<ProxyDetectDto> dtoList) throws Exception {
-		JSONObject newObject = rootObject;
-		ProxyDetectDto dto = new ProxyDetectDto();
-		dto.setId(JSONUtils.getLong(argsObject, "id"));
-		dto.setIp(JSONUtils.getLong(argsObject, "ip"));
-		dto.setPort(JSONUtils.getInteger(argsObject, "port"));
-
-		dto.setDetector(JSONUtils.getString(newObject, "detector"));
-		dto.setStatus(JSONUtils.getInteger(newObject, "status"));
-		dto.setCurCost(JSONUtils.getLong(newObject, "cost"));
-		dto.setDomain(JSONUtils.getString(newObject, "domain"));
-		dto.setUrl(JSONUtils.getString(newObject, "url"));
-
-		dto.setCreateTime(new Date());
-		dto.setUpdateTime(dto.getCreateTime());
-		dtoList.add(dto);
-	}
-
-	private StorageBuffer<TaskPriorityDto> getTaskPriorityDtoBuffer() {
-		return (StorageBuffer<TaskPriorityDto>) StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class);
 	}
 
 	private void addRetry(ResultWritable rWritable) {
@@ -154,7 +129,6 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 					offerDetectTasks(dtoList, taskId);
 					JSONUtils.put(statusObject, "" + status, dtoList.size());
 				}
-				offerNewProxy(taskId);
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
 			} finally {
@@ -164,37 +138,6 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 				running = false;
 			}
 
-		}
-
-		private void offerNewProxy(String taskId) {
-			String type = "ConfigProxyDetector";
-			JSONObject argsObject = new JSONObject();
-			Date afterTime = new Date();
-			afterTime = DateUtils.setHours(afterTime, 0);
-			afterTime = DateUtils.setMinutes(afterTime, 0);
-			afterTime = DateUtils.setSeconds(afterTime, 0);
-			afterTime = DateUtils.setMilliseconds(afterTime, 0);
-			List<ProxyAddrDto> dtoList = proxyAddrService.getProxyAddrDtosByCreateTime(afterTime);
-			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>(dtoList.size());
-			for (ProxyAddrDto dto : dtoList) {
-				JSONUtils.put(argsObject, "id", dto.getId());
-				JSONUtils.put(argsObject, "ip", dto.getIp());
-				JSONUtils.put(argsObject, "port", dto.getPort());
-				JSONUtils.put(argsObject, "type", dto.getType());
-				JSONUtils.put(argsObject, "url", DEFAULT_DETECT_URL);
-
-				TaskPriorityDto taskDto = new TaskPriorityDto();
-				taskDto.setBatchId(taskId);
-				taskDto.setType(type);
-				taskDto.setLevel(1);
-				taskDto.setSource(getName());
-				taskDto.setCreatTime(new Date());
-				taskDto.setStatus(TaskConstant.TASK_NEW);
-				taskDto.setParams(argsObject.toString());
-				taskDtos.add(taskDto);
-			}
-			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
-			logger.info(String.format("add task to buffer,new task size:%d", taskDtos.size()));
 		}
 
 		private void offerDetectTasks(List<ProxyDetectDto> dtoList, String taskId) {

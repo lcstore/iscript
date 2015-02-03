@@ -10,7 +10,6 @@ public interface ProxyDetectService {
 
 	void batchUpdateProxyDetectDtos(List<ProxyDetectDto> dtoList);
 
-	@Deprecated
 	void batchInsertIfAbsent(List<ProxyDetectDto> dtoList);
 
 	void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList);

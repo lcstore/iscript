@@ -26,6 +26,7 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(ProxyCheckStrategy.class);
+	private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
 	private static volatile boolean running = false;
 	private Timer timer;
 
@@ -76,11 +77,11 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 		}
 
 		private void offerDetectTasks(List<ProxyAddrDto> dtoList, String taskId) {
-			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>();
 			JSONObject argsObject = new JSONObject();
 			JSONUtils.put(argsObject, "strategy", getName());
 			JSONUtils.put(argsObject, "retry", 0);
 			String type = "ConfigProxyChecker";
+			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>(dtoList.size());
 			for (ProxyAddrDto dto : dtoList) {
 				JSONUtils.put(argsObject, "id", dto.getId());
 				JSONUtils.put(argsObject, "ip", dto.getIp());
@@ -97,7 +98,27 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 				taskDtos.add(taskDto);
 			}
 			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
-			logger.info(String.format("add task[ConfigProxyChecker] to buffer,size:%d", taskDtos.size()));
+			logger.info(String.format("add task[%s] to buffer,size:%d", type, taskDtos.size()));
+			type = "ConfigProxyDetector";
+			taskDtos = new ArrayList<TaskPriorityDto>(dtoList.size());
+			for (ProxyAddrDto dto : dtoList) {
+				JSONUtils.put(argsObject, "id", dto.getId());
+				JSONUtils.put(argsObject, "ip", dto.getIp());
+				JSONUtils.put(argsObject, "port", dto.getPort());
+				JSONUtils.put(argsObject, "url", DEFAULT_DETECT_URL);
+
+				TaskPriorityDto taskDto = new TaskPriorityDto();
+				taskDto.setBatchId(taskId);
+				taskDto.setType(type);
+				taskDto.setLevel(1);
+				taskDto.setSource(getName());
+				taskDto.setCreatTime(new Date());
+				taskDto.setStatus(TaskConstant.TASK_NEW);
+				taskDto.setParams(argsObject.toString());
+				taskDtos.add(taskDto);
+			}
+			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+			logger.info(String.format("add task[%s] to buffer,size:%d", type, taskDtos.size()));
 		}
 
 	}

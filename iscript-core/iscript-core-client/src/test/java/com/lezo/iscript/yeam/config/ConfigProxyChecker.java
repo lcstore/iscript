@@ -75,7 +75,7 @@ public class ConfigProxyChecker implements ConfigParser {
 			tBean.setId(Long.valueOf(idObject.toString()));
 		}
 		findRegin(tBean, proxyIp, port);
-		findProxyType(tBean, proxyIp, port);
+//		findProxyType(tBean, proxyIp, port);
 		DataBean rsBean = new DataBean();
 		rsBean.getDataList().add(tBean);
 		return rsBean;
