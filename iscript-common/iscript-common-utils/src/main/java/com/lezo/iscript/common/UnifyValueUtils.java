@@ -2,11 +2,27 @@ package com.lezo.iscript.common;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 public class UnifyValueUtils {
+
+	public static <T> boolean hasUnifyField(Class<T> targetClass) {
+		Field[] fields = targetClass.getDeclaredFields();
+		if (fields == null) {
+			return false;
+		}
+		for (Field field : fields) {
+			UnifyValueAnnotation unifyValueAnnotation = field.getAnnotation(UnifyValueAnnotation.class);
+			if (unifyValueAnnotation != null) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public static <T> T unifyObject(T target) throws IllegalAccessException {
 		if (target == null) {
@@ -27,6 +43,20 @@ public class UnifyValueUtils {
 			}
 		}
 		return target;
+	}
+
+	public static <T> List<T> unifyObjects(List<T> targetList) throws IllegalAccessException {
+		if (CollectionUtils.isEmpty(targetList)) {
+			return targetList;
+		}
+		T firstObject = targetList.get(0);
+		if (!UnifyValueUtils.hasUnifyField(firstObject.getClass())) {
+			return targetList;
+		}
+		for (T targetObject : targetList) {
+			targetObject = UnifyValueUtils.unifyObject(targetObject);
+		}
+		return targetList;
 	}
 
 	private static Object convertTo(Field field, String toValue) {

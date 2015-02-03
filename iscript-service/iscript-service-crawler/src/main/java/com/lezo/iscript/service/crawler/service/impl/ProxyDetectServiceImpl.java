@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dao.ProxyDetectDao;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
@@ -34,6 +35,14 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		BatchIterator<ProxyDetectDto> it = new BatchIterator<ProxyDetectDto>(dtoList);
 		while (it.hasNext()) {
 			proxyDetectDao.batchInsert(it.next());
+		}
+	}
+
+	private void ensureUnifyFields(List<ProxyDetectDto> dtoList) {
+		try {
+			dtoList = UnifyValueUtils.unifyObjects(dtoList);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -66,6 +75,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	@Override
 	public void batchInsertIfAbsent(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
+		ensureUnifyFields(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		doAbsentAssort(dtoList, insertDtos);
 		batchInsertProxyDetectDtos(insertDtos);
@@ -116,6 +126,8 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 
 	@Override
 	public void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList) {
+		ensureAddrCodeFilled(dtoList);
+		ensureUnifyFields(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		List<ProxyDetectDto> updateDtos = new ArrayList<ProxyDetectDto>();
 		doAssort(dtoList, insertDtos, updateDtos);

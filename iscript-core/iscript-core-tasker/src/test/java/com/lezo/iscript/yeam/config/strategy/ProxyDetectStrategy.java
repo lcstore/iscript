@@ -148,7 +148,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 				JSONUtils.put(argsObject, "id", dto.getId());
 				JSONUtils.put(argsObject, "ip", dto.getIp());
 				JSONUtils.put(argsObject, "port", dto.getPort());
-				JSONUtils.put(argsObject, "type", dto.getType());
+				JSONUtils.put(argsObject, "proxyType", dto.getType());
 				TaskPriorityDto taskDto = new TaskPriorityDto();
 				taskDto.setBatchId(taskId);
 				taskDto.setType("ConfigProxyDetector");

@@ -42,6 +42,12 @@
 						<constructor-arg name="secretKey" value="${qiniu_secretKey_d1002}" />
 					</bean>
 				</entry>
+				<entry key="p1001.qiniudn.com">
+					<bean class="com.qiniu.api.auth.digest.Mac">
+						<constructor-arg name="accessKey" value="${qiniu_accessKey_p1001}" />
+						<constructor-arg name="secretKey" value="${qiniu_secretKey_p1001}" />
+					</bean>
+				</entry>
 			</map>
 		</property>
 	</bean>

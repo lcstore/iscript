@@ -65,7 +65,7 @@ public class ConfigProxyDetector implements ConfigParser {
 
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		Integer port = (Integer) task.get("port");
-		Integer type = (Integer) task.get("type");
+		Integer type = (Integer) task.get("proxyType");
 		type = type == null ? 0 : type;
 		String proxyIp = getHost(task);
 		String url = getDetectUrl(task);
@@ -78,9 +78,9 @@ public class ConfigProxyDetector implements ConfigParser {
 			tBean.setType(type);
 		} else {
 			tBean = getHttpProxyDetectDto(url, proxyIp, port);
-			if (tBean.getStatus() == 1) {
+			if (tBean.getStatus() == 1 || tBean.getRemark() != null) {
 				tBean.setType(1);
-			} else {
+			} else if (tBean.getRemark() == null) {
 				tBean = getSocketProxyDetectDto(url, proxyIp, port);
 				if (tBean.getStatus() == 1) {
 					tBean.setType(2);
@@ -108,7 +108,7 @@ public class ConfigProxyDetector implements ConfigParser {
 			HttpResponse res = client.execute(get, context);
 			fillStatus(tBean, res, domain);
 		} catch (Exception e) {
-			logger.warn("SocketProxy url:" + url + ",cause:", e);
+			logger.warn("SocketProxy url:" + url + ",proxy:" + proxyIp + ":" + port + ",cause:", e);
 		} finally {
 			if (get != null && !get.isAborted()) {
 				get.abort();
@@ -134,7 +134,7 @@ public class ConfigProxyDetector implements ConfigParser {
 			HttpResponse res = client.execute(get, context);
 			fillStatus(tBean, res, domain);
 		} catch (Exception e) {
-			logger.warn("HttpProxy url:" + url + ",cause:", e);
+			logger.warn("HttpProxy url:" + url + ",proxy:" + proxyIp + ":" + port + ",cause:", e);
 		} finally {
 			if (get != null && !get.isAborted()) {
 				get.abort();
@@ -149,23 +149,36 @@ public class ConfigProxyDetector implements ConfigParser {
 		int statusCode = res.getStatusLine().getStatusCode();
 		String html = EntityUtils.toString(res.getEntity());
 		if (statusCode < 200 || statusCode >= 300) {
-			if (html != null && html.indexOf(domain) > 0) {
-				tBean.setVerifyStatus(1);
-				tBean.setStatus(1);
-				return;
+			tBean.setRemark("code:" + statusCode + ",html:" + html);
+			tBean.setStatus(0);
+			limitRemarkLen(tBean);
+			return;
+		}
+		if (html != null && html.indexOf(domain) > 0) {
+			tBean.setVerifyStatus(1);
+			tBean.setStatus(1);
+			return;
+		} else {
+			if (html != null) {
+				tBean.setRemark(html);
 			} else {
-				if (html != null) {
-					int maxLen = 95;
-					int len = html.length() > maxLen ? maxLen : html.length();
-					html = html.substring(0, len);
-					tBean.setRemark(html);
-				} else {
-					tBean.setRemark("html is null");
-				}
-				tBean.setVerifyStatus(-1);
+				tBean.setRemark("html is null");
 			}
+			tBean.setVerifyStatus(-1);
+			limitRemarkLen(tBean);
 		}
 		tBean.setStatus(0);
+	}
+
+	private void limitRemarkLen(ProxyDetectDto tBean) {
+		if (tBean.getRemark() == null) {
+			return;
+		}
+		int maxLen = 95;
+		String html = tBean.getRemark();
+		int len = html.length() > maxLen ? maxLen : html.length();
+		html = html.substring(0, len);
+		tBean.setRemark(html);
 	}
 
 	private String getHost(TaskWritable task) {

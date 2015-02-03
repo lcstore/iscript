@@ -31,16 +31,16 @@
 		<property name="limit" value="3000" />
 		<property name="nameList">
 			<list>
-				<value>ConfigJdProduct</value>
+				<!-- <value>ConfigJdProduct</value>
 				<value>ConfigJdPromotion</value>
-				<value>ConfigProxyDetector</value>
 				<value>ConfigYhdPromotion</value> 
 				<value>ConfigTmallBrandShop</value>
 				<value>ConfigJdBrandShop</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyCollector</value>
 				<value>ConfigYhdProduct</value>
-				<value>ConfigProxyChecker</value>
+				<value>ConfigProxyChecker</value> -->
+				<value>ConfigProxyDetector</value>
 			</list>
 		</property>
 	</bean>

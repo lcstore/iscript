@@ -153,6 +153,10 @@ public class ConfigParserTest {
 		task.put("ip", "218.166.41.56");
 		task.put("port", 8088);
 		task.put("type", 2);
+
+		task.put("ip", "20.132.160.149");
+		task.put("port", 80);
+		task.put("type", 0);
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}
