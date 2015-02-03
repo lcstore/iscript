@@ -29,4 +29,9 @@ public class UrlTest {
 			System.err.println(addr);
 		}
 	}
+
+	@Test
+	public void testPort() throws Exception {
+		System.err.println(0xFFFF);
+	}
 }

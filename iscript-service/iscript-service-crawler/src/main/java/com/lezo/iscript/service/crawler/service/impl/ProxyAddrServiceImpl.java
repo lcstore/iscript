@@ -17,6 +17,7 @@ import com.lezo.iscript.service.crawler.dao.ProxyAddrDao;
 import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
 import com.lezo.iscript.service.crawler.service.ProxyAddrService;
 import com.lezo.iscript.utils.BatchIterator;
+import com.lezo.iscript.utils.ProxyUtils;
 
 @Service
 public class ProxyAddrServiceImpl implements ProxyAddrService {
@@ -26,11 +27,23 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	@Override
 	public void batchInsertProxyAddrs(List<ProxyAddrDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
+		dtoList = doFilterByPort(dtoList);
 		BatchIterator<ProxyAddrDto> it = new BatchIterator<ProxyAddrDto>(dtoList);
 		while (it.hasNext()) {
 			proxyAddrDao.batchInsert(it.next());
 		}
 
+	}
+
+	private List<ProxyAddrDto> doFilterByPort(List<ProxyAddrDto> dataList) {
+		List<ProxyAddrDto> destList = new ArrayList<ProxyAddrDto>(dataList);
+		for (ProxyAddrDto addrDto : dataList) {
+			if (!ProxyUtils.isPort(addrDto.getPort())) {
+				continue;
+			}
+			destList.add(addrDto);
+		}
+		return destList;
 	}
 
 	@Override
