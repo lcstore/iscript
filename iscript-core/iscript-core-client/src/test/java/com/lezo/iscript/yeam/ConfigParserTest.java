@@ -154,9 +154,9 @@ public class ConfigParserTest {
 		task.put("port", 1080);
 		task.put("proxyType", 2);
 
-		task.put("ip", "177.55.255.3");
-		task.put("port", 8080);
-		task.put("proxyType", 2);
+		task.put("ip", "222.87.129.218");
+		task.put("port", 83);
+		task.put("proxyType", 1);
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}
