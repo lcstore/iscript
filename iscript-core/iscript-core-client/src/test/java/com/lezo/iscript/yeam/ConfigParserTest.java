@@ -148,15 +148,15 @@ public class ConfigParserTest {
 		task.put("ip", "111.1.36.130");
 		task.put("port", 80);
 		task.put("ip", "180.168.217.86");
-		task.put("port", 8081);
+		task.put("proxyType", 8081);
 		// socket
-		task.put("ip", "218.166.41.56");
-		task.put("port", 8088);
-		task.put("type", 2);
+		task.put("ip", "103.246.161.194");
+		task.put("port", 1080);
+		task.put("proxyType", 2);
 
-		task.put("ip", "20.132.160.149");
-		task.put("port", 80);
-		task.put("type", 0);
+		task.put("ip", "177.55.255.3");
+		task.put("port", 8080);
+		task.put("proxyType", 2);
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}

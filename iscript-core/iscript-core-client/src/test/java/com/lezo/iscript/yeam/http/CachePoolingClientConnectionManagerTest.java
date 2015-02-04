@@ -146,7 +146,7 @@ public class CachePoolingClientConnectionManagerTest {
 		SchemeRegistry schreg = new SchemeRegistry();
 		// schreg.register(new Scheme("http", 80, new
 		// MyConnectionSocketFactory()));
-		schreg.register(new Scheme("http", 80, new ProxySocketFactory()));
+		schreg.register(new Scheme("http", 80, ProxySocketFactory.getSocketFactory()));
 		schreg.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		addHttpsTrustStrategy(schreg);
 
@@ -177,7 +177,8 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("37.228.134.52", 7808);
 		socksaddr = new InetSocketAddress("110.139.128.4", 80);
 		socksaddr = new InetSocketAddress("209.141.9.201", 1080);
-		socksaddr = new InetSocketAddress("183.228.72.120", 8123);
+		socksaddr = new InetSocketAddress("103.246.161.194", 1080);
+		socksaddr = new InetSocketAddress("1.179.143.178", 3128);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);
@@ -185,6 +186,7 @@ public class CachePoolingClientConnectionManagerTest {
 		// socksaddr = new InetSocketAddress("180.153.139.246", 8888);
 		String url = "http://item.yhd.com/item/102301?tp=1.0.61.0.9.Kcjj6mx";
 		url = "http://1111.ip138.com/ic.asp";
+		url = "http://www.baidu.com/";
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));

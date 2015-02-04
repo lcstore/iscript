@@ -17,4 +17,8 @@ public class ProxySocketFactory extends org.apache.http.conn.scheme.PlainSocketF
 		}
 		return super.createSocket(params);
 	}
+
+	public static ProxySocketFactory getSocketFactory() {
+		return new ProxySocketFactory();
+	}
 }
