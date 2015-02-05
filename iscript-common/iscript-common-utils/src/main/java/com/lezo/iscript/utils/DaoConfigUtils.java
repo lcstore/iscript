@@ -92,10 +92,12 @@ public class DaoConfigUtils {
 			String updateString = colName + "=#{" + paramList.get(i) + "}";
 			if (sb.length() > 0) {
 				sb.append(LINE_FORMAT);
-			}
-			sb.append(updateString);
-			if (i + 1 < size) {
 				sb.append(",");
+				sb.append(updateString);
+			} else {
+				sb.append(updateString);
+			}
+			if (i + 1 < size) {
 				sb.append(NEW_LINE);
 			}
 		}

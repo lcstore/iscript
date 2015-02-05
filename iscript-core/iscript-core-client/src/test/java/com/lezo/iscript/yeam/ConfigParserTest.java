@@ -37,6 +37,7 @@ import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
+import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
@@ -68,6 +69,7 @@ public class ConfigParserTest {
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
 		parser = new ConfigProxyDetector();
+		parser = new ConfigProxySeedHandler();
 //		parser = new ConfigProxyCollector();
 //		parser = new ConfigJdPromotion();
 //		parser = new ConfigTmallBrandList();
@@ -157,6 +159,9 @@ public class ConfigParserTest {
 		task.put("ip", "222.87.129.218");
 		task.put("port", 83);
 		task.put("proxyType", 1);
+
+		task.put("url", "http://www.proxy.com.ru/list_%s.html");
+		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxySeedDao">
+	<resultMap type="ProxySeedDto" id="RM_ProxySeedDto">
+		<result column="ID" property="id"/>
+		<result column="URL" property="url"/>
+		<result column="CREATE_URLS_FUN" property="createUrlsFun"/>
+		<result column="DECODE_PAGE_FUN" property="decodePageFun"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="ProxySeedDto-coloumn-list">
+		URL
+		,CREATE_URLS_FUN
+		,DECODE_PAGE_FUN
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="ProxySeedDto">
+		INSERT INTO T_PROXY_SEED(
+		<include refid="ProxySeedDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.url},#{item.createUrlsFun},#{item.decodePageFun},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="ProxySeedDto">
+		UPDATE T_PROXY_SEED SET
+		URL=#{url},
+		CREATE_URLS_FUN=#{createUrlsFun},
+		DECODE_PAGE_FUN=#{decodePageFun}
+		WHERE ID=#{id}
+	</update>
+	<select id="getProxySeedDtoByFromId" parameterType="map" resultMap="RM_ProxySeedDto">
+	   SELECT * FROM T_PROXY_SEED
+	   <where>
+	     <![CDATA[ ID>#{fromId} ]]>
+	     LIMIT #{limit}
+	   </where>
+	</select>
+</mapper>

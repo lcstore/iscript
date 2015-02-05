@@ -141,4 +141,17 @@
 			value="com.lezo.iscript.service.crawler.dao.BrandShopDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
+	<bean id="proxySeedDao"
+		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.ProxySeedDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<bean id="ProxyCollectHisDao"
+		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.service.crawler.dao.ProxyCollectHisDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

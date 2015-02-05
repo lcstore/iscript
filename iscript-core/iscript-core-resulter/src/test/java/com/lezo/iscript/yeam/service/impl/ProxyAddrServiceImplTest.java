@@ -21,6 +21,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.service.crawler.dao.ProxyAddrDao;
 import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
 import com.lezo.iscript.service.crawler.service.impl.ProxyAddrServiceImpl;
@@ -45,9 +46,9 @@ public class ProxyAddrServiceImplTest {
 //				 String url =String.format("http://www.proxylist.ro/free-proxy-list-widget.js?size=20");
 				// String url =
 				// String.format("http://checkerproxy.net/all_proxy");
-				 String url =
-				 String.format("http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=%d",
-				 i);
+				String url =
+						String.format("http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=%d",
+								i);
 				// String url =
 				// String.format("http://proxy-list.org/english/index.php?p=%d",
 				// i);
@@ -163,5 +164,23 @@ public class ProxyAddrServiceImplTest {
 			System.out.println(matcher.group(1) + ":" + matcher.group(2));
 		}
 		return proxyArray;
+	}
+
+	@Test
+	public void testFun() {
+		JSONObject argsObject = new JSONObject();
+		JSONUtils.put(argsObject, "url", "http://www.proxy.com.ru/list_%s.html");
+		StringBuilder sb = new StringBuilder();
+		sb.append("var oUrlArr = [];");
+		sb.append("var maxCount=50;");
+		sb.append("for(var i=1;i<=maxCount;i++){");
+		sb.append("oUrlArr.push(java.lang.String.format(args.url,''+i));");
+		sb.append("}");
+		sb.append("return JSON.stringify(oUrlArr);");
+		String source = String.format("(function(args){%s})(%s);", sb.toString(), argsObject.toString());
+		Context cx = Context.enter();
+		System.err.println(sb.toString());
+		Object rsObject = cx.evaluateString(ScriptableUtils.getJSONScriptable(), source, "cmd", 0, null);
+		System.out.println(Context.toString(rsObject));
 	}
 }

@@ -1,9 +1,13 @@
 package com.lezo.iscript.yeam.resultmgr.handler;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -96,19 +100,46 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			logger.warn("type:{},can not found writer:{}", type, destObject.getClass().getSimpleName());
 			return;
 		}
-		int len = dataArray.length();
-		List<Object> dataList = new ArrayList<Object>(len);
-		for (int i = 0; i < len; i++) {
-			JSONObject rObject = dataArray.getJSONObject(i);
-			ObjectUtils.copyObject(rObject, destObject);
-			try {
-				addProperties(destObject, rObject, argsObject);
-				dataList.add(destObject);
-			} catch (Exception e) {
-				logger.warn("add data fail.cause:", e);
+		JSONObject dataObject = dataArray.getJSONObject(0);
+		if (hasSameProperty(dataObject, dtoClass)) {
+			int len = dataArray.length();
+			List<Object> dataList = new ArrayList<Object>(len);
+			for (int i = 0; i < len; i++) {
+				JSONObject rObject = dataArray.getJSONObject(i);
+				ObjectUtils.copyObject(rObject, destObject);
+				try {
+					addProperties(destObject, rObject, argsObject);
+					dataList.add(destObject);
+				} catch (Exception e) {
+					logger.warn("add data fail.cause:", e);
+				}
+			}
+			writer.write(dataList);
+		} else {
+			Iterator<?> it = dataObject.keys();
+			while (it.hasNext()) {
+				Object nextObject = dataObject.get(it.next().toString());
+				if (nextObject instanceof JSONArray) {
+					JSONArray nextDataArray = (JSONArray) nextObject;
+					addDestObject(type, clsName, nextDataArray, argsObject);
+				}
 			}
 		}
-		writer.write(dataList);
+	}
+
+	private boolean hasSameProperty(JSONObject jsonObject, Class<?> dtoClass) {
+		Set<String> keySet = new HashSet<String>();
+		Iterator<?> it = jsonObject.keys();
+		while (it.hasNext()) {
+			keySet.add(it.next().toString());
+		}
+		Field[] fields = dtoClass.getDeclaredFields();
+		for (Field field : fields) {
+			if (keySet.contains(field.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void addProperties(Object destObject, JSONObject dataObject, JSONObject argsObject) throws Exception {
