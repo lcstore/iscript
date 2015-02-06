@@ -52,7 +52,8 @@ public class ConfigProxySeedHandler implements ConfigParser {
 	}
 
 	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
-		dataBean.getTargetList().add("ProxySeedHandleVo");
+		dataBean.getTargetList().add("ProxyAddrDto");
+		dataBean.getTargetList().add("ProxyCollectHisDto");
 
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
@@ -73,6 +74,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		}
 		int fetchPage = 0;
 		String decodePageFun = JSONUtils.getString(argsObject, "DecodePageFun");
+		argsObject.remove("DecodePageFun");
 		Set<ProxyAddrDto> resultSet = new HashSet<ConfigProxySeedHandler.ProxyAddrDto>();
 		for (int i = 0; i < urlArray.length(); i++) {
 			String sProxyUrl = urlArray.getString(i);
@@ -96,6 +98,9 @@ public class ConfigProxySeedHandler implements ConfigParser {
 			}
 		}
 		Long seedId = JSONUtils.getLong(argsObject, "seedId");
+		for (ProxyAddrDto dataAddrDto : resultSet) {
+			dataAddrDto.setSeedId(seedId);
+		}
 		ProxyCollectHisDto collectHisDto = new ProxyCollectHisDto();
 		int totalCount = resultSet.size();
 		collectHisDto.setSeedId(seedId);
@@ -137,6 +142,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 	private JSONArray getFetchUrls(JSONObject argsObject) throws Exception {
 		String url = JSONUtils.getString(argsObject, "url");
 		String createUrlsFun = JSONUtils.getString(argsObject, "CreateUrlsFun");
+		argsObject.remove("CreateUrlsFun");
 		JSONObject paramObject = new JSONObject();
 		JSONUtils.put(paramObject, "url", url);
 		String source = String.format("(function(args){%s})(%s);", createUrlsFun, paramObject.toString());
@@ -267,6 +273,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 	}
 
 	private static class ProxyAddrDto {
+		private Long seedId;
 		private Long ip;
 		private Integer port;
 
@@ -289,6 +296,14 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		@Override
 		public int hashCode() {
 			return new HashCodeBuilder().append(this.ip).append(this.port).toHashCode();
+		}
+
+		public Long getSeedId() {
+			return seedId;
+		}
+
+		public void setSeedId(Long seedId) {
+			this.seedId = seedId;
 		}
 
 		@Override

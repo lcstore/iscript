@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.BufferObjectWriter;
-import com.lezo.iscript.common.ObjectWriter;
 
 public class FlushWriterTimer {
 	private static Logger logger = LoggerFactory.getLogger(FlushWriterTimer.class);

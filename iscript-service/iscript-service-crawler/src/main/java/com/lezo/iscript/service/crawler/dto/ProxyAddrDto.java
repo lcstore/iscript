@@ -21,6 +21,8 @@ public class ProxyAddrDto {
 	private Integer type = TYPE_UNKNOWN;
 	private String remark = "";
 
+	private Long seedId;
+
 	public Long getId() {
 		return id;
 	}
@@ -123,6 +125,14 @@ public class ProxyAddrDto {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Long getSeedId() {
+		return seedId;
+	}
+
+	public void setSeedId(Long seedId) {
+		this.seedId = seedId;
 	}
 
 }

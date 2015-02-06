@@ -3,10 +3,15 @@ package com.lezo.iscript.yeam.resultmgr.handler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -86,6 +91,9 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 	}
 
 	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
+		if (dataArray == null || dataArray.length() < 1) {
+			return;
+		}
 		clsName = clsName.replace("BrandStoreDto", "BrandConfigVo");
 		if (type.equals("ConfigProxyCollector")) {
 			clsName = clsName.replace("ProxyDetectDto", "ProxyAddrDto");
@@ -94,52 +102,83 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			clsName = clsName.replace("ProxyDetectDto", "ProxyAddrDto");
 		}
 		Class<?> dtoClass = ConfigClassUtils.getDtoClass(clsName);
+		dataArray = getHitDataArray(dataArray, dtoClass);
 		Object destObject = ObjectUtils.newCopyObject(dtoClass);
 		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());
 		if (writer == null) {
 			logger.warn("type:{},can not found writer:{}", type, destObject.getClass().getSimpleName());
 			return;
 		}
-		JSONObject dataObject = dataArray.getJSONObject(0);
-		if (hasSameProperty(dataObject, dtoClass)) {
-			int len = dataArray.length();
-			List<Object> dataList = new ArrayList<Object>(len);
-			for (int i = 0; i < len; i++) {
-				JSONObject rObject = dataArray.getJSONObject(i);
-				ObjectUtils.copyObject(rObject, destObject);
-				try {
-					addProperties(destObject, rObject, argsObject);
-					dataList.add(destObject);
-				} catch (Exception e) {
-					logger.warn("add data fail.cause:", e);
-				}
+		int len = dataArray.length();
+		List<Object> dataList = new ArrayList<Object>(len);
+		for (int i = 0; i < len; i++) {
+			JSONObject rObject = dataArray.getJSONObject(i);
+			ObjectUtils.copyObject(rObject, destObject);
+			try {
+				addProperties(destObject, rObject, argsObject);
+				dataList.add(destObject);
+			} catch (Exception e) {
+				logger.warn("add data fail.cause:", e);
 			}
-			writer.write(dataList);
-		} else {
-			Iterator<?> it = dataObject.keys();
-			while (it.hasNext()) {
-				Object nextObject = dataObject.get(it.next().toString());
-				if (nextObject instanceof JSONArray) {
-					JSONArray nextDataArray = (JSONArray) nextObject;
-					addDestObject(type, clsName, nextDataArray, argsObject);
+		}
+		writer.write(dataList);
+	}
+
+	private JSONArray getHitDataArray(JSONArray dataArray, Class<?> dtoClass) throws Exception {
+		JSONObject dataObject = dataArray.getJSONObject(0);
+		Iterator<?> it = dataObject.keys();
+		List<JSONArray> dataArrayList = new ArrayList<JSONArray>();
+		while (it.hasNext()) {
+			Object nextObject = dataObject.get(it.next().toString());
+			if (nextObject instanceof JSONArray) {
+				JSONArray subArray = (JSONArray) nextObject;
+				if (subArray != null && subArray.length() > 0) {
+					dataArrayList.add(subArray);
 				}
 			}
 		}
+		if (dataArrayList.isEmpty()) {
+			return dataArray;
+		}
+		dataArrayList.add(dataArray);
+		Map<JSONArray, Integer> array2CountMap = new HashMap<JSONArray, Integer>();
+		for (JSONArray curArray : dataArrayList) {
+			int count = getSamePropertyCount(curArray.get(0), dtoClass);
+			if (count > 0) {
+				array2CountMap.put(curArray, count);
+			}
+		}
+		if (array2CountMap.isEmpty()) {
+			return dataArray;
+		}
+		List<Entry<JSONArray, Integer>> entryList = new ArrayList<Entry<JSONArray, Integer>>(array2CountMap.entrySet());
+		Collections.sort(entryList, new Comparator<Entry<JSONArray, Integer>>() {
+			@Override
+			public int compare(Entry<JSONArray, Integer> o1, Entry<JSONArray, Integer> o2) {
+				return o2.getValue().compareTo(o1.getValue());
+			}
+		});
+		return entryList.get(0).getKey();
 	}
 
-	private boolean hasSameProperty(JSONObject jsonObject, Class<?> dtoClass) {
+	private int getSamePropertyCount(Object dataObject, Class<?> dtoClass) {
+		if (!(dataObject instanceof JSONObject)) {
+			return 0;
+		}
+		JSONObject jsonObject = (JSONObject) dataObject;
 		Set<String> keySet = new HashSet<String>();
 		Iterator<?> it = jsonObject.keys();
 		while (it.hasNext()) {
 			keySet.add(it.next().toString());
 		}
+		int hasCount = 0;
 		Field[] fields = dtoClass.getDeclaredFields();
 		for (Field field : fields) {
 			if (keySet.contains(field.getName())) {
-				return true;
+				hasCount++;
 			}
 		}
-		return false;
+		return hasCount;
 	}
 
 	private void addProperties(Object destObject, JSONObject dataObject, JSONObject argsObject) throws Exception {

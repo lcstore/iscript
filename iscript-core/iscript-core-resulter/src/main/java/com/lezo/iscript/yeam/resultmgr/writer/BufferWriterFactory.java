@@ -10,6 +10,7 @@ import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 import com.lezo.iscript.service.crawler.dto.PromotionMapDto;
 import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
+import com.lezo.iscript.service.crawler.dto.ProxyCollectHisDto;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.utils.ObjectUtils;
 import com.lezo.iscript.yeam.resultmgr.vo.BrandConfigVo;
@@ -25,6 +26,7 @@ public class BufferWriterFactory {
 		addWriter(BrandConfigVo.class, new BrandWriter(), 200);
 		addWriter(BrandShopDto.class, new BrandShopWriter(), 200);
 		addWriter(ProxyAddrDto.class, new ProxyCollectWriter(), 200);
+		addWriter(ProxyCollectHisDto.class, new ProxyCollectHisWriter(), 200);
 	}
 
 	public static <T> void addWriter(Class<T> beanClass, ObjectWriter<T> objectWriter, int bufferSize) {

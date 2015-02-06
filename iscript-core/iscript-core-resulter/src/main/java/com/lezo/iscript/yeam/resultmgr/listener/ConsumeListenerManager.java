@@ -5,18 +5,15 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConsumeListenerManager {
+	private static final ConsumeListenerManager INSTANCE = new ConsumeListenerManager();
 	private ConcurrentHashMap<String, ConsumeListener> listenerMap = new ConcurrentHashMap<String, ConsumeListener>();
-
-	static class InstanceHolder {
-		private static final ConsumeListenerManager INSTANCE = new ConsumeListenerManager();
-	}
 
 	private ConsumeListenerManager() {
 		addListener(new BeanCopyListener());
 	}
 
 	public static ConsumeListenerManager getInstance() {
-		return InstanceHolder.INSTANCE;
+		return INSTANCE;
 	}
 
 	public void addListener(ConsumeListener listener) {

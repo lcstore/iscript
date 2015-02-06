@@ -11,6 +11,7 @@ import com.lezo.iscript.common.UnifyValueAnnotation;
  */
 public class ProxyCollectHisDto {
 	private Long id;
+	@UnifyValueAnnotation("0")
 	private Long seedId;
 	@UnifyValueAnnotation("0")
 	private Integer totalPage;
