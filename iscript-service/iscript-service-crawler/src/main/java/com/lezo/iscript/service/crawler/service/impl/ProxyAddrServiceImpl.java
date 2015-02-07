@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -60,7 +62,7 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	}
 
 	@Override
-	public void batchSaveProxyAddrs(List<ProxyAddrDto> dtoList) {
+	public synchronized void batchSaveProxyAddrs(List<ProxyAddrDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
 			return;
 		}
@@ -95,19 +97,21 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 			newDtoMap.put(dto.getAddrCode(), dto);
 		}
 		List<String> addrCodeList = new ArrayList<String>(newDtoMap.keySet());
-		List<ProxyAddrDto> hasList = getProxyAddrDtosByAddrCodes(addrCodeList);
-		Map<String, ProxyAddrDto> oldDtoMap = new HashMap<String, ProxyAddrDto>(hasList.size());
-		for (ProxyAddrDto oldDto : hasList) {
-			oldDtoMap.put(oldDto.getAddrCode(), oldDto);
+		List<ProxyAddrDto> hasDtoList = getProxyAddrDtosByAddrCodes(addrCodeList);
+		Set<String> hasKeySet = new HashSet<String>();
+		for (ProxyAddrDto oldDto : hasDtoList) {
+			hasKeySet.add(oldDto.getAddrCode());
+			ProxyAddrDto newDto = newDtoMap.get(oldDto.getAddrCode());
+			if (newDto != null) {
+				keepValidValue(oldDto, newDto);
+				updateList.add(newDto);
+			}
 		}
 		for (Entry<String, ProxyAddrDto> entry : newDtoMap.entrySet()) {
-			ProxyAddrDto oldDto = oldDtoMap.get(entry.getKey());
-			if (oldDto == null) {
-				insertList.add(entry.getValue());
-			} else {
-				keepValidValue(oldDto, entry.getValue());
-				updateList.add(entry.getValue());
+			if (hasKeySet.contains(entry.getKey())) {
+				continue;
 			}
+			insertList.add(entry.getValue());
 		}
 	}
 
@@ -124,6 +128,9 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 		}
 		if (newDto.getType() == null || newDto.getType() == ProxyAddrDto.TYPE_UNKNOWN) {
 			newDto.setType(oldDto.getType());
+		}
+		if (newDto.getSeedId() == null || newDto.getSeedId().equals(0L)) {
+			newDto.setSeedId(oldDto.getSeedId());
 		}
 	}
 

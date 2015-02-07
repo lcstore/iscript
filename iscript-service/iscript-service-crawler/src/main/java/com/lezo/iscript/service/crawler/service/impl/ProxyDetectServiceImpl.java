@@ -38,14 +38,6 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		}
 	}
 
-	private void ensureUnifyFields(List<ProxyDetectDto> dtoList) {
-		try {
-			dtoList = UnifyValueUtils.unifyObjects(dtoList);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public void batchUpdateProxyDetectDtos(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
@@ -75,7 +67,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	@Override
 	public void batchInsertIfAbsent(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
-		ensureUnifyFields(dtoList);
+		UnifyValueUtils.unifyQuietly(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		doAbsentAssort(dtoList, insertDtos);
 		batchInsertProxyDetectDtos(insertDtos);
@@ -127,7 +119,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	@Override
 	public void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
-		ensureUnifyFields(dtoList);
+		UnifyValueUtils.unifyQuietly(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		List<ProxyDetectDto> updateDtos = new ArrayList<ProxyDetectDto>();
 		doAssort(dtoList, insertDtos, updateDtos);

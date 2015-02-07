@@ -24,8 +24,10 @@ public class ProxyCollectWriter implements ObjectWriter<ProxyAddrDto> {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		proxyAddrService.batchSaveProxyAddrs(dataList);
-		logger.info("save data size:" + dataList.size());
+		synchronized (ProxyCollectWriter.class) {
+			proxyAddrService.batchSaveProxyAddrs(dataList);
+			logger.info("save data size:" + dataList.size());
+		}
 	}
 
 }

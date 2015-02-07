@@ -5,10 +5,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnifyValueUtils {
+	private static Logger logger = LoggerFactory.getLogger(UnifyValueUtils.class);
 
 	public static <T> boolean hasUnifyField(Class<T> targetClass) {
 		Field[] fields = targetClass.getDeclaredFields();
@@ -55,6 +59,15 @@ public class UnifyValueUtils {
 		}
 		for (T targetObject : targetList) {
 			targetObject = UnifyValueUtils.unifyObject(targetObject);
+		}
+		return targetList;
+	}
+
+	public static <T> List<T> unifyQuietly(List<T> targetList) {
+		try {
+			return unifyObjects(targetList);
+		} catch (IllegalAccessException e) {
+			logger.warn("unify objects:" + targetList.size() + ",cause:", e);
 		}
 		return targetList;
 	}

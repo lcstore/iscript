@@ -26,5 +26,6 @@
 		<mapper resource="mybatis/mybatis-mapper-searchHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-brand.xml" />
 		<mapper resource="mybatis/mybatis-mapper-brandShop.xml" />
+		<mapper resource="mybatis/mybatis-mapper-proxyCollectHis.xml" />
 	</mappers>
 </configuration>

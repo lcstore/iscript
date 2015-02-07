@@ -103,15 +103,15 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		}
 		Class<?> dtoClass = ConfigClassUtils.getDtoClass(clsName);
 		dataArray = getHitDataArray(dataArray, dtoClass);
-		Object destObject = ObjectUtils.newCopyObject(dtoClass);
-		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(destObject.getClass());
+		ObjectWriter<Object> writer = BufferWriterManager.getInstance().getWriter(dtoClass);
 		if (writer == null) {
-			logger.warn("type:{},can not found writer:{}", type, destObject.getClass().getSimpleName());
+			logger.warn("type:{},can not found writer:{}", type, dtoClass.getSimpleName());
 			return;
 		}
 		int len = dataArray.length();
 		List<Object> dataList = new ArrayList<Object>(len);
 		for (int i = 0; i < len; i++) {
+			Object destObject = ObjectUtils.newCopyObject(dtoClass);
 			JSONObject rObject = dataArray.getJSONObject(i);
 			ObjectUtils.copyObject(rObject, destObject);
 			try {

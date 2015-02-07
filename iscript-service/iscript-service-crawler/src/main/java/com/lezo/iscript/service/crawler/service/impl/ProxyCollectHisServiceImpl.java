@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dao.ProxyCollectHisDao;
 import com.lezo.iscript.service.crawler.dto.ProxyCollectHisDto;
 import com.lezo.iscript.service.crawler.service.ProxyCollectHisService;
@@ -23,6 +24,7 @@ public class ProxyCollectHisServiceImpl implements ProxyCollectHisService {
 
 	@Override
 	public void batchInsertDtos(List<ProxyCollectHisDto> dtoList) {
+		UnifyValueUtils.unifyQuietly(dtoList);
 		BatchIterator<ProxyCollectHisDto> it = new BatchIterator<ProxyCollectHisDto>(dtoList);
 		while (it.hasNext()) {
 			proxyCollectHisDao.batchInsert(it.next());

@@ -16,6 +16,7 @@
 		<result column="UPDATE_TIME" property="updateTime" />
 		<result column="TYPE" property="type" />
 		<result column="REMARK" property="remark" />
+		<result column="SEED_ID" property="seedId" />
 	</resultMap>
 	<sql id="ProxyAddrDto-coloumn-list">
 		IP
@@ -29,6 +30,7 @@
 		,UPDATE_TIME
 		,TYPE
 		,REMARK
+		,SEED_ID
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyAddrDto">
 		INSERT INTO T_PROXY_ADDR(
@@ -37,7 +39,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark},#{item.seedId})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyAddrDto">
@@ -50,7 +52,8 @@
 		ISP_NAME=#{ispName},
 		IS_DELETE=#{isDelete},
 		TYPE=#{type},
-		REMARK=#{remark}
+		REMARK=#{remark},
+		SEED_ID=#{seedId}
 		WHERE ID=#{id}
 	</update>
 	<select id="getProxyAddrDtosByAddrCodes" parameterType="map"

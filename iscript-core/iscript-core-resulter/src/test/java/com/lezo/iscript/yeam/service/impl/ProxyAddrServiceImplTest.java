@@ -169,14 +169,16 @@ public class ProxyAddrServiceImplTest {
 	@Test
 	public void testFun() {
 		JSONObject argsObject = new JSONObject();
-		JSONUtils.put(argsObject, "url", "http://www.proxy.com.ru/list_%s.html");
+		JSONUtils.put(argsObject, "url", "http://www.proxylists.net/%s_%s_ext.html");
+		JSONUtils.put(argsObject, "source", "<td><script type='text/javascript'>eval(unescape('%73%65%6c%66%2e%64%6f%63%75%6d%65%6e%74%2e%77%72%69%74%65%6c%6e%28%22%38%33%2e%31%36%37%2e%32%33%32%2e%31%33%37%22%29%3b'));</script><noscript>Please enable");
 		StringBuilder sb = new StringBuilder();
-		sb.append("var oUrlArr = [];");
-		sb.append("var maxCount=50;");
-		sb.append("for(var i=1;i<=maxCount;i++){");
-		sb.append("oUrlArr.push(java.lang.String.format(args.url,''+i));");
-		sb.append("}");
-		sb.append("return JSON.stringify(oUrlArr);");
+//		sb.append("var oUrlArr = [];");
+//		sb.append("var maxCount=50;");
+//		sb.append("for(var i=1;i<=maxCount;i++){");
+//		sb.append("oUrlArr.push(java.lang.String.format(args.url,''+i));");
+//		sb.append("}");
+//		sb.append("return JSON.stringify(oUrlArr);");
+		sb.append("var oReg = new RegExp('unescape.*?\\\\)','gm'); var oMatch = args.source.match(oReg); if(!oMatch || oMatch.length<1){   return args.source; }  var newString = new String(args.source); for(var i=0;i<oMatch.length;i++){   newString = newString.replace(oMatch[i],eval(oMatch[i])); } return newString;");
 		String source = String.format("(function(args){%s})(%s);", sb.toString(), argsObject.toString());
 		Context cx = Context.enter();
 		System.err.println(sb.toString());

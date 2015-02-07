@@ -34,19 +34,11 @@
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyCollectHisDto">
 		UPDATE T_PROXY_COLLECT_HIS SET
-		SEED_ID=#{seedId},
-		TOTAL_PAGE=#{totalPage},
-		FETCH_PAGE=#{fetchPage},
-		TOTAL_COUNT=#{totalCount},
-		NEW_COUNT=#{newCount}
+		SEED_ID=#{seedId}
+		,TOTAL_PAGE=#{totalPage}
+		,FETCH_PAGE=#{fetchPage}
+		,TOTAL_COUNT=#{totalCount}
+		,NEW_COUNT=#{newCount}
 		WHERE ID=#{id}
 	</update>
-	
-	<select id="getProxyCollectHisDtoByFromId" parameterType="map" resultMap="RM_ProxySeedDto">
-	   SELECT * FROM T_PROXY_COLLECT_HIS
-	   <where>
-	     <![CDATA[ ID>#{fromId} ]]>
-	     LIMIT #{limit}
-	   </where>
-	</select>
 </mapper>

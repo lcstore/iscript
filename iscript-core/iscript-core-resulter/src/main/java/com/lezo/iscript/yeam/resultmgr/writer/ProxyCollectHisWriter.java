@@ -24,8 +24,10 @@ public class ProxyCollectHisWriter implements ObjectWriter<ProxyCollectHisDto> {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		proxyCollectHisService.batchSaveDtos(dataList);
-		logger.info("save data size:" + dataList.size());
+		synchronized (this) {
+			proxyCollectHisService.batchSaveDtos(dataList);
+			logger.info("save data size:" + dataList.size());
+		}
 	}
 
 }
