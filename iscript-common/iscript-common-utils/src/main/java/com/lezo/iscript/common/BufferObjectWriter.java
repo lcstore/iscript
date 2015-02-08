@@ -1,6 +1,8 @@
 package com.lezo.iscript.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,21 +24,27 @@ public class BufferObjectWriter<E> implements ObjectWriter<E> {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		synchronized (this) {
+		synchronized (this.batchList) {
 			this.batchList.addAll(dataList);
-			if (batchList.size() >= capacity) {
+			if (this.batchList.size() >= capacity) {
 				flush();
 			}
 		}
 	}
 
 	public void flush() {
-		List<E> copyList = batchList;
-		if (copyList.isEmpty()) {
+		if (this.batchList.isEmpty()) {
 			return;
 		}
-		synchronized (this) {
-			this.batchList = new ArrayList<E>(capacity);
+		List<E> copyList = Collections.emptyList();
+		synchronized (this.batchList) {
+			if (!this.batchList.isEmpty()) {
+				copyList = new ArrayList<E>(this.batchList);
+				for (int i = 0; i < this.batchList.size(); i++) {
+					copyList.set(i, this.batchList.get(i));
+				}
+				this.batchList.clear();
+			}
 		}
 		daoWriter.write(copyList);
 	}

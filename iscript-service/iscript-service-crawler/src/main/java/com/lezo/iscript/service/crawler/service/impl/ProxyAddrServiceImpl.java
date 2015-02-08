@@ -27,7 +27,7 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	private ProxyAddrDao proxyAddrDao;
 
 	@Override
-	public void batchInsertProxyAddrs(List<ProxyAddrDto> dtoList) {
+	public synchronized void batchInsertProxyAddrs(List<ProxyAddrDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
 		dtoList = doFilterByPort(dtoList);
 		BatchIterator<ProxyAddrDto> it = new BatchIterator<ProxyAddrDto>(dtoList);
@@ -49,7 +49,7 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	}
 
 	@Override
-	public void batchUpdateProxyAddrs(List<ProxyAddrDto> dtoList) {
+	public synchronized void batchUpdateProxyAddrs(List<ProxyAddrDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
 		BatchIterator<ProxyAddrDto> it = new BatchIterator<ProxyAddrDto>(dtoList);
 		while (it.hasNext()) {
