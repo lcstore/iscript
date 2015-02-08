@@ -65,7 +65,6 @@
 		GOOD_COMMENT=#{goodComment},
 		POOR_COMMENT=#{poorComment},
 		STOCK_NUM=#{stockNum},
-		CREATE_TIME=#{createTime},
 		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>

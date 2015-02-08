@@ -15,6 +15,8 @@ import org.json.JSONObject;
 import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
@@ -38,17 +40,18 @@ public class ProxyAddrServiceImplTest {
 		ProxyAddrDao proxyAddrDao = SpringBeanUtils.getBean(ProxyAddrDao.class);
 		ProxyAddrServiceImpl brandService = new ProxyAddrServiceImpl();
 		brandService.setProxyAddrDao(proxyAddrDao);
-		int maxCount = 100;
+		int maxCount = 1;
 		for (int i = 0; i <= maxCount; i++) {
 			try {
-//				 String url = String.format("http://www.proxy.com.ru/list_%s.html", i);
-//				 String url =String.format("http://www.cybersyndrome.net/pla.html");
-//				 String url =String.format("http://www.proxylist.ro/free-proxy-list-widget.js?size=20");
+				// String url =
+				// String.format("http://www.proxy.com.ru/list_%s.html", i);
+				// String url
+				// =String.format("http://www.cybersyndrome.net/pla.html");
+				// String url
+				// =String.format("http://www.proxylist.ro/free-proxy-list-widget.js?size=20");
 				// String url =
 				// String.format("http://checkerproxy.net/all_proxy");
-				String url =
-						String.format("http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=%d",
-								i);
+				String url = String.format("http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=%d", i);
 				// String url =
 				// String.format("http://proxy-list.org/english/index.php?p=%d",
 				// i);
@@ -61,9 +64,14 @@ public class ProxyAddrServiceImplTest {
 				// String url =
 				// String.format("http://socks5proxies.com/index.php?page=%d&action=freeproxy",
 				// i);
-//				String url = String.format("http://www.samair.ru/proxy/proxy-%s.htm", i < 10 ? "0" + i : i);
-//				String url = String.format("http://www.proxylists.net/%s_%s_ext.html", portString, i);
+				// String url =
+				// String.format("http://www.samair.ru/proxy/proxy-%s.htm", i <
+				// 10 ? "0" + i : i);
+				// String url =
+				// String.format("http://www.proxylists.net/%s_%s_ext.html",
+				// portString, i);
 				System.err.println("start to parser:" + url);
+				url = "http://www.proxynova.com/proxy-server-list/country-cn/";
 				byte[] byteArray = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate").timeout(60000).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0")
 						.referrer(url).method(Method.GET).execute().bodyAsBytes();
 				String source = new String(byteArray, "gbk");
@@ -88,6 +96,22 @@ public class ProxyAddrServiceImplTest {
 	}
 
 	@Test
+	public void testUrl() throws Exception {
+		String url = "http://www.proxynova.com/proxy-server-list/country-cn/";
+		System.err.println("start to parser:" + url);
+		byte[] byteArray = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate").timeout(60000).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0")
+				.referrer(url).method(Method.GET).execute().bodyAsBytes();
+		String source = new String(byteArray, "gbk");
+		Document dom = Jsoup.parse(source);
+		Elements elements = dom.select("div.dropdown div.col3 ul li a[href^=http://www.proxynova.com/proxy-server-list/country-]");
+		JSONArray typeArray = new JSONArray();
+		for (Element ele : elements) {
+			typeArray.put(ele.attr("href").replace("http://www.proxynova.com/proxy-server-list/country-", "").replace("/", ""));
+		}
+		System.err.println(typeArray.toString());
+	}
+
+	@Test
 	public void testParserProxys() throws Exception {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
@@ -109,7 +133,7 @@ public class ProxyAddrServiceImplTest {
 	}
 
 	private List<ProxyAddrDto> findProxy(String source) throws JSONException {
-//		source = doDecode(source);
+		// source = doDecode(source);
 		JSONArray proxyArray = doProxyParser(source);
 		List<ProxyAddrDto> dtoList = convert2Dto(proxyArray);
 		return dtoList;
@@ -170,14 +194,17 @@ public class ProxyAddrServiceImplTest {
 	public void testFun() {
 		JSONObject argsObject = new JSONObject();
 		JSONUtils.put(argsObject, "url", "http://www.proxylists.net/%s_%s_ext.html");
-		JSONUtils.put(argsObject, "source", "<td><script type='text/javascript'>eval(unescape('%73%65%6c%66%2e%64%6f%63%75%6d%65%6e%74%2e%77%72%69%74%65%6c%6e%28%22%38%33%2e%31%36%37%2e%32%33%32%2e%31%33%37%22%29%3b'));</script><noscript>Please enable");
+		JSONUtils
+				.put(argsObject,
+						"source",
+						"<td><script type='text/javascript'>eval(unescape('%73%65%6c%66%2e%64%6f%63%75%6d%65%6e%74%2e%77%72%69%74%65%6c%6e%28%22%38%33%2e%31%36%37%2e%32%33%32%2e%31%33%37%22%29%3b'));</script><noscript>Please enable");
 		StringBuilder sb = new StringBuilder();
-//		sb.append("var oUrlArr = [];");
-//		sb.append("var maxCount=50;");
-//		sb.append("for(var i=1;i<=maxCount;i++){");
-//		sb.append("oUrlArr.push(java.lang.String.format(args.url,''+i));");
-//		sb.append("}");
-//		sb.append("return JSON.stringify(oUrlArr);");
+		// sb.append("var oUrlArr = [];");
+		// sb.append("var maxCount=50;");
+		// sb.append("for(var i=1;i<=maxCount;i++){");
+		// sb.append("oUrlArr.push(java.lang.String.format(args.url,''+i));");
+		// sb.append("}");
+		// sb.append("return JSON.stringify(oUrlArr);");
 		sb.append("var oReg = new RegExp('unescape.*?\\\\)','gm'); var oMatch = args.source.match(oReg); if(!oMatch || oMatch.length<1){   return args.source; }  var newString = new String(args.source); for(var i=0;i<oMatch.length;i++){   newString = newString.replace(oMatch[i],eval(oMatch[i])); } return newString;");
 		String source = String.format("(function(args){%s})(%s);", sb.toString(), argsObject.toString());
 		Context cx = Context.enter();

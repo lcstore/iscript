@@ -17,6 +17,8 @@ import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
+import com.lezo.rest.QiniuBucketMac;
+import com.lezo.rest.QiniuBucketMacFactory;
 
 public class TaskWorker implements Callable<ResultWritable> {
 	private static Logger logger = LoggerFactory.getLogger(TaskWorker.class);
@@ -58,6 +60,9 @@ public class TaskWorker implements Callable<ResultWritable> {
 				JSONUtils.put(storageObject, "rs", storageDataObject);
 				List<JSONObject> dataList = new ArrayList<JSONObject>(1);
 				dataList.add(storageObject);
+				QiniuBucketMac bucketMac = QiniuBucketMacFactory.getRandomBucketMac();
+				JSONUtils.put(argsObject, "data_bucket", bucketMac.getBucket());
+				JSONUtils.put(argsObject, "data_domain", bucketMac.getDomain());
 				PersistentCollector.getInstance().getBufferWriter().write(dataList);
 			}
 			JSONObject callBackDataObject = JSONUtils.getJSONObject(returnObject, ClientConstant.KEY_CALLBACK_RESULT);
@@ -75,8 +80,6 @@ public class TaskWorker implements Callable<ResultWritable> {
 			JSONUtils.put(callBackObject, "ex", exObject);
 			logger.warn(strStack);
 		} finally {
-			JSONUtils.put(argsObject, "data_bucket", HeaderUtils.STORAGE_BUCKET);
-			JSONUtils.put(argsObject, "data_domain", HeaderUtils.STORAGE_DOMAIN);
 			JSONUtils.put(callBackObject, "args", argsObject);
 			rsWritable.setResult(callBackObject.toString());
 			long cost = System.currentTimeMillis() - start;

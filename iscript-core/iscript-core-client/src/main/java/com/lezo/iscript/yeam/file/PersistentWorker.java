@@ -12,6 +12,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
+import com.lezo.iscript.yeam.rest.QiniuRestCallBack;
 import com.lezo.iscript.yeam.rest.RestUtils;
 import com.qiniu.api.io.PutRet;
 
@@ -21,12 +22,14 @@ public class PersistentWorker implements Runnable {
 	private String rootPath = "iscript";
 	private String type;
 	private String batchId;
+	private String bucket;
 	private List<String> copyList;
 
-	public PersistentWorker(String type, String batchId, List<String> copyList) {
+	public PersistentWorker(String type, String batchId, String bucket, List<String> copyList) {
 		super();
 		this.type = type;
 		this.batchId = batchId;
+		this.bucket = bucket;
 		this.copyList = copyList;
 	}
 
@@ -45,13 +48,17 @@ public class PersistentWorker implements Runnable {
 	}
 
 	private void add2Disk(List<String> rWritables) throws Exception {
+		if ("-".equals(this.bucket)) {
+			logger.warn("illegal bucket,type:" + this.type + ",batchId:" + this.batchId + ",size:" + rWritables.size());
+			return;
+		}
 		String path = getFilePath();
 		InputStream reader = toInputStream(rWritables);
 		File destFile = new File(path);
-		PutRet ret = (PutRet) RestUtils.doRestCallBack(destFile, reader, RestUtils.QINIU_CALL_BACK);
+		PutRet ret = (PutRet) RestUtils.doRestCallBack(destFile, reader, new QiniuRestCallBack(this.bucket));
 		if (ret.ok()) {
 			logger.info(String.format("Succss to add:%s", path));
-		}else {
+		} else {
 			throw new IOException(ret.response, ret.exception);
 		}
 	}

@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -26,6 +27,8 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
@@ -103,6 +106,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		}
 		ProxyCollectHisDto collectHisDto = new ProxyCollectHisDto();
 		int totalCount = resultSet.size();
+		collectHisDto.setTaskId(task.getId());
 		collectHisDto.setSeedId(seedId);
 		collectHisDto.setTotalCount(totalCount);
 		collectHisDto.setTotalPage(urlArray.length());
@@ -142,13 +146,19 @@ public class ConfigProxySeedHandler implements ConfigParser {
 	private JSONArray getFetchUrls(JSONObject argsObject) throws Exception {
 		String url = JSONUtils.getString(argsObject, "url");
 		String createUrlsFun = JSONUtils.getString(argsObject, "CreateUrlsFun");
+		if (StringUtils.isEmpty(createUrlsFun)) {
+			JSONArray urlArray = new JSONArray();
+			urlArray.put(url);
+			return urlArray;
+		}
 		argsObject.remove("CreateUrlsFun");
 		JSONObject paramObject = new JSONObject();
 		JSONUtils.put(paramObject, "url", url);
 		String source = String.format("(function(args){%s})(%s);", createUrlsFun, paramObject.toString());
 		try {
 			Context cx = Context.enter();
-			Object rsObject = cx.evaluateString(ScriptableUtils.getJSONScriptable(), source, "FetchUrls", 0, null);
+			Scriptable scope = cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
+			Object rsObject = cx.evaluateString(scope, source, "FetchUrls", 0, null);
 			String sResult = Context.toString(rsObject);
 			JSONArray urlArray = new JSONArray(sResult);
 			return urlArray;
@@ -173,7 +183,8 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		String source = String.format("(function(args){%s})(%s);", decodePageFun, argsObject.toString());
 		try {
 			Context cx = Context.enter();
-			Object rsObject = cx.evaluateString(ScriptableUtils.getJSONScriptable(), source, "decode", 0, null);
+			Scriptable scope = cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
+			Object rsObject = cx.evaluateString(scope, source, "decode", 0, null);
 			return Context.toString(rsObject);
 		} finally {
 			Context.exit();
@@ -187,10 +198,14 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		while (matcher.find()) {
 			JSONObject ipObject = new JSONObject();
 			String ipString = matcher.group(1);
-			JSONUtils.put(ipObject, "ip", InetAddressUtils.inet_aton(ipString));
-			JSONUtils.put(ipObject, "port", Integer.valueOf(matcher.group(2)));
-			proxyArray.put(ipObject);
-//			System.out.println(matcher.group(1) + ":" + matcher.group(2));
+			String portString = matcher.group(2);
+			Integer port = NumberUtils.toInt(portString, -1);
+			if (port > 0 && port < 65536) {
+				JSONUtils.put(ipObject, "ip", InetAddressUtils.inet_aton(ipString));
+				JSONUtils.put(ipObject, "port", Integer.valueOf(matcher.group(2)));
+				proxyArray.put(ipObject);
+			}
+			// System.out.println(matcher.group(1) + ":" + matcher.group(2));
 		}
 		return proxyArray;
 	}
@@ -225,6 +240,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 
 	private static class ProxyCollectHisDto {
 		private Long seedId;
+		private Long taskId;
 		private Integer totalPage = 0;
 		private Integer fetchPage = 0;
 		private Integer totalCount = 0;
@@ -268,6 +284,14 @@ public class ConfigProxySeedHandler implements ConfigParser {
 
 		public void setProxyList(Set<ProxyAddrDto> proxyList) {
 			this.proxyList = proxyList;
+		}
+
+		public Long getTaskId() {
+			return taskId;
+		}
+
+		public void setTaskId(Long taskId) {
+			this.taskId = taskId;
 		}
 
 	}

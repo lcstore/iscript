@@ -12,6 +12,7 @@
 		<result column="NEW_COUNT" property="newCount"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="TASK_ID" property="taskId"/>
 	</resultMap>
 	<sql id="ProxyCollectHisDto-coloumn-list">
 		SEED_ID
@@ -21,6 +22,7 @@
 		,NEW_COUNT
 		,CREATE_TIME
 		,UPDATE_TIME
+		,TASK_ID
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyCollectHisDto">
 		INSERT INTO T_PROXY_COLLECT_HIS(
@@ -29,7 +31,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.seedId},#{item.totalPage},#{item.fetchPage},#{item.totalCount},#{item.newCount},#{item.createTime},#{item.updateTime})
+			(#{item.seedId},#{item.totalPage},#{item.fetchPage},#{item.totalCount},#{item.newCount},#{item.createTime},#{item.updateTime},#{item.taskId})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyCollectHisDto">
@@ -39,6 +41,7 @@
 		,FETCH_PAGE=#{fetchPage}
 		,TOTAL_COUNT=#{totalCount}
 		,NEW_COUNT=#{newCount}
+		,TASK_ID=#{taskId}
 		WHERE ID=#{id}
 	</update>
 </mapper>

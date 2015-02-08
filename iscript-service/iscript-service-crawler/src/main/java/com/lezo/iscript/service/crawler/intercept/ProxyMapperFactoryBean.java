@@ -52,7 +52,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 					paramMap.put(batchKey, bObject);
 					result += sqlSession.update(sqlMapper, paramMap);
 				}
-				sqlSession.commit();
+				sqlSession.commit(true);
 			} else if (paramObject instanceof List) {
 				Collection<Object> batchCollection = (Collection<Object>) paramObject;
 				for (Object bObject : batchCollection) {

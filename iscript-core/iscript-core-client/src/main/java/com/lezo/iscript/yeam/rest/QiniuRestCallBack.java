@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import com.lezo.rest.QiniuBucketMac;
+import com.lezo.rest.QiniuBucketMacFactory;
 import com.qiniu.api.auth.digest.Mac;
 import com.qiniu.api.io.IoApi;
 import com.qiniu.api.io.PutExtra;
@@ -11,12 +13,14 @@ import com.qiniu.api.io.PutRet;
 import com.qiniu.api.rs.PutPolicy;
 
 public class QiniuRestCallBack implements RestCallBack {
+
 	private Mac mac;
 	private PutPolicy putPolicy;
 
-	public QiniuRestCallBack(String accessKey, String secretKey, String bucketName) {
-		this.mac = new Mac(accessKey, secretKey);
-		this.putPolicy = new PutPolicy(bucketName);
+	public QiniuRestCallBack(String bucket) {
+		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(bucket);
+		this.mac = bucketMac.getMac();
+		this.putPolicy = new PutPolicy(bucketMac.getBucket());
 	}
 
 	@Override
@@ -25,7 +29,7 @@ public class QiniuRestCallBack implements RestCallBack {
 		PutExtra extra = new PutExtra();
 		String uptoken = putPolicy.token(mac);
 		PutRet ret = IoApi.Put(uptoken, key, in, extra);
-		if(ret.exception!=null){
+		if (ret.exception != null) {
 			throw ret.exception;
 		}
 		return ret;
@@ -40,4 +44,5 @@ public class QiniuRestCallBack implements RestCallBack {
 		}
 		return newKey;
 	}
+
 }

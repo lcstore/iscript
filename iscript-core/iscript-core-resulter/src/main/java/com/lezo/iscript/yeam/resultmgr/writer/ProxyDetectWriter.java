@@ -29,7 +29,7 @@ public class ProxyDetectWriter implements ObjectWriter<ProxyDetectDto> {
 		if (detectList.isEmpty()) {
 			return;
 		}
-		synchronized (this) {
+		synchronized (ProxyDetectWriter.class) {
 			callService.batchSaveProxyDetectDtos(detectList);
 		}
 	}

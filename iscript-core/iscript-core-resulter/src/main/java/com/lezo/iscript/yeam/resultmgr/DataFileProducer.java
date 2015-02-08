@@ -14,6 +14,8 @@ import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryDescriptor;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryLockUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryTracker;
+import com.lezo.rest.QiniuBucketMac;
+import com.lezo.rest.QiniuBucketMacFactory;
 import com.qiniu.api.auth.digest.Mac;
 import com.qiniu.api.rsf.ListItem;
 import com.qiniu.api.rsf.ListPrefixRet;
@@ -33,7 +35,8 @@ public class DataFileProducer implements Runnable {
 	@Override
 	public void run() {
 		DirectoryDescriptor descriptor = this.tracker.getDescriptor();
-		Mac mac = getMac(descriptor);
+		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(descriptor.getBucketName());
+		Mac mac = bucketMac == null ? null : bucketMac.getMac();
 		if (mac == null) {
 			throw new IllegalArgumentException("can not get QiniuMac:" + descriptor.getBucketName() + "." + descriptor.getDomain());
 		}
@@ -57,22 +60,21 @@ public class DataFileProducer implements Runnable {
 
 	private void doWork(DirectoryDescriptor descriptor, Mac mac) {
 		RSFClient client = new RSFClient(mac);
-		String marker = this.tracker.getMarker();
-		long stamp = this.tracker.getStamp();
-		List<ListItem> itemList = new ArrayList<ListItem>();
 		ListPrefixRet ret = null;
 		int limit = 100;
 		int retry = 0;
 		int count = 0;
 		while (true) {
-			ret = client.listPrifix(descriptor.getBucketName(), descriptor.getDataPath(), marker, limit);
+			ret = client.listPrifix(descriptor.getBucketName(), descriptor.getDataPath(), this.tracker.getMarker(), limit);
 			if (ret.statusCode >= 200 && ret.statusCode < 300) {
-				marker = ret.marker;
-				List<ListItem> acceptList = getAccepts(ret.results, stamp);
+				List<ListItem> acceptList = getAccepts(ret.results, this.tracker.getStamp());
+				this.tracker.setMarker(ret.marker);
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
 					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + count + ",newCount:" + acceptList.size());
 					createDataFileConsumer(descriptor, mac, acceptList);
+					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
+					this.tracker.setStamp(getMaxStamp(acceptList));
 				}
 				if (ret.results.size() < limit) {
 					break;
@@ -89,11 +91,6 @@ public class DataFileProducer implements Runnable {
 				}
 			}
 
-		}
-		if (!itemList.isEmpty()) {
-			this.tracker.setMarker(marker);
-			this.tracker.setFileCount(this.tracker.getFileCount() + count);
-			this.tracker.setStamp(getMaxStamp(itemList));
 		}
 		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
 	}
@@ -112,12 +109,6 @@ public class DataFileProducer implements Runnable {
 				logger.warn("File:" + item.key + ",cause:", e);
 			}
 		}
-	}
-
-	private Mac getMac(DirectoryDescriptor descriptor) {
-		QiniuMacFactory qiniuMacFactory = SpringBeanUtils.getBean(QiniuMacFactory.class);
-		String host = descriptor.getBucketName() + "." + descriptor.getDomain();
-		return qiniuMacFactory.getMac(host);
 	}
 
 	private long getMaxStamp(List<ListItem> itemList) {

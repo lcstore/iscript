@@ -53,7 +53,8 @@
 		IS_DELETE=#{isDelete},
 		TYPE=#{type},
 		REMARK=#{remark},
-		SEED_ID=#{seedId}
+		SEED_ID=#{seedId},
+		UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 	<select id="getProxyAddrDtosByAddrCodes" parameterType="map"

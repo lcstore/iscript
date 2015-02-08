@@ -21,7 +21,7 @@ public class ProxyAddrDto {
 	private Integer type = TYPE_UNKNOWN;
 	private String remark = "";
 
-	private Long seedId;
+	private Long seedId = 0L;
 
 	public Long getId() {
 		return id;
