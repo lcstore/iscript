@@ -40,8 +40,8 @@
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyCollector</value>
 				<value>ConfigYhdProduct</value>
-				<value>ConfigProxyDetector</value>
 				-->
+				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyChecker</value> 
 				<value>ConfigProxySeedHandler</value> 
 			</list>

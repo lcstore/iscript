@@ -13,8 +13,6 @@ import com.lezo.iscript.yeam.task.TasksCaller;
 public class HeaderUtils {
 	public static final String MAC_ADDR = MacAddress.getMacAddress();
 	public static final String CLIENT_NAME = String.format("%s@%s", ClientPropertiesUtils.getProperty("name"), MAC_ADDR);
-	public static final String STORAGE_BUCKET = ClientPropertiesUtils.getProperty("qiniu_bucket");
-	public static final String STORAGE_DOMAIN = ClientPropertiesUtils.getProperty("storage_domain");
 
 	public static JSONObject getHeader() {
 		JSONObject headObject = new JSONObject();
