@@ -69,7 +69,7 @@ public class ConfigParserTest {
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
 		parser = new ConfigProxyDetector();
-		parser = new ConfigProxySeedHandler();
+//		parser = new ConfigProxySeedHandler();
 //		parser = new ConfigProxyCollector();
 //		parser = new ConfigJdPromotion();
 //		parser = new ConfigTmallBrandList();
@@ -147,22 +147,21 @@ public class ConfigParserTest {
 		task.put("port", 3128);
 
 		// http
-		task.put("ip", "111.1.36.130");
+		task.put("ip", "117.177.243.35");
 		task.put("port", 80);
-		task.put("ip", "180.168.217.86");
-		task.put("proxyType", 8081);
-		// socket
-		task.put("ip", "103.246.161.194");
-		task.put("port", 1080);
-		task.put("proxyType", 2);
-
-		task.put("ip", "222.87.129.218");
-		task.put("port", 83);
 		task.put("proxyType", 1);
-
-		task.put("url", "http://www.proxy.com.ru/list_%s.html");
-		task.put("seedId", "1");
-		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
+		// socket
+//		task.put("ip", "103.246.161.194");
+//		task.put("port", 1080);
+//		task.put("proxyType", 2);
+//
+//		task.put("ip", "222.87.129.218");
+//		task.put("port", 83);
+//		task.put("proxyType", 1);
+//
+//		task.put("url", "http://www.proxy.com.ru/list_%s.html");
+//		task.put("seedId", "1");
+//		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}

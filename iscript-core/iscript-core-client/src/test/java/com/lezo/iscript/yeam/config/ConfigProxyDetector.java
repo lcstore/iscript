@@ -15,6 +15,9 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +157,9 @@ public class ConfigProxyDetector implements ConfigParser {
 			limitRemarkLen(tBean);
 			return;
 		}
-		if (html != null && html.indexOf(domain) > 0) {
+		Document dom = Jsoup.parse(html);
+		Elements footEls = dom.select("a[href=http://www.baidu.com/duty/]");
+		if (!footEls.isEmpty()) {
 			tBean.setVerifyStatus(1);
 			tBean.setStatus(1);
 			return;
