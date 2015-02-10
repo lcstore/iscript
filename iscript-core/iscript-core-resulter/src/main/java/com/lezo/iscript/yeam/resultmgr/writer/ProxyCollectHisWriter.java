@@ -20,12 +20,14 @@ public class ProxyCollectHisWriter implements ObjectWriter<ProxyCollectHisDto> {
 	private ProxyCollectHisService proxyCollectHisService = SpringBeanUtils.getBean(ProxyCollectHisService.class);
 
 	@Override
-	public synchronized void write(List<ProxyCollectHisDto> dataList) {
+	public void write(List<ProxyCollectHisDto> dataList) {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		proxyCollectHisService.batchSaveDtos(dataList);
-		logger.info("save data size:" + dataList.size());
+		synchronized (ProxyCollectHisService.class) {
+			proxyCollectHisService.batchSaveDtos(dataList);
+			logger.info("save data size:" + dataList.size());
+		}
 	}
 
 }

@@ -20,12 +20,14 @@ public class ProxyCollectWriter implements ObjectWriter<ProxyAddrDto> {
 	private ProxyAddrService proxyAddrService = SpringBeanUtils.getBean(ProxyAddrService.class);
 
 	@Override
-	public synchronized void write(List<ProxyAddrDto> dataList) {
+	public void write(List<ProxyAddrDto> dataList) {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		proxyAddrService.batchSaveProxyAddrs(dataList);
-		logger.info("save data size:" + dataList.size());
+		synchronized (ProxyAddrService.class) {
+			proxyAddrService.batchSaveProxyAddrs(dataList);
+			logger.info("save data size:" + dataList.size());
+		}
 	}
 
 }

@@ -1,15 +1,18 @@
 package com.lezo.iscript.yeam.resultmgr.writer;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.common.BufferObjectWriter;
 import com.lezo.iscript.common.ObjectWriter;
 
 public class BufferWriterManager {
-	private Map<String, BufferObjectWriter<?>> writerMap = new HashMap<String, BufferObjectWriter<?>>();
+	private static Logger logger = LoggerFactory.getLogger(BufferWriterManager.class);
+	private ConcurrentHashMap<String, BufferObjectWriter<?>> writerMap = new ConcurrentHashMap<String, BufferObjectWriter<?>>();
 	private Object addLock = new Object();
 
 	static class InstanceHolder {
@@ -23,34 +26,23 @@ public class BufferWriterManager {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public void addWriter(String name) {
-		try {
-			BufferObjectWriter<?> writer = BufferWriterFactory.createBufferObjectWriter(name);
-			addWriter(name, writer);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void addWriter(String name, BufferObjectWriter<?> writer) {
-		if (name == null || writer == null) {
-			return;
-		}
-		synchronized (addLock) {
-			writerMap.put(name, writer);
-		}
-	}
-
 	public ObjectWriter<Object> getWriter(Class<?> dtoClass) {
 		return getWriter(dtoClass.getSimpleName());
 	}
 
 	@SuppressWarnings("unchecked")
 	public ObjectWriter<Object> getWriter(String name) {
-		ObjectWriter<Object> writer = (ObjectWriter<Object>) writerMap.get(name);
+		BufferObjectWriter<Object> writer = (BufferObjectWriter<Object>) writerMap.get(name);
 		if (writer == null) {
-			addWriter(name);
-			writer = (ObjectWriter<Object>) writerMap.get(name);
+			synchronized (addLock) {
+				try {
+					writer = (BufferObjectWriter<Object>) BufferWriterFactory.createBufferObjectWriter(name);
+					BufferObjectWriter<Object> oldWriter = (BufferObjectWriter<Object>) writerMap.putIfAbsent(name, writer);
+					writer = oldWriter == null ? writer : oldWriter;
+				} catch (Exception e) {
+					logger.error("add writer:" + name + ",cause:", e);
+				}
+			}
 		}
 		return writer;
 	}

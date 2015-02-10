@@ -8,11 +8,16 @@ public class QiniuBucketMac {
 	private Integer capacity;
 	private String domain = "qiniudn.com";
 
-	public QiniuBucketMac(Mac mac, String bucket, Integer capacity) {
+	public QiniuBucketMac(Mac mac, String bucket, Integer capacity, String domain) {
 		super();
 		this.mac = mac;
 		this.bucket = bucket;
 		this.capacity = capacity;
+		this.domain = domain;
+	}
+
+	public QiniuBucketMac(Mac mac, String bucket, Integer capacity) {
+		this(mac, bucket, capacity, bucket + ".qiniudn.com");
 	}
 
 	public Mac getMac() {

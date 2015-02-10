@@ -28,4 +28,16 @@ public class DataLineConsumerTest {
 			new DataLineConsumer(type, dataLine).run();
 		}
 	}
+
+	@Test
+	public void testProxyCheckConsume() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+		List<String> lineList = FileUtils.readLines(new File("src/test/resources/data/ConfigProxyChecker.20150210.1423497600382"), "UTF-8");
+		String type = "ConfigProxyChecker";
+		for (String dataLine : lineList) {
+			new DataLineConsumer(type, dataLine).run();
+		}
+		Thread.currentThread().join();
+	}
 }

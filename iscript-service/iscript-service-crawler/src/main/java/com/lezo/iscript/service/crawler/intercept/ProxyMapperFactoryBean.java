@@ -58,7 +58,7 @@ public class ProxyMapperFactoryBean<T> extends MapperFactoryBean<T> implements I
 				for (Object bObject : batchCollection) {
 					result += sqlSession.update(sqlMapper, bObject);
 				}
-				sqlSession.commit();
+				sqlSession.commit(true);
 			} else {
 				throw new RuntimeException("It is not an auto batch mapper:[" + sqlMapper + "]");
 			}

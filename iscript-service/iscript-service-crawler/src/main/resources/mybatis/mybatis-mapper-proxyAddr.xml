@@ -44,9 +44,6 @@
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyAddrDto">
 		UPDATE T_PROXY_ADDR SET
-		IP=#{ip},
-		PORT=#{port},
-		ADDR_CODE=#{addrCode},
 		SOURCE=#{source},
 		REGION_NAME=#{regionName},
 		ISP_NAME=#{ispName},

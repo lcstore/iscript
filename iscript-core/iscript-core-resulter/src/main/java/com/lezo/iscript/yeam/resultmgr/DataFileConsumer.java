@@ -15,14 +15,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.rest.QiniuBucketMac;
+import com.lezo.rest.QiniuBucketMacFactory;
 import com.qiniu.api.auth.AuthException;
 import com.qiniu.api.rs.GetPolicy;
 import com.qiniu.api.rs.URLUtils;
 
 public class DataFileConsumer implements Runnable {
+	private static Logger logger = LoggerFactory.getLogger(DataFileConsumer.class);
 	private static final DefaultHttpClient CLIENT = HttpClientUtils.createHttpClient();
 	private static final String CHARSET_NAME = "UTF-8";
 	private String type;
@@ -53,10 +58,11 @@ public class DataFileConsumer implements Runnable {
 	}
 
 	private List<String> downData() throws EncoderException, AuthException {
-		String bucketDomain = dataFileWrapper.getBucketName() + "." + dataFileWrapper.getDomain();
+		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(dataFileWrapper.getBucketName());
+		String bucketDomain = bucketMac.getDomain();
 		String baseUrl = URLUtils.makeBaseUrl(bucketDomain, dataFileWrapper.getItem().key);
 		GetPolicy getPolicy = new GetPolicy();
-		String downloadUrl = getPolicy.makeRequest(baseUrl, dataFileWrapper.getMac());
+		String downloadUrl = getPolicy.makeRequest(baseUrl, bucketMac.getMac());
 		HttpGet fileGet = new HttpGet(downloadUrl);
 		InputStream inStream = null;
 		try {
@@ -64,7 +70,7 @@ public class DataFileConsumer implements Runnable {
 			inStream = res.getEntity().getContent();
 			return toDataList(inStream);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("url:" + downloadUrl + ",cause:", e);
 			return Collections.emptyList();
 		} finally {
 			IOUtils.closeQuietly(inStream);

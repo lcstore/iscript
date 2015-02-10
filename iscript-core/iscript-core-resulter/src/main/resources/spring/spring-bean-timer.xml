@@ -43,7 +43,7 @@
 				-->
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyChecker</value> 
-				<value>ConfigProxySeedHandler</value> 
+				<value>ConfigProxySeedHandler</value>
 			</list>
 		</property>
 	</bean>
