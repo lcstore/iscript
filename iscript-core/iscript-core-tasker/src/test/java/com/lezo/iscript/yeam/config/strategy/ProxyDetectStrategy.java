@@ -123,11 +123,24 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			try {
 				logger.info("Detect proxy is start...");
 				running = true;
-				Date afterTime = null;
+				int limit = 1000;
 				for (int status : checkStatusList) {
-					List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromStatus(status, afterTime);
-					offerDetectTasks(dtoList, taskId);
-					JSONUtils.put(statusObject, "" + status, dtoList.size());
+					int totalCount = 0;
+					Long fromId = 0L;
+					while (true) {
+						List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromId(fromId, limit, status);
+						offerDetectTasks(dtoList, taskId);
+						for (ProxyDetectDto dto : dtoList) {
+							if (dto.getId() > fromId) {
+								fromId = dto.getId();
+							}
+						}
+						totalCount += dtoList.size();
+						if (dtoList.size() < limit) {
+							break;
+						}
+					}
+					JSONUtils.put(statusObject, "" + status, totalCount);
 				}
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
