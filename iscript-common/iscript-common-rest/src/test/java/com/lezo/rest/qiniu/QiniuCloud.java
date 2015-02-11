@@ -54,12 +54,12 @@ public class QiniuCloud {
 
 	@Test
 	public void testDelete() throws Exception {
-		Mac mac = new Mac(Config.ACCESS_KEY, Config.SECRET_KEY);
-		// 请确保该bucket已经存在
-		String bucketName = "istore";
+		String bucketName = "p1001";
+		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(bucketName);
+		Mac mac = bucketMac.getMac();
 		RSClient rs = new RSClient(mac);
 		RSFClient client = new RSFClient(mac);
-		String key = "iscript/201410";
+		String key = "iscript/2014";
 		String marker = "";
 		ListPrefixRet ret = null;
 		while (true) {
