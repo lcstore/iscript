@@ -1,9 +1,11 @@
 package com.lezo.iscript.service.crawler.dao.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -40,6 +42,22 @@ public class ProxyAddrDaoTest {
 		while (iterator.hasNext()) {
 			List<ProxyAddrDto> insertDtos = iterator.next();
 			proxyAddrDao.batchInsert(insertDtos);
+		}
+	}
+
+	@Test
+	public void testBatchDelete() throws Exception {
+		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+		ProxyAddrDao proxyAddrDao = SpringBeanUtils.getBean(ProxyAddrDao.class);
+		List<String> srcList = FileUtils.readLines(new File("src/test/resources/proxyAddr.txt"), "UTF-8");
+		BatchIterator<String> iterator = new BatchIterator<String>(srcList, 10000);
+		int total = 0;
+		while (iterator.hasNext()) {
+			List<String> idList = iterator.next();
+			proxyAddrDao.batchDeleteByIds(idList);
+			total += idList.size();
+			System.err.println("delete size:" + idList.size() + ",has delete:" + total + ",total:" + srcList.size());
 		}
 	}
 }

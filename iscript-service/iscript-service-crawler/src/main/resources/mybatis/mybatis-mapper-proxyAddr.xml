@@ -72,10 +72,14 @@
 		<include refid="ProxyAddrDto-coloumn-list" />
 		FROM T_PROXY_ADDR
 		<where>
-			REGION_NAME IS NULL
+		    <![CDATA[
+		    ID > #{fromId}
+		    ]]>
+			AND REGION_NAME IS NULL
 			<if test="type !=null">
 				AND TYPE=#{type}
 			</if>
+			LIMIT #{limit}
 		</where>
 	</select>
 	<select id="getProxyAddrDtosByCreateTime" parameterType="map"
@@ -96,4 +100,11 @@
 		FROM T_PROXY_ADDR
 		WHERE  ID > #{fromId} LIMIT #{limit}
 	</select>
+	
+	<delete id="batchDeleteByIds" parameterType="map">
+	     DELETE FROM T_PROXY_ADDR
+	     <foreach collection="idList" item="id" open="WHERE ID IN(" separator="," close=")">
+	       #{id}
+	     </foreach> 
+	</delete>
 </mapper>

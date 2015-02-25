@@ -14,9 +14,11 @@ public interface ProxyAddrDao {
 
 	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(@Param("addrCodeList") List<String> addrCodeList);
 
-	List<ProxyAddrDto> getNullRegionProxyAddrDtos(@Param("type") Integer type);
+	List<ProxyAddrDto> getNullRegionProxyAddrDtos(@Param("fromId") Long fromId, @Param("type") Integer type, @Param("limit") Integer limit);
 
 	List<ProxyAddrDto> getProxyAddrDtosByCreateTime(@Param("afterTime") Date afterTime);
 
 	List<ProxyAddrDto> getProxyAddrDtosByFromId(@Param("fromId") Long fromId, @Param("limit") Integer limit);
+
+	void batchDeleteByIds(@Param("idList") List<String> idList);
 }

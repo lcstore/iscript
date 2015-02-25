@@ -59,18 +59,32 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 			}
 			long start = System.currentTimeMillis();
 			String taskId = UUID.randomUUID().toString();
-			int size = 0;
+			int total = 0;
 			try {
 				logger.info(getName() + " taskTimer is start...");
-				List<ProxyAddrDto> dtoList = proxyAddrService.getNullRegionProxyAddrDtos(0);
-				offerDetectTasks(dtoList, taskId);
-				size = dtoList.size();
+				Integer type = 0;
+				Integer limit = 1000;
+				Long fromId = 0L;
+				while (true) {
+					List<ProxyAddrDto> dtoList = proxyAddrService.getNullRegionProxyAddrDtos(fromId, type, limit);
+					offerDetectTasks(dtoList, taskId);
+					total += dtoList.size();
+					logger.info(getName() + ",add task:" + dtoList.size() + ",total:" + total);
+					if (dtoList.size() < limit) {
+						break;
+					}
+					for (ProxyAddrDto dto : dtoList) {
+						if (fromId < dto.getId()) {
+							fromId = dto.getId();
+						}
+					}
+				}
 				running = true;
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));
 			} finally {
 				long cost = System.currentTimeMillis() - start;
-				logger.info(getName() + " taskTimer is done.taskId:" + taskId + ",size:" + size + ",cost:" + cost);
+				logger.info(getName() + " taskTimer is done.taskId:" + taskId + ",size:" + total + ",cost:" + cost);
 				running = false;
 			}
 

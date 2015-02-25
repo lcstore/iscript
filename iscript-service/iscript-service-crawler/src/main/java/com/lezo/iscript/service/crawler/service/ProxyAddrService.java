@@ -14,7 +14,7 @@ public interface ProxyAddrService {
 
 	List<ProxyAddrDto> getProxyAddrDtosByAddrCodes(List<String> addrCodeList);
 
-	List<ProxyAddrDto> getNullRegionProxyAddrDtos(Integer type);
+	List<ProxyAddrDto> getNullRegionProxyAddrDtos(Long fromId, Integer type, Integer limit);
 
 	List<ProxyAddrDto> getProxyAddrDtosByCreateTime(Date afterTime);
 }

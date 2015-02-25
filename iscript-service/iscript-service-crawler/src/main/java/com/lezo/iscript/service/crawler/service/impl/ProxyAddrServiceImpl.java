@@ -149,8 +149,8 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	}
 
 	@Override
-	public List<ProxyAddrDto> getNullRegionProxyAddrDtos(Integer type) {
-		return proxyAddrDao.getNullRegionProxyAddrDtos(type);
+	public List<ProxyAddrDto> getNullRegionProxyAddrDtos(Long fromId, Integer type, Integer limit) {
+		return proxyAddrDao.getNullRegionProxyAddrDtos(fromId, type, limit);
 	}
 
 	@Override
