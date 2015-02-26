@@ -106,9 +106,9 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 
 		public ProxyDetectTimer() {
 			checkStatusList = new ArrayList<Integer>();
-			checkStatusList.add(ProxyDetectDto.STATUS_WORK);
-			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
-			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
+//			checkStatusList.add(ProxyDetectDto.STATUS_WORK);
+//			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
+//			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
 			// checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 		}
 

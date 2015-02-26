@@ -14,10 +14,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.ProxyAddrService;
+import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
@@ -48,6 +48,7 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 
 	private class ProxyDetectTimer extends TimerTask {
 		private ProxyAddrService proxyAddrService = SpringBeanUtils.getBean(ProxyAddrService.class);
+		private TaskPriorityService taskPriorityService = SpringBeanUtils.getBean(TaskPriorityService.class);
 
 		public ProxyDetectTimer() {
 		}
@@ -111,7 +112,7 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 				taskDto.setParams(argsObject.toString());
 				taskDtos.add(taskDto);
 			}
-			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+			taskPriorityService.batchInsert(taskDtos);
 			logger.info(String.format("add task[%s] to buffer,size:%d", type, taskDtos.size()));
 			type = "ConfigProxyDetector";
 			taskDtos = new ArrayList<TaskPriorityDto>(dtoList.size());
@@ -131,7 +132,7 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 				taskDto.setParams(argsObject.toString());
 				taskDtos.add(taskDto);
 			}
-			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+			taskPriorityService.batchInsert(taskDtos);
 			logger.info(String.format("add task[%s] to buffer,size:%d", type, taskDtos.size()));
 		}
 

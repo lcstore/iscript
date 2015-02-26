@@ -62,16 +62,18 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	}
 
 	@Override
-	public synchronized void batchSaveProxyAddrs(List<ProxyAddrDto> dtoList) {
+	public void batchSaveProxyAddrs(List<ProxyAddrDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
 			return;
 		}
 		ensureAddrCodeFilled(dtoList);
-		List<ProxyAddrDto> insertList = new ArrayList<ProxyAddrDto>();
-		List<ProxyAddrDto> updateList = new ArrayList<ProxyAddrDto>();
-		doAssortment(dtoList, insertList, updateList);
-		batchInsertProxyAddrs(insertList);
-		batchUpdateProxyAddrs(updateList);
+		synchronized (ProxyAddrServiceImpl.class) {
+			List<ProxyAddrDto> insertList = new ArrayList<ProxyAddrDto>();
+			List<ProxyAddrDto> updateList = new ArrayList<ProxyAddrDto>();
+			doAssortment(dtoList, insertList, updateList);
+			batchInsertProxyAddrs(insertList);
+			batchUpdateProxyAddrs(updateList);
+		}
 	}
 
 	private void ensureAddrCodeFilled(List<ProxyAddrDto> dtoList) {
