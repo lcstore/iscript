@@ -23,7 +23,7 @@ public class SessionCacher {
 
 	}
 
-	public static SessionCacher getInstance() {
+	private static SessionCacher getInstance() {
 		return INSTANCE;
 	}
 

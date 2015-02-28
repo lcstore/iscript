@@ -62,11 +62,15 @@ public class DataFileProducer implements Runnable {
 		RSFClient client = new RSFClient(mac);
 		ListPrefixRet ret = null;
 		int limit = 100;
-		int retry = 0;
 		int count = 0;
-		while (true) {
+		int maxCount = 10;
+		while (maxCount-- > 0) {
 			ret = client.listPrifix(descriptor.getBucketName(), descriptor.getDataPath(), this.tracker.getMarker(), limit);
-			if (ret.statusCode >= 200 && ret.statusCode < 300) {
+			if (ret.exception != null && !(ret.exception instanceof RSFEofException)) {
+				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",maxCount:" + maxCount, ret.exception);
+				break;
+			}
+			if (ret.results != null) {
 				List<ListItem> acceptList = getAccepts(ret.results, this.tracker.getStamp());
 				this.tracker.setMarker(ret.marker);
 				if (!CollectionUtils.isEmpty(acceptList)) {
@@ -75,22 +79,19 @@ public class DataFileProducer implements Runnable {
 					createDataFileConsumer(descriptor, mac, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
+				} else {
+					logger.warn("list empty.path:" + descriptor.getDataPath() + ",bucket:" + descriptor.getBucketName() + ",marker:" + ret.marker);
 				}
-				if (ret.results.size() < limit) {
+				if (ret.results.size() < limit || acceptList.isEmpty()) {
 					break;
 				}
 				if (ret.exception instanceof RSFEofException) {
 					// error handler
 					break;
 				}
-				retry = 0;
 			} else {
-				logger.warn(ret.response + ",retry:" + (++retry), ret.exception);
-				if (retry > 3) {
-					break;
-				}
+				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",maxCount:" + maxCount);
 			}
-
 		}
 		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
 	}

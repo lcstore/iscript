@@ -3,6 +3,8 @@ package com.lezo.iscript.yeam;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Test;
 
@@ -33,5 +35,8 @@ public class UrlTest {
 	@Test
 	public void testPort() throws Exception {
 		System.err.println(0xFFFF);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		System.err.println(sdf.format(new Date()));
+
 	}
 }

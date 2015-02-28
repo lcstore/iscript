@@ -3,15 +3,17 @@ package com.lezo.iscript.yeam.tasker;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IoSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
 import com.lezo.iscript.service.crawler.service.SessionHisService;
-import com.lezo.iscript.yeam.server.session.SessionCacher;
+import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 
 public class SaveSessionTimer {
 	private static Logger logger = Logger.getLogger(SaveSessionTimer.class);
@@ -27,24 +29,23 @@ public class SaveSessionTimer {
 		try {
 			running = true;
 			long start = System.currentTimeMillis();
-			List<IoSession> closeList = SessionCacher.getInstance().removeClosed();
 			List<SessionHisDto> copyList = new ArrayList<SessionHisDto>();
-			for (IoSession session : closeList) {
-				SessionHisDto sessionHisDto = getSessionHisDto(session);
-				sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
-				copyList.add(sessionHisDto);
-			}
-			for (Entry<String, IoSession> entry : SessionCacher.getInstance().entrySet()) {
+			IoAcceptor ioAcceptor = IoAcceptorHolder.getIoAcceptor();
+			Map<Long, IoSession> sessionMap = ioAcceptor.getManagedSessions();
+			int closeCount = 0;
+			for (Entry<Long, IoSession> entry : sessionMap.entrySet()) {
 				IoSession session = entry.getValue();
 				SessionHisDto sessionHisDto = getSessionHisDto(session);
 				if (session.getCloseFuture().isClosed()) {
 					sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
+					closeCount++;
 				}
 				copyList.add(sessionHisDto);
 			}
+			sessionHisService.updateSessionByStatus(SessionHisDto.STATUS_UP, SessionHisDto.STATUS_DOWN);
 			sessionHisService.batchSaveSessionHisDtos(copyList);
 			long cost = System.currentTimeMillis() - start;
-			logger.info(String.format("Save SessionHisDto,close:%d,active:%d,cost:%s", closeList.size(), copyList.size(), cost));
+			logger.info(String.format("Save SessionHisDto,close:%d,active:%d,cost:%s", closeCount, copyList.size() - closeCount, cost));
 		} finally {
 			running = false;
 		}

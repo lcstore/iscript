@@ -10,7 +10,7 @@ import com.baidu.pcs.BaiduPCSActionInfo.PCSSimplefiedResponse;
 import com.baidu.pcs.BaiduPCSClient;
 
 public class PcsApiTest {
-	String accessToken = "23.4bc6dbd93afb14f64cdfa89af523126c.2592000.1418106914.4026763474-2920106";
+	String accessToken = "23.667bbb2d701b083d956a61df15a6ff09.2592000.1427599070.4026763474-2920106&session_secret=3dcab0b540c170807f41fe12dc025e18&";
 	BaiduPCSClient client = new BaiduPCSClient(accessToken);
 
 	@Test

@@ -31,6 +31,7 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
 			name2UrlMap.put("openshift", "http://osclient-iscript.rhcloud.com/");
 			name2UrlMap.put("openshift.d1001", "http://d1001-dlink.rhcloud.com/");
 			name2UrlMap.put("openshift.p1001", "http://p1001-p1001.rhcloud.com/");
+			name2UrlMap.put("openshift.p1001", "http://p1002-p1002.rhcloud.com/");
 			this.timer = new Timer();
 			long delay = 60 * 1000L;
 			long period = 5 * 60 * 1000L;

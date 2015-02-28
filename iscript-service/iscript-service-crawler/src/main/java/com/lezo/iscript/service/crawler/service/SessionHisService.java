@@ -17,4 +17,6 @@ public interface SessionHisService {
 	void updateUpSessionToInterrupt();
 
 	List<SessionHisDto> getSessionHisDtosByUpdateTime(Date afterUpdateTime);
+
+	void updateSessionByStatus(int fromStatus, int toStatus);
 }

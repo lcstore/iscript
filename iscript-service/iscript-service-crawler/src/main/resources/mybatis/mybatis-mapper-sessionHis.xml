@@ -62,4 +62,8 @@
 			AND UPDATE_TIME &gt;#{updateTime}
 		</if>
 	</select>
+	<update id="updateSessionByStatus" parameterType="map">
+		UPDATE T_SESSION_HIS SET
+		STATUS=#{toStatus} WHERE STATUS=#{fromStatus}
+	</update>
 </mapper>

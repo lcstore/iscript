@@ -15,6 +15,8 @@ public interface SessionHisDao {
 	List<SessionHisDto> getSessionHisDtos(@Param(value = "sessionIds") List<String> sessionIds);
 
 	void updateUpSessionToInterrupt();
-	
-	List<SessionHisDto> getSessionHisDtosByUpdateTime(@Param(value = "updateTime")Date afterCreateTime);
+
+	List<SessionHisDto> getSessionHisDtosByUpdateTime(@Param(value = "updateTime") Date afterCreateTime);
+
+	void updateSessionByStatus(@Param("fromStatus") int fromStatus, @Param("toStatus") int toStatus);
 }

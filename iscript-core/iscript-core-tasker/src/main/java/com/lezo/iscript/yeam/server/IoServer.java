@@ -2,10 +2,10 @@ package com.lezo.iscript.yeam.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.mina.core.service.IoAcceptor;
@@ -32,7 +32,6 @@ import com.lezo.iscript.yeam.server.handler.IoConfigHandler;
 import com.lezo.iscript.yeam.server.handler.IoResultHandler;
 import com.lezo.iscript.yeam.server.handler.IoTaskHandler;
 import com.lezo.iscript.yeam.server.handler.MessageHandler;
-import com.lezo.iscript.yeam.server.session.SessionCacher;
 
 public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
@@ -51,6 +50,9 @@ public class IoServer extends IoHandlerAdapter {
 		// 读写 通道均在600 秒内无任何操作就进入空闲状态
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 600);
 		acceptor.bind(new InetSocketAddress(port));
+
+		IoAcceptorHolder.setIoAcceptor(acceptor);
+
 		resetSessions();
 		resetProxys();
 		this.handlers = new ArrayList<MessageHandler>();
@@ -122,14 +124,13 @@ public class IoServer extends IoHandlerAdapter {
 	}
 
 	private void addNewSession(IoSession session, Object message) {
-		if (message instanceof IoRequest && !session.containsAttribute(SessionHisDto.CLIEN_NAME)) {
+		if (!session.containsAttribute(SessionHisDto.CLIEN_NAME) && message instanceof IoRequest) {
 			IoRequest ioRequest = (IoRequest) message;
 			JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
 			String name = JSONUtils.getString(hObject, SessionHisDto.CLIEN_NAME);
 			if (!StringUtils.isEmpty(name)) {
 				logger.info(String.format("add new client:%s", name));
 				session.setAttribute(SessionHisDto.CLIEN_NAME, name);
-				SessionCacher.getInstance().putIfAbsent(name, session);
 			} else {
 				logger.warn(String.format("can not found name from %s", hObject));
 			}
@@ -152,7 +153,8 @@ public class IoServer extends IoHandlerAdapter {
 	}
 
 	private void resetSession(IoSession session) {
-		String newSessionId = UUID.randomUUID().toString();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String newSessionId = sdf.format(new Date()) + "#" + session.getId();
 		session.setAttribute(SessionHisDto.SESSION_ID, newSessionId);
 		session.setAttribute(SessionHisDto.REQUEST_SIZE, 0);
 		session.setAttribute(SessionHisDto.RESPONE_SIZE, 0);

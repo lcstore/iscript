@@ -114,4 +114,9 @@ public class SessionHisServiceImpl implements SessionHisService {
 		return sessionHisDao.getSessionHisDtosByUpdateTime(afterUpdateTime);
 	}
 
+	@Override
+	public void updateSessionByStatus(int fromStatus, int toStatus) {
+		sessionHisDao.updateSessionByStatus(fromStatus, toStatus);
+	}
+
 }
