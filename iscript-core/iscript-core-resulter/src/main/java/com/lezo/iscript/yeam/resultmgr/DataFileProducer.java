@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,7 +59,7 @@ public class DataFileProducer implements Runnable {
 		}
 	}
 
-	private void doWork(DirectoryDescriptor descriptor, Mac mac) {
+	private void doWork(DirectoryDescriptor descriptor, Mac mac) throws Exception {
 		RSFClient client = new RSFClient(mac);
 		ListPrefixRet ret = null;
 		int limit = 100;
@@ -83,7 +84,8 @@ public class DataFileProducer implements Runnable {
 					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + ret.results.size() + ",but accept 0");
 				}
 			} else {
-				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",listTimes:" + listTimes + ",listCost:" + costMills);
+				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",listTimes:" + listTimes
+						+ ",listCost:" + costMills);
 			}
 			if (ret.exception instanceof RSFEofException) {
 				logger.info("list to EOF.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",maxCount:" + listTimes + ",listCost:" + costMills);
@@ -91,6 +93,7 @@ public class DataFileProducer implements Runnable {
 			} else {
 				this.tracker.setMarker(ret.marker);
 			}
+			TimeUnit.SECONDS.sleep(1);
 		}
 		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
 	}
