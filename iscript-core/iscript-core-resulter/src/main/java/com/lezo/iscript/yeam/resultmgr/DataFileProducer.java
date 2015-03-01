@@ -63,16 +63,20 @@ public class DataFileProducer implements Runnable {
 		ListPrefixRet ret = null;
 		int limit = 100;
 		int count = 0;
-		int maxCount = 10;
-		while (maxCount-- > 0) {
+		int listTimes = 0;
+		while (true) {
+			listTimes++;
+			long startMills = System.currentTimeMillis();
 			ret = client.listPrifix(descriptor.getBucketName(), descriptor.getDataPath(), this.tracker.getMarker(), limit);
-			if (ret.exception != null && !(ret.exception instanceof RSFEofException)) {
-				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",maxCount:" + maxCount, ret.exception);
+			long costMills = System.currentTimeMillis() - startMills;
+			if (!ret.ok()) {
+				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",listTimes:" + listTimes + ",listCost:" + costMills);
 				break;
 			}
-			if (ret.results != null) {
+			if (CollectionUtils.isNotEmpty(ret.results)) {
+				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",results:" + ret.results.size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
+
 				List<ListItem> acceptList = getAccepts(ret.results, this.tracker.getStamp());
-				this.tracker.setMarker(ret.marker);
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
 					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + count + ",newCount:" + acceptList.size());
@@ -80,17 +84,16 @@ public class DataFileProducer implements Runnable {
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
 				} else {
-					logger.warn("list empty.path:" + descriptor.getDataPath() + ",bucket:" + descriptor.getBucketName() + ",marker:" + ret.marker);
-				}
-				if (ret.results.size() < limit || acceptList.isEmpty()) {
-					break;
-				}
-				if (ret.exception instanceof RSFEofException) {
-					// error handler
-					break;
+					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + ret.results.size() + ",but accept 0");
 				}
 			} else {
-				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",maxCount:" + maxCount);
+				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",listTimes:" + listTimes + ",listCost:" + costMills);
+			}
+			if (ret.exception instanceof RSFEofException) {
+				logger.info("list to EOF.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",maxCount:" + listTimes + ",listCost:" + costMills);
+				break;
+			} else {
+				this.tracker.setMarker(ret.marker);
 			}
 		}
 		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
