@@ -70,7 +70,7 @@ public class DataFileConsumer implements Runnable {
 			inStream = res.getEntity().getContent();
 			return toDataList(inStream);
 		} catch (Exception e) {
-			logger.warn("url:" + downloadUrl + ",cause:", e);
+			logger.warn("url:" + downloadUrl + ",bucket:" + bucketDomain + ",cause:", e);
 			return Collections.emptyList();
 		} finally {
 			IOUtils.closeQuietly(inStream);
