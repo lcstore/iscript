@@ -41,6 +41,7 @@
 				<value>ConfigProxyCollector</value>
 				<value>ConfigYhdProduct</value>
 				-->
+				<value>ConfigProxyCollector</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyChecker</value> 
 				<value>ConfigProxySeedHandler</value>
