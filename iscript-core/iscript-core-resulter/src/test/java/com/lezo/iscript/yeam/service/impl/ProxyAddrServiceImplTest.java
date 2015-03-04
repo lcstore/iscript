@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +21,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -193,23 +196,39 @@ public class ProxyAddrServiceImplTest {
 	@Test
 	public void testFun() {
 		JSONObject argsObject = new JSONObject();
-		JSONUtils.put(argsObject, "url", "http://www.proxylists.net/%s_%s_ext.html");
+		JSONUtils.put(argsObject, "url", "http://spys.ru/en/%s/%s/");
 		JSONUtils
 				.put(argsObject,
 						"source",
 						"<td><script type='text/javascript'>eval(unescape('%73%65%6c%66%2e%64%6f%63%75%6d%65%6e%74%2e%77%72%69%74%65%6c%6e%28%22%38%33%2e%31%36%37%2e%32%33%32%2e%31%33%37%22%29%3b'));</script><noscript>Please enable");
 		StringBuilder sb = new StringBuilder();
-		// sb.append("var oUrlArr = [];");
-		// sb.append("var maxCount=50;");
-		// sb.append("for(var i=1;i<=maxCount;i++){");
-		// sb.append("oUrlArr.push(java.lang.String.format(args.url,''+i));");
-		// sb.append("}");
-		// sb.append("return JSON.stringify(oUrlArr);");
-		sb.append("var oReg = new RegExp('unescape.*?\\\\)','gm'); var oMatch = args.source.match(oReg); if(!oMatch || oMatch.length<1){   return args.source; }  var newString = new String(args.source); for(var i=0;i<oMatch.length;i++){   newString = newString.replace(oMatch[i],eval(oMatch[i])); } return newString;");
+//		sb.append("var oReg = new RegExp('unescape.*?\\\\)','gm'); var oMatch = args.source.match(oReg); if(!oMatch || oMatch.length<1){   return args.source; }  var newString = new String(args.source); for(var i=0;i<oMatch.length;i++){   newString = newString.replace(oMatch[i],eval(oMatch[i])); } return newString;");
+//		sb.append("var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+(i < 10 ? \"0\" + i : i)));}return JSON.stringify(oUrlArr);");
+		sb.append("var typeArr =['free-proxy-list','anonymous-proxy-list','https-ssl-proxy','socks-proxy-list','http-proxy-list','non-anonymous-proxy-list']; var oUrlArr = [];var maxCount=10;for(var j=0;j<typeArr.length;j++){ for(var i=1;i<=maxCount;i++){ oUrlArr.push(java.lang.String.format(args.url,''+typeArr[j],''+(i-1)));} } return JSON.stringify(oUrlArr);");
 		String source = String.format("(function(args){%s})(%s);", sb.toString(), argsObject.toString());
 		Context cx = Context.enter();
 		System.err.println(sb.toString());
-		Object rsObject = cx.evaluateString(ScriptableUtils.getJSONScriptable(), source, "cmd", 0, null);
+
+		Scriptable sharedScope = ScriptableUtils.getJSONScriptable();
+		Scriptable threadScope = ScriptableUtils.newScriptable(sharedScope);
+
+		Object rsObject = cx.evaluateString(threadScope, source, "cmd", 0, null);
 		System.out.println(Context.toString(rsObject));
+	}
+
+	@Test
+	public void testBatchRunScript() throws Exception {
+		ExecutorService executor = Executors.newFixedThreadPool(10);
+		for (int i = 0; i < 50; i++) {
+			executor.execute(new Runnable() {
+
+				@Override
+				public void run() {
+					testFun();
+				}
+			});
+		}
+		System.err.println("##########end");
+		Thread.currentThread().join();
 	}
 }

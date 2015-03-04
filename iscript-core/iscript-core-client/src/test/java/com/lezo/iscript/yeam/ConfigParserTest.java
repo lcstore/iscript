@@ -69,7 +69,7 @@ public class ConfigParserTest {
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
 		parser = new ConfigProxyDetector();
-//		parser = new ConfigProxySeedHandler();
+		parser = new ConfigProxySeedHandler();
 //		parser = new ConfigProxyCollector();
 //		parser = new ConfigJdPromotion();
 //		parser = new ConfigTmallBrandList();
@@ -159,9 +159,9 @@ public class ConfigParserTest {
 //		task.put("port", 83);
 //		task.put("proxyType", 1);
 //
-//		task.put("url", "http://www.proxy.com.ru/list_%s.html");
-//		task.put("seedId", "1");
-//		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
+		task.put("url", "http://www.proxy.com.ru/list_%s.html");
+		task.put("seedId", "1");
+		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}

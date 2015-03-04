@@ -28,7 +28,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
@@ -157,7 +156,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		String source = String.format("(function(args){%s})(%s);", createUrlsFun, paramObject.toString());
 		try {
 			Context cx = Context.enter();
-			Scriptable scope = cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
+			Scriptable scope = newScriptable(ScriptableUtils.getJSONScriptable());
 			Object rsObject = cx.evaluateString(scope, source, "FetchUrls", 0, null);
 			String sResult = Context.toString(rsObject);
 			JSONArray urlArray = new JSONArray(sResult);
@@ -183,7 +182,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		String source = String.format("(function(args){%s})(%s);", decodePageFun, argsObject.toString());
 		try {
 			Context cx = Context.enter();
-			Scriptable scope = cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
+			Scriptable scope = newScriptable(ScriptableUtils.getJSONScriptable());
 			Object rsObject = cx.evaluateString(scope, source, "decode", 0, null);
 			return Context.toString(rsObject);
 		} finally {
@@ -294,6 +293,14 @@ public class ConfigProxySeedHandler implements ConfigParser {
 			this.taskId = taskId;
 		}
 
+	}
+
+	public static Scriptable newScriptable(Scriptable parent) {
+		Context cx = Context.enter();
+		Scriptable newScope = cx.newObject(parent);
+		newScope.setPrototype(parent);
+		newScope.setParentScope(null);
+		return newScope;
 	}
 
 	private static class ProxyAddrDto {

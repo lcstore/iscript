@@ -6,6 +6,7 @@ import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -16,28 +17,28 @@ import org.mozilla.javascript.ScriptableObject;
  */
 public class ResourceScriptableFactory implements ScriptableFactory {
 	private String[] codePaths;
-	private ScriptableObject parent;
 
-	public ResourceScriptableFactory(ScriptableObject parent, String... codePaths) {
+	public ResourceScriptableFactory(String... codePaths) {
 		super();
-		this.parent = parent;
 		this.codePaths = codePaths;
 	}
 
-	public Scriptable createScriptable() throws Exception {
+	public Scriptable createScriptable(ScriptableObject parent, boolean sealed) throws Exception {
 		Scriptable scope = null;
 		InputStream in = null;
 		Reader reader = null;
 		try {
 			Context cx = Context.enter();
-			scope = cx.initStandardObjects(this.parent);
+			scope = cx.initStandardObjects(parent, sealed);
 			ClassLoader loader = ResourceScriptableFactory.class.getClassLoader();
 			int size = codePaths.length;
 			for (int i = 0; i < size; i++) {
 				String path = codePaths[i];
 				in = loader.getResourceAsStream(path);
 				reader = new InputStreamReader(in);
-				cx.evaluateReader(scope, reader, "<cmd>", 0, null);
+				Script script = cx.compileReader(reader, "<sharedScript>", 0, null);
+				script.exec(cx, scope);
+//				cx.evaluateReader(scope, reader, "<cmd>", 0, null);
 				IOUtils.closeQuietly(in);
 				IOUtils.closeQuietly(reader);
 			}

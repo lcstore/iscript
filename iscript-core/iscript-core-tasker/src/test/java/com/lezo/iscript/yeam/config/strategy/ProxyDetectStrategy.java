@@ -15,11 +15,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.ProxyAddrService;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
+import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
@@ -102,13 +102,14 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private class ProxyDetectTimer extends TimerTask {
 		private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 		private ProxyAddrService proxyAddrService = SpringBeanUtils.getBean(ProxyAddrService.class);
+		private TaskPriorityService taskPriorityService = SpringBeanUtils.getBean(TaskPriorityService.class);
 		private List<Integer> checkStatusList;
 
 		public ProxyDetectTimer() {
 			checkStatusList = new ArrayList<Integer>();
 //			checkStatusList.add(ProxyDetectDto.STATUS_WORK);
-//			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
-//			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
+			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
+			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
 			// checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 		}
 
@@ -178,8 +179,9 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 				taskDto.setParams(argsObject.toString());
 				taskDtos.add(taskDto);
 			}
-			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
-			logger.info(String.format("add task to buffer,size:%d", taskDtos.size()));
+//			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+			taskPriorityService.batchInsert(taskDtos);
+			logger.info(String.format("add task to DB,size:%d", taskDtos.size()));
 		}
 
 	}
