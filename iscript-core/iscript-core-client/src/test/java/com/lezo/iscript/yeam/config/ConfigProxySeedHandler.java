@@ -76,7 +76,6 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		}
 		int fetchPage = 0;
 		String decodePageFun = JSONUtils.getString(argsObject, "DecodePageFun");
-		argsObject.remove("DecodePageFun");
 		Set<ProxyAddrDto> resultSet = new HashSet<ConfigProxySeedHandler.ProxyAddrDto>();
 		for (int i = 0; i < urlArray.length(); i++) {
 			String sProxyUrl = urlArray.getString(i);
@@ -113,6 +112,8 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		collectHisDto.getProxyList().addAll(resultSet);
 		DataBean dataBean = new DataBean();
 		dataBean.getDataList().add(collectHisDto);
+		argsObject.remove("CreateUrlsFun");
+		argsObject.remove("DecodePageFun");
 		return dataBean;
 	}
 
@@ -147,10 +148,13 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		String createUrlsFun = JSONUtils.getString(argsObject, "CreateUrlsFun");
 		if (StringUtils.isEmpty(createUrlsFun)) {
 			JSONArray urlArray = new JSONArray();
-			urlArray.put(url);
+			if (url.indexOf("%s") > 0) {
+				throw new RuntimeException("createUrlsFun is empty,and url:" + url);
+			} else {
+				urlArray.put(url);
+			}
 			return urlArray;
 		}
-		argsObject.remove("CreateUrlsFun");
 		JSONObject paramObject = new JSONObject();
 		JSONUtils.put(paramObject, "url", url);
 		String source = String.format("(function(args){%s})(%s);", createUrlsFun, paramObject.toString());

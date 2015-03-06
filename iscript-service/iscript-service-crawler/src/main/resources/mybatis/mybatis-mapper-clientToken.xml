@@ -45,8 +45,29 @@
 		,REFRESH_TOKEN=#{refreshToken}
 		,ACCESS_TOKEN=#{accessToken}
 		,NEXT_REFRESH_TIME=#{nextRefreshTime}
-		,CREATE_TIME=#{createTime}
-		,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<select id="getClientTokenDtoByRefreshDate" parameterType="map" resultMap="RM_ClientTokenDto">
+	   SELECT * FROM T_CLIENT_TOKEN
+	   <where>
+	       <if test="fromRefreshDate != null and toRefreshDate != null">
+	       <![CDATA[
+	       NEXT_REFRESH_TIME>=#{fromRefreshDate} AND NEXT_REFRESH_TIME<#{toRefreshDate}
+	       ]]>
+	        </if>
+	       <if test="clientType != null">
+	        AND CLIENT_TYPE=#{clientType}
+	       </if>
+	   </where>
+	</select>
+	<select id="getClientTokenDtoByUpdateTime" parameterType="map" resultMap="RM_ClientTokenDto">
+	   SELECT * FROM T_CLIENT_TOKEN
+	   <where>
+	       <if test="afterTime != null">
+	       <![CDATA[
+	       UPDATE_TIME>#{afterTime}
+	       ]]>
+	        </if>
+	   </where>
+	</select>
 </mapper>
