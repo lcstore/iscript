@@ -1,14 +1,21 @@
 package com.lezo.rest.data;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 public class ClientRestFactory {
-	private ConcurrentHashMap<String, ClientRester> clientRestMap = new ConcurrentHashMap<String, ClientRester>();
+	private ConcurrentHashMap<String, ClientRest> clientRestMap = new ConcurrentHashMap<String, ClientRest>();
+	private List<ClientRest> clientRestList = new ArrayList<ClientRest>();
+	private AtomicBoolean modify = new AtomicBoolean(false);
 
 	private ClientRestFactory() {
 
@@ -22,9 +29,10 @@ public class ClientRestFactory {
 		return InstanceHolder.INSTANCE;
 	}
 
-	public synchronized void put(ClientRester clientRester) {
-		String key = clientRester.getBucket() + "." + clientRester.getDomain();
-		clientRestMap.put(key, clientRester);
+	public void put(ClientRest clientRest) {
+		String key = clientRest.getBucket() + "." + clientRest.getDomain();
+		clientRestMap.put(key, clientRest);
+		modify.set(true);
 	}
 
 	public void get(String bucket, String domain) {
@@ -32,13 +40,34 @@ public class ClientRestFactory {
 		clientRestMap.get(key);
 	}
 
-	public synchronized void remove(String bucket, String domain) {
+	public void remove(String bucket, String domain) {
 		String key = bucket + "." + domain;
 		clientRestMap.remove(key);
+		modify.set(true);
 	}
 
-	public Iterator<Entry<String, ClientRester>> unmodifyIterator() {
-		Collection<Entry<String, ClientRester>> unmodifyList = CollectionUtils.unmodifiableCollection(clientRestMap.entrySet());
+	public Iterator<Entry<String, ClientRest>> unmodifyIterator() {
+		Collection<Entry<String, ClientRest>> unmodifyList = CollectionUtils.unmodifiableCollection(clientRestMap.entrySet());
 		return unmodifyList.iterator();
+	}
+
+	public ClientRest getRandom() {
+		if (modify.get()) {
+			synchronized (this) {
+				if (modify.get()) {
+					clientRestList.clear();
+					for (Entry<String, ClientRest> entry : clientRestMap.entrySet()) {
+						for (int i = 0; i < entry.getValue().getCapacity(); i++) {
+							clientRestList.add(entry.getValue());
+						}
+					}
+					Collections.shuffle(clientRestList);
+					modify.set(false);
+				}
+			}
+		}
+		Random rand = new Random();
+		int index = rand.nextInt(clientRestList.size());
+		return clientRestList.get(index);
 	}
 }
