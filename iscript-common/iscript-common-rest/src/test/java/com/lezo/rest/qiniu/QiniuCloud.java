@@ -96,7 +96,7 @@ public class QiniuCloud {
 		ListPrefixRet ret = null;
 		int limit = 100;
 		String maker = "";
-		ret = client.listPrifix(bucketMac.getBucket(), "iscript/20150210/ConfigProxyChecker", maker, limit);
+		ret = client.listPrifix(bucketMac.getBucket(), "iscript/20150210/", maker, limit);
 		System.err.println(ret.response);
 	}
 

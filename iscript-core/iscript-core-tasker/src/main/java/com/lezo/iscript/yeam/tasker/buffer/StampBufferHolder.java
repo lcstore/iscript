@@ -1,5 +1,6 @@
 package com.lezo.iscript.yeam.tasker.buffer;
 
+import com.lezo.iscript.common.buffer.StampBeanBuffer;
 import com.lezo.iscript.service.crawler.dto.ClientTokenDto;
 
 /**

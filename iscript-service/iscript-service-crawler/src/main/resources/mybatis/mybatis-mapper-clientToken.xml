@@ -6,23 +6,35 @@
 	<resultMap type="ClientTokenDto" id="RM_ClientTokenDto">
 		<result column="ID" property="id"/>
 		<result column="CLIENT_TYPE" property="clientType"/>
-		<result column="CLIENT_ID" property="clientId"/>
+		<result column="CLIENT_BUCKET" property="clientBucket"/>
+		<result column="CLIENT_DOMAIN" property="clientDomain"/>
+		<result column="CLIENT_KEY" property="clientKey"/>
 		<result column="CLIENT_SECRET" property="clientSecret"/>
 		<result column="CLIENT_PARAMS" property="clientParams"/>
 		<result column="REFRESH_TOKEN" property="refreshToken"/>
 		<result column="ACCESS_TOKEN" property="accessToken"/>
+		<result column="SUCCESS_COUNT" property="successCount"/>
+		<result column="FAIL_COUNT" property="failCount"/>
+		<result column="LAST_MESSGE" property="lastMessge"/>
 		<result column="NEXT_REFRESH_TIME" property="nextRefreshTime"/>
+		<result column="IS_DELETE" property="isDelete"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="ClientTokenDto-coloumn-list">
 		CLIENT_TYPE
-		,CLIENT_ID
+		,CLIENT_BUCKET
+		,CLIENT_DOMAIN
+		,CLIENT_KEY
 		,CLIENT_SECRET
 		,CLIENT_PARAMS
 		,REFRESH_TOKEN
 		,ACCESS_TOKEN
+		,SUCCESS_COUNT
+		,FAIL_COUNT
+		,LAST_MESSGE
 		,NEXT_REFRESH_TIME
+		,IS_DELETE
 		,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
@@ -33,18 +45,24 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.clientType},#{item.clientId},#{item.clientSecret},#{item.clientParams},#{item.refreshToken},#{item.accessToken},#{item.nextRefreshTime},#{item.createTime},#{item.updateTime})
+			(#{item.clientType},#{item.clientBucket},#{item.clientDomain},#{item.clientKey},#{item.clientSecret},#{item.clientParams},#{item.refreshToken},#{item.accessToken},#{item.successCount},#{item.failCount},#{item.lastMessge},#{item.nextRefreshTime},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ClientTokenDto">
 		UPDATE T_CLIENT_TOKEN SET
 		CLIENT_TYPE=#{clientType}
-		,CLIENT_ID=#{clientId}
+		,CLIENT_BUCKET=#{clientBucket}
+		,CLIENT_DOMAIN=#{clientDomain}
+		,CLIENT_KEY=#{clientKey}
 		,CLIENT_SECRET=#{clientSecret}
 		,CLIENT_PARAMS=#{clientParams}
 		,REFRESH_TOKEN=#{refreshToken}
 		,ACCESS_TOKEN=#{accessToken}
+		,SUCCESS_COUNT=#{successCount}
+		,FAIL_COUNT=#{failCount}
+		,LAST_MESSGE=#{lastMessge}
 		,NEXT_REFRESH_TIME=#{nextRefreshTime}
+		,IS_DELETE=#{isDelete}
 		WHERE ID=#{id}
 	</update>
 	<select id="getClientTokenDtoByRefreshDate" parameterType="map" resultMap="RM_ClientTokenDto">

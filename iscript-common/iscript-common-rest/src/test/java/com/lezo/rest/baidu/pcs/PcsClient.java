@@ -54,19 +54,22 @@ public class PcsClient {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-//		String access_token = "3.e499588ba0c670981ea43961628db6a2.2592000.1389015994.4026763474-1552221";
-//		String url = "https://pcs.baidu.com/rest/2.0/pcs/quota?method=info&access_token=" + access_token;
-//		// Get请求
-//		HttpGet httpget = new HttpGet(url);
-//		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
-//		DefaultHttpClient hc = new DefaultHttpClient();
-//		String params = EntityUtils.toString(new UrlEncodedFormEntity(paramList));
-//		httpget.setURI(new URI(httpget.getURI().toString() + "?" + params));
-//		HttpResponse httpresponse = hc.execute(httpget);
-//		HttpEntity entity = httpresponse.getEntity();
-//		System.out.println(EntityUtils.toString(entity));
-		
-		
+		// String access_token =
+		// "3.e499588ba0c670981ea43961628db6a2.2592000.1389015994.4026763474-1552221";
+		// String url =
+		// "https://pcs.baidu.com/rest/2.0/pcs/quota?method=info&access_token="
+		// + access_token;
+		// // Get请求
+		// HttpGet httpget = new HttpGet(url);
+		// List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+		// DefaultHttpClient hc = new DefaultHttpClient();
+		// String params = EntityUtils.toString(new
+		// UrlEncodedFormEntity(paramList));
+		// httpget.setURI(new URI(httpget.getURI().toString() + "?" + params));
+		// HttpResponse httpresponse = hc.execute(httpget);
+		// HttpEntity entity = httpresponse.getEntity();
+		// System.out.println(EntityUtils.toString(entity));
+
 		String access_token = "3.a1333cd5eebc4a402e706e06b060b60a.2592000.1389019338.4026763474-1552221";
 		String url = "https://pcs.baidu.com/rest/2.0/pcs/file";
 		String path = "/apps/emao_doc/mydi";
@@ -141,7 +144,7 @@ public class PcsClient {
 		System.out.println("dfd:" + EntityUtils.toString(entity));
 	}
 
-	private ClientConnectionManager createClientConnManager() throws Exception {
+	public static ClientConnectionManager createClientConnManager() throws Exception {
 		SchemeRegistry supportedSchemes = new SchemeRegistry();
 		supportedSchemes.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 		supportedSchemes.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));

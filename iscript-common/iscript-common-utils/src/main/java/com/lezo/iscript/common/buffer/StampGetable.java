@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.buffer;
+package com.lezo.iscript.common.buffer;
 
 /**
  * @author lezo

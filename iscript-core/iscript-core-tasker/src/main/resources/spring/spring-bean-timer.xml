@@ -55,10 +55,22 @@
 		<task:scheduled ref="saveSessionTimer" method="run"
 			cron="0 0/5 * * * ?" />
 	</task:scheduled-tasks>
+	<bean id="writeFlushTimer" class="com.lezo.iscript.yeam.resultmgr.writer.WriteFlushTimer">
+	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="writeFlushTimer" method="run"
 			cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
-	<bean id="writeFlushTimer" class="com.lezo.iscript.yeam.resultmgr.writer.WriteFlushTimer">
+	<bean id="RefreshClientTokenTimer" class="com.lezo.iscript.yeam.tasker.RefreshClientTokenTimer">
 	</bean>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="RefreshClientTokenTimer" method="run"
+			cron="0 0/3 * * * ?" />
+	</task:scheduled-tasks>
+	<bean id="LoadClientTokenTimer" class="com.lezo.iscript.yeam.tasker.LoadClientTokenTimer">
+	</bean>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="LoadClientTokenTimer" method="run"
+			cron="0 0/2 * * * ?" />
+	</task:scheduled-tasks>
 </beans>

@@ -23,5 +23,6 @@
 		<mapper resource="mybatis/mybatis-mapper-message.xml" />
 		<mapper resource="mybatis/mybatis-mapper-crawlerWarnHis.xml" />
 		<mapper resource="mybatis/mybatis-mapper-proxySeed.xml" />
+		<mapper resource="mybatis/mybatis-mapper-clientToken.xml" />
 	</mappers>
 </configuration>

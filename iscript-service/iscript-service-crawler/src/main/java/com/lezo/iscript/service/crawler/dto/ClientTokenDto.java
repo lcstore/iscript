@@ -2,6 +2,8 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
+import com.lezo.iscript.common.UnifyValueAnnotation;
+
 /**
  * @author lezo
  * @email lcstore@126.com
@@ -9,15 +11,33 @@ import java.util.Date;
  */
 public class ClientTokenDto {
 	private Long id;
+	@UnifyValueAnnotation("")
 	private String clientType;
-	private String clientId;
+	private String clientBucket;
+	private String clientDomain;
+	@UnifyValueAnnotation("")
+	private String clientKey;
+	@UnifyValueAnnotation("")
 	private String clientSecret;
+	@UnifyValueAnnotation("")
 	private String clientParams;
+	@UnifyValueAnnotation("")
 	private String refreshToken;
+	@UnifyValueAnnotation("")
 	private String accessToken;
 	private Date nextRefreshTime;
 	private Date createTime;
 	private Date updateTime;
+
+	@UnifyValueAnnotation("0")
+	private Integer successCount = 0;
+	@UnifyValueAnnotation("0")
+	private Integer failCount = 0;
+	@UnifyValueAnnotation("")
+	private String lastMessge;
+
+	@UnifyValueAnnotation("0")
+	private Integer isDelete = 0;
 
 	public Long getId() {
 		return id;
@@ -35,12 +55,28 @@ public class ClientTokenDto {
 		this.clientType = clientType;
 	}
 
-	public String getClientId() {
-		return clientId;
+	public String getClientBucket() {
+		return clientBucket;
 	}
 
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
+	public void setClientBucket(String clientBucket) {
+		this.clientBucket = clientBucket;
+	}
+
+	public String getClientDomain() {
+		return clientDomain;
+	}
+
+	public void setClientDomain(String clientDomain) {
+		this.clientDomain = clientDomain;
+	}
+
+	public String getClientKey() {
+		return clientKey;
+	}
+
+	public void setClientKey(String clientKey) {
+		this.clientKey = clientKey;
 	}
 
 	public String getClientSecret() {
@@ -98,4 +134,37 @@ public class ClientTokenDto {
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
+
+	public Integer getSuccessCount() {
+		return successCount;
+	}
+
+	public void setSuccessCount(Integer successCount) {
+		this.successCount = successCount;
+	}
+
+	public Integer getFailCount() {
+		return failCount;
+	}
+
+	public void setFailCount(Integer failCount) {
+		this.failCount = failCount;
+	}
+
+	public String getLastMessge() {
+		return lastMessge;
+	}
+
+	public void setLastMessge(String lastMessge) {
+		this.lastMessge = lastMessge;
+	}
+
+	public Integer getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Integer isDelete) {
+		this.isDelete = isDelete;
+	}
+
 }

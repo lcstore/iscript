@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.tasker.buffer;
+package com.lezo.iscript.common.buffer;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,7 +16,7 @@ public class StampBeanBuffer<T> {
 	public StampBeanBuffer() {
 	}
 
-	public synchronized void addBeanAll(List<T> beanList, StampGetable<T> getable) {
+	public synchronized void addAll(List<T> beanList, StampGetable<T> getable) {
 		long curStamp = bufferStamp.get();
 		long maxStamp = 0;
 		for (T bean : beanList) {

@@ -7,4 +7,5 @@ public class IoConstant {
 	public static final int EVENT_TYPE_TASK = 2;
 	public static final int EVENT_TYPE_RESULT = 3;
 	public static final int EVENT_TYPE_PROXY = 4;
+	public static final int EVENT_TYPE_TOKEN = 5;
 }
