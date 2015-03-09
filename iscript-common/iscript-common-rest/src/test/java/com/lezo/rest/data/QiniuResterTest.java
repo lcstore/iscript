@@ -33,10 +33,11 @@ public class QiniuResterTest {
 	public void testDownload() throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
 		rester.setClient(client);
-		rester.setBucket("p1001");
-		rester.setDomain("p1001.qiniudn.com");
+		rester.setBucket("d1002");
+		rester.setDomain("d1002.qiniudn.com");
 		rester.setMac(QiniuBucketMacFactory.getBucketMac(rester.getBucket()).getMac());
 		String soucePath = "iscript/20150210/ConfigProxyChecker/upload/ConfigProxyChecker.upload.1425793736885.gz";
+		soucePath = "iscript/20150309/ConfigProxyChecker/5df50e4e-ad2a-4980-b72d-6eaf32231e2e/ConfigProxyChecker.20150309.1425889009119.gz";
 		System.err.println("data:" + rester.download(soucePath));
 	}
 
