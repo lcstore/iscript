@@ -22,8 +22,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import com.lezo.iscript.crawler.http.HttpClientFactory;
-import com.lezo.iscript.crawler.http.HttpClientUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.Config1688Category;
@@ -51,6 +49,8 @@ import com.lezo.iscript.yeam.config.LatestSohuNews;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
 import com.lezo.iscript.yeam.config.StringLinker;
 import com.lezo.iscript.yeam.config.ZYueSigner;
+import com.lezo.iscript.yeam.http.HttpClientFactory;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 

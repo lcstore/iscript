@@ -20,7 +20,7 @@ public class HeadCacher {
 	public boolean putIfVary(Integer type, JSONObject hObject) {
 		String clientName = JSONUtils.getString(hObject, "name");
 		String key = clientName + "-" + type;
-		Object lastObject = headMap.get(clientName);
+		Object lastObject = headMap.get(key);
 		Integer tactive = JSONUtils.getInteger(hObject, "tactive");
 		Integer tsize = JSONUtils.getInteger(hObject, "tsize");
 		Integer tCount = tactive + tsize;

@@ -17,8 +17,8 @@ import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
-import com.lezo.rest.QiniuBucketMac;
-import com.lezo.rest.QiniuBucketMacFactory;
+import com.lezo.rest.data.ClientRest;
+import com.lezo.rest.data.ClientRestFactory;
 
 public class TaskWorker implements Callable<ResultWritable> {
 	private static Logger logger = LoggerFactory.getLogger(TaskWorker.class);
@@ -60,9 +60,10 @@ public class TaskWorker implements Callable<ResultWritable> {
 				JSONUtils.put(storageObject, "rs", storageDataObject);
 				List<JSONObject> dataList = new ArrayList<JSONObject>(1);
 				dataList.add(storageObject);
-				QiniuBucketMac bucketMac = QiniuBucketMacFactory.getRandomBucketMac();
-				JSONUtils.put(argsObject, "data_bucket", bucketMac.getBucket());
-				JSONUtils.put(argsObject, "data_domain", bucketMac.getDomain());
+//				QiniuBucketMac bucketMac = QiniuBucketMacFactory.getRandomBucketMac();
+				ClientRest clientRest = ClientRestFactory.getInstance().getRandom();
+				JSONUtils.put(argsObject, "data_bucket", clientRest.getBucket());
+				JSONUtils.put(argsObject, "data_domain", clientRest.getDomain());
 				PersistentCollector.getInstance().getBufferWriter().write(dataList);
 			}
 			JSONObject callBackDataObject = JSONUtils.getJSONObject(returnObject, ClientConstant.KEY_CALLBACK_RESULT);

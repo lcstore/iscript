@@ -50,7 +50,7 @@ public class QiniuResterTest {
 
 		String targetPath = "iscript/20150210/ConfigProxyChecker/upload";
 		Map<String, String> paramMap = new HashMap<String, String>();
-		RestFileList fileList = rester.listFiles(targetPath, paramMap);
+		RestList fileList = rester.listFiles(targetPath, paramMap);
 		System.err.println("data:" + fileList.getDataList().size());
 	}
 }

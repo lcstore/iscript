@@ -5,7 +5,9 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
+import com.lezo.iscript.common.buffer.StampBeanBuffer;
+import com.lezo.iscript.common.buffer.StampGetable;
+import com.lezo.iscript.yeam.tasker.buffer.StampBufferHolder;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -19,7 +21,19 @@ public class IoServerTest {
 		configWritable.setName("test.name");
 		configWritable.setStamp(System.currentTimeMillis());
 		configWritable.setType(ConfigWritable.CONFIG_TYPE_SCRIPT);
-		ConfigBuffer.getInstance().addConfig(configWritable.getName(), configWritable);
+
+		StampBeanBuffer<ConfigWritable> configBuffer = StampBufferHolder.getConfigBuffer();
+		configBuffer.addBean(configWritable, new StampGetable<ConfigWritable>() {
+			@Override
+			public long getStamp(ConfigWritable bean) {
+				return bean.getStamp();
+			}
+
+			@Override
+			public String getName(ConfigWritable bean) {
+				return bean.getName();
+			}
+		});
 		IoServer ioServer = new IoServer(port);
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

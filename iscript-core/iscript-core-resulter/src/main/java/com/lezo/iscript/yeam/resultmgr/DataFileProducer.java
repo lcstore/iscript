@@ -3,11 +3,13 @@ package com.lezo.iscript.yeam.resultmgr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +17,12 @@ import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryDescriptor;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryLockUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryTracker;
-import com.lezo.rest.QiniuBucketMac;
-import com.lezo.rest.QiniuBucketMacFactory;
-import com.qiniu.api.auth.digest.Mac;
-import com.qiniu.api.rsf.ListItem;
-import com.qiniu.api.rsf.ListPrefixRet;
-import com.qiniu.api.rsf.RSFClient;
-import com.qiniu.api.rsf.RSFEofException;
+import com.lezo.rest.data.BaiduPcsRester;
+import com.lezo.rest.data.ClientRest;
+import com.lezo.rest.data.ClientRestFactory;
+import com.lezo.rest.data.DataRestable;
+import com.lezo.rest.data.RestFile;
+import com.lezo.rest.data.RestList;
 
 public class DataFileProducer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(DataFileProducer.class);
@@ -36,11 +37,6 @@ public class DataFileProducer implements Runnable {
 	@Override
 	public void run() {
 		DirectoryDescriptor descriptor = this.tracker.getDescriptor();
-		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(descriptor.getBucketName());
-		Mac mac = bucketMac == null ? null : bucketMac.getMac();
-		if (mac == null) {
-			throw new IllegalArgumentException("can not get QiniuMac:" + descriptor.getBucketName() + "." + descriptor.getDomain());
-		}
 		Lock locker = DirectoryLockUtils.findLock(descriptor.getDirectoryKey());
 		if (locker == null) {
 			throw new IllegalArgumentException("can not get locker:" + descriptor.getDirectoryKey());
@@ -48,7 +44,7 @@ public class DataFileProducer implements Runnable {
 		if (locker.tryLock()) {
 			try {
 				locker.lock();
-				doWork(descriptor, mac);
+				doWork(descriptor);
 			} catch (Exception e) {
 				logger.warn("do file produce.cause:", e);
 			} finally {
@@ -59,78 +55,91 @@ public class DataFileProducer implements Runnable {
 		}
 	}
 
-	private void doWork(DirectoryDescriptor descriptor, Mac mac) throws Exception {
-		RSFClient client = new RSFClient(mac);
-		ListPrefixRet ret = null;
+	private void doWork(DirectoryDescriptor descriptor) throws Exception {
+		ClientRest clientRest = ClientRestFactory.getInstance().get(descriptor.getBucketName(), descriptor.getDomain(), 5, 15 * 1000);
+		if (clientRest == null) {
+			throw new IllegalArgumentException("can not get ClientRest:" + descriptor.getBucketName() + "." + descriptor.getDomain());
+		}
+		DataRestable rester = clientRest.getRester();
 		int limit = 100;
 		int count = 0;
 		int listTimes = 0;
+		Map<String, String> paramMap = this.tracker.getParamMap();
+		String limitChars = paramMap.get("limit");
+		int fromCount = 0;
+		if (rester instanceof BaiduPcsRester) {
+			if (StringUtils.isNotEmpty(limitChars)) {
+				fromCount = Integer.valueOf(limitChars.split("-")[1]);
+			}
+		} else {
+			paramMap.put("limit", "" + limit);
+		}
 		while (true) {
 			listTimes++;
 			long startMills = System.currentTimeMillis();
-			ret = client.listPrifix(descriptor.getBucketName(), descriptor.getDataPath(), this.tracker.getMarker(), limit);
+			if (rester instanceof BaiduPcsRester) {
+				paramMap.put("limit", fromCount + "-" + (fromCount + limit));
+			}
+			RestList restList = rester.listFiles(descriptor.getDataPath(), paramMap);
 			long costMills = System.currentTimeMillis() - startMills;
-			if (CollectionUtils.isNotEmpty(ret.results)) {
-				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",results:" + ret.results.size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
-
-				List<ListItem> acceptList = getAccepts(ret.results, this.tracker.getStamp());
+			if (CollectionUtils.isNotEmpty(restList.getDataList())) {
+				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",results:" + restList.getDataList().size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
+				List<RestFile> acceptList = getAccepts(restList.getDataList(), this.tracker.getStamp());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
 					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + count + ",newCount:" + acceptList.size());
-					createDataFileConsumer(descriptor, mac, acceptList);
+					createDataFileConsumer(descriptor, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
 				} else {
-					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + ret.results.size() + ",but accept 0");
+					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + restList.getDataList().size() + ",but accept 0");
 				}
 			} else {
-				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",respone :" + ret.response + ",statusCode:" + ret.statusCode + ",listTimes:" + listTimes
-						+ ",listCost:" + costMills);
+				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",listTimes:" + listTimes + ",listCost:" + costMills);
 			}
-			if (ret.exception instanceof RSFEofException) {
+			if (restList.isEOF()) {
 				logger.info("list to EOF.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",maxCount:" + listTimes + ",listCost:" + costMills);
 				break;
 			} else {
-				this.tracker.setMarker(ret.marker);
+				paramMap.put("marker", restList.getMarker());
 			}
 			TimeUnit.SECONDS.sleep(1);
 		}
 		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
 	}
 
-	private void createDataFileConsumer(DirectoryDescriptor descriptor, Mac mac, List<ListItem> itemList) {
+	private void createDataFileConsumer(DirectoryDescriptor descriptor, List<RestFile> acceptList) {
 		String type = getTypeFromPath(descriptor.getDataPath());
-		for (ListItem item : itemList) {
+		for (RestFile item : acceptList) {
 			try {
 				DataFileWrapper dataFileWrapper = new DataFileWrapper();
 				dataFileWrapper.setBucketName(descriptor.getBucketName());
 				dataFileWrapper.setDomain(descriptor.getDomain());
 				dataFileWrapper.setItem(item);
-				dataFileWrapper.setMac(mac);
 				executor.execute(new DataFileConsumer(type, dataFileWrapper));
 			} catch (Exception e) {
-				logger.warn("File:" + item.key + ",cause:", e);
+				logger.warn("File:" + item.getPath() + ",cause:", e);
 			}
 		}
 	}
 
-	private long getMaxStamp(List<ListItem> itemList) {
+	private long getMaxStamp(List<RestFile> acceptList) {
 		long max = 0L;
-		for (ListItem item : itemList) {
-			if (max < item.putTime) {
-				max = item.putTime;
+		for (RestFile item : acceptList) {
+			if (max < item.getCreateTime()) {
+				max = item.getCreateTime();
 			}
 		}
 		return max;
 	}
 
-	private List<ListItem> getAccepts(List<ListItem> results, long stamp) {
-		if (CollectionUtils.isEmpty(results)) {
+	private List<RestFile> getAccepts(List<RestFile> restList, long stamp) {
+		if (CollectionUtils.isEmpty(restList)) {
 			return Collections.emptyList();
 		}
-		List<ListItem> itemList = new ArrayList<ListItem>(results.size());
-		for (ListItem rs : results) {
-			if (stamp > rs.putTime) {
+		List<RestFile> itemList = new ArrayList<RestFile>(restList.size());
+		for (RestFile rs : restList) {
+			if (stamp > rs.getCreateTime()) {
 				continue;
 			}
 			itemList.add(rs);

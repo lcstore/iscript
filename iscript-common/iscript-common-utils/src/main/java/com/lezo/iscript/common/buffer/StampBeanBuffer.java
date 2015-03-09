@@ -32,13 +32,13 @@ public class StampBeanBuffer<T> {
 		}
 	}
 
-	public synchronized void addBean(T bean, StampGetable<T> getable) {
+	public synchronized T addBean(T bean, StampGetable<T> getable) {
 		String name = getable.getName(bean);
 		Long stamp = getable.getStamp(bean);
 		if (stamp > bufferStamp.get()) {
 			bufferStamp.set(stamp);
 		}
-		beanMap.put(name, bean);
+		return beanMap.put(name, bean);
 	}
 
 	public T getBean(String name) {
@@ -53,5 +53,9 @@ public class StampBeanBuffer<T> {
 		Collection<Entry<String, T>> unmodifyList = CollectionUtils.unmodifiableCollection(beanMap
 				.entrySet());
 		return unmodifyList.iterator();
+	}
+
+	public void setBufferStamp(Long bufferStamp) {
+		this.bufferStamp.set(bufferStamp);
 	}
 }

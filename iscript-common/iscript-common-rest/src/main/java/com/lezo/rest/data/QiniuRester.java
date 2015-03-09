@@ -31,7 +31,7 @@ import com.qiniu.api.rsf.RSFEofException;
 public class QiniuRester implements DataRestable {
 
 	private static final String DEFAULT_CHASET_NAME = "UTF-8";
-	private static final String KEY_LIMIT = "limit";
+	private static final String KEY_LIMIT_NUM = "limit";
 	private static final String KEY_MARKER = "marker";
 	private String bucket;
 	private String domain;
@@ -93,10 +93,10 @@ public class QiniuRester implements DataRestable {
 	}
 
 	@Override
-	public RestFileList listFiles(String targetPath, Map<String, String> paramMap) throws Exception {
+	public RestList listFiles(String targetPath, Map<String, String> paramMap) throws Exception {
 		RSFClient rsfClient = new RSFClient(mac);
 		String marker = getValue(paramMap, KEY_MARKER, "");
-		int limit = Integer.valueOf(getValue(paramMap, KEY_LIMIT, "100"));
+		int limit = Integer.valueOf(getValue(paramMap, KEY_LIMIT_NUM, "100"));
 		ListPrefixRet ret = rsfClient.listPrifix(getBucket(), targetPath, marker, limit);
 		if (ret.results != null) {
 			List<ListItem> itemList = ret.results;
@@ -114,7 +114,7 @@ public class QiniuRester implements DataRestable {
 				restFile.setSource(getBucket() + "." + getDomain());
 				fileList.add(restFile);
 			}
-			RestFileList restFileList = new RestFileList();
+			RestList restFileList = new RestList();
 			restFileList.setDataList(fileList);
 			restFileList.setEOF(ret.exception instanceof RSFEofException);
 			restFileList.setMarker(ret.marker);

@@ -39,6 +39,8 @@ public class CacheTaskTimer {
 		}
 		List<TypeConfigDto> typeConfigList = typeConfigService.getTypeConfigDtos(tasker, TypeConfigDto.TYPE_ENABLE);
 		if (CollectionUtils.isEmpty(typeConfigList)) {
+			// create a TaskQueue to mark for taskCache.
+			TaskCacher.getInstance().getQueue("ConfigJdProduct");
 			log.info("no type config for tasker:" + tasker);
 			return;
 		}

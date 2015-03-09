@@ -1,19 +1,24 @@
 package com.lezo.iscript.yeam.tasker;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.common.buffer.StampBeanBuffer;
+import com.lezo.iscript.common.buffer.StampGetable;
+import com.lezo.iscript.common.loader.ClassUtils;
 import com.lezo.iscript.service.crawler.dto.TaskConfigDto;
 import com.lezo.iscript.service.crawler.service.TaskConfigService;
 import com.lezo.iscript.service.crawler.service.TypeConfigService;
-import com.lezo.iscript.yeam.tasker.buffer.ConfigBuffer;
-import com.lezo.iscript.yeam.tasker.buffer.StrategyBuffer;
+import com.lezo.iscript.yeam.strategy.ResultStrategy;
+import com.lezo.iscript.yeam.tasker.buffer.StampBufferHolder;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
 public class CacheConfigTimer {
@@ -40,8 +45,10 @@ public class CacheConfigTimer {
 	}
 
 	private void updateConfig() {
-		long configStamp = ConfigBuffer.getInstance().getStamp();
-		long strategyStamp = StrategyBuffer.getInstance().getStamp();
+		StampBeanBuffer<ConfigWritable> configBuffer = StampBufferHolder.getConfigBuffer();
+		StampBeanBuffer<ResultStrategy> stragegyBuffer = StampBufferHolder.getStrategyBuffer();
+		long configStamp = configBuffer.getBufferStamp();
+		long strategyStamp = stragegyBuffer.getBufferStamp();
 		Date afterStamp = new Date(configStamp < strategyStamp ? strategyStamp : configStamp);
 		List<TaskConfigDto> configList = taskConfigService.getTaskConfigDtos(afterStamp, 1);
 		if (configList.isEmpty()) {
@@ -59,11 +66,23 @@ public class CacheConfigTimer {
 		if (strategyConfigs.isEmpty()) {
 			return;
 		}
-		StrategyBuffer strategyBuffer = StrategyBuffer.getInstance();
+		StampBeanBuffer<ResultStrategy> stragegyBuffer = StampBufferHolder.getStrategyBuffer();
 		StringBuilder sb = new StringBuilder();
-		for (TaskConfigDto dto : strategyConfigs) {
+		for (final TaskConfigDto dto : strategyConfigs) {
 			try {
-				strategyBuffer.addStrategy(dto);
+				ResultStrategy resultStrategy = convertTo(dto);
+				ResultStrategy oldStrategy = stragegyBuffer.addBean(resultStrategy, new StampGetable<ResultStrategy>() {
+					@Override
+					public String getName(ResultStrategy bean) {
+						return bean.getName();
+					}
+
+					@Override
+					public long getStamp(ResultStrategy bean) {
+						return dto.getUpdateTime().getTime();
+					}
+				});
+				handleOldStrategy(oldStrategy);
 				if (sb.length() > 0) {
 					sb.append(",");
 				}
@@ -72,24 +91,53 @@ public class CacheConfigTimer {
 				log.warn("can not buffer config:" + dto.getType() + "," + ExceptionUtils.getStackTrace(e));
 			}
 		}
-		log.info("update strategy[" + sb.toString() + "].size:" + strategyConfigs.size()+",stamp:"+strategyBuffer.getStamp());
+		log.info("update strategy[" + sb.toString() + "].size:" + strategyConfigs.size() + ",stamp:" + stragegyBuffer.getBufferStamp());
+	}
+
+	private void handleOldStrategy(ResultStrategy oldStrategy) {
+		if (oldStrategy == null) {
+			return;
+		}
+		if (oldStrategy instanceof Closeable) {
+			Closeable closeable = (Closeable) oldStrategy;
+			IOUtils.closeQuietly(closeable);
+		}
+		oldStrategy = null;
+	}
+
+	private ResultStrategy convertTo(TaskConfigDto dto) throws Exception {
+		String codeSource = dto.getConfig();
+		Object newObject = ClassUtils.newObject(codeSource);
+		return (ResultStrategy) newObject;
 	}
 
 	private void add2ConfigBuffer(List<TaskConfigDto> taskConfigs) {
 		if (taskConfigs.isEmpty()) {
 			return;
 		}
-		ConfigBuffer configBuffer = ConfigBuffer.getInstance();
+		List<ConfigWritable> configWritableList = new ArrayList<ConfigWritable>(taskConfigs.size());
 		StringBuilder sb = new StringBuilder();
 		for (TaskConfigDto dto : taskConfigs) {
 			ConfigWritable configWritable = getConfigWritable(dto);
-			configBuffer.addConfig(configWritable.getName(), configWritable);
+			configWritableList.add(configWritable);
 			if (sb.length() > 0) {
 				sb.append(",");
 			}
 			sb.append(dto.getType());
 		}
-		log.info("update config[" + sb.toString() + "].size:" + taskConfigs.size());
+		StampBeanBuffer<ConfigWritable> configBuffer = StampBufferHolder.getConfigBuffer();
+		configBuffer.addAll(configWritableList, new StampGetable<ConfigWritable>() {
+			@Override
+			public long getStamp(ConfigWritable bean) {
+				return bean.getStamp();
+			}
+
+			@Override
+			public String getName(ConfigWritable bean) {
+				return bean.getName();
+			}
+		});
+		log.info("update config[" + sb.toString() + "].size:" + taskConfigs.size() + ",newStamp:" + configBuffer.getBufferStamp());
 	}
 
 	private void doAssort(List<TaskConfigDto> configList, List<TaskConfigDto> taskConfigs,

@@ -12,24 +12,26 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-import com.lezo.iscript.yeam.rest.QiniuRestCallBack;
-import com.lezo.iscript.yeam.rest.RestUtils;
-import com.qiniu.api.io.PutRet;
+import com.lezo.rest.data.ClientRest;
+import com.lezo.rest.data.ClientRestFactory;
 
 public class PersistentWorker implements Runnable {
 	private static Logger logger = org.slf4j.LoggerFactory.getLogger(PersistentWorker.class);
 	private static final String CHARSET_NAME = "UTF-8";
+	private static final String PATH_SEPARATPR = File.separator;
 	private String rootPath = "iscript";
 	private String type;
 	private String batchId;
 	private String bucket;
+	private String domain;
 	private List<String> copyList;
 
-	public PersistentWorker(String type, String batchId, String bucket, List<String> copyList) {
+	public PersistentWorker(String type, String batchId, String bucket, String domain, List<String> copyList) {
 		super();
 		this.type = type;
 		this.batchId = batchId;
 		this.bucket = bucket;
+		this.domain = domain;
 		this.copyList = copyList;
 	}
 
@@ -38,7 +40,7 @@ public class PersistentWorker implements Runnable {
 		int retry = 0;
 		while (retry < 3) {
 			try {
-				add2Disk(copyList);
+				upload2Cloud(copyList);
 				break;
 			} catch (Exception e) {
 				retry++;
@@ -47,19 +49,36 @@ public class PersistentWorker implements Runnable {
 		}
 	}
 
-	private void add2Disk(List<String> rWritables) throws Exception {
-		if ("-".equals(this.bucket)) {
-			logger.warn("illegal bucket,type:" + this.type + ",batchId:" + this.batchId + ",size:" + rWritables.size());
-			return;
-		}
-		String path = getFilePath();
-		InputStream reader = toInputStream(rWritables);
-		File destFile = new File(path);
-		PutRet ret = (PutRet) RestUtils.doRestCallBack(destFile, reader, new QiniuRestCallBack(this.bucket));
-		if (ret.ok()) {
-			logger.info(String.format("Succss to add:%s", path));
+	private void upload2Cloud(List<String> rWritables) throws Exception {
+		ClientRest clientRest = ClientRestFactory.getInstance().get(this.bucket, this.domain);
+		if (clientRest == null) {
+			logger.error("error,can not get ClientRest.bucket:" + this.bucket + ",domain:" + this.domain + ",miss data:" + rWritables.size());
 		} else {
-			throw new IOException(ret.response, ret.exception);
+			String targetPath = getFilePath();
+			byte[] byteArray = toGzipByteArray(rWritables);
+			try {
+				if (clientRest.getRester().upload(targetPath, byteArray)) {
+					logger.info(String.format("result.add[%s]:%s", this.bucket + "." + this.domain, targetPath));
+				}
+			} catch (Exception e) {
+				logger.error(String.format("result.miss[%s]:%s,", this.bucket + "." + this.domain, targetPath), e);
+				throw e;
+			}
+		}
+	}
+
+	private byte[] toGzipByteArray(List<String> rWritables) throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			GZIPOutputStream gzos = new GZIPOutputStream(bos);
+			for (String result : rWritables) {
+				result += "\n";
+				gzos.write(result.getBytes(CHARSET_NAME));
+			}
+			gzos.close();
+			return bos.toByteArray();
+		} finally {
+			IOUtils.closeQuietly(bos);
 		}
 	}
 
@@ -91,13 +110,13 @@ public class PersistentWorker implements Runnable {
 		toDay += day < 10 ? "0" + day : day;
 		StringBuilder sb = new StringBuilder();
 		sb.append(rootPath);
-		sb.append(File.separator);
+		sb.append(PATH_SEPARATPR);
 		sb.append(toDay);
-		sb.append(File.separator);
+		sb.append(PATH_SEPARATPR);
 		sb.append(type);
-		sb.append(File.separator);
+		sb.append(PATH_SEPARATPR);
 		sb.append(batchId);
-		sb.append(File.separator);
+		sb.append(PATH_SEPARATPR);
 		sb.append(type);
 		sb.append(".");
 		sb.append(toDay);

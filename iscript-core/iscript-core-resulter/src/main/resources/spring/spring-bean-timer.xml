@@ -74,4 +74,10 @@
 		<task:scheduled ref="sorlSearchHandler" method="run"
 			cron="0/1 * * * * ?" />
 	</task:scheduled-tasks>
+	
+	<bean id="TokenToRestTimer" class="com.lezo.iscript.yeam.buffer.TokenToRestTimer"></bean>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="TokenToRestTimer" method="run"
+			cron="0 0/1 * * * ?" />
+	</task:scheduled-tasks>
 </beans>

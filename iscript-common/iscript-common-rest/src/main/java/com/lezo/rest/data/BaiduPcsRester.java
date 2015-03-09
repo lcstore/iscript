@@ -1,17 +1,21 @@
 package com.lezo.rest.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -30,7 +34,7 @@ public class BaiduPcsRester implements DataRestable {
 	private static final String DEFAULT_CHASET_NAME = "UTF-8";
 	private static final String KEY_BY = "by";
 	private static final String KEY_ORDER = "order";
-	private static final String KEY_LIMIT = "limit";
+	private static final String KEY_LIMIT_STRING = "limit";
 	private String bucket;
 	private String domain;
 	private String accessToken;
@@ -49,29 +53,26 @@ public class BaiduPcsRester implements DataRestable {
 
 		int index = targetPath.lastIndexOf("/");
 		String suffix = targetPath.substring(index + 1, targetPath.length());
-
 		HttpPost post = new HttpPost(url);
 		MultipartEntity entity = new MultipartEntity();
 		ContentBody bsData = new ByteArrayBody(dataBytes, suffix);
 		entity.addPart("uploadedfile", bsData);
 		post.setEntity(entity);
-
 		RestRespone customRespone = RestRequestUtils.doRequest(client, post);
 		if (customRespone.getException() != null) {
 			throw customRespone.getException();
 		}
+		EntityUtils.consumeQuietly(customRespone.getResponse().getEntity());
 		StatusLine statusLine = customRespone.getResponse().getStatusLine();
 		int status = statusLine.getStatusCode();
-		if (status / 100 != 2) {
-			throw new HttpResponseException(statusLine.getStatusCode(), "upload " + targetPath + ",but[" + statusLine.getReasonPhrase() + "]");
-		}
-		return true;
+		return status / 100 == 2;
 	}
 
 	private String convertPath(String targetPath) {
 		if (StringUtils.isNotEmpty(getRootPath()) && !targetPath.startsWith(getRootPath().substring(0, getRootPath().length() - 1))) {
 			targetPath = targetPath.startsWith("/") ? (getRootPath() + targetPath.substring(1)) : (getRootPath() + targetPath);
 		}
+		targetPath = targetPath.replace("\\", "/");
 		return targetPath;
 	}
 
@@ -90,11 +91,46 @@ public class BaiduPcsRester implements DataRestable {
 		if (customRespone.getException() != null) {
 			throw customRespone.getException();
 		}
-		return EntityUtils.toString(customRespone.getResponse().getEntity(), DEFAULT_CHASET_NAME);
+		byte[] byteArray = EntityUtils.toByteArray(customRespone.getResponse().getEntity());
+		byteArray = convertBytes(byteArray);
+		return new String(byteArray, DEFAULT_CHASET_NAME);
+	}
+
+	private byte[] convertBytes(byte[] dataBytes) throws Exception {
+		if (isGzip(dataBytes)) {
+			GZIPInputStream gis = null;
+			ByteArrayOutputStream bos = null;
+			try {
+				InputStream inStream = new ByteArrayInputStream(dataBytes);
+				gis = new GZIPInputStream(inStream);
+				bos = new ByteArrayOutputStream();
+				byte[] tmp = new byte[1024]; // Rough estimate
+				int len = -1;
+				while ((len = gis.read(tmp)) > -1) {
+					bos.write(tmp, 0, len);
+				}
+				bos.flush();
+				dataBytes = bos.toByteArray();
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				IOUtils.closeQuietly(bos);
+				IOUtils.closeQuietly(gis);
+			}
+		}
+		return dataBytes;
+	}
+
+	private boolean isGzip(byte[] header) {
+		if (header == null || header.length < 2) {
+			return false;
+		}
+		int headCode = (header[0] & 0xff) | ((header[1] & 0xff) << 8);
+		return headCode == GZIPInputStream.GZIP_MAGIC;
 	}
 
 	@Override
-	public RestFileList listFiles(String sourcePath, Map<String, String> paramMap) throws Exception {
+	public RestList listFiles(String sourcePath, Map<String, String> paramMap) throws Exception {
 		sourcePath = convertPath(sourcePath);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("method", "list"));
@@ -103,7 +139,7 @@ public class BaiduPcsRester implements DataRestable {
 
 		addNameValuePair(params, KEY_BY, paramMap, "time");
 		addNameValuePair(params, KEY_ORDER, paramMap, "desc");
-		addNameValuePair(params, KEY_LIMIT, paramMap, null);
+		addNameValuePair(params, KEY_LIMIT_STRING, paramMap, null);// 0-10,10-20
 
 		String url = "https://pcs.baidu.com/rest/2.0/pcs/file?" + buildParams(params);
 		HttpGet request = new HttpGet(url);
@@ -111,7 +147,7 @@ public class BaiduPcsRester implements DataRestable {
 		if (customRespone.getException() != null) {
 			throw customRespone.getException();
 		}
-		RestFileList restFileList = new RestFileList();
+		RestList restFileList = new RestList();
 		String result = EntityUtils.toString(customRespone.getResponse().getEntity(), DEFAULT_CHASET_NAME);
 		JSONObject rsObject = JSONUtils.getJSONObject(result);
 		JSONArray listArray = (JSONArray) (rsObject == null ? null : JSONUtils.get(rsObject, "list"));
@@ -131,7 +167,7 @@ public class BaiduPcsRester implements DataRestable {
 				fileList.add(restFile);
 			}
 			restFileList.setDataList(fileList);
-			String limit = paramMap == null ? null : paramMap.get(KEY_LIMIT);
+			String limit = paramMap == null ? null : paramMap.get(KEY_LIMIT_STRING);
 			if (StringUtils.isNotEmpty(limit) && limit.indexOf("-") > 0) {
 				String[] limitArr = limit.split("-");
 				int count = Integer.valueOf(limitArr[1]) - Integer.valueOf(limitArr[0]);

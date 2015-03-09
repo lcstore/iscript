@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,14 +31,33 @@ public class ClientRestFactory {
 	}
 
 	public void put(ClientRest clientRest) {
+		if (clientRest == null) {
+			throw new IllegalArgumentException("ClientRest can not be null.");
+		}
 		String key = clientRest.getBucket() + "." + clientRest.getDomain();
 		clientRestMap.put(key, clientRest);
 		modify.set(true);
 	}
 
-	public void get(String bucket, String domain) {
+	public ClientRest get(String bucket, String domain) {
 		String key = bucket + "." + domain;
-		clientRestMap.get(key);
+		return clientRestMap.get(key);
+	}
+
+	public ClientRest get(String bucket, String domain, int retryCount, long sleepMills) {
+		String key = bucket + "." + domain;
+		ClientRest rest = null;
+		while (rest == null && retryCount-- > 0) {
+			rest = clientRestMap.get(key);
+			if (rest == null && retryCount > 0) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(sleepMills);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return rest;
 	}
 
 	public void remove(String bucket, String domain) {

@@ -30,6 +30,10 @@ public class TaskCacher {
 		return queue;
 	}
 
+	public int getTypeCount() {
+		return taskQueueMap.size();
+	}
+
 	public List<String> getTypeList() {
 		return new ArrayList<String>(taskQueueMap.keySet());
 	}

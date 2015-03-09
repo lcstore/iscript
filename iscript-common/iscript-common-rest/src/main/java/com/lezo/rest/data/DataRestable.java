@@ -8,6 +8,6 @@ public interface DataRestable {
 
 	public String download(String soucePath) throws Exception;
 
-	public RestFileList listFiles(String sourcePath, Map<String, String> paramMap) throws Exception;
+	public RestList listFiles(String sourcePath, Map<String, String> paramMap) throws Exception;
 
 }

@@ -31,6 +31,7 @@ import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.server.handler.IoConfigHandler;
 import com.lezo.iscript.yeam.server.handler.IoResultHandler;
 import com.lezo.iscript.yeam.server.handler.IoTaskHandler;
+import com.lezo.iscript.yeam.server.handler.IoTokenHandler;
 import com.lezo.iscript.yeam.server.handler.MessageHandler;
 
 public class IoServer extends IoHandlerAdapter {
@@ -58,6 +59,7 @@ public class IoServer extends IoHandlerAdapter {
 		this.handlers = new ArrayList<MessageHandler>();
 		this.handlers.add(new IoResultHandler());
 		this.handlers.add(new IoConfigHandler());
+		this.handlers.add(new IoTokenHandler());
 		this.handlers.add(new IoTaskHandler());
 		logger.info("start to listener port:" + port + " for IoServer..");
 	}

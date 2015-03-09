@@ -38,7 +38,7 @@ public class IoTaskHandler implements MessageHandler {
 
 	private void ensureTaskLoaded() {
 		TaskCacher taskCacher = TaskCacher.getInstance();
-		while (taskCacher.getTypeList().isEmpty()) {
+		while (taskCacher.getTypeCount() < 1) {
 			logger.warn("wait to buffer tasks...");
 			try {
 				TimeUnit.MILLISECONDS.sleep(1000);

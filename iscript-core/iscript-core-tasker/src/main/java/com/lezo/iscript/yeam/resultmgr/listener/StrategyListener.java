@@ -6,15 +6,17 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.common.buffer.StampBeanBuffer;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.resultmgr.strategy.DefaultStrategy;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
-import com.lezo.iscript.yeam.tasker.buffer.StrategyBuffer;
+import com.lezo.iscript.yeam.tasker.buffer.StampBufferHolder;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class StrategyListener implements IResultListener {
 	private static Logger logger = LoggerFactory.getLogger(StrategyListener.class);
 	private ResultStrategy defaultStrategy = new DefaultStrategy();
+	private StampBeanBuffer<ResultStrategy> stragegyBuffer = StampBufferHolder.getStrategyBuffer();
 
 	@Override
 	public void handle(ResultWritable result) {
@@ -28,8 +30,8 @@ public class StrategyListener implements IResultListener {
 		if (name == null) {
 			return defaultStrategy;
 		}
-		return StrategyBuffer.getInstance().getStrategy(name);
 
+		return stragegyBuffer.getBean(name);
 	}
 
 	private void doStrategy(ResultWritable rWritable, int execCount) {

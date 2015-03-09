@@ -29,13 +29,17 @@ public class PersistentWriter implements ObjectWriter<JSONObject> {
 			JSONObject argsObject = JSONUtils.get(gObject, "args");
 			String type = JSONUtils.getString(argsObject, "type");
 			String batchId = argsObject == null ? null : JSONUtils.getString(argsObject, "bid");
-			String dataBucket = argsObject == null ? null : JSONUtils.getString(argsObject, "data_bucket");
+			String dataBucketDomain = getOrDefault(JSONUtils.getString(argsObject, "data_bucket"), "-") + ":" + getOrDefault(JSONUtils.getString(argsObject, "data_domain"), "-");
+			if ("-:-".equals(dataBucketDomain)) {
+				logger.error("error bucket and domain.data:" + gObject);
+				continue;
+			}
 			StringBuffer sb = new StringBuffer();
 			sb.append(type);
 			sb.append(KEY_SPLIT);
 			sb.append(getOrDefault(batchId, "-"));
 			sb.append(KEY_SPLIT);
-			sb.append(getOrDefault(dataBucket, "-"));
+			sb.append(dataBucketDomain);
 			String key = sb.toString();
 			List<String> dataListy = key2DataMap.get(key);
 			if (dataListy == null) {
@@ -48,8 +52,12 @@ public class PersistentWriter implements ObjectWriter<JSONObject> {
 		PersistentCaller caller = PersistentCaller.getInstance();
 		for (Entry<String, List<String>> bEntry : key2DataMap.entrySet()) {
 			String[] keyArr = bEntry.getKey().split(KEY_SPLIT);
+			String bucketDomain = keyArr[2];
+			int indexOfSplit = bucketDomain.indexOf(":");
+			String bucket = bucketDomain.substring(0, indexOfSplit);
+			String domain = bucketDomain.substring(indexOfSplit + 1);
 			int index = -1;
-			caller.execute(new PersistentWorker(keyArr[++index], keyArr[++index], keyArr[++index], bEntry.getValue()));
+			caller.execute(new PersistentWorker(keyArr[++index], keyArr[++index], bucket, domain, bEntry.getValue()));
 			total++;
 		}
 		long cost = System.currentTimeMillis() - start;

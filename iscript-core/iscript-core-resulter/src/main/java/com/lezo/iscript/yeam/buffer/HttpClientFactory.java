@@ -1,4 +1,4 @@
-package com.lezo.iscript.yeam.http;
+package com.lezo.iscript.yeam.buffer;
 
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -13,7 +13,6 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.DnsResolver;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -73,12 +72,11 @@ public class HttpClientFactory {
 
 	private static ClientConnectionManager createClientConnManager() {
 		SchemeRegistry schreg = new SchemeRegistry();
-		schreg.register(new Scheme("http", 80, ProxySocketFactory.getSocketFactory()));
+		schreg.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 		schreg.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
 		addHttpsTrustStrategy(schreg);
 		// addHttpsTrustManager(supportedSchemes);
-		DnsResolver dnsResolver = new ShuffleCacheDnsResolver();
-		PoolingClientConnectionManager conman = new IdlePoolingClientConnectionManager(schreg, dnsResolver);
+		PoolingClientConnectionManager conman = new PoolingClientConnectionManager(schreg);
 		conman.setMaxTotal(HttpParamsConstant.MAX_TOTAL_CONNECTIONS);
 		conman.setDefaultMaxPerRoute(HttpParamsConstant.MAX_ROUTE_CONNECTIONS);
 		return conman;

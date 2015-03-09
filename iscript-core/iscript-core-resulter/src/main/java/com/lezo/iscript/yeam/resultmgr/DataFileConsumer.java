@@ -9,26 +9,16 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.codec.EncoderException;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.spring.context.SpringBeanUtils;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.rest.QiniuBucketMac;
-import com.lezo.rest.QiniuBucketMacFactory;
-import com.qiniu.api.auth.AuthException;
-import com.qiniu.api.rs.GetPolicy;
-import com.qiniu.api.rs.URLUtils;
+import com.lezo.rest.data.ClientRest;
+import com.lezo.rest.data.ClientRestFactory;
 
 public class DataFileConsumer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(DataFileConsumer.class);
-	private static final DefaultHttpClient CLIENT = HttpClientUtils.createHttpClient();
 	private static final String CHARSET_NAME = "UTF-8";
 	private String type;
 	private DataFileWrapper dataFileWrapper;
@@ -44,9 +34,7 @@ public class DataFileConsumer implements Runnable {
 		List<String> dataLineList = null;
 		try {
 			dataLineList = downData();
-		} catch (EncoderException e) {
-			e.printStackTrace();
-		} catch (AuthException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		if (CollectionUtils.isNotEmpty(dataLineList)) {
@@ -57,27 +45,19 @@ public class DataFileConsumer implements Runnable {
 		}
 	}
 
-	private List<String> downData() throws EncoderException, AuthException {
-		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(dataFileWrapper.getBucketName());
-		String bucketDomain = bucketMac.getDomain();
-		String baseUrl = URLUtils.makeBaseUrl(bucketDomain, dataFileWrapper.getItem().key);
-		GetPolicy getPolicy = new GetPolicy();
-		String downloadUrl = getPolicy.makeRequest(baseUrl, bucketMac.getMac());
-		HttpGet fileGet = new HttpGet(downloadUrl);
-		InputStream inStream = null;
-		try {
-			HttpResponse res = CLIENT.execute(fileGet);
-			inStream = res.getEntity().getContent();
-			return toDataList(inStream);
-		} catch (Exception e) {
-			logger.warn("url:" + downloadUrl + ",bucket:" + bucketDomain + ",cause:", e);
+	private List<String> downData() throws Exception {
+		ClientRest clientRest = ClientRestFactory.getInstance().get(dataFileWrapper.getBucketName(), dataFileWrapper.getDomain(), 5, 15 * 1000);
+		if (clientRest == null) {
+			logger.warn("can not get ClientRest.bucket:" + dataFileWrapper.getBucketName() + ",domain:" + dataFileWrapper.getDomain());
 			return Collections.emptyList();
-		} finally {
-			IOUtils.closeQuietly(inStream);
-			if (fileGet != null && !fileGet.isAborted()) {
-				fileGet.abort();
-			}
 		}
+		String content = clientRest.getRester().download(dataFileWrapper.getItem().getPath());
+		StringTokenizer tokenizer = new StringTokenizer(content);
+		List<String> lineList = new ArrayList<String>();
+		while (tokenizer.hasMoreElements()) {
+			lineList.add(tokenizer.nextElement().toString());
+		}
+		return lineList;
 	}
 
 	private List<String> toDataList(InputStream inStream) throws Exception {
