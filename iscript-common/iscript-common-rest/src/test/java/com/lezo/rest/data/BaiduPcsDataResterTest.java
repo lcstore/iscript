@@ -22,8 +22,8 @@ public class BaiduPcsDataResterTest {
 		rester.setClient(client);
 		rester.setBucket("idocs");
 		rester.setAccessToken(accessToken);
-		String targetPath = "/iscript/20150308/rest\\rest1001.gz";
-		String source = "rest.test.stt";
+		String targetPath = "/iscript/1001.gz";
+		String source = "rest.我们.stt";
 		byte[] dataBytes = source.getBytes();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		GZIPOutputStream gos = new GZIPOutputStream(bos);
@@ -43,7 +43,7 @@ public class BaiduPcsDataResterTest {
 		String path = "/apps/idocs";
 		path = "";
 		String soucePath = path + "/rest/rest1001.txt";
-//		soucePath = "/iscript/20150308/rest\rest1001.gz";
+		soucePath = "iscript/20150309/ConfigProxyChecker/5df50e4e-ad2a-4980-b72d-6eaf32231e2e/ConfigProxyChecker.20150309.1425890407643.gz";
 		System.err.println("data:" + rester.download(soucePath));
 	}
 

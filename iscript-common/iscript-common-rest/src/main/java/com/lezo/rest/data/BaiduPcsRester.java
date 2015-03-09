@@ -161,8 +161,8 @@ public class BaiduPcsRester implements DataRestable {
 				restFile.setPath(JSONUtils.getString(itemObject, "path"));
 				restFile.setDirectory(1 == JSONUtils.getInteger(itemObject, "isdir"));
 				restFile.setSize(JSONUtils.getLong(itemObject, "size"));
-				restFile.setCreateTime(JSONUtils.getLong(itemObject, "ctime"));
-				restFile.setUpdateTime(JSONUtils.getLong(itemObject, "mtime"));
+				restFile.setCreateTime(JSONUtils.getLong(itemObject, "ctime") * 1000);
+				restFile.setUpdateTime(JSONUtils.getLong(itemObject, "mtime") * 1000);
 				restFile.setSource(getBucket() + "." + getDomain());
 				fileList.add(restFile);
 			}

@@ -1,16 +1,12 @@
 package com.lezo.rest.data;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -44,29 +40,13 @@ public class QiniuRester implements DataRestable {
 		PutExtra extra = new PutExtra();
 		PutPolicy putPolicy = new PutPolicy(getBucket());
 		String uptoken = putPolicy.token(mac);
-		InputStream in = toInputStream(dataBytes);
+		InputStream in = new ByteArrayInputStream(dataBytes);
 
 		PutRet ret = IoApi.Put(uptoken, key, in, extra);
 		if (ret.exception != null) {
 			throw ret.exception;
 		}
 		return true;
-	}
-
-	private InputStream toInputStream(byte[] dataBytes) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		InputStream destStream = null;
-		try {
-			GZIPOutputStream gzos = new GZIPOutputStream(bos);
-			gzos.write(dataBytes);
-			gzos.close();
-			byte[] bytes = bos.toByteArray();
-			destStream = new ByteArrayInputStream(bytes);
-			// destStream = new ZipInputStream(bis);
-		} finally {
-			IOUtils.closeQuietly(bos);
-		}
-		return destStream;
 	}
 
 	private String toQiniuKey(String key) {

@@ -83,11 +83,11 @@ public class DataFileProducer implements Runnable {
 			RestList restList = rester.listFiles(descriptor.getDataPath(), paramMap);
 			long costMills = System.currentTimeMillis() - startMills;
 			if (CollectionUtils.isNotEmpty(restList.getDataList())) {
-				logger.warn("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",results:" + restList.getDataList().size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
 				List<RestFile> acceptList = getAccepts(restList.getDataList(), this.tracker.getStamp());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
-					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + count + ",newCount:" + acceptList.size());
+					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",stamp:" + this.tracker.getStamp() + ",acceptSum:" + count + ",result:"
+							+ restList.getDataList().size() + ",accept:" + acceptList.size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
 					createDataFileConsumer(descriptor, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));

@@ -3,6 +3,8 @@ package com.lezo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.Test;
+
 public class URLCreater {
 
 	private static long currentTime = new Date().getTime() / 1000;
@@ -35,5 +37,10 @@ public class URLCreater {
 
 		url.append("&sign=").append(md5Str);
 		System.out.println(url);
+	}
+
+	@Test
+	public void test() {
+		System.out.println(new Date(1425877931*1000L));
 	}
 }
