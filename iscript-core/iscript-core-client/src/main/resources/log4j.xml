@@ -22,10 +22,11 @@
 	<!-- org.apache.log4j.WriterAppender(将日志信息以流格式发送到任意指定的地方) -->
 	<!-- ========================================================================== -->
 	<!-- 输出到日志文件 -->
-	<appender name="rollAppender" class="org.apache.log4j.DailyRollingFileAppender">
+	<appender name="rollAppender" class="org.apache.log4j.DailyMaxRollingFileAppender">
 		<!-- 设置File参数：日志输出文件名 -->
 		<param name="File" value="logs/client.log" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="MaxBackupIndex" value="7" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
 				value="[%d{yyyy-MM-dd HH:mm:ss\} [%c] %-5p] %c[%t] (%c:%L) - %m%n" />

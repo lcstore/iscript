@@ -33,7 +33,7 @@ public class JSONUtils {
 				jObject = new JSONObject(content);
 			}
 		} catch (JSONException e) {
-			log.warn("Fail to convert JSONObject..");
+			log.warn("Fail to convert JSONObject,data:" + content, e);
 		}
 		return jObject;
 	}
