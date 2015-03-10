@@ -138,7 +138,7 @@ public class BaiduPcsRester implements DataRestable {
 		params.add(new BasicNameValuePair("path", sourcePath));
 
 		addNameValuePair(params, KEY_BY, paramMap, "time");
-		addNameValuePair(params, KEY_ORDER, paramMap, "desc");
+		addNameValuePair(params, KEY_ORDER, paramMap, "asc");
 		addNameValuePair(params, KEY_LIMIT_STRING, paramMap, null);// 0-10,10-20
 
 		String url = "https://pcs.baidu.com/rest/2.0/pcs/file?" + buildParams(params);
