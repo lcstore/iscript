@@ -37,8 +37,16 @@ public class SendUtils {
 			name = "config";
 			break;
 		}
+		case IoConstant.EVENT_TYPE_PROXY: {
+			name = "proxy";
+			break;
+		}
 		case IoConstant.EVENT_TYPE_TASK: {
 			name = "task";
+			break;
+		}
+		case IoConstant.EVENT_TYPE_TOKEN: {
+			name = "token";
 			break;
 		}
 		default: {
