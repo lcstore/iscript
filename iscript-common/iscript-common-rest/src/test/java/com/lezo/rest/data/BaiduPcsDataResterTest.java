@@ -12,15 +12,18 @@ import org.junit.Test;
 import com.lezo.rest.baidu.pcs.PcsClient;
 
 public class BaiduPcsDataResterTest {
-	String accessToken = "21.2c338df374df1340034fb1ac1ecb9d66.2592000.1428417297.4026763474-2920106";
-	String rootPath = "/apps/idocs";
+//	String accessToken = "21.2c338df374df1340034fb1ac1ecb9d66.2592000.1428417297.4026763474-2920106";
+//	String rootPath = "/apps/idocs";
+	String accessToken = "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
+	private String bucket = "istore_doc";
+	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
 	@Test
 	public void testUpload() throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
 		rester.setClient(client);
-		rester.setBucket("idocs");
+		rester.setBucket(bucket);
 		rester.setAccessToken(accessToken);
 		String targetPath = "/iscript/1001.gz";
 		String source = "rest.我们.stt";

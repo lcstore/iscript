@@ -65,7 +65,7 @@
 	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="RefreshClientTokenTimer" method="run"
-			cron="0 0/3 * * * ?" />
+			cron="0 0/5 * * * ?" />
 	</task:scheduled-tasks>
 	<bean id="LoadClientTokenTimer" class="com.lezo.iscript.yeam.tasker.LoadClientTokenTimer">
 	</bean>
