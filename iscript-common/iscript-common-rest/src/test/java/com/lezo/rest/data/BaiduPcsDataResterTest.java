@@ -13,9 +13,12 @@ import com.lezo.rest.baidu.pcs.PcsClient;
 
 public class BaiduPcsDataResterTest {
 //	String accessToken = "21.2c338df374df1340034fb1ac1ecb9d66.2592000.1428417297.4026763474-2920106";
-//	String rootPath = "/apps/idocs";
-	String accessToken = "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
-	private String bucket = "istore_doc";
+//	private String bucket = "idocs";
+	// String accessToken =
+	// "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
+	// private String bucket = "istore_doc";
+	String accessToken = "21.ada9ddec0d31911fa247392ca6f70180.2592000.1428592268.1778594770-3129948";
+	private String bucket = "doc_cloud";
 	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
@@ -54,9 +57,9 @@ public class BaiduPcsDataResterTest {
 	public void testLists() throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
 		rester.setClient(client);
-		rester.setBucket("idocs");
+		rester.setBucket(bucket);
 		rester.setAccessToken(accessToken);
-		String path = "/apps/idocs";
+		String path = "/apps/" + bucket;
 		String targetPath = path + "/rest/";
 		Map<String, String> paramMap = new HashMap<String, String>();
 		RestList fileList = rester.listFiles(path, paramMap);
