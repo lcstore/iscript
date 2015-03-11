@@ -37,6 +37,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
+import com.lezo.iscript.yeam.config.ConfigYhdBrandList;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.ConfigYhdProduct;
@@ -84,56 +85,12 @@ public class ConfigParserTest {
 //		parser = new ConfigJdProduct();
 		// parser = new ConfigYhdPromotion();
 		// parser = new ConfigYhdProduct();
-		// parser = new ConfigYhdPromotList();
+		parser = new ConfigYhdBrandList();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
-		// url =
-		// "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
-		url = "http://www.yhd.com/?tracker_u=4734&website_id=A100202367";
-		url = "http://item.yhd.com/item/10323264?tc=2.0.5.10323264.4&tp=4.111243.m1669872.0.7.K|dT4Pn";
-		url = "http://item.yhd.com/item/27838177";
-		// url = "http://item.jd.com/1226088.html";
-		// url =
-		// "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.4.QJ4gy8&q=%D3%F0%C8%DE%B7%FE&sort=d&style=g&from=qRecommend_1_qRecommend&industryCatId=2#J_Filter";
-		// url =
-		// "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.tEE8nC&id=35591763765";
-		url = "http://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.42.wvi8o3&id=40271259575";
-		url = "http://brand.tmall.com/azIndexInside.htm?spm=a3200.2787281.0.0.fOBcJo&firstLetter=A";
-		// url =
-		// "http://brand.tmall.com/categoryIndex.htm?page=24&type=#J_NavTag";
-		url = "http://brand.tmall.com/brandInfo.htm?spm=a3207.3469821.0.0.i017yp&brandId=3469821&abtest=_AB-LR238-PV238_557";
-		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=3406935&type=0&scm=1048.1.1.6";
-		url = "http://iclient.jd-app.com/";
-		// url = "http://idober.jd-app.com/";
-		url = "http://jd1001.jd-app.com/";
-		// url = "http://jda1001.jd-app.com/";
-		// url =
-		// "http://mybrand.tmall.com/brandInfo.htm?spm=a3200.2192457.0.0.bKhQoJ&brandId=36795434&type=0&scm=1048.1.1.6";
-		// url =
-		// "http://brand.tmall.com/brandInfo.htm?spm=a3200.2192449.0.0.1NxsU7&brandId=21459&type=0&scm=1048.1.1.6";
-		url = "http://list.jd.com/list.html?cat=1620,1624,1656";
-		url = "http://list.jd.com/6233-6291-6308.html";
-		// url =
-		// "http://search.jd.com/search?keyword=%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89&enc=utf-8&qr=&qrst=UNEXPAND&rt=1&vt=3&sttr=1&ev=exbrand%E6%8E%A2%E8%B7%AF%E8%80%85%EF%BC%88TOREAD%EF%BC%89_%40&page=2";
-		url = "http://list.jd.com/list.html?cat=1315,1343,1354";
-		url = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter";// brand
-																																	// shop
-		url = "http://mybrand.tmall.com/brandInfo.htm?brandId=28257182&type=0&scm=1048.1.1.6";// brand
-																								// shop
-		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";// brand
-																					// shop
-		// url =
-		// "http://brand.tmall.com/categoryIndex.htm?spm=a3200.2787281.0.1.jZpRGj&industryId=100&categoryId=50025135&etgId=59";
-		url = "http://item.yhd.com/item/36177809";
-		url = "http://item.jd.com/1226984.html";
-		url = "http://brand.tmall.com/brandMap.htm?spm=a3200.2192449.0.0.6OiqFL";
-		url = "http://brand.tmall.com/brandInfo.htm?brandId=31674&type=0";
-		url = "http://item.yhd.com/item/9105839";
-		url = "http://item.jd.com/1264683.html";
-		url = "http://item.jd.com/1166371.html";
 		url = "http://item.yhd.com/item/992913";
-		url = "http://www.baidu.com/";
+		url = "http://www.yhd.com/brand/c8644.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -159,9 +116,9 @@ public class ConfigParserTest {
 //		task.put("port", 83);
 //		task.put("proxyType", 1);
 //
-		task.put("url", "http://www.proxy.com.ru/list_%s.html");
-		task.put("seedId", "1");
-		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
+//		task.put("url", "http://www.proxy.com.ru/list_%s.html");
+//		task.put("seedId", "1");
+//		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}
