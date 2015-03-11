@@ -1,13 +1,12 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,17 +14,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdBrandList implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	private static final String EMTPY_RESULT = new JSONObject().toString();
 
+	// http://www.yhd.com/brand/c8644.html
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
@@ -33,64 +32,50 @@ public class ConfigYhdBrandList implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		JSONObject itemObject = getDataObject(task);
-		doCollect(itemObject, task);
-		return itemObject.toString();
+		DataBean dataBean = getDataObject(task);
+		return convert2TaskCallBack(dataBean, task);
 	}
 
-	private JSONObject getDataObject(TaskWritable task) throws Exception {
+	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+//		dataBean.getTargetList().add("ProxyAddrDto");
+
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, dataBean);
+		String dataString = writer.toString();
+
+		JSONObject returnObject = new JSONObject();
+		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
+//		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+		return returnObject.toString();
+	}
+
+	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
-		ResultBean rsBean = new ResultBean();
-		Elements itemEls = dom.select("div.brand_list li a.item[href] img[alt]");
+		DataBean rsBean = new DataBean();
+		Elements itemEls = dom.select("div.brand_list li a.item[href],div.other_brand li a.item[href]");
 		if (!itemEls.isEmpty()) {
 			for (Element item : itemEls) {
 				BrandList tBean = new BrandList();
-				tBean.setBrandUrl(item.absUrl("href"));
-				tBean.setBrandName(item.attr("title"));
-				String idString = item.parent().id();
-				tBean.setBrandCode(idString.replace("brand_id_", ""));
-				if (tBean.getBrandName().equals("其它")) {
+				tBean.setBrandName(item.text().trim());
+				Pattern oReg = Pattern.compile("www.yhd.com/brand/([0-9]+)");
+				String sUrl = item.absUrl("href");
+				Matcher matcher = oReg.matcher(sUrl);
+				if (!matcher.find()) {
+					System.err.println("unknown:" + sUrl);
 					continue;
 				}
-//				unifyName(tBean);
+				tBean.setBrandCode(matcher.group(1));
+				tBean.setBrandUrl("http://list.yhd.com/b" + tBean.getBrandCode());
+				// unifyName(tBean);
 				rsBean.getDataList().add(tBean);
 			}
 		}
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, rsBean);
-		return new JSONObject(writer.toString());
-	}
-
-	private void unifyName(BrandList tBean) {
-		String brandName = tBean.getBrandName();
-		// brandName = brandName.replace("(", "/");
-		// brandName = brandName.replace(")", "");
-		brandName = brandName.replace("（", "/");
-		brandName = brandName.replace("）", "");
-		tBean.setBrandName(brandName);
-	}
-
-	private void doCollect(JSONObject dataObject, TaskWritable task) {
-		JSONObject gObject = new JSONObject();
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
-
-		JSONArray tArray = new JSONArray();
-		tArray.put("ProductDto");
-		tArray.put("ProductStatDto");
-		JSONUtils.put(argsObject, "target", tArray);
-		JSONUtils.put(gObject, "args", argsObject);
-
-		JSONUtils.put(gObject, "rs", dataObject.toString());
-		System.err.println("data:" + dataObject);
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
+		return rsBean;
 	}
 
 	private class BrandList {
@@ -114,26 +99,8 @@ public class ConfigYhdBrandList implements ConfigParser {
 			this.brandCode = brandCode;
 		}
 
-		public String getBrandUrl() {
-			return brandUrl;
-		}
-
 		public String getBrandCode() {
 			return brandCode;
-		}
-
-	}
-
-	private final class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
-
-		public List<Object> getDataList() {
-			return dataList;
-		}
-
-		public List<Object> getNextList() {
-			return nextList;
 		}
 
 	}

@@ -38,6 +38,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigYhdBrandList;
+import com.lezo.iscript.yeam.config.ConfigYhdBrandShop;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
 import com.lezo.iscript.yeam.config.ConfigYhdProduct;
@@ -86,18 +87,20 @@ public class ConfigParserTest {
 		// parser = new ConfigYhdPromotion();
 		// parser = new ConfigYhdProduct();
 		parser = new ConfigYhdBrandList();
+		parser = new ConfigYhdBrandShop();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.yhd.com/item/992913";
 		url = "http://www.yhd.com/brand/c8644.html";
+		url = "http://list.yhd.com/b330";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
 		// task.put("barCode", "9787807514398");
 		// task.put("barCode", "6903148018194");
-		task.put("brandName", "尚朋堂");
-		task.put("brandCode", "75609");
+		task.put("brandName", "悠哈");
+		task.put("brandCode", "330");
 		task.put("url", url);
 
 		task.put("ip", "2030763147");
