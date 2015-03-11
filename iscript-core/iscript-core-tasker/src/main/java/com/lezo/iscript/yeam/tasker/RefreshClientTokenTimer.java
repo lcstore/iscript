@@ -80,6 +80,9 @@ public class RefreshClientTokenTimer {
 	}
 
 	private boolean isTime2Refresh(ClientTokenDto dto) {
+		if (dto.getClientType().equals("qiniu.com")) {
+			return false;
+		}
 		if (dto.getNextRefreshTime() == null) {
 			return true;
 		}

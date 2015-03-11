@@ -3,6 +3,7 @@ package com.lezo.iscript.yeam.config;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -70,32 +71,37 @@ public class ConfigProxySeedHandler implements ConfigParser {
 
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		JSONObject argsObject = JSONUtils.getJSONObject(task.getArgs());
-		JSONArray urlArray = getFetchUrls(argsObject);
-		if (urlArray == null) {
+		JSONObject urlObject = getFetchUrls(argsObject);
+		if (urlObject == null) {
 			throw new IllegalArgumentException("get 0 fetch urls by url:" + task.get("url"));
 		}
 		int fetchPage = 0;
 		String decodePageFun = JSONUtils.getString(argsObject, "DecodePageFun");
 		Set<ProxyAddrDto> resultSet = new HashSet<ConfigProxySeedHandler.ProxyAddrDto>();
-		for (int i = 0; i < urlArray.length(); i++) {
-			String sProxyUrl = urlArray.getString(i);
-			HttpGet get = new HttpGet(sProxyUrl);
-			HttpResponse respone = client.execute(get);
-			HttpEntity entity = respone.getEntity();
-			byte[] dataBytes = EntityUtils.toByteArray(entity);
-			String charset = getOrHeadCharset(entity.getContentType(), dataBytes);
-			String html = new String(dataBytes, charset);
-			List<ProxyAddrDto> findList = findProxy(html, decodePageFun);
-			if (findList.size() < 5) {
-				Document dom = Jsoup.parse(html);
-				html = dom.text();
-				findList = findProxy(html, decodePageFun);
-			}
-			fetchPage++;
-			if (findList.isEmpty()) {
-				break;
-			} else {
-				resultSet.addAll(findList);
+		Iterator<?> it = urlObject.keys();
+		while (it.hasNext()) {
+			String key = it.next().toString();
+			JSONArray urlArray = JSONUtils.get(urlObject, key);
+			for (int i = 0; i < urlArray.length(); i++) {
+				String sProxyUrl = urlArray.getString(i);
+				HttpGet get = new HttpGet(sProxyUrl);
+				HttpResponse respone = client.execute(get);
+				HttpEntity entity = respone.getEntity();
+				byte[] dataBytes = EntityUtils.toByteArray(entity);
+				String charset = getOrHeadCharset(entity.getContentType(), dataBytes);
+				String html = new String(dataBytes, charset);
+				List<ProxyAddrDto> findList = findProxy(html, decodePageFun);
+				if (findList.size() < 5) {
+					Document dom = Jsoup.parse(html);
+					html = dom.text();
+					findList = findProxy(html, decodePageFun);
+				}
+				fetchPage++;
+				if (findList.isEmpty()) {
+					break;
+				} else {
+					resultSet.addAll(findList);
+				}
 			}
 		}
 		Long seedId = JSONUtils.getLong(argsObject, "seedId");
@@ -107,7 +113,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		collectHisDto.setTaskId(task.getId());
 		collectHisDto.setSeedId(seedId);
 		collectHisDto.setTotalCount(totalCount);
-		collectHisDto.setTotalPage(urlArray.length());
+		collectHisDto.setTotalPage(urlObject.length());
 		collectHisDto.setFetchPage(fetchPage);
 		collectHisDto.getProxyList().addAll(resultSet);
 		DataBean dataBean = new DataBean();
@@ -143,9 +149,11 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		return "UTF-8";
 	}
 
-	private JSONArray getFetchUrls(JSONObject argsObject) throws Exception {
+	private JSONObject getFetchUrls(JSONObject argsObject) throws Exception {
 		String url = JSONUtils.getString(argsObject, "url");
 		String createUrlsFun = JSONUtils.getString(argsObject, "CreateUrlsFun");
+		JSONObject urlObject = new JSONObject();
+		String urlKey = "default";
 		if (StringUtils.isEmpty(createUrlsFun)) {
 			JSONArray urlArray = new JSONArray();
 			if (url.indexOf("%s") > 0) {
@@ -153,7 +161,8 @@ public class ConfigProxySeedHandler implements ConfigParser {
 			} else {
 				urlArray.put(url);
 			}
-			return urlArray;
+			JSONUtils.put(urlObject, urlKey, urlArray);
+			return urlObject;
 		}
 		JSONObject paramObject = new JSONObject();
 		JSONUtils.put(paramObject, "url", url);
@@ -163,8 +172,13 @@ public class ConfigProxySeedHandler implements ConfigParser {
 			Scriptable scope = newScriptable(ScriptableUtils.getJSONScriptable());
 			Object rsObject = cx.evaluateString(scope, source, "FetchUrls", 0, null);
 			String sResult = Context.toString(rsObject);
-			JSONArray urlArray = new JSONArray(sResult);
-			return urlArray;
+			if (sResult.trim().startsWith("{")) {
+				return JSONUtils.getJSONObject(sResult);
+			} else {
+				JSONArray urlArray = new JSONArray(sResult);
+				JSONUtils.put(urlObject, urlKey, urlArray);
+			}
+			return urlObject;
 		} finally {
 			Context.exit();
 		}

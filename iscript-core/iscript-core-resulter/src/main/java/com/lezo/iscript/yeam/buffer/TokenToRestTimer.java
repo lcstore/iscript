@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -66,7 +67,7 @@ public class TokenToRestTimer {
 	private ClientRest convertToClientRest(ClientTokenDto dto) {
 		String bucket = dto.getClientBucket();
 		String domain = dto.getClientDomain();
-		JSONObject paramObject = JSONUtils.getJSONObject(dto.getClientParams());
+		JSONObject paramObject = StringUtils.isEmpty(dto.getClientParams()) ? null : JSONUtils.getJSONObject(dto.getClientParams());
 		Integer capacity = paramObject == null ? 1 : JSONUtils.getInteger(paramObject, "capacity");
 		capacity = capacity == null ? 1 : capacity;
 		ClientRest clientRest = new ClientRest();

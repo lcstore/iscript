@@ -83,6 +83,7 @@ public class DataFileProducer implements Runnable {
 			RestList restList = rester.listFiles(descriptor.getDataPath(), paramMap);
 			long costMills = System.currentTimeMillis() - startMills;
 			if (CollectionUtils.isNotEmpty(restList.getDataList())) {
+				fromCount += restList.getDataList().size();
 				List<RestFile> acceptList = getAccepts(restList.getDataList(), this.tracker.getStamp());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();

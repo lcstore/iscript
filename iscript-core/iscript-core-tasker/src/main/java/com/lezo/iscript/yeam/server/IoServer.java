@@ -40,6 +40,12 @@ public class IoServer extends IoHandlerAdapter {
 	private List<MessageHandler> handlers;
 
 	public IoServer(int port) throws IOException {
+		this.handlers = new ArrayList<MessageHandler>();
+		this.handlers.add(new IoResultHandler());
+		this.handlers.add(new IoConfigHandler());
+		this.handlers.add(new IoTokenHandler());
+		this.handlers.add(new IoTaskHandler());
+
 		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
 		if (logger.isDebugEnabled()) {
@@ -56,11 +62,6 @@ public class IoServer extends IoHandlerAdapter {
 
 		resetSessions();
 		resetProxys();
-		this.handlers = new ArrayList<MessageHandler>();
-		this.handlers.add(new IoResultHandler());
-		this.handlers.add(new IoConfigHandler());
-		this.handlers.add(new IoTokenHandler());
-		this.handlers.add(new IoTaskHandler());
 		logger.info("start to listener port:" + port + " for IoServer..");
 	}
 

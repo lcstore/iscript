@@ -1,13 +1,13 @@
 package com.lezo.rest.data;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.FileUtils;
@@ -77,7 +77,15 @@ public class QiniuResterTest {
 		rester.setMac(QiniuBucketMacFactory.getBucketMac(rester.getBucket()).getMac());
 		String soucePath = "iscript/20150210/ConfigProxyChecker/upload/ConfigProxyChecker.upload.1425793736885.gz";
 		soucePath = "iscript/20150309/ConfigProxyChecker/5df50e4e-ad2a-4980-b72d-6eaf32231e2e/ConfigProxyChecker.20150309.1425888905647.gz";
-		System.err.println("data:" + rester.download(soucePath));
+		soucePath = "iscript/20150311/ConfigProxyDetector/1e68a446-a6ab-4c91-91c3-7d0f272e862c/ConfigProxyDetector.20150311.1426043050683.gz";
+		String content = rester.download(soucePath);
+		System.err.println("data:" + content);
+		StringTokenizer tokenizer = new StringTokenizer(content);
+		List<String> lineList = new ArrayList<String>();
+		while (tokenizer.hasMoreElements()) {
+//			lineList.add(tokenizer.nextElement().toString());
+			System.out.println(tokenizer.nextElement().toString());
+		}
 	}
 
 	@Test
@@ -92,5 +100,16 @@ public class QiniuResterTest {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		RestList fileList = rester.listFiles(targetPath, paramMap);
 		System.err.println("data:" + fileList.getDataList().size());
+	}
+
+	@Test
+	public void testStringTokenizer() throws IOException {
+		String content = FileUtils.readFileToString(new File("src/main/resources/file.temp"), "UTF-8");
+		StringTokenizer tokenizer = new StringTokenizer(content, "\n");
+		List<String> lineList = new ArrayList<String>();
+		while (tokenizer.hasMoreElements()) {
+//			lineList.add(tokenizer.nextElement().toString());
+			System.out.println(tokenizer.nextElement().toString());
+		}
 	}
 }

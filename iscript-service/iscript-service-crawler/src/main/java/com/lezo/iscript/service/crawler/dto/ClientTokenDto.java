@@ -52,7 +52,7 @@ public class ClientTokenDto {
 	}
 
 	public void setClientType(String clientType) {
-		this.clientType = clientType;
+		this.clientType = trimString(clientType);
 	}
 
 	public String getClientBucket() {
@@ -60,7 +60,7 @@ public class ClientTokenDto {
 	}
 
 	public void setClientBucket(String clientBucket) {
-		this.clientBucket = clientBucket;
+		this.clientBucket = trimString(clientBucket);
 	}
 
 	public String getClientDomain() {
@@ -68,7 +68,7 @@ public class ClientTokenDto {
 	}
 
 	public void setClientDomain(String clientDomain) {
-		this.clientDomain = clientDomain;
+		this.clientDomain = trimString(clientDomain);
 	}
 
 	public String getClientKey() {
@@ -76,7 +76,7 @@ public class ClientTokenDto {
 	}
 
 	public void setClientKey(String clientKey) {
-		this.clientKey = clientKey;
+		this.clientKey = trimString(clientKey);
 	}
 
 	public String getClientSecret() {
@@ -84,7 +84,7 @@ public class ClientTokenDto {
 	}
 
 	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
+		this.clientSecret = trimString(clientSecret);
 	}
 
 	public String getClientParams() {
@@ -92,7 +92,7 @@ public class ClientTokenDto {
 	}
 
 	public void setClientParams(String clientParams) {
-		this.clientParams = clientParams;
+		this.clientParams = trimString(clientParams);
 	}
 
 	public String getRefreshToken() {
@@ -100,7 +100,7 @@ public class ClientTokenDto {
 	}
 
 	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
+		this.refreshToken = trimString(refreshToken);
 	}
 
 	public String getAccessToken() {
@@ -108,7 +108,7 @@ public class ClientTokenDto {
 	}
 
 	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+		this.accessToken = trimString(accessToken);
 	}
 
 	public Date getNextRefreshTime() {
@@ -167,4 +167,7 @@ public class ClientTokenDto {
 		this.isDelete = isDelete;
 	}
 
+	private String trimString(String source) {
+		return source == null ? null : source.trim();
+	}
 }

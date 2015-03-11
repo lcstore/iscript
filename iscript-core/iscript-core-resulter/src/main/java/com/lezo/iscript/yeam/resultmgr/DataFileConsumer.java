@@ -52,7 +52,7 @@ public class DataFileConsumer implements Runnable {
 			return Collections.emptyList();
 		}
 		String content = clientRest.getRester().download(dataFileWrapper.getItem().getPath());
-		StringTokenizer tokenizer = new StringTokenizer(content);
+		StringTokenizer tokenizer = new StringTokenizer(content, "\n");
 		List<String> lineList = new ArrayList<String>();
 		while (tokenizer.hasMoreElements()) {
 			lineList.add(tokenizer.nextElement().toString());
