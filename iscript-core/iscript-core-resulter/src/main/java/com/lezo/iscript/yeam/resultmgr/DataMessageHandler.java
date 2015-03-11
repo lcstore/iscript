@@ -61,7 +61,7 @@ public class DataMessageHandler {
 				}
 				String dateString = getDateString(dto.getCreateTime());
 				Iterator<?> it = mObject.keys();
-				String host = dto.getDataBucket() + "." + dto.getDataDomain();
+				String host = dto.getDataBucket().trim() + "." + dto.getDataDomain().trim();
 				while (it.hasNext()) {
 					StringBuilder sb = new StringBuilder("iscript/");
 					sb.append(dateString);
@@ -73,7 +73,7 @@ public class DataMessageHandler {
 					String key = host + ":" + path;
 					DirectoryDescriptor descriptor = keyDirectoryMap.get(key);
 					if (descriptor == null) {
-						descriptor = new DirectoryDescriptor(path, dto.getDataBucket(), dto.getDataDomain());
+						descriptor = new DirectoryDescriptor(path, dto.getDataBucket().trim(), dto.getDataDomain().trim());
 						descriptor.setCreateTime(dto.getCreateTime());
 						keyDirectoryMap.put(key, descriptor);
 					} else if (descriptor.getCreateTime().after(dto.getCreateTime())) {
