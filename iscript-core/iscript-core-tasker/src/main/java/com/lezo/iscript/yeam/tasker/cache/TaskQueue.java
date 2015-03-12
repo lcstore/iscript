@@ -14,6 +14,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class TaskQueue {
 	private String type;
 	private ConcurrentHashMap<Integer, Queue<TaskWritable>> levelQueueMap = new ConcurrentHashMap<Integer, Queue<TaskWritable>>();
+	private List<Integer> levelDescList = new ArrayList<Integer>();
 
 	public TaskQueue(String type) {
 		super();
@@ -27,6 +28,14 @@ public class TaskQueue {
 				if (queue == null) {
 					queue = new LinkedBlockingQueue<TaskWritable>();
 					levelQueueMap.put(level, queue);
+					// add new level and sort leveList desc
+					levelDescList.add(level);
+					Collections.sort(levelDescList, new Comparator<Integer>() {
+						@Override
+						public int compare(Integer o1, Integer o2) {
+							return o2.compareTo(o1);
+						}
+					});
 				}
 			}
 		}
@@ -66,30 +75,24 @@ public class TaskQueue {
 		return taskList;
 	}
 
+	/**
+	 * poll task by leve desc
+	 * 
+	 * @param limit
+	 * @return
+	 */
 	public List<TaskWritable> pollDecsLevel(int limit) {
 		List<TaskWritable> taskList = new ArrayList<TaskWritable>(limit);
-		List<Integer> leveList = new ArrayList<Integer>(levelQueueMap.keySet());
-		doDescSort(leveList);
 		int remain = limit;
-		for (Integer level : leveList) {
+		for (Integer level : levelDescList) {
 			if (remain < 1) {
 				break;
 			}
 			List<TaskWritable> curLevelTasks = poll(level, remain);
 			taskList.addAll(curLevelTasks);
-			remain = limit - curLevelTasks.size();
+			remain = limit - taskList.size();
 		}
 		return taskList;
-	}
-
-	private void doDescSort(List<Integer> leveList) {
-		Collections.sort(leveList, new Comparator<Integer>() {
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				return o2.compareTo(o1);
-			}
-		});
-
 	}
 
 	public int size(int level) {

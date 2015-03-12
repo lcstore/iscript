@@ -17,8 +17,8 @@ public class BaiduPcsDataResterTest {
 	// String accessToken =
 	// "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
 	// private String bucket = "istore_doc";
-	String accessToken = "21.ada9ddec0d31911fa247392ca6f70180.2592000.1428592268.1778594770-3129948";
-	private String bucket = "doc_cloud";
+	String accessToken = "21.a221daab8af08ff20c86f622bdaba78e.2592000.1428736113.1778594770-3129948";
+	private String bucket = "idoc_cloud";
 	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
@@ -44,12 +44,13 @@ public class BaiduPcsDataResterTest {
 	public void testDownload() throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
 		rester.setClient(client);
-		rester.setBucket("idocs");
+		rester.setBucket(bucket);
 		rester.setAccessToken(accessToken);
 		String path = "/apps/idocs";
 		path = "";
 		String soucePath = path + "/rest/rest1001.txt";
 		soucePath = "iscript/20150309/ConfigProxyChecker/5df50e4e-ad2a-4980-b72d-6eaf32231e2e/ConfigProxyChecker.20150309.1425890407643.gz";
+		soucePath = "file.temp.01";
 		System.err.println("data:" + rester.download(soucePath));
 	}
 

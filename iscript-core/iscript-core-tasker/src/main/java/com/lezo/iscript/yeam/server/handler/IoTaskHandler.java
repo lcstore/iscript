@@ -15,6 +15,7 @@ import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.server.HeadCacher;
+import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 import com.lezo.iscript.yeam.server.SendUtils;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
@@ -69,8 +70,9 @@ public class IoTaskHandler implements MessageHandler {
 			Collections.shuffle(typeList);
 			logger.info(String.format("Ready type:%s", typeList));
 			int cycle = 0;
-			limit = getLimitSize(typeList);
-			int remain = PER_OFFER_SIZE;
+			TaskAssign taskAssign = getTaskAssign(typeList);
+			int remain = taskAssign.getMaxCountForClient();
+			limit = taskAssign.getMaxCountForType();
 			while (remain > 0 && ++cycle <= 3) {
 				for (String type : typeList) {
 					TaskQueue taskQueue = taskCancher.getQueue(type);
@@ -117,6 +119,44 @@ public class IoTaskHandler implements MessageHandler {
 		int limit = PER_OFFER_SIZE / typeList.size();
 		limit = limit <= 1 ? 2 : limit;
 		return limit;
+	}
+
+	private TaskAssign getTaskAssign(List<String> typeList) {
+		TaskAssign assign = new TaskAssign();
+		TaskCacher taskCancher = TaskCacher.getInstance();
+		int total = 0;
+		for (String type : typeList) {
+			total += taskCancher.getQueue(type).size();
+		}
+		int clientCount = IoAcceptorHolder.getIoAcceptor().getManagedSessions().size();
+		int countForClient = total / clientCount;
+		countForClient = countForClient < PER_OFFER_SIZE ? (countForClient < 1 ? 1 : countForClient) : PER_OFFER_SIZE;
+		int countForType = countForClient / typeList.size();
+		countForType = countForType < 1 ? 1 : countForType;
+		assign.setMaxCountForClient(countForClient);
+		assign.setMaxCountForType(countForType);
+		return assign;
+	}
+
+	private static class TaskAssign {
+		private int maxCountForClient;
+		private int maxCountForType;
+
+		public int getMaxCountForClient() {
+			return maxCountForClient;
+		}
+
+		public void setMaxCountForClient(int maxCountForClient) {
+			this.maxCountForClient = maxCountForClient;
+		}
+
+		public int getMaxCountForType() {
+			return maxCountForType;
+		}
+
+		public void setMaxCountForType(int maxCountForType) {
+			this.maxCountForType = maxCountForType;
+		}
 	}
 
 }
