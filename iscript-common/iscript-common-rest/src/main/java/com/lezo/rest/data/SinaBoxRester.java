@@ -85,7 +85,7 @@ public class SinaBoxRester implements DataRestable {
 		params.add(new BasicNameValuePair("access_token", getAccessToken()));
 		params.add(new BasicNameValuePair("path", soucePath));
 
-		String url = "https://pcs.baidu.com/rest/2.0/pcs/file?" + buildParams(params);
+		String url = "https://api.weipan.cn/2/files/" + buildParams(params);
 		HttpGet request = new HttpGet(url);
 		RestRespone customRespone = RestRequestUtils.doRequest(client, request);
 		if (customRespone.getException() != null) {

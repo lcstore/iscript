@@ -46,7 +46,7 @@ public class KanBoxRester implements DataRestable {
 	public boolean upload(String targetPath, byte[] dataBytes) throws Exception {
 //		targetPath = convertPath(targetPath);
 		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
-		paramList.add(new BasicNameValuePair("path", "/11.xml"));
+		paramList.add(new BasicNameValuePair("path", "/idocs/11.xml"));
 		paramList.add(new BasicNameValuePair("bearer_token", getAccessToken()));
 
 		String url = "https://api-upload.kanbox.com/0/upload?" + buildParams(paramList);
@@ -56,7 +56,6 @@ public class KanBoxRester implements DataRestable {
 		HttpPost post = new HttpPost(url);
 		MultipartEntity entity = new MultipartEntity();
 		ContentBody bsData = new ByteArrayBody(dataBytes, suffix);
-		bsData = new FileBody(new File("D:/codes/lezo/iscript/iscript-common/iscript-common-rest/src/main/resources/log4j.xml"));
 		entity.addPart("file", bsData);
 		post.setEntity(entity);
 		RestRespone customRespone = RestRequestUtils.doRequest(client, post);
