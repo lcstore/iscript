@@ -1,6 +1,8 @@
 package com.lezo.rest.data;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -46,5 +48,13 @@ public class KanBoxResterTest {
 	public void testDownload() throws Exception {
 		String soucePath = "/tasker.properties";
 		System.err.println("data:" + rester.download(soucePath));
+	}
+
+	@Test
+	public void testListFiles() throws Exception {
+		String sourcePath = "/";
+		Map<String, String> paramMap = new HashMap<String, String>();
+		RestList restList = rester.listFiles(sourcePath, paramMap);
+		System.err.println("data:" + restList.getDataList().size());
 	}
 }

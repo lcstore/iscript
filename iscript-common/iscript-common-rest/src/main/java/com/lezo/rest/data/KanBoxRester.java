@@ -2,7 +2,6 @@ package com.lezo.rest.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -129,18 +127,12 @@ public class KanBoxRester implements DataRestable {
 
 	@Override
 	public RestList listFiles(String sourcePath, Map<String, String> paramMap) throws Exception {
-		sourcePath = convertPath(sourcePath);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("method", "list"));
-		params.add(new BasicNameValuePair("access_token", getAccessToken()));
+		params.add(new BasicNameValuePair("bearer_token", getAccessToken()));
 		params.add(new BasicNameValuePair("path", sourcePath));
 
-		addNameValuePair(params, KEY_BY, paramMap, "time");
-		addNameValuePair(params, KEY_ORDER, paramMap, "asc");
-		addNameValuePair(params, KEY_LIMIT_STRING, paramMap, null);// 0-10,10-20
-
-		String url = "https://pcs.baidu.com/rest/2.0/pcs/file?" + buildParams(params);
-		HttpGet request = new HttpGet(url);
+		String url = "https://api.kanbox.com/0/list?" + buildParams(params);
+		HttpPost request = new HttpPost(url);
 		RestRespone customRespone = RestRequestUtils.doRequest(client, request);
 		if (customRespone.getException() != null) {
 			throw customRespone.getException();
@@ -148,19 +140,19 @@ public class KanBoxRester implements DataRestable {
 		RestList restFileList = new RestList();
 		String result = EntityUtils.toString(customRespone.getResponse().getEntity(), DEFAULT_CHASET_NAME);
 		JSONObject rsObject = JSONUtils.getJSONObject(result);
-		JSONArray listArray = (JSONArray) (rsObject == null ? null : JSONUtils.get(rsObject, "list"));
+		JSONArray listArray = (JSONArray) (rsObject == null ? null : JSONUtils.get(rsObject, "contents"));
 		if (listArray != null) {
 			int len = listArray.length();
 			List<RestFile> fileList = new ArrayList<RestFile>(len);
 			for (int i = 0; i < len; i++) {
 				JSONObject itemObject = listArray.getJSONObject(i);
 				RestFile restFile = new RestFile();
-				restFile.setId(JSONUtils.getString(itemObject, "fs_id"));
-				restFile.setPath(JSONUtils.getString(itemObject, "path"));
-				restFile.setDirectory(1 == JSONUtils.getInteger(itemObject, "isdir"));
-				restFile.setSize(JSONUtils.getLong(itemObject, "size"));
-				restFile.setCreateTime(JSONUtils.getLong(itemObject, "ctime") * 1000);
-				restFile.setUpdateTime(JSONUtils.getLong(itemObject, "mtime") * 1000);
+//				restFile.setId(JSONUtils.getString(itemObject, "fs_id"));
+				restFile.setPath(JSONUtils.getString(itemObject, "fullPath"));
+				restFile.setDirectory("true" == JSONUtils.getString(itemObject, "isFolder"));
+				restFile.setSize(JSONUtils.getLong(itemObject, "fileSize"));
+				restFile.setCreateTime(JSONUtils.getLong(itemObject, "creationDate") * 1000);
+				restFile.setUpdateTime(restFile.getCreateTime());
 				restFile.setSource(getBucket() + "." + getDomain());
 				fileList.add(restFile);
 			}
