@@ -90,6 +90,7 @@ public class IoTaskHandler implements MessageHandler {
 				}
 			}
 			if (!taskOffers.isEmpty()) {
+				assignProxyForTasks(taskOffers);
 				IoRespone ioRespone = new IoRespone();
 				ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
 				ioRespone.setData(taskOffers);
@@ -103,6 +104,11 @@ public class IoTaskHandler implements MessageHandler {
 				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
 		logger.info(msg);
 		return sendCount;
+	}
+
+	private void assignProxyForTasks(List<TaskWritable> taskOffers) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private int getLimitSize(List<String> typeList) {

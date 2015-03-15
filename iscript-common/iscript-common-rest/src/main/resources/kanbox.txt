@@ -12,8 +12,8 @@ https://auth.kanbox.com/0/token?grant_type=authorization_code&client_id=b4fabd4a
 
 
 
-https://api.kanbox.com/0/info?bearer_token=aee384a5b860093179f28979f47c7f3b
+https://api.kanbox.com/0/info?bearer_token=253966875101559bf51eac3a5a41ba62
 
-https://api.kanbox.com/0/list?path=/i&bearer_token=aee384a5b860093179f28979f47c7f3b
+https://api.kanbox.com/0/list?path=/i&bearer_token=253966875101559bf51eac3a5a41ba62
 
 https://api.kanbox.com/0/download?path=/i/log4j.xml&bearer_token=aee384a5b860093179f28979f47c7f3b

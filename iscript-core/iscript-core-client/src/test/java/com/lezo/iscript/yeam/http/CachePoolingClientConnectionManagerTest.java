@@ -3,6 +3,7 @@ package com.lezo.iscript.yeam.http;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
@@ -34,6 +35,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.net.SocketAppender;
 import org.junit.Test;
 
 import com.lezo.iscript.crawler.http.HttpParamsConstant;
@@ -179,17 +181,21 @@ public class CachePoolingClientConnectionManagerTest {
 		socksaddr = new InetSocketAddress("209.141.9.201", 1080);
 		socksaddr = new InetSocketAddress("103.246.161.194", 1080);
 		socksaddr = new InetSocketAddress("1.179.143.178", 3128);
+		socksaddr = new InetSocketAddress("117.169.1.100", 4203);
 
 		// http://www.xroxy.com/proxy-type-Socks5.htm
 		// socksaddr = new InetSocketAddress("61.147.67.2", 9125);
 		// socksaddr = new InetSocketAddress("124.42.127.221", 1080);
-		// socksaddr = new InetSocketAddress("180.153.139.246", 8888);
+		socksaddr = new InetSocketAddress("202.197.127.139", 1080);
 		String url = "http://item.yhd.com/item/102301?tp=1.0.61.0.9.Kcjj6mx";
 		url = "http://1111.ip138.com/ic.asp";
-		url = "http://www.baidu.com/";
+		// url = "http://www.baidu.com/";
 		HttpGet get = new HttpGet(url);
 		get.addHeader("Referer", url);
 		get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, socksaddr));
+		// get.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new
+		// Proxy(Proxy.Type.SOCKS,
+		// InetSocketAddress.createUnresolved("79.127.124.115", 1080)));
 		HttpResponse resp = client.execute(get);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);
@@ -217,12 +223,42 @@ public class CachePoolingClientConnectionManagerTest {
 		client.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, SSLSocketFactory.getSystemSocketFactory()));
 
 		HttpUriRequest request = new HttpGet(uri);
-//		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("107.182.17.243", 7808, "http"));
+		// request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new
+		// HttpHost("107.182.17.243", 7808, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("183.250.179.29", 80, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("74.50.126.249", 3127, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("187.188.195.66", 8080, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("118.175.93.243", 80, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("121.199.34.212", 80, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("117.177.243.35", 80, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("117.177.243.35", 80)));
+		HttpResponse resp = client.execute(request);
+		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
+		System.out.println(html);
+	}
+
+	@Test
+	public void testChooseProxy() throws Exception {
+		SchemeRegistry schreg = new SchemeRegistry();
+		schreg.register(new Scheme("http", 80, ProxySocketFactory.getSocketFactory()));
+		schreg.register(new Scheme("ftp", 21, PlainSocketFactory.getSocketFactory()));
+		addHttpsTrustStrategy(schreg);
+
+		DnsResolver dnsResolver = new FakeDnsResolver();
+		dnsResolver = new ShuffleCacheDnsResolver();
+		PoolingClientConnectionManager conman = new PoolingClientConnectionManager(schreg, dnsResolver);
+
+		HttpParams params = createHttpParams();
+		DefaultHttpClient client = new DefaultHttpClient(conman, params);
+		client.setHttpRequestRetryHandler(new SimpleHttpRequestRetryHandler());
+		CookieSpecFactory csf = getCustomCookieSpecFactory();
+		client.getCookieSpecs().register("easy", csf);
+		client.getParams().setParameter(ClientPNames.COOKIE_POLICY, "easy");
+
+		String url = "http://1111.ip138.com/ic.asp";
+
+		HttpUriRequest request = null;
+		// http
+		request = HttpClientUtils.createHttpGet(url, "117.177.243.35", 80, 1);
+		request = HttpClientUtils.createHttpGet(url, "183.216.164.240", 8123, 1);
+		// socket
+		request = HttpClientUtils.createHttpGet(url, "202.197.127.139", 1080, 2);
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

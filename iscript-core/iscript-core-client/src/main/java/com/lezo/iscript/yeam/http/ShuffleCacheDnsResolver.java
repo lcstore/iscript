@@ -3,7 +3,6 @@ package com.lezo.iscript.yeam.http;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class ShuffleCacheDnsResolver implements DnsResolver {
 	private static Logger logger = LoggerFactory.getLogger(ShuffleCacheDnsResolver.class);
-	private Map<String, InetAddress[]> dnsMap;
+	private ConcurrentHashMap<String, InetAddress[]> dnsMap;
 
 	public ShuffleCacheDnsResolver() {
 		dnsMap = new ConcurrentHashMap<String, InetAddress[]>();

@@ -5,10 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -32,9 +34,8 @@ import com.lezo.iscript.utils.JSONUtils;
 public class KanBoxRester implements DataRestable {
 
 	private static final String DEFAULT_CHASET_NAME = "UTF-8";
-	private static final String KEY_BY = "by";
-	private static final String KEY_ORDER = "order";
-	private static final String KEY_LIMIT_STRING = "limit";
+	public static final String PARAM_KEY_HASH = "hash";
+	private static final List<RestFile> EMPTY_LIST = Collections.emptyList();
 	private String bucket;
 	private String domain;
 	private String accessToken;
@@ -42,12 +43,11 @@ public class KanBoxRester implements DataRestable {
 
 	@Override
 	public boolean upload(String targetPath, byte[] dataBytes) throws Exception {
-//		targetPath = convertPath(targetPath);
+		targetPath = convertPath(targetPath);
 		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
-		paramList.add(new BasicNameValuePair("path", "/idocs/11.xml"));
 		paramList.add(new BasicNameValuePair("bearer_token", getAccessToken()));
 
-		String url = "https://api-upload.kanbox.com/0/upload?" + buildParams(paramList);
+		String url = "https://api-upload.kanbox.com/0/upload" + targetPath + "?" + buildParams(paramList);
 
 		int index = targetPath.lastIndexOf("/");
 		String suffix = targetPath.substring(index + 1, targetPath.length());
@@ -60,7 +60,6 @@ public class KanBoxRester implements DataRestable {
 		if (customRespone.getException() != null) {
 			throw customRespone.getException();
 		}
-		String rsString = EntityUtils.toString(customRespone.getResponse().getEntity());
 		EntityUtils.consumeQuietly(customRespone.getResponse().getEntity());
 		StatusLine statusLine = customRespone.getResponse().getStatusLine();
 		int status = statusLine.getStatusCode();
@@ -68,10 +67,11 @@ public class KanBoxRester implements DataRestable {
 	}
 
 	private String convertPath(String targetPath) {
-		if (StringUtils.isNotEmpty(getRootPath()) && !targetPath.startsWith(getRootPath().substring(0, getRootPath().length() - 1))) {
-			targetPath = targetPath.startsWith("/") ? (getRootPath() + targetPath.substring(1)) : (getRootPath() + targetPath);
-		}
+		targetPath = targetPath.trim();
 		targetPath = targetPath.replace("\\", "/");
+		if (!targetPath.startsWith("/")) {
+			targetPath = "/" + targetPath;
+		}
 		return targetPath;
 	}
 
@@ -131,6 +131,8 @@ public class KanBoxRester implements DataRestable {
 		params.add(new BasicNameValuePair("bearer_token", getAccessToken()));
 		params.add(new BasicNameValuePair("path", sourcePath));
 
+		addNameValuePair(params, PARAM_KEY_HASH, paramMap, null);
+
 		String url = "https://api.kanbox.com/0/list?" + buildParams(params);
 		HttpPost request = new HttpPost(url);
 		RestRespone customRespone = RestRequestUtils.doRequest(client, request);
@@ -147,7 +149,7 @@ public class KanBoxRester implements DataRestable {
 			for (int i = 0; i < len; i++) {
 				JSONObject itemObject = listArray.getJSONObject(i);
 				RestFile restFile = new RestFile();
-//				restFile.setId(JSONUtils.getString(itemObject, "fs_id"));
+				// restFile.setId(JSONUtils.getString(itemObject, "fs_id"));
 				restFile.setPath(JSONUtils.getString(itemObject, "fullPath"));
 				restFile.setDirectory("true" == JSONUtils.getString(itemObject, "isFolder"));
 				restFile.setSize(JSONUtils.getLong(itemObject, "fileSize"));
@@ -156,18 +158,11 @@ public class KanBoxRester implements DataRestable {
 				restFile.setSource(getBucket() + "." + getDomain());
 				fileList.add(restFile);
 			}
+			restFileList.setMarker(JSONUtils.getString(rsObject, "hash"));
 			restFileList.setDataList(fileList);
-			String limit = paramMap == null ? null : paramMap.get(KEY_LIMIT_STRING);
-			if (StringUtils.isNotEmpty(limit) && limit.indexOf("-") > 0) {
-				String[] limitArr = limit.split("-");
-				int count = Integer.valueOf(limitArr[1]) - Integer.valueOf(limitArr[0]);
-				restFileList.setEOF(count > fileList.size());
-				restFileList.setMarker(limit);
-			} else if (fileList.isEmpty()) {
-				restFileList.setEOF(true);
-			}
 			return restFileList;
 		} else {
+			restFileList.setDataList(EMPTY_LIST);
 			restFileList.setEOF(true);
 		}
 		return restFileList;

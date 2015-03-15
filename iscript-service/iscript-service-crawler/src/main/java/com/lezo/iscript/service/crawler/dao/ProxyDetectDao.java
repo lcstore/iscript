@@ -12,20 +12,13 @@ public interface ProxyDetectDao {
 
 	void batchUpdate(List<ProxyDetectDto> dtoList);
 
-	List<ProxyDetectDto> getProxyDetectDtos(@Param(value = "ipLongs") List<Long> ipLongs,
-			@Param(value = "portList") List<Integer> portList, @Param(value = "status") Integer status);
+	List<ProxyDetectDto> getProxyDetectDtos(@Param(value = "ipLongs") List<Long> ipLongs, @Param(value = "portList") List<Integer> portList, @Param(value = "status") Integer status);
 
-	List<ProxyDetectDto> getProxyDetectDtosFromId(@Param(value = "fromId") Long fromId,
-			@Param(value = "limit") int limit, @Param(value = "status") Integer status);
+	List<ProxyDetectDto> getProxyDetectDtosFromId(@Param(value = "fromId") Long fromId, @Param(value = "limit") int limit, @Param(value = "status") Integer status);
 
-	List<ProxyDetectDto> getProxyDetectDtosFromStatus(@Param(value = "status") Integer status,
-			@Param(value = "afterUpdateTime") Date afterUpdateTime);
+	List<ProxyDetectDto> getProxyDetectDtosFromStatus(@Param(value = "status") Integer status, @Param(value = "afterUpdateTime") Date afterUpdateTime);
 
-	List<ProxyDetectDto> getProxyDetectDtoFromDomain(@Param(value = "domainList") List<String> domainList,
-			@Param(value = "status") Integer status);
-
-	List<ProxyDetectDto> getUnionProxyDetectDtoFromDomain(@Param(value = "domainList") List<String> domainList,
-			@Param(value = "status") Integer status, @Param(value = "limit") int limit);
+	List<ProxyDetectDto> getProxyDetectDtoFromDomain(@Param(value = "domainList") List<String> domainList, @Param(value = "status") Integer status, @Param(value = "limit") Integer limit);
 
 	void batchUpdateProxyStatus(@Param(value = "idList") List<Long> idList, @Param(value = "status") Integer status);
 

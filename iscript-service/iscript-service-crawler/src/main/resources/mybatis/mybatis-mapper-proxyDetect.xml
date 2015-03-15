@@ -154,12 +154,8 @@
 		<if test="status!=null">
 			AND STATUS=#{status}
 		</if>
-	</select>
-	<select id="getUnionProxyDetectDtoFromDomain" parameterType="map"
-		resultMap="RM_ProxyDetectDto">
-		<foreach collection="domainList" item="domain" separator="UNION">
-			(SELECT * FROM T_PROXY_DETECT
-			WHERE  DOMAIN=#{domain} AND STATUS=#{status} LIMIT #{limit})
-		</foreach>
+		<if test="limit!=null">
+			LIMIT #{limit}
+		</if>
 	</select>
 </mapper>
