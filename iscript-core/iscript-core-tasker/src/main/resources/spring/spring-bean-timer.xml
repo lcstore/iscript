@@ -73,4 +73,10 @@
 		<task:scheduled ref="LoadClientTokenTimer" method="run"
 			cron="0 0/2 * * * ?" />
 	</task:scheduled-tasks>
+	<bean id="ReloadProxyTimer" class="com.lezo.iscript.yeam.tasker.ReloadProxyTimer">
+	</bean>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="ReloadProxyTimer" method="run"
+			fixed-delay="300000" />
+	</task:scheduled-tasks>
 </beans>

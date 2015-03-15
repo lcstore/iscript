@@ -159,10 +159,10 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 				}
 				newDto.setMaxCost(newDto.getCurCost());
 				newDto.setMinCost(newDto.getCurCost());
-				if (oldDto.getMaxCost() != null && newDto.getMaxCost() < oldDto.getMaxCost()) {
+				if (oldDto.getMaxCost() != null && oldDto.getMaxCost() > 0 && newDto.getMaxCost() < oldDto.getMaxCost()) {
 					newDto.setMaxCost(oldDto.getMaxCost());
 				}
-				if (oldDto.getMinCost() != null && newDto.getMinCost() > oldDto.getMinCost()) {
+				if (oldDto.getMinCost() != null && oldDto.getMinCost() > 0 && newDto.getMinCost() > oldDto.getMinCost()) {
 					newDto.setMinCost(oldDto.getMinCost());
 				}
 				if (1 == newDto.getStatus()) {
