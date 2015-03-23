@@ -73,31 +73,26 @@ public class ConfigParserTest {
 		parser = new ConfigProxyChecker();
 		parser = new ConfigProxyDetector();
 		parser = new ConfigProxySeedHandler();
-//		parser = new ConfigProxyCollector();
-//		parser = new ConfigJdPromotion();
-//		parser = new ConfigTmallBrandList();
-//		parser = new ConfigTmallBrandShop();
-		// parser = new ConfigJdBrandShop();
-		// parser = new ConfigJdClientValidator();
-		// parser = new ConfigBaiduDoc();
-		// parser = new ConfigBarCodeCollector();
-		// parser = new ConfigBaiduDoc();
-		// parser = new ConfigBarCodeMatcher();
-//		parser = new ConfigYhdProduct();
-//		parser = new ConfigJdProduct();
-		// parser = new ConfigYhdPromotion();
-		// parser = new ConfigYhdProduct();
 		parser = new ConfigYhdBrandList();
+<<<<<<< HEAD
 		parser = new ConfigYhdBrandShop();
 		parser = new ConfigJdBrandShop();
+=======
+//		parser = new ConfigYhdBrandShop();
+>>>>>>> 5493dd0cd8bfc471f07b79ed956d56b2f27c3ac7
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.yhd.com/item/992913";
 		url = "http://www.yhd.com/brand/c8644.html";
+<<<<<<< HEAD
 		url = "http://list.yhd.com/b330";
 		url = "http://www.jd.com/pinpai/100081.html?enc=utf-8&vt=3#filter";
 		url = "http://www.jd.com/pinpai/109.html?enc=utf-8&vt=3#filter";
+=======
+//		url = "http://list.yhd.com/b330";
+//		url = "http://list.yhd.com/c0-0-0/b330/a-s1-v0-p4-price-d0-f0-m1-rt0-pid-mid0-k%E6%82%A0%E5%93%88UHA";
+>>>>>>> 5493dd0cd8bfc471f07b79ed956d56b2f27c3ac7
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -107,12 +102,9 @@ public class ConfigParserTest {
 		task.put("brandCode", "330");
 		task.put("url", url);
 
-		task.put("ip", "2030763147");
-		task.put("port", 3128);
-
 		// http
-		task.put("ip", "117.177.243.35");
-		task.put("port", 80);
+		task.put("proxyHost", "117.177.243.35");
+		task.put("proxyPort", 80);
 		task.put("proxyType", 1);
 		// socket
 //		task.put("ip", "103.246.161.194");

@@ -2,9 +2,7 @@ package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,16 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientManager;
@@ -33,7 +27,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdBrandShop implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	public static final int SITE_ID = 1001;
+	public static final int SITE_ID = 1002;
 
 	@Override
 	public String getName() {
@@ -66,117 +60,90 @@ public class ConfigYhdBrandShop implements ConfigParser {
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = getUrl(task);
 		HttpGet get = new HttpGet(url);
-		get.addHeader(
-				"Cookie",
-				"unionuuid=V2_ZAsQVBZeSxB3AEMEfklVV24CE1pHVRQRcQBEV3lNVFIIABNdR1dDFnELRVF6GllqZwISQkdTXBZwF0VUfAxJ; areaId=1; xtest=c.p.a69dc8ae32ca2fdcc3d60d333771c71f; mt_ext=%7b%22adu%22%3a%22fd0abf96426b0d8e2850ae645289b681%22%7d; ipLoc-djd=1-72-4137-0; ipLocation=%u5317%u4EAC; __jda=122270672.2082678400.1416134992.1419689279.1419699044.8; __jdb=122270672.4.2082678400|8.1419699044; __jdc=122270672; __jdv=122270672|direct|-|none|-; __jdu=2082678400");
-		get.addHeader("Referer", url);
-		System.err.println(url);
 		String html = HttpClientUtils.getContent(client, get, "UTF-8");
 		Document dom = Jsoup.parse(html, url);
 		DataBean rsBean = new DataBean();
-		Elements itemEls = dom.select("div.shop[shop-id]");
+		Elements itemEls = dom.select("div.search_item_box a[id^=merchant_][href][target]");
 		if (!itemEls.isEmpty()) {
 			String region = "";
 			Set<String> brandSet = getBrandSet(dom, task);
 			String mainBrand = getMainBrandName(brandSet);
 			String synonym = toSynonym(brandSet);
 			String brandCode = (String) task.get("brandCode");
-			StringBuilder sb = new StringBuilder();
-			Map<String, ShopVo> shopMap = new HashMap<String, ConfigYhdBrandShop.ShopVo>();
-			for (Element item : itemEls) {
-				ShopVo shopVo = new ShopVo();
-				shopVo.setShopCode(item.attr("shop-id"));
+			Pattern oReg = Pattern.compile(".*?m-([0-9]+)\\.html");
+			Elements countEls = dom.select("small.result_count:contains(条)");
+			Integer iCount=null;
+			if (!countEls.isEmpty()) {
+				String sCount = countEls.first().ownText();
+				sCount = sCount.replace("共", "");
+				sCount = sCount.replace("条", "");
+				iCount = (Integer.valueOf(sCount));
+			}
+			Set<String> shopSet = new HashSet<String>();
+			addShops(rsBean,oReg,iCount,dom,shopSet);
+			if (itemEls.size() >= 29 && url.indexOf("isGetMoreProducts") < 0) {
+				String moreUrl = url + "?callback=jsonp" + System.currentTimeMillis()
+						+ "&isGetMoreProducts=1&moreProductsDefaultTemplate=0&isLargeImg=0";
+				get = new HttpGet(moreUrl);
+				get.addHeader("Referer", url);
+				html = HttpClientUtils.getContent(client, get);
+                Document moreDom = Jsoup.parse(html);
+                addShops(rsBean,oReg,iCount,moreDom,shopSet);
+			}
+			for(Object data:rsBean.getDataList()){
+				ShopVo shopVo = (ShopVo) data;
 				shopVo.setBrandName(mainBrand);
 				shopVo.setBrandUrl(url);
 				shopVo.setBrandCode(brandCode == null ? getHashCode(mainBrand) : brandCode);
 				shopVo.setSynonyms(synonym);
 				shopVo.setRegion(region);
-				rsBean.getDataList().add(shopVo);
-				if (sb.length() > 0) {
-					sb.append("%2C");
-				}
-				sb.append(shopVo.getShopCode());
-				Elements countEls = item.select("div.related-products a:containsOwn(件)");
-				if (!countEls.isEmpty()) {
-					String sCount = countEls.first().ownText();
-					shopVo.setSkuCount(Integer.valueOf(sCount.substring(0, sCount.length() - 1)));
-				}
-				shopMap.put(shopVo.getShopCode(), shopVo);
+				shopVo.setSkuCount(iCount);
 			}
-			String sUrl = "http://search.jd.com/ShopName.php?ids=" + sb.toString();
-			get = new HttpGet(sUrl);
-			html = HttpClientUtils.getContent(client, get, "UTF-8");
-			html = "var oShopArr =" + html;
-			String source = html + "; var sArray = JSON.stringify(oShopArr);";
-			Context cx = Context.enter();
-			ScriptableObject scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
-			cx.evaluateString(scope, source, "cmd", 0, null);
-			String sArray = Context.toString(ScriptableObject.getProperty(scope, "sArray"));
-			Context.exit();
-			JSONArray shopArray = new JSONArray(sArray);
-			for (int i = 0; i < shopArray.length(); i++) {
-				JSONObject shopObject = shopArray.getJSONObject(i);
-				ShopVo shopVo = shopMap.get(JSONUtils.getString(shopObject, "id"));
-				if (shopVo == null) {
-					continue;
-				}
-				shopVo.setShopName(JSONUtils.getString(shopObject, "title"));
-				shopVo.setShopUrl(JSONUtils.getString(shopObject, "url"));
-				parserType(shopVo);
-			}
+
 		}
 		addNextPages(dom, rsBean);
 		return rsBean;
 	}
 
+	private void addShops(DataBean rsBean, Pattern oReg, Integer iCount, Document dom, Set<String> shopSet) {
+		Elements itemEls = dom.select("div.search_item_box a[id^=merchant_][href][target]");
+		for (Element item : itemEls) {
+			if (shopSet.contains(item.ownText())) {
+				continue;
+			}
+			shopSet.add(item.ownText());
+			ShopVo shopVo = new ShopVo();
+			rsBean.getDataList().add(shopVo);
+			shopVo.setShopName(item.ownText());
+			shopVo.setShopUrl(item.absUrl("href"));
+			parserType(shopVo);
+			Matcher matcher = oReg.matcher(shopVo.getShopUrl());
+			if (matcher.find()) {
+				shopVo.setShopCode(matcher.group(1));
+			}
+		}
+	}
+
 	private String getUrl(TaskWritable task) throws UnsupportedEncodingException {
 		Object urlObject = task.get("url");
-		if (urlObject != null && urlObject.toString().indexOf("jd.com/pinpai/") > 0 && urlObject.toString().indexOf("vt=3#filter") > 0) {
-			return urlObject.toString();
-		}
-		String brandCode = task.get("brandCode").toString();
-		return "http://www.jd.com/pinpai/" + brandCode + ".html?enc=utf-8&vt=3#filter";
+		return urlObject.toString();
 	}
 
 	private void addNextPages(Document body, DataBean rsBean) {
-		Elements oCurAs = body.select("#pagin-btm a.current[href]");
-		if (oCurAs.isEmpty()) {
-			return;
+		Elements pageCountEls = body.select("#pageCountPage");
+		if(pageCountEls.isEmpty()){
+		   return; 	
 		}
-		Integer iCurPage = Integer.valueOf(oCurAs.first().ownText());
-		if (iCurPage != 1) {
-			return;
-		}
-		Elements oNextAs = body.select("#pagin-btm a.next[href]:contains(下一页)");
+		Elements oNextAs = body.select("a.page_next[href]:contains(下一页)");
 		if (oNextAs.isEmpty()) {
 			return;
 		}
 		String sNextUrl = oNextAs.first().absUrl("href");
-		Pattern oReg = Pattern.compile("(page=)([0-9]+)(.*)");
-		Matcher matcher = oReg.matcher(sNextUrl);
-		if (!matcher.find()) {
-			return;
-		}
-		Integer iPage = Integer.valueOf(matcher.group(2));
-		if (iPage != 2) {
-			return;
-		}
-
-		Elements oPageAs = body.select("#pagin-btm span.page-skip em:containsOwn(页)");
-		if (oPageAs.isEmpty()) {
-			return;
-		}
-		String sTxt = oPageAs.first().ownText();
-		oReg = Pattern.compile("(共)([0-9]+)(页)");
-		matcher = oReg.matcher(sTxt);
-		if (!matcher.find()) {
-			return;
-		}
 		rsBean.getNextList().add(sNextUrl);
 		System.out.println("sNextUrl:" + sNextUrl);
-		Integer iTotal = Integer.valueOf(matcher.group(2));
+		Integer iTotal = Integer.valueOf(pageCountEls.first().val());
 		for (int jj = 3; jj <= iTotal; jj++) {
-			String sCurUrl = sNextUrl.replace("page=2", "page=" + jj);
+			String sCurUrl = sNextUrl.replace("-p2-", "-p"+jj+"-");
 			rsBean.getNextList().add(sCurUrl);
 			System.out.println("sNextUrl:" + sCurUrl);
 		}

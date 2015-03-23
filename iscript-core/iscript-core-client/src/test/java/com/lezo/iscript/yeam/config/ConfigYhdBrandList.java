@@ -103,5 +103,9 @@ public class ConfigYhdBrandList implements ConfigParser {
 			return brandCode;
 		}
 
+		public String getBrandUrl() {
+			return brandUrl;
+		}
+
 	}
 }
