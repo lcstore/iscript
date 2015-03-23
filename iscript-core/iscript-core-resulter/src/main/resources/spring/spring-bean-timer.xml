@@ -45,6 +45,8 @@
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyChecker</value> 
 				<value>ConfigProxySeedHandler</value>
+				<value>ConfigYhdBrandShop</value>
+				<value>ConfigJdBrandShop</value>
 			</list>
 		</property>
 	</bean>

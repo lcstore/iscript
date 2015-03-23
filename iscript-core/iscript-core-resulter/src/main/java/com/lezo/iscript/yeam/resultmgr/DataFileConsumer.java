@@ -34,8 +34,9 @@ public class DataFileConsumer implements Runnable {
 		List<String> dataLineList = null;
 		try {
 			dataLineList = downData();
+			logger.info("dataPath:"+dataFileWrapper.getItem().getPath()+",dataLine:"+dataLineList.size());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("dataPath:"+dataFileWrapper.getItem().getPath()+",cause:",e);
 		}
 		if (CollectionUtils.isNotEmpty(dataLineList)) {
 			ThreadPoolExecutor dataConsumeExecutor = (ThreadPoolExecutor) SpringBeanUtils.getBean("dataConsumeExecutor");

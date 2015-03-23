@@ -20,6 +20,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.scope.ScriptableUtils;
@@ -76,62 +77,111 @@ public class ConfigJdBrandShop implements ConfigParser {
 		DataBean rsBean = new DataBean();
 		Elements itemEls = dom.select("div.shop[shop-id]");
 		if (!itemEls.isEmpty()) {
+			addBrandInfos(dom, task);
 			String region = "";
 			Set<String> brandSet = getBrandSet(dom, task);
 			String mainBrand = getMainBrandName(brandSet);
 			String synonym = toSynonym(brandSet);
 			String brandCode = (String) task.get("brandCode");
-			StringBuilder sb = new StringBuilder();
-			Map<String, ShopVo> shopMap = new HashMap<String, ConfigJdBrandShop.ShopVo>();
-			for (Element item : itemEls) {
-				ShopVo shopVo = new ShopVo();
-				shopVo.setShopCode(item.attr("shop-id"));
-				shopVo.setBrandName(mainBrand);
-				shopVo.setBrandUrl(url);
-				shopVo.setBrandCode(brandCode == null ? getHashCode(mainBrand) : brandCode);
-				shopVo.setSynonyms(synonym);
-				shopVo.setRegion(region);
-				rsBean.getDataList().add(shopVo);
-				if (sb.length() > 0) {
-					sb.append("%2C");
-				}
-				sb.append(shopVo.getShopCode());
-				Elements countEls = item.select("div.related-products a:containsOwn(件)");
-				if (!countEls.isEmpty()) {
-					String sCount = countEls.first().ownText();
-					shopVo.setSkuCount(Integer.valueOf(sCount.substring(0, sCount.length() - 1)));
-				}
-				shopMap.put(shopVo.getShopCode(), shopVo);
-			}
-			String sUrl = "http://search.jd.com/ShopName.php?ids=" + sb.toString();
-			get = new HttpGet(sUrl);
-			html = HttpClientUtils.getContent(client, get, "UTF-8");
-			html = "var oShopArr =" + html;
-			String source = html + "; var sArray = JSON.stringify(oShopArr);";
-			Context cx = Context.enter();
-			ScriptableObject scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
-			cx.evaluateString(scope, source, "cmd", 0, null);
-			String sArray = Context.toString(ScriptableObject.getProperty(scope, "sArray"));
-			Context.exit();
-			JSONArray shopArray = new JSONArray(sArray);
-			for (int i = 0; i < shopArray.length(); i++) {
-				JSONObject shopObject = shopArray.getJSONObject(i);
-				ShopVo shopVo = shopMap.get(JSONUtils.getString(shopObject, "id"));
-				if (shopVo == null) {
-					continue;
-				}
-				shopVo.setShopName(JSONUtils.getString(shopObject, "title"));
-				shopVo.setShopUrl(JSONUtils.getString(shopObject, "url"));
-				parserType(shopVo);
-			}
+
+			addShops(dom, url, mainBrand, brandCode, synonym, region, rsBean);
+			Document scrollDom = getScrollDocument(brandCode, dom);
+			addShops(scrollDom, url, mainBrand, brandCode, synonym, region, rsBean);
+
 		}
 		addNextPages(dom, rsBean);
 		return rsBean;
 	}
 
+	private void addShops(Document dom, String brandUrl, String mainBrand, String brandCode, String synonym, String region, DataBean rsBean) throws Exception {
+		if (dom == null) {
+			return;
+		}
+		Map<String, ShopVo> shopMap = new HashMap<String, ConfigJdBrandShop.ShopVo>();
+		Elements itemEls = dom.select("div.shop[shop-id]");
+		StringBuilder sb = new StringBuilder();
+		for (Element item : itemEls) {
+			ShopVo shopVo = new ShopVo();
+			shopVo.setShopCode(item.attr("shop-id"));
+			shopVo.setBrandName(mainBrand);
+			shopVo.setBrandUrl(brandUrl);
+			shopVo.setBrandCode(brandCode == null ? getHashCode(mainBrand) : brandCode);
+			shopVo.setSynonyms(synonym);
+			shopVo.setRegion(region);
+			rsBean.getDataList().add(shopVo);
+			if (sb.length() > 0) {
+				sb.append("%2C");
+			}
+			sb.append(shopVo.getShopCode());
+			Elements countEls = item.select("div.related-products a:containsOwn(件)");
+			if (!countEls.isEmpty()) {
+				String sCount = countEls.first().ownText();
+				shopVo.setSkuCount(Integer.valueOf(sCount.substring(0, sCount.length() - 1)));
+			}
+			shopMap.put(shopVo.getShopCode(), shopVo);
+		}
+		String sUrl = "http://search.jd.com/ShopName.php?ids=" + sb.toString();
+		HttpGet get = new HttpGet(sUrl);
+		String html = HttpClientUtils.getContent(client, get, "UTF-8");
+		html = "var oShopArr =" + html;
+		String source = html + "; var sArray = JSON.stringify(oShopArr);";
+		Context cx = Context.enter();
+		ScriptableObject scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
+		cx.evaluateString(scope, source, "cmd", 0, null);
+		String sArray = Context.toString(ScriptableObject.getProperty(scope, "sArray"));
+		Context.exit();
+		JSONArray shopArray = new JSONArray(sArray);
+		for (int i = 0; i < shopArray.length(); i++) {
+			JSONObject shopObject = shopArray.getJSONObject(i);
+			ShopVo shopVo = shopMap.get(JSONUtils.getString(shopObject, "id"));
+			if (shopVo == null) {
+				continue;
+			}
+			shopVo.setShopName(JSONUtils.getString(shopObject, "title"));
+			shopVo.setShopUrl(JSONUtils.getString(shopObject, "url"));
+			parserType(shopVo);
+		}
+	}
+
+	private Document getScrollDocument(String brandCode, Document dom) throws Exception {
+		Elements sEls = dom.select("#scroll_loading[data-log-id]");
+		if (sEls.isEmpty()) {
+			return null;
+		}
+		Elements scriptEls = dom.select("#shop-choice + script");
+		String source = "var SEARCH={}; " + scriptEls.first().html() + " var baseUrl=SEARCH.base_url;";
+		Context cx = Context.enter();
+		Scriptable scope = cx.initStandardObjects();
+		cx.evaluateString(scope, source, "baseUrl", 0, null);
+		String baseUrl = Context.toString(ScriptableObject.getProperty(scope, "baseUrl"));
+		Context.exit();
+		Integer curPage = Integer.valueOf(dom.select("#pagin-btm a[href].current").first().ownText().trim());
+		curPage += 1;
+		String url = "http://www.jd.com/pinpai/s.php?" + baseUrl + "&psort=&page=" + curPage + "&scrolling=y&start=" + sEls.first().attr("data-start") + "&log_id=" + sEls.first().attr("data-log-id")
+				+ "&tpl=3_M";
+		HttpGet get = new HttpGet(url);
+		get.addHeader(
+				"Cookie",
+				"unionuuid=V2_ZAsQVBZeSxB3AEMEfklVV24CE1pHVRQRcQBEV3lNVFIIABNdR1dDFnELRVF6GllqZwISQkdTXBZwF0VUfAxJ; areaId=1; xtest=c.p.a69dc8ae32ca2fdcc3d60d333771c71f; mt_ext=%7b%22adu%22%3a%22fd0abf96426b0d8e2850ae645289b681%22%7d; ipLoc-djd=1-72-4137-0; ipLocation=%u5317%u4EAC; __jda=122270672.2082678400.1416134992.1419689279.1419699044.8; __jdb=122270672.4.2082678400|8.1419699044; __jdc=122270672; __jdv=122270672|direct|-|none|-; __jdu=2082678400");
+		get.addHeader("Referer", dom.baseUri());
+		System.err.println("scrollUrl:" + url);
+		String html = HttpClientUtils.getContent(client, get, "UTF-8");
+		return Jsoup.parse(html, url);
+	}
+
+	private void addBrandInfos(Document dom, TaskWritable task) {
+		Elements elements = dom.select("[id^=brand_id_] a[title]");
+		if (!elements.isEmpty()) {
+			task.put("brandName", elements.first().attr("title").trim());
+			String idString = elements.first().parent().attr("id");
+			idString = idString.replace("brand_id_", "");
+			task.put("brandCode", idString);
+		}
+	}
+
 	private String getUrl(TaskWritable task) throws UnsupportedEncodingException {
 		Object urlObject = task.get("url");
-		if (urlObject != null && urlObject.toString().indexOf("jd.com/pinpai/") > 0 && urlObject.toString().indexOf("vt=3#filter") > 0) {
+		if (urlObject != null && urlObject.toString().indexOf("jd.com/pinpai/") > 0) {
 			return urlObject.toString();
 		}
 		String brandCode = task.get("brandCode").toString();

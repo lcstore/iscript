@@ -93,7 +93,7 @@ public class DataFileProducer implements Runnable {
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
 				} else {
-					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + restList.getDataList().size() + ",but accept 0");
+//					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + restList.getDataList().size() + ",but accept 0");
 				}
 			} else {
 				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",listTimes:" + listTimes + ",listCost:" + costMills);

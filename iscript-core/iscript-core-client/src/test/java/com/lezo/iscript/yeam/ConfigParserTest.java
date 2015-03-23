@@ -31,6 +31,7 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
+import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
@@ -88,12 +89,15 @@ public class ConfigParserTest {
 		// parser = new ConfigYhdProduct();
 		parser = new ConfigYhdBrandList();
 		parser = new ConfigYhdBrandShop();
+		parser = new ConfigJdBrandShop();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.yhd.com/item/992913";
 		url = "http://www.yhd.com/brand/c8644.html";
 		url = "http://list.yhd.com/b330";
+		url = "http://www.jd.com/pinpai/100081.html?enc=utf-8&vt=3#filter";
+		url = "http://www.jd.com/pinpai/109.html?enc=utf-8&vt=3#filter";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
