@@ -5,15 +5,25 @@ import java.io.FileFilter;
 import java.net.InetAddress;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -30,6 +40,7 @@ import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
+import com.lezo.iscript.yeam.config.ConfigGoogleChecker;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
 import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
@@ -56,6 +67,7 @@ import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 public class ConfigParserTest {
 
@@ -74,25 +86,18 @@ public class ConfigParserTest {
 		parser = new ConfigProxyDetector();
 		parser = new ConfigProxySeedHandler();
 		parser = new ConfigYhdBrandList();
-<<<<<<< HEAD
 		parser = new ConfigYhdBrandShop();
 		parser = new ConfigJdBrandShop();
-=======
-//		parser = new ConfigYhdBrandShop();
->>>>>>> 5493dd0cd8bfc471f07b79ed956d56b2f27c3ac7
+		parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
 		url = "http://item.yhd.com/item/992913";
 		url = "http://www.yhd.com/brand/c8644.html";
-<<<<<<< HEAD
 		url = "http://list.yhd.com/b330";
 		url = "http://www.jd.com/pinpai/100081.html?enc=utf-8&vt=3#filter";
 		url = "http://www.jd.com/pinpai/109.html?enc=utf-8&vt=3#filter";
-=======
-//		url = "http://list.yhd.com/b330";
-//		url = "http://list.yhd.com/c0-0-0/b330/a-s1-v0-p4-price-d0-f0-m1-rt0-pid-mid0-k%E6%82%A0%E5%93%88UHA";
->>>>>>> 5493dd0cd8bfc471f07b79ed956d56b2f27c3ac7
+		url = "http://218.189.25.168/";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -107,17 +112,18 @@ public class ConfigParserTest {
 		task.put("proxyPort", 80);
 		task.put("proxyType", 1);
 		// socket
-//		task.put("ip", "103.246.161.194");
-//		task.put("port", 1080);
-//		task.put("proxyType", 2);
-//
-//		task.put("ip", "222.87.129.218");
-//		task.put("port", 83);
-//		task.put("proxyType", 1);
-//
-//		task.put("url", "http://www.proxy.com.ru/list_%s.html");
-//		task.put("seedId", "1");
-//		task.put("CreateUrlsFun", "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
+		// task.put("ip", "103.246.161.194");
+		// task.put("port", 1080);
+		// task.put("proxyType", 2);
+		//
+		// task.put("ip", "222.87.129.218");
+		// task.put("port", 83);
+		// task.put("proxyType", 1);
+		//
+		// task.put("url", "http://www.proxy.com.ru/list_%s.html");
+		// task.put("seedId", "1");
+		// task.put("CreateUrlsFun",
+		// "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}
@@ -125,12 +131,58 @@ public class ConfigParserTest {
 	@Test
 	public void parserUrls() throws Exception {
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
-		HttpGet get = new HttpGet("http://www.jd.com/allSort.aspx");
+		HttpGet get = new HttpGet("http://www.legendsec.org/google.html");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
 		Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
-		Elements destEls = dom.select("#allsort div.mc dd em a[href]");
+		Elements destEls = dom.select("tr td a[href*=.][target=_blank]");
 		for (Element ele : destEls) {
 			System.err.println("urlSet.add(\"" + ele.absUrl("href") + "\");");
+		}
+	}
+
+	@Test
+	public void parserGoogleUrls() throws Exception {
+		final DefaultHttpClient client = HttpClientUtils.createHttpClient();
+		HttpGet get = new HttpGet("http://www.legendsec.org/google.html");
+		String html = HttpClientUtils.getContent(client, get, "gbk");
+		Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
+		Elements destEls = dom.select("tr td a[href*=.][target=_blank]");
+		final Map<String, Long> urlCostMap = new HashMap<String, Long>();
+		ExecutorService exec = Executors.newFixedThreadPool(10);
+		for (final Element ele : destEls) {
+			exec.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						long startMills = System.currentTimeMillis();
+						String url = ele.absUrl("href");
+						HttpGet get = new HttpGet(url);
+						HttpResponse respone = client.execute(get);
+						String html = EntityUtils.toString(respone.getEntity(), "UTF-8");
+						if (html.indexOf("searchform") > 0) {
+							urlCostMap.put(url, System.currentTimeMillis() - startMills);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}					
+				}
+			});
+		}
+		exec.shutdown();
+		while(!exec.isTerminated()){
+			System.err.println("wait a mills");
+			TimeUnit.SECONDS.sleep(60);
+		}
+		List<Map.Entry<String, Long>> entryList = new ArrayList<Map.Entry<String, Long>>(urlCostMap.entrySet());
+		java.util.Collections.sort(entryList, new Comparator<Map.Entry<String, Long>>() {
+			@Override
+			public int compare(Entry<String, Long> o1, Entry<String, Long> o2) {
+				return o1.getValue().compareTo(o2.getValue());
+			}
+		});
+		FileUtils.writeLines(new File("src/test/resources/google-ip.txt"), "UTF-8", entryList);
+		for (Entry<String, Long> entry : entryList) {
+			System.err.println(entry.getKey() + " : " + entry.getValue());
 		}
 	}
 

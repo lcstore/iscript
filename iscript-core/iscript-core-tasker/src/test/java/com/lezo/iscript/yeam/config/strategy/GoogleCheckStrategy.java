@@ -31,8 +31,8 @@ public class GoogleCheckStrategy implements ResultStrategy, Closeable {
 
 	public GoogleCheckStrategy() {
 		ProxyDetectTimer task = new ProxyDetectTimer();
-		this.timer = new Timer(this.getName());
-		this.timer.schedule(task, 1 * 60 * 1000, 2  * 60 * 60 * 1000);
+//		this.timer = new Timer(this.getName());
+//		this.timer.schedule(task, 1 * 60 * 1000, 2  * 60 * 60 * 1000);
 	}
 
 	@Override

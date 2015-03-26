@@ -34,7 +34,7 @@ public class DataFileConsumer implements Runnable {
 		List<String> dataLineList = null;
 		try {
 			dataLineList = downData();
-			logger.info("dataPath:"+dataFileWrapper.getItem().getPath()+",dataLine:"+dataLineList.size());
+//			logger.info("dataPath:"+dataFileWrapper.getItem().getPath()+",dataLine:"+dataLineList.size());
 		} catch (Exception e) {
 			logger.info("dataPath:"+dataFileWrapper.getItem().getPath()+",cause:",e);
 		}

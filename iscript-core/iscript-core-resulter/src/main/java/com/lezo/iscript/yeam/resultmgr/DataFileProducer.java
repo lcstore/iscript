@@ -56,9 +56,11 @@ public class DataFileProducer implements Runnable {
 	}
 
 	private void doWork(DirectoryDescriptor descriptor) throws Exception {
-		ClientRest clientRest = ClientRestFactory.getInstance().get(descriptor.getBucketName(), descriptor.getDomain(), 5, 15 * 1000);
+		ClientRest clientRest = ClientRestFactory.getInstance().get(descriptor.getBucketName(), descriptor.getDomain(),
+				5, 15 * 1000);
 		if (clientRest == null) {
-			throw new IllegalArgumentException("can not get ClientRest:" + descriptor.getBucketName() + "." + descriptor.getDomain());
+			throw new IllegalArgumentException("can not get ClientRest:" + descriptor.getBucketName() + "."
+					+ descriptor.getDomain());
 		}
 		DataRestable rester = clientRest.getRester();
 		int limit = 100;
@@ -87,30 +89,39 @@ public class DataFileProducer implements Runnable {
 				List<RestFile> acceptList = getAccepts(restList.getDataList(), this.tracker.getStamp());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
-					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",stamp:" + this.tracker.getStamp() + ",acceptSum:" + count + ",result:"
-							+ restList.getDataList().size() + ",accept:" + acceptList.size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
+					logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",stamp:"
+							+ this.tracker.getStamp() + ",acceptSum:" + count + ",result:"
+							+ restList.getDataList().size() + ",accept:" + acceptList.size() + ",listTimes:"
+							+ listTimes + ",listCost:" + costMills);
 					createDataFileConsumer(descriptor, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
 				} else {
-//					throw new RuntimeException(descriptor.getBucketName() + ":" + this.tracker.getDescriptor().getDirectoryKey() + ",listCount:" + restList.getDataList().size() + ",but accept 0");
+					// throw new RuntimeException(descriptor.getBucketName() +
+					// ":" + this.tracker.getDescriptor().getDirectoryKey() +
+					// ",listCount:" + restList.getDataList().size() +
+					// ",but accept 0");
 				}
 			} else {
-				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",listTimes:" + listTimes + ",listCost:" + costMills);
+				logger.warn("list empty.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",listTimes:"
+						+ listTimes + ",listCost:" + costMills);
 			}
 			if (restList.isEOF()) {
-				logger.info("list to EOF.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",maxCount:" + listTimes + ",listCost:" + costMills);
+				logger.info("list to EOF.directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ",maxCount:"
+						+ listTimes + ",listCost:" + costMills);
 				break;
 			} else {
 				paramMap.put("marker", restList.getMarker());
 			}
 			TimeUnit.SECONDS.sleep(1);
 		}
-		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp() + ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
+		logger.info("directoryKey:" + this.tracker.getDescriptor().getDirectoryKey() + ", :" + this.tracker.getStamp()
+				+ ",totalCount:" + this.tracker.getFileCount() + ",newCount:" + count);
 	}
 
 	private void createDataFileConsumer(DirectoryDescriptor descriptor, List<RestFile> acceptList) {
 		String type = getTypeFromPath(descriptor.getDataPath());
+		int addCount = 0;
 		for (RestFile item : acceptList) {
 			try {
 				DataFileWrapper dataFileWrapper = new DataFileWrapper();
@@ -122,6 +133,9 @@ public class DataFileProducer implements Runnable {
 				logger.warn("File:" + item.getPath() + ",cause:", e);
 			}
 		}
+		RestFile firstFile = acceptList.get(0);
+		logger.info("Get new file,addCount:" + addCount + ",total:" + acceptList.size() + ",first path:"
+				+ firstFile.getPath());
 	}
 
 	private long getMaxStamp(List<RestFile> acceptList) {

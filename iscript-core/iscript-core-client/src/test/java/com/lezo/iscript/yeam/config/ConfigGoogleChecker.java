@@ -79,9 +79,9 @@ public class ConfigGoogleChecker implements ConfigParser {
 			long startMills = System.currentTimeMillis();
 			HttpGet get = new HttpGet(url);
 			HttpResponse respone = client.execute(get);
-			checkDto.setLength(respone.getEntity().getContentLength());
 			checkDto.setStatusCode(respone.getStatusLine().getStatusCode());
 			String html = EntityUtils.toString(respone.getEntity(), "UTF-8");
+			checkDto.setLength(html == null ? -1 : html.length());
 			if (html.indexOf("searchform") > 0) {
 				checkDto.setValidate(true);
 			}
