@@ -5,13 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
+import sun.util.calendar.ZoneInfo;
+
+import com.lezo.iscript.yeam.mina.utils.ServerTimeUtils;
 import com.lezo.rest.data.ClientRest;
 import com.lezo.rest.data.ClientRestFactory;
 
@@ -103,6 +108,8 @@ public class PersistentWorker implements Runnable {
 
 	private String getFilePath() {
 		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(ServerTimeUtils.getTimeMills());
+		c.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
 		String toDay = "" + c.get(Calendar.YEAR);
 		int month = c.get(Calendar.MONTH) + 1;
 		int day = c.get(Calendar.DAY_OF_MONTH);
@@ -121,7 +128,7 @@ public class PersistentWorker implements Runnable {
 		sb.append(".");
 		sb.append(toDay);
 		sb.append(".");
-		sb.append(System.currentTimeMillis());
+		sb.append(c.getTimeInMillis());
 		sb.append(".gz");
 		return sb.toString();
 	}

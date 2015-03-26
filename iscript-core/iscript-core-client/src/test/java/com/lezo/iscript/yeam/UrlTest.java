@@ -4,9 +4,15 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.junit.Test;
+
+import sun.util.calendar.ZoneInfo;
 
 public class UrlTest {
 
@@ -35,8 +41,32 @@ public class UrlTest {
 	@Test
 	public void testPort() throws Exception {
 		System.err.println(0xFFFF);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
 		System.err.println(sdf.format(new Date()));
+		// for(String id: TimeZone.getAvailableIDs()){
+		// System.err.println("id="+id);
+		// }
+		Calendar c = Calendar.getInstance(ZoneInfo.getTimeZone("Etc/GMT+8"));
+//		c.setTimeZone(ZoneInfo.getTimeZone("Asia/Harbin"));
+//		c.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+//		c.setTimeZone(ZoneInfo.getTimeZone("HST"));
+//		TimeZone.setDefault(ZoneInfo.getTimeZone("Asia/Shanghai"));
 
+		
+		TimeZone timeZone1 = TimeZone.getTimeZone("America/Los_Angeles");
+		TimeZone timeZone2 = TimeZone.getTimeZone("Europe/Copenhagen");
+
+		Calendar calendar = new GregorianCalendar();
+		calendar = Calendar.getInstance();
+
+		long timeCPH = calendar.getTimeInMillis();
+		System.out.println("timeCPH  = " + timeCPH);
+		System.out.println("hour     = " + calendar.get(Calendar.HOUR_OF_DAY));
+
+		calendar.setTimeZone(timeZone1);
+
+		long timeLA = calendar.getTimeInMillis();
+		System.out.println("timeLA   = " + timeLA);
+		System.out.println("hour     = " + calendar.get(Calendar.HOUR_OF_DAY));
 	}
 }

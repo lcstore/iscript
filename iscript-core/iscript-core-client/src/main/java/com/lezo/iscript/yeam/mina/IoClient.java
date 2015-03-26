@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.yeam.mina.filter.ConfigIoFilter;
 import com.lezo.iscript.yeam.mina.filter.ProxyIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TaskIoFilter;
+import com.lezo.iscript.yeam.mina.filter.TimeIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TokenIoFilter;
 import com.lezo.iscript.yeam.mina.utils.ClientPropertiesUtils;
 
@@ -51,6 +52,7 @@ public class IoClient extends IoHandlerAdapter {
 		if (logger.isDebugEnabled()) {
 			this.connector.getFilterChain().addLast("logger", new LoggingFilter());
 		}
+		this.connector.getFilterChain().addLast(TimeIoFilter.class.getSimpleName(), new TimeIoFilter());
 		this.connector.getFilterChain().addLast(ConfigIoFilter.class.getSimpleName(), new ConfigIoFilter());
 		this.connector.getFilterChain().addLast(TokenIoFilter.class.getSimpleName(), new TokenIoFilter());
 		this.connector.getFilterChain().addLast(ProxyIoFilter.class.getSimpleName(), new ProxyIoFilter());
