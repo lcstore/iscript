@@ -47,7 +47,10 @@ public class YhdBrandShopStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
-			urlSet.add("http://www.yhd.com/brand/c8644.html");
+//			urlSet.add("http://www.yhd.com/brand/c8644.html");
+			urlSet.add("http://www.yhd.com/brand/c21306.html");
+			urlSet.add("http://www.yhd.com/brand/c5135.html");
+			urlSet.add("http://www.yhd.com/brand/c36144.html");
 			typeMap.put("ConfigYhdBrandList", urlSet);
 		}
 

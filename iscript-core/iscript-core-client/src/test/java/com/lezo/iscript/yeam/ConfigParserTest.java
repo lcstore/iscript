@@ -67,7 +67,6 @@ import com.lezo.iscript.yeam.http.HttpClientFactory;
 import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 public class ConfigParserTest {
 
@@ -86,9 +85,9 @@ public class ConfigParserTest {
 		parser = new ConfigProxyDetector();
 		parser = new ConfigProxySeedHandler();
 		parser = new ConfigYhdBrandList();
-		parser = new ConfigYhdBrandShop();
-		parser = new ConfigJdBrandShop();
-		parser = new ConfigGoogleChecker();
+//		parser = new ConfigYhdBrandShop();
+//		parser = new ConfigJdBrandShop();
+//		parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
@@ -97,7 +96,7 @@ public class ConfigParserTest {
 		url = "http://list.yhd.com/b330";
 		url = "http://www.jd.com/pinpai/100081.html?enc=utf-8&vt=3#filter";
 		url = "http://www.jd.com/pinpai/109.html?enc=utf-8&vt=3#filter";
-		url = "http://218.189.25.168/";
+		url = "http://www.yhd.com/brand/c21306.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
