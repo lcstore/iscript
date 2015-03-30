@@ -91,24 +91,28 @@ public class BrandServiceImpl implements BrandService {
 				codeNameMap.put(key, dto);
 			}
 			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(null, new ArrayList<String>(nameSet), null);
+			String minCode = entry.getKey();
+			for (BrandDto sDto : hasList) {
+				if (minCode.compareTo(sDto.getSynonymCode()) < 0) {
+					minCode = sDto.getSynonymCode();
+				}
+			}
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandDto oldDto : hasList) {
 				String key = oldDto.getBrandCode() + "-" + oldDto.getBrandName();
 				BrandDto newDto = codeNameMap.get(key);
 				if (newDto != null) {
 					newDto.setId(oldDto.getId());
+					newDto.setSynonymCode(minCode);
 					hasSet.add(key);
 					updateList.add(newDto);
 				}
 			}
-			BrandDto oldBaseDto = hasList.isEmpty() ? null : hasList.get(0);
 			for (Entry<String, BrandDto> cnEntry : codeNameMap.entrySet()) {
 				if (hasSet.contains(cnEntry.getKey())) {
 					continue;
 				}
-				if (oldBaseDto != null) {
-					cnEntry.getValue().setSynonymCode(oldBaseDto.getSynonymCode());
-				}
+				cnEntry.getValue().setSynonymCode(minCode);
 				insertList.add(cnEntry.getValue());
 			}
 		}
@@ -157,35 +161,39 @@ public class BrandServiceImpl implements BrandService {
 				return o1.compareTo(o2);
 			}
 		});
-		Set<String> removeSet = new HashSet<String>();
 		Map<String, List<BrandDto>> resultMap = new HashMap<String, List<BrandDto>>();
-		for (Entry<String, Set<String>> nEntry : synNameMap.entrySet()) {
-			if (removeSet.contains(nEntry.getKey())) {
+		Set<String> handleCodeSet = new HashSet<String>();
+		for (String sCode : synCodeList) {
+			if (handleCodeSet.contains(sCode)) {
 				continue;
 			}
-			Set<String> nameSet = nEntry.getValue();
-			for (Entry<String, List<BrandDto>> entry : synCodeMap.entrySet()) {
-				if (removeSet.contains(entry.getKey())) {
+
+			List<BrandDto> sameList = synCodeMap.get(sCode);
+			List<String> sameCodeList = new ArrayList<String>();
+			for (Entry<String, Set<String>> nEntry : synNameMap.entrySet()) {
+				if (handleCodeSet.contains(nEntry.getKey())) {
 					continue;
 				}
-				boolean bSame = false;
-				for (BrandDto dto : entry.getValue()) {
+				Set<String> nameSet = nEntry.getValue();
+				for (BrandDto dto : sameList) {
 					if (nameSet.contains(dto.getBrandName())) {
-						bSame = true;
+						sameCodeList.add(nEntry.getKey());
 						break;
 					}
 				}
-				if (bSame) {
-					removeSet.add(entry.getKey());
-					List<BrandDto> sameList = resultMap.get(nEntry.getKey());
-					if (sameList == null) {
-						sameList = entry.getValue();
-						resultMap.put(nEntry.getKey(), sameList);
-					} else {
-						sameList.addAll(entry.getValue());
-					}
-				}
 			}
+			List<BrandDto> oneList = new ArrayList<BrandDto>();
+			for (String keyCode : sameCodeList) {
+				List<BrandDto> sList = synCodeMap.get(keyCode);
+				for (BrandDto sDto : sList) {
+					sDto.setSynonymCode(sCode);
+				}
+				oneList.addAll(sList);
+			}
+			resultMap.put(sCode, oneList);
+			handleCodeSet.addAll(sameCodeList);
+			handleCodeSet.add(sCode);
+
 		}
 		return resultMap;
 	}
