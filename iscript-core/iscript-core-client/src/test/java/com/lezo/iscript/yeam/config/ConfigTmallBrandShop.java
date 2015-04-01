@@ -40,7 +40,8 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 	@Override
 	public String doParse(TaskWritable task) throws Exception {
-		// brand shop list. http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter
+		// brand shop list.
+		// http://list.tmall.com/search_product.htm?spm=a220m.1000858.1000724.7.QRTGLw&brand=107380&sort=s&style=w#J_Filter
 		DataBean itemObject = getDataObject(task);
 		return convert2TaskCallBack(itemObject, task);
 	}
@@ -65,9 +66,13 @@ public class ConfigTmallBrandShop implements ConfigParser {
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		HttpGet get = new HttpGet(url);
-		get.addHeader("Referer", url);
+		get.addHeader("Accept-Encoding", "gzip, deflate");
+		get.addHeader(
+				"Cookie",
+				"cna=6OyPDT2Pp24CAWXnyHCgg26b; isg=92E670F64B8D5FC6073ED0D7215196F4; pnm_cku822=102UW5TcyMNYQwiAiwQRHhBfEF8QXtHcklnMWc%3D%7CUm5Ockt0TnRBf0F5Q3lEeC4%3D%7CU2xMHDJ%2BH2QJZwBxX39Rb1R6WnQzWjEfSR8%3D%7CVGhXd1llXGNZY1ZoVm5UblNvWGVHeUd8QHlBfUF6QHhMeUF1SHZYDg%3D%3D%7CVWldfS0RMQ04BTAQLBg4FikWMxoiGj8ZZVgmFiZdNBM3CntVA1U%3D%7CVmhIGCQZJgY7GycYLRAwDDELPgsrFygdIAA1CDUVKRYjHj4EOANVAw%3D%3D%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D; cq=ccp%3D1; CNZZDATA1000279581=699445961-1426908583-http%253A%252F%252Fnvzhuang.tmall.com%252F%7C1427779935; t=5750a246b58b32ac9861e2ee9318193f; uc3=nk2=&id2=&lg2=; tracknick=; ck1=; _tb_token_=q9oBLLi654Dq; cookie2=a5f051384342601eaa11e637a619dfe7; res=scroll%3A1280*10788-client%3A1280*600-offset%3A1280*10788-screen%3A1280*800");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
 		Document dom = Jsoup.parse(html, url);
+
 		DataBean rsBean = new DataBean();
 		Elements itemEls = dom.select("div.brandShop ul.brandShop-slide-list a[href][target]");
 		if (!itemEls.isEmpty()) {
@@ -132,10 +137,12 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 	private Set<String> getBrandSet(Document dom, TaskWritable task) {
 		Elements destEls = dom.select("div.brandWiki ul.brandWiki-con li:contains(品牌名) em");
+		destEls = destEls.isEmpty() ? dom.select("#J_CrumbSlideCon .crumbAttr[data-tag=brand][title]") : destEls;
 		// Bejirog/北极绒
 		Set<String> brandSet = new HashSet<String>();
 		if (!destEls.isEmpty()) {
 			String sText = destEls.first().ownText();
+			sText = sText.replace("品牌:", "");
 			String[] sArr = sText.split("/");
 			for (String sUnit : sArr) {
 				brandSet.add(sUnit.toLowerCase());

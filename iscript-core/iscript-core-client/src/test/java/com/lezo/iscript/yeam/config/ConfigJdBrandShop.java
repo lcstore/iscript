@@ -93,7 +93,8 @@ public class ConfigJdBrandShop implements ConfigParser {
 		return rsBean;
 	}
 
-	private void addShops(Document dom, String brandUrl, String mainBrand, String brandCode, String synonym, String region, DataBean rsBean) throws Exception {
+	private void addShops(Document dom, String brandUrl, String mainBrand, String brandCode, String synonym,
+			String region, DataBean rsBean) throws Exception {
 		if (dom == null) {
 			return;
 		}
@@ -126,7 +127,8 @@ public class ConfigJdBrandShop implements ConfigParser {
 		html = "var oShopArr =" + html;
 		String source = html + "; var sArray = JSON.stringify(oShopArr);";
 		Context cx = Context.enter();
-		ScriptableObject scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) ScriptableUtils.getJSONScriptable());
+		ScriptableObject scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) ScriptableUtils
+				.getJSONScriptable());
 		cx.evaluateString(scope, source, "cmd", 0, null);
 		String sArray = Context.toString(ScriptableObject.getProperty(scope, "sArray"));
 		Context.exit();
@@ -157,8 +159,8 @@ public class ConfigJdBrandShop implements ConfigParser {
 		Context.exit();
 		Integer curPage = Integer.valueOf(dom.select("#pagin-btm a[href].current").first().ownText().trim());
 		curPage += 1;
-		String url = "http://www.jd.com/pinpai/s.php?" + baseUrl + "&psort=&page=" + curPage + "&scrolling=y&start=" + sEls.first().attr("data-start") + "&log_id=" + sEls.first().attr("data-log-id")
-				+ "&tpl=3_M";
+		String url = "http://www.jd.com/pinpai/s.php?" + baseUrl + "&psort=&page=" + curPage + "&scrolling=y&start="
+				+ sEls.first().attr("data-start") + "&log_id=" + sEls.first().attr("data-log-id") + "&tpl=3_M";
 		HttpGet get = new HttpGet(url);
 		get.addHeader(
 				"Cookie",
@@ -176,6 +178,16 @@ public class ConfigJdBrandShop implements ConfigParser {
 			String idString = elements.first().parent().attr("id");
 			idString = idString.replace("brand_id_", "");
 			task.put("brandCode", idString);
+		}
+		elements = dom.select("#select.m div.mt a[href*=pinpai]");
+		if (!elements.isEmpty()) {
+			task.put("brandName", elements.first().ownText().trim());
+			String idString = elements.first().attr("href");
+			Pattern oReg = Pattern.compile("/pinpai/([0-9]+)\\.html");
+			Matcher matcher = oReg.matcher(idString);
+			if (matcher.find()) {
+				task.put("brandCode", matcher.group(1));
+			}
 		}
 	}
 
@@ -297,6 +309,7 @@ public class ConfigJdBrandShop implements ConfigParser {
 				}
 			} else {
 				int toIndex = brandName.indexOf(")");
+				toIndex = toIndex < 0 ? brandName.length() : toIndex;
 				String leftString = brandName.substring(0, fromIndex);
 				brandSet.add(leftString.toLowerCase());
 				String rightString = brandName.substring(fromIndex + 1, toIndex);

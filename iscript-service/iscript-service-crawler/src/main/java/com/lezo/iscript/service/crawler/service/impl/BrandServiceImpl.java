@@ -90,7 +90,7 @@ public class BrandServiceImpl implements BrandService {
 				String key = dto.getBrandCode() + "-" + dto.getBrandName();
 				codeNameMap.put(key, dto);
 			}
-			List<BrandDto> hasList = brandDao.getBrandDtoByCodes(null, new ArrayList<String>(nameSet), null);
+			List<BrandDto> hasList = getBrandDtoByBrandNameList(new ArrayList<String>(nameSet));
 			String minCode = entry.getKey();
 			for (BrandDto sDto : hasList) {
 				if (minCode.compareTo(sDto.getSynonymCode()) < 0) {
@@ -224,6 +224,18 @@ public class BrandServiceImpl implements BrandService {
 
 	public void setBrandDao(BrandDao brandDao) {
 		this.brandDao = brandDao;
+	}
+
+	@Override
+	public List<BrandDto> getBrandDtoByBrandNameList(List<String> brandNameList) {
+		if(CollectionUtils.isEmpty(brandNameList)){
+			return Collections.emptyList();
+		}
+		List<String> sCodeList = this.brandDao.getSynonymCodesByNameList(brandNameList);
+		if(CollectionUtils.isEmpty(sCodeList)){
+			return Collections.emptyList();
+		}
+		return this.brandDao.getBrandDtoBySynonymCodeList(sCodeList);
 	}
 
 }

@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.lezo.iscript.common.CloneObject;
 
 public class BrandDto extends CloneObject<BrandDto> {
-	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Integer siteId;
 	private String brandCode;

@@ -69,6 +69,22 @@
 	      </if>
 	    </where>
 	</select>
+	<select id="getSynonymCodesByNameList" parameterType="map" resultType="string">
+	    SELECT DISTINCT SYNONYM_CODE FROM T_BRAND
+	    <where>
+	        <foreach collection="brandNameList" item="name" open="AND BRAND_NAME IN(" separator="," close=")"> 
+	          #{name}
+	        </foreach>
+	    </where>
+	</select>
+	<select id="getBrandDtoBySynonymCodeList" parameterType="map" resultMap="RM_BrandDto">
+	    SELECT * FROM T_BRAND
+	    <where>
+	        <foreach collection="synonymCodeList" item="sCode" open="AND SYNONYM_CODE IN(" separator="," close=")"> 
+	          #{sCode}
+	        </foreach>
+	    </where>
+	</select>
 	<select id="getBrandDtoByIds" parameterType="map" resultMap="RM_BrandDto">
 	    SELECT * FROM T_BRAND
 	    <where>

@@ -50,7 +50,7 @@ public class JdBrandShopStrategy implements ResultStrategy, Closeable {
 		public CreateTaskTimer() {
 			typeMap = new HashMap<String, Set<String>>();
 			Set<String> urlSet = new HashSet<String>();
-			int maxCout = 10000;
+			int maxCout = 110000;
 			for (int i = 1; i <= maxCout; i++) {
 				urlSet.add("http://www.jd.com/pinpai/" + i + ".html?enc=utf-8&vt=3#filter");
 			}

@@ -28,26 +28,28 @@
 
 
 	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
-		<property name="limit" value="3000" />
+		<property name="limit" value="100" />
 		<property name="nameList">
 			<list>
 				<!-- 
 				<value>ConfigJdProduct</value>
 				<value>ConfigJdPromotion</value>
 				<value>ConfigYhdPromotion</value> 
-				<value>ConfigTmallBrandShop</value>
 				<value>ConfigJdBrandShop</value>
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyCollector</value>
 				<value>ConfigYhdProduct</value>
-				-->
 				<value>ConfigProxyCollector</value>
+				-->
 				<value>ConfigProxyDetector</value>
 				<value>ConfigProxyChecker</value> 
 				<value>ConfigProxySeedHandler</value>
-				<value>ConfigYhdBrandShop</value>
+				<value>ConfigTmallBrandShop</value>
+				<!--
+				 <value>ConfigYhdBrandShop</value>
 				<value>ConfigJdBrandShop</value>
-			</list>
+				 -->
+ 			</list>
 		</property>
 	</bean>
 
@@ -62,24 +64,24 @@
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
-			cron="0 0/1 * * * ?" />
+			fixed-rate="300000"/>
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="flushWriterTimer" method="run"
 			cron="0 0/2 * * * ?" />
 	</task:scheduled-tasks>
-	<task:scheduled-tasks scheduler="scheduler">
+	<!-- <task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="luceneIndexer" method="run"
 			cron="0 20 14 * * ?" />
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="sorlSearchHandler" method="run"
 			cron="0/1 * * * * ?" />
-	</task:scheduled-tasks>
+	</task:scheduled-tasks> -->
 	
 	<bean id="TokenToRestTimer" class="com.lezo.iscript.yeam.buffer.TokenToRestTimer"></bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="TokenToRestTimer" method="run"
-			cron="0 0/1 * * * ?" />
+			fixed-rate="18000000"/>
 	</task:scheduled-tasks>
 </beans>
