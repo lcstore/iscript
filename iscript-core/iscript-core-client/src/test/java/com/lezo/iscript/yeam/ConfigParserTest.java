@@ -1,7 +1,10 @@
 package com.lezo.iscript.yeam;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -83,10 +87,10 @@ public class ConfigParserTest {
 		parser = new ConfigProxyDetector();
 		parser = new ConfigProxySeedHandler();
 		parser = new ConfigYhdBrandList();
-//		parser = new ConfigYhdBrandShop();
+		// parser = new ConfigYhdBrandShop();
 		parser = new ConfigJdBrandShop();
 		parser = new ConfigTmallBrandShop();
-//		parser = new ConfigGoogleChecker();
+		// parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
@@ -97,8 +101,8 @@ public class ConfigParserTest {
 		url = "http://www.jd.com/pinpai/109.html?enc=utf-8&vt=3#filter";
 		url = "http://www.jd.com/pinpai/52369.html?enc=utf-8&vt=3#filter";
 		url = "http://www.jd.com/pinpai/1000.html?enc=utf-8&vt=3#filter";
-		url = "http://list.tmall.com/search_product.htm?brand=107380&sort=s&style=w#J_Filter";
-//		url = "http://www.yhd.com/brand/c21306.html";
+		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
+		// url = "http://www.yhd.com/brand/c21306.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -142,6 +146,45 @@ public class ConfigParserTest {
 	}
 
 	@Test
+	public void parserDataList() throws Exception {
+		DefaultHttpClient client = HttpClientUtils.createHttpClient();
+		String sUrl = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.0.0.XJTRBJ&cat=50105688&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50105688#J_crumbs";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.7.pKgweB&cat=54978001";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.16.pKgweB&cat=54980001&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50072624#J_crumbs";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.25.pKgweB&cat=54982001&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50072114#J_crumbs";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.32.pKgweB&cat=54986001";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.41.pKgweB&cat=54984001";
+		String brandUrl = "http://list.tmall.com/ajax/allBrandShowForGaiBan.htm?cat=50020909&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50023743&spm=a220m.1000858.0.0.yl6e8T&userIDNum=&tracknick=";
+		int fromIndex = sUrl.indexOf("?");
+		fromIndex = fromIndex < 0 ? 0 : fromIndex;
+		int toIndex = sUrl.indexOf("#");
+		toIndex = toIndex < 0 ? sUrl.length() : toIndex;
+		brandUrl = "http://list.tmall.com/ajax/allBrandShowForGaiBan.htm?" + sUrl.substring(fromIndex + 1, toIndex);
+		System.err.println("brandUrl:" + brandUrl);
+		HttpGet get = new HttpGet(brandUrl);
+		get.addHeader("Refer", sUrl);
+		get.addHeader(
+				"Cookie",
+				"cna=6OyPDT2Pp24CAWXnyHCgg26b; isg=1F8ACFEA6D267706DA5E969E83DE4750; pnm_cku822=138UW5TcyMNYQwiAiwTR3tCf0J%2FQnhEcUpkMmQ%3D%7CUm5Ockt0TnpAeU1xSHJOey0%3D%7CU2xMHDJ%2BH2QJZwBxX39Rb1R6WnQzWjEfSR8%3D%7CVGhXd1llXGNZbVduWmZfZVlsW2ZEeEJ%2BR35Lckt1THBKfkp2S3JcCg%3D%3D%7CVWldfS0RMQQ%2FBCQYJgYoA1kLUSxKJ1Q1UTpZclwKXA%3D%3D%7CVmhIGCQZJgY%2FBycbJBEsDDQOMA4uEi0YJQUwDTAQLBMmGzsBPQdRBw%3D%3D%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D; cq=ccp%3D1; CNZZDATA1000279581=699445961-1426908583-http%253A%252F%252Fnvzhuang.tmall.com%252F%7C1427970267; t=5750a246b58b32ac9861e2ee9318193f; uc3=nk2=&id2=&lg2=; tracknick=; ck1=; _tb_token_=c177Nwq7hAjv; cookie2=3bbb2c643f2db222cb3e47f1a629d830; l=AeJ6aKbw4l5i3rdDUB2giWLewlFi3uJe; res=scroll%3A1280*5733-client%3A1280*630-offset%3A1280*5733-screen%3A1280*800; tt=food.tmall.com");
+
+		String html = HttpClientUtils.getContent(client, get, "gbk");
+		Pattern oReg = Pattern.compile("brand=([0-9]+)");
+		Matcher matcher = oReg.matcher(html);
+		Set<String> brandSet = new HashSet<String>();
+		while (matcher.find()) {
+			brandSet.add(matcher.group(1));
+		}
+		System.err.println("brand.count:" + brandSet.size());
+		Writer out = new FileWriter(new File("src/test/resources/data/tm.brandId.txt"), true);
+		BufferedWriter bw = new BufferedWriter(out);
+		for (String brand : brandSet) {
+			bw.append(brand);
+			bw.append("\n");
+		}
+		IOUtils.closeQuietly(bw);
+	}
+
+	@Test
 	public void parserGoogleUrls() throws Exception {
 		final DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		HttpGet get = new HttpGet("http://www.legendsec.org/google.html");
@@ -165,12 +208,12 @@ public class ConfigParserTest {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-					}					
+					}
 				}
 			});
 		}
 		exec.shutdown();
-		while(!exec.isTerminated()){
+		while (!exec.isTerminated()) {
 			System.err.println("wait a mills");
 			TimeUnit.SECONDS.sleep(60);
 		}

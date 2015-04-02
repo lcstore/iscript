@@ -66,25 +66,33 @@ public class ConfigTmallBrandShop implements ConfigParser {
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
 		HttpGet get = new HttpGet(url);
+		get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 		get.addHeader("Accept-Encoding", "gzip, deflate");
-		get.addHeader(
-				"Cookie",
-				"cna=6OyPDT2Pp24CAWXnyHCgg26b; isg=92E670F64B8D5FC6073ED0D7215196F4; pnm_cku822=102UW5TcyMNYQwiAiwQRHhBfEF8QXtHcklnMWc%3D%7CUm5Ockt0TnRBf0F5Q3lEeC4%3D%7CU2xMHDJ%2BH2QJZwBxX39Rb1R6WnQzWjEfSR8%3D%7CVGhXd1llXGNZY1ZoVm5UblNvWGVHeUd8QHlBfUF6QHhMeUF1SHZYDg%3D%3D%7CVWldfS0RMQ04BTAQLBg4FikWMxoiGj8ZZVgmFiZdNBM3CntVA1U%3D%7CVmhIGCQZJgY7GycYLRAwDDELPgsrFygdIAA1CDUVKRYjHj4EOANVAw%3D%3D%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D; cq=ccp%3D1; CNZZDATA1000279581=699445961-1426908583-http%253A%252F%252Fnvzhuang.tmall.com%252F%7C1427779935; t=5750a246b58b32ac9861e2ee9318193f; uc3=nk2=&id2=&lg2=; tracknick=; ck1=; _tb_token_=q9oBLLi654Dq; cookie2=a5f051384342601eaa11e637a619dfe7; res=scroll%3A1280*10788-client%3A1280*600-offset%3A1280*10788-screen%3A1280*800");
+		get.addHeader("User-Agent",
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
+		System.err.println(html.indexOf("search_shopitem"));
 		Document dom = Jsoup.parse(html, url);
 
 		DataBean rsBean = new DataBean();
-		Elements itemEls = dom.select("div.brandShop ul.brandShop-slide-list a[href][target]");
+		Elements itemEls = dom
+				.select("div.brandShop ul.brandShop-slide-list a[href][target],div.shopHeader-info a.sHi-title[href]");
 		if (!itemEls.isEmpty()) {
+			Pattern oPattern = Pattern.compile("brand=([0-9]+)");
+			Matcher matcher = oPattern.matcher(url);
 			String region = getRegion(dom);
 			Set<String> brandSet = getBrandSet(dom, task);
 			String mainBrand = getMainBrandName(brandSet);
 			String synonym = brandSet.toString();
-			String brandCode = (String) task.get("brandCode");
+			String brandCode = matcher.find() ? matcher.group(1) : (String) task.get("brandCode");
 			for (Element item : itemEls) {
 				ShopVo shopVo = new ShopVo();
-				shopVo.setShopUrl(item.attr("href"));
-				shopVo.setShopName(item.select("h3").first().text().trim());
+				shopVo.setShopUrl(item.absUrl("href"));
+				if (item.hasClass("sHi-title")) {
+					shopVo.setShopName(item.ownText().trim());
+				} else {
+					shopVo.setShopName(item.select("h3").first().text().trim());
+				}
 				parserType(shopVo);
 				shopVo.setBrandName(mainBrand);
 				shopVo.setBrandUrl(url);
@@ -93,8 +101,28 @@ public class ConfigTmallBrandShop implements ConfigParser {
 				shopVo.setRegion(region);
 				rsBean.getDataList().add(shopVo);
 			}
+			addNexts(rsBean, dom);
 		}
 		return rsBean;
+	}
+
+	private void addNexts(DataBean rsBean, Document dom) {
+		String sUrl = dom.baseUri();
+		if (dom.baseUri().indexOf("&s=") > 0) {
+			return;
+		}
+		Elements totalEls = dom.select("input[name=totalPage]");
+		if (totalEls.isEmpty()) {
+			return;
+		}
+		int totalPage = Integer.valueOf(totalEls.first().val());
+		if (totalPage <= 1) {
+			return;
+		}
+		for (int i = 2; i <= totalPage; i++) {
+			rsBean.getNextList().add(sUrl.replace("&sort=s", "&s=" + (i - 1) * 20 + "&sort=s"));
+		}
+
 	}
 
 	private String getHashCode(String mainBrand) {
@@ -141,7 +169,8 @@ public class ConfigTmallBrandShop implements ConfigParser {
 		// Bejirog/北极绒
 		Set<String> brandSet = new HashSet<String>();
 		if (!destEls.isEmpty()) {
-			String sText = destEls.first().ownText();
+			Element brandElement = destEls.first();
+			String sText = brandElement.hasClass("crumbAttr") ? brandElement.attr("title") : brandElement.ownText();
 			sText = sText.replace("品牌:", "");
 			String[] sArr = sText.split("/");
 			for (String sUnit : sArr) {

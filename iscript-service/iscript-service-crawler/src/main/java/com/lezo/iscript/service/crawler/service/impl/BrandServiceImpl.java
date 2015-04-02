@@ -104,6 +104,9 @@ public class BrandServiceImpl implements BrandService {
 				if (newDto != null) {
 					newDto.setId(oldDto.getId());
 					newDto.setSynonymCode(minCode);
+					if(StringUtils.isBlank(newDto.getRegion())){
+						newDto.setRegion(oldDto.getRegion());
+					}
 					hasSet.add(key);
 					updateList.add(newDto);
 				}
