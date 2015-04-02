@@ -37,7 +37,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	public ProxyDetectStrategy() {
 		ProxyDetectTimer task = new ProxyDetectTimer();
 		this.timer = new Timer("ProxyDetectProducer");
-		this.timer.schedule(task, 1 * 60 * 1000, 10 * 60 * 60 * 1000);
+		this.timer.schedule(task, 1 * 60 * 1000, 5 * 60 * 60 * 1000);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 //			checkStatusList.add(ProxyDetectDto.STATUS_WORK);
 			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
 			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
-			checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
+//			checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 		}
 
 		public void run() {

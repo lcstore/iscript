@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IoSession;
@@ -40,12 +41,17 @@ public class SaveSessionTimer {
 					sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
 					closeCount++;
 				}
+				if (StringUtils.isEmpty(sessionHisDto.getClienName())) {
+					logger.warn("empty name.id:" + sessionHisDto.getSessionId() + "," + sessionHisDto);
+					continue;
+				}
 				copyList.add(sessionHisDto);
 			}
 			sessionHisService.updateSessionByStatus(SessionHisDto.STATUS_UP, SessionHisDto.STATUS_DOWN);
 			sessionHisService.batchSaveSessionHisDtos(copyList);
 			long cost = System.currentTimeMillis() - start;
-			logger.info(String.format("Save SessionHisDto,close:%d,active:%d,cost:%s", closeCount, copyList.size() - closeCount, cost));
+			logger.info(String.format("Save SessionHisDto,close:%d,active:%d,cost:%s", closeCount, copyList.size()
+					- closeCount, cost));
 		} finally {
 			running = false;
 		}

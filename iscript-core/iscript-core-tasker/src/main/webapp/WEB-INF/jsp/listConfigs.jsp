@@ -204,7 +204,7 @@ img.updateLoad {
 							<label class="control-label">上传配置</label>
 							<div class="controls">
 								<input id="inputBox" class="popinput" name="configFile"
-									type="file" accept="text/xml,application/xml" width="80%">
+									type="file" accept="text/java,application/java" width="80%">
 							</div>
 						</div>
 						<div class="controls">
