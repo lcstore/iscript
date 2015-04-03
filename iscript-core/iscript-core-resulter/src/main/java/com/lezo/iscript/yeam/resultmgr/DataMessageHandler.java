@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -44,10 +45,22 @@ public class DataMessageHandler {
 		try {
 			logger.info("start to do DataMessageHandler ..");
 			running.set(true);
-			List<MessageDto> dtoList = messageService.getMessageDtos(nameList, 0, limit);
+			if (CollectionUtils.isEmpty(nameList)) {
+				logger.warn("empty name to handler...");
+				return;
+			}
+			List<String> queryList = new ArrayList<String>(1);
+			List<MessageDto> dtoList = new ArrayList<MessageDto>();
+			queryList.add("");
+			for (String name : nameList) {
+				queryList.set(0, name);
+				List<MessageDto> initList = messageService.getMessageDtos(queryList, 0, limit);
+				dtoList.addAll(initList);
+			}
 			logger.info("Query.name:{},limit:{},size:{}.", nameList, limit, dtoList.size());
 			Set<Long> idSet = new HashSet<Long>(dtoList.size());
-			Map<String, DirectoryDescriptor> keyDirectoryMap = new HashMap<String, DirectoryDescriptor>(getCapacity(dtoList.size()));
+			Map<String, DirectoryDescriptor> keyDirectoryMap = new HashMap<String, DirectoryDescriptor>(
+					getCapacity(dtoList.size()));
 			Set<Long> emptyHostSet = new HashSet<Long>(dtoList.size());
 			for (MessageDto dto : dtoList) {
 				if (StringUtils.isEmpty(dto.getDataBucket()) || StringUtils.isEmpty(dto.getDataDomain())) {
@@ -73,7 +86,8 @@ public class DataMessageHandler {
 					String key = host + ":" + path;
 					DirectoryDescriptor descriptor = keyDirectoryMap.get(key);
 					if (descriptor == null) {
-						descriptor = new DirectoryDescriptor(path, dto.getDataBucket().trim(), dto.getDataDomain().trim());
+						descriptor = new DirectoryDescriptor(path, dto.getDataBucket().trim(), dto.getDataDomain()
+								.trim());
 						descriptor.setCreateTime(dto.getCreateTime());
 						keyDirectoryMap.put(key, descriptor);
 					} else if (descriptor.getCreateTime().after(dto.getCreateTime())) {
@@ -81,16 +95,20 @@ public class DataMessageHandler {
 					}
 				}
 			}
-			logger.info("directory.count:" + keyDirectoryMap.size() + ",affectCount:" + idSet.size() + ",totalCount:" + dtoList.size());
+			logger.info("directory.count:" + keyDirectoryMap.size() + ",affectCount:" + idSet.size() + ",totalCount:"
+					+ dtoList.size());
 			messageService.batchUpdateStatus(new ArrayList<Long>(idSet), -1, "size:" + idSet.size());
-			messageService.batchUpdateStatus(new ArrayList<Long>(emptyHostSet), -2, "emptyHost.size:" + emptyHostSet.size());
+			messageService.batchUpdateStatus(new ArrayList<Long>(emptyHostSet), -2,
+					"emptyHost.size:" + emptyHostSet.size());
 			buildeProducer(keyDirectoryMap);
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,dir:%s,cost:%s.", nameList, limit, query, keyDirectoryMap.size(), cost);
+			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,dir:%s,cost:%s.", nameList, limit,
+					query, keyDirectoryMap.size(), cost);
 			logger.info(msg);
 		} catch (Exception e) {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,cost:%s.Cause:", nameList, limit, query, cost);
+			String msg = String.format("Finish to handle.name:%s,limit:%s,query:%s,cost:%s.Cause:", nameList, limit,
+					query, cost);
 			logger.warn(msg, e);
 		} finally {
 			running.set(false);

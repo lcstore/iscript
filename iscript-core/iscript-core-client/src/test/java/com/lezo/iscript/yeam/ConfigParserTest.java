@@ -152,8 +152,8 @@ public class ConfigParserTest {
 		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.7.pKgweB&cat=54978001";
 		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.16.pKgweB&cat=54980001&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50072624#J_crumbs";
 		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.25.pKgweB&cat=54982001&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50072114#J_crumbs";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.32.pKgweB&cat=54986001";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.41.pKgweB&cat=54984001";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.0.0.KMcSMz&cat=50024399&sort=s&style=g&search_condition=55&from=sn_1_rightnav&active=1&industryCatId=50024399&theme=445#J_crumbs";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=141.3067357.1.15.z4EwQu&cat=50024399&theme=359";
 		String brandUrl = "http://list.tmall.com/ajax/allBrandShowForGaiBan.htm?cat=50020909&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50023743&spm=a220m.1000858.0.0.yl6e8T&userIDNum=&tracknick=";
 		int fromIndex = sUrl.indexOf("?");
 		fromIndex = fromIndex < 0 ? 0 : fromIndex;

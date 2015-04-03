@@ -64,7 +64,7 @@
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
-			fixed-rate="300000"/>
+			fixed-rate="120000"/>
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="flushWriterTimer" method="run"

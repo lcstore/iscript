@@ -71,7 +71,9 @@ public class ConfigTmallBrandShop implements ConfigParser {
 		get.addHeader("User-Agent",
 				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
-		System.err.println(html.indexOf("search_shopitem"));
+		if (html.indexOf("search_shopitem") < 0) {
+			throw new RuntimeException("can not found search_shopitem.");
+		}
 		Document dom = Jsoup.parse(html, url);
 
 		DataBean rsBean = new DataBean();
