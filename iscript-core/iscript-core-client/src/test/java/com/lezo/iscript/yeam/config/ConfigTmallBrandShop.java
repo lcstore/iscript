@@ -1,13 +1,18 @@
 package com.lezo.iscript.yeam.config;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -59,26 +64,52 @@ public class ConfigTmallBrandShop implements ConfigParser {
 			String dataString = writer.toString();
 
 			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+			if (CollectionUtils.isNotEmpty(dataBean.getNextList())) {
+				JSONObject rsObject = JSONUtils.getJSONObject(dataString);
+				rsObject.remove("targetList");
+				rsObject.remove("dataList");
+				JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, rsObject.toString());
+			}
 		}
 		return returnObject.toString();
 	}
 
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
-		HttpGet get = new HttpGet(url);
+		File file = new File("src/test/resources/data/proxy.txt");
+		if (file.exists()) {
+			List<String> proxyList = FileUtils.readLines(file);
+			proxyList.add("");
+			int index = new Random().nextInt(proxyList.size());
+			String proxy = proxyList.get(index);
+			if (!StringUtils.isBlank(proxy)) {
+				String[] proxyArr = proxy.trim().split(":");
+				task.put("proxyHost", proxyArr[0]);
+				task.put("proxyPort", Integer.valueOf(proxyArr[1]));
+				task.put("proxyType", 1);
+			}
+
+		}
+		TimeUnit.SECONDS.sleep(new Random().nextInt(60));
+		// HttpGet get = new HttpGet(url);
+		HttpGet get = HttpClientUtils.createHttpGet(url, task);
 		get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 		get.addHeader("Accept-Encoding", "gzip, deflate");
-		get.addHeader("User-Agent",
-				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");
+		get.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");
+		get.addHeader(
+				"Cookie",
+				"cna=IhdRDRpyYTYCAdOh+Rh5Glt6; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; x=__ll%3D-1%26_ato%3D0; CNZZDATA1000279581=1211739643-1422628013-http%253A%252F%252Fdetail.tmall.com%252F%7C1428209984; cq=ccp%3D0; isg=C6DC626A355F35EC98CE561B1B8A0BC2; pnm_cku822=204UW5TcyMNYQwiAiwZTXFIdUh1SHJOe0BuOG4%3D%7CUm5Ockt0QX5Cf0pxSXFFcCY%3D%7CU2xMHDJ%2BH2QJZwBxX39Rb1R6WnQoSS9DJFogDlgO%7CVGhXd1llXGNWaVVoXWZeZlJnUG1PdEF5QX9Lckx5RX1FekF%2BQW85%7CVWldfS0RMQ47Dy8RMR9lFkZoPmg%3D%7CVmhIGCQYLQ0wECwYJRs7BzoDOwYmGi4RLAwwDTgFJRktEi8PMw43ClwK%7CV25Tbk5zU2xMcEl1VWtTaUlwJg%3D%3D; l=AXtJxEB4-2U7JS7FfxHqZjslW-67pvtl; t=38f8eaef73d3f36a372d6a1da704d12a; res=scroll%3A1903*10450-client%3A1903*586-offset%3A1903*10450-screen%3A1920*1080; swfstore=284800; whl=-1%260%260%260; tt=sec.taobao.com; _tb_token_=4Uxl5G4oeqxO; ck1=; uc1=lltime=1428201238&cookie14=UoW1HJ2O0%2FKldw%3D%3D&existShop=false&cookie16=U%2BGCWk%2F74Mx5tgzv3dWpnhjPaQ%3D%3D&cookie21=WqG3DMC9Fb5mPLIRJbWy&tag=0&cookie15=URm48syIIVrSKA%3D%3D&pas=0; uc3=nk2=E63VQkPQIzE%3D&id2=UonaUgm3h6aFZQ%3D%3D&vt3=F8dAT%2BauXHAfsTiN66E%3D&lg2=VT5L2FSpMGV7TQ%3D%3D; lgc=pis_1001; tracknick=pis_1001; cookie2=b0412ba4531056024cd4f3a5d9ddde0c; cookie1=UNiEt3GrKrqAFyfwCdFMB1SvDybA8ecJHzHb5vnHRoo%3D; unb=1817804237; _nk_=pis_1001; _l_g_=Ug%3D%3D; cookie17=UonaUgm3h6aFZQ%3D%3D; login=true");
 		String html = HttpClientUtils.getContent(client, get, "gbk");
-		if (html.indexOf("search_shopitem") < 0) {
-			throw new RuntimeException("can not found search_shopitem.");
+		int index = html.indexOf("search_shopitem");
+		index = index < 0 ? html.indexOf("productShop-name") : index;
+		if (index < 0) {
+			FileUtils.writeStringToFile(new File("src/test/resources/tmall.txt"), JSONUtils.getJSONObject(task.getArgs()) + "\n" + html);
+			throw new RuntimeException("can not found search_shopitem.args:" + JSONUtils.getJSONObject(task.getArgs()));
 		}
 		Document dom = Jsoup.parse(html, url);
 
 		DataBean rsBean = new DataBean();
-		Elements itemEls = dom
-				.select("div.brandShop ul.brandShop-slide-list a[href][target],div.shopHeader-info a.sHi-title[href]");
+		Elements itemEls = dom.select("div.brandShop ul.brandShop-slide-list a[href][target],div.shopHeader-info a.sHi-title[href],a.productShop-name[href]");
 		if (!itemEls.isEmpty()) {
 			Pattern oPattern = Pattern.compile("brand=([0-9]+)");
 			Matcher matcher = oPattern.matcher(url);
@@ -90,7 +121,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 			for (Element item : itemEls) {
 				ShopVo shopVo = new ShopVo();
 				shopVo.setShopUrl(item.absUrl("href"));
-				if (item.hasClass("sHi-title")) {
+				if (item.hasClass("sHi-title") || item.hasClass("productShop-name")) {
 					shopVo.setShopName(item.ownText().trim());
 				} else {
 					shopVo.setShopName(item.select("h3").first().text().trim());

@@ -102,6 +102,7 @@ public class ConfigParserTest {
 		url = "http://www.jd.com/pinpai/52369.html?enc=utf-8&vt=3#filter";
 		url = "http://www.jd.com/pinpai/1000.html?enc=utf-8&vt=3#filter";
 		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
+		url = "http://list.tmall.com/search_product.htm?brand=29295&sort=s&style=w#J_Filter";
 		// url = "http://www.yhd.com/brand/c21306.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
@@ -113,8 +114,8 @@ public class ConfigParserTest {
 		task.put("url", url);
 
 		// http
-		task.put("proxyHost", "117.177.243.35");
-		task.put("proxyPort", 80);
+		task.put("proxyHost", "202.101.96.154");
+		task.put("proxyPort", 8888);
 		task.put("proxyType", 1);
 		// socket
 		// task.put("ip", "103.246.161.194");
@@ -149,11 +150,7 @@ public class ConfigParserTest {
 	public void parserDataList() throws Exception {
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		String sUrl = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.0.0.XJTRBJ&cat=50105688&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50105688#J_crumbs";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.7.pKgweB&cat=54978001";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.16.pKgweB&cat=54980001&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50072624#J_crumbs";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=a2224.1382173.1998187256.25.pKgweB&cat=54982001&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50072114#J_crumbs";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.0.0.KMcSMz&cat=50024399&sort=s&style=g&search_condition=55&from=sn_1_rightnav&active=1&industryCatId=50024399&theme=445#J_crumbs";
-		sUrl = "http://list.tmall.com/search_product.htm?spm=141.3067357.1.15.z4EwQu&cat=50024399&theme=359";
+		sUrl = "http://list.tmall.com/search_product.htm?spm=a220m.1000858.0.0.SDnbZM&cat=50025174&sort=s&style=g&search_condition=71&from=sn_1_rightnav&active=1&promo=43906&shopType=any&industryCatId=50026245#J_crumbs";
 		String brandUrl = "http://list.tmall.com/ajax/allBrandShowForGaiBan.htm?cat=50020909&sort=s&style=g&search_condition=7&from=sn_1_rightnav&active=1&industryCatId=50023743&spm=a220m.1000858.0.0.yl6e8T&userIDNum=&tracknick=";
 		int fromIndex = sUrl.indexOf("?");
 		fromIndex = fromIndex < 0 ? 0 : fromIndex;

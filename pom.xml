@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.lezo.iscript</groupId>
@@ -9,12 +8,12 @@
 	<packaging>pom</packaging>
 
 	<name>iscript</name>
-	<url>http://maven.apache.org</url>
 
 	<modules>
 		<module>iscript-common</module>
 		<module>iscript-core</module>
 		<module>iscript-service</module>
+		<module>iscript-proxy</module>
 	</modules>
 
 	<build>
@@ -100,5 +99,6 @@
 		<jackson.version>1.9.12</jackson.version>
 		<joda-time.version>2.2</joda-time.version>
 		<qiniu.version>6.1.0</qiniu.version>
+		<netty.version>4.0.22.Final</netty.version>
 	</properties>
 </project>

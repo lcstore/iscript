@@ -3,6 +3,7 @@ package com.lezo.iscript.yeam.server.handler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,6 +11,7 @@ import org.apache.mina.core.session.IoSession;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
@@ -17,6 +19,7 @@ import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.server.HeadCacher;
 import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 import com.lezo.iscript.yeam.server.SendUtils;
+import com.lezo.iscript.yeam.tasker.cache.ProxyCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -99,16 +102,45 @@ public class IoTaskHandler implements MessageHandler {
 			}
 		}
 		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
-				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
-				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
+		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s", taskOffers.size(), JSONUtils.getString(hObject, "name"),
+				JSONUtils.getString(hObject, "tactive"), JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
 		logger.info(msg);
 		return sendCount;
 	}
 
 	private void assignProxyForTasks(List<TaskWritable> taskOffers) {
-		// TODO Auto-generated method stub
-		
+		if (CollectionUtils.isEmpty(taskOffers)) {
+			return;
+		}
+		ProxyCacher proxyCacher = ProxyCacher.getInstance();
+		Integer useProxy = 1;
+		String defaultDomain = "baidu.com";
+		Queue<ProxyDetectDto> proxyQueue = proxyCacher.getOrSecond(defaultDomain, null);
+		int proxyCount = proxyQueue == null ? 0 : proxyQueue.size();
+		if (proxyCount > 100) {
+			logger.info("domain:" + defaultDomain + ",proxy count:" + proxyCount);
+		} else {
+			logger.warn("lack of proxy.domain:" + defaultDomain + ",proxy count:" + proxyCount);
+		}
+		for (TaskWritable task : taskOffers) {
+			if (useProxy.equals(task.get("useProxy"))) {
+				Object retryObject = task.get("retry");
+				Integer retry = (Integer) (retryObject == null ? 0 : retryObject);
+				if (retry == 3) {
+					continue;
+				}
+				ProxyDetectDto proxyDto = proxyQueue.poll();
+				if (proxyDto == null) {
+					logger.warn("there is no proxy in domain:" + defaultDomain);
+				} else {
+					task.put("proxyPort", proxyDto.getPort());
+					task.put("proxyHost", proxyDto.getIpString());
+					task.put("proxyType", proxyDto.getType());
+				}
+				proxyQueue.offer(proxyDto);
+			}
+		}
+
 	}
 
 	private int getLimitSize(List<String> typeList) {

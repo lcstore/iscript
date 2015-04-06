@@ -24,13 +24,13 @@ public class DirectoryEventListener {
 			directoryMap.put(event.getDirectoryKey(), tracker);
 			DirectoryLockUtils.addLock(event.getDirectoryKey(), new ReentrantLock());
 		} else {
-			// 重新下载旧结果
-			Calendar c = Calendar.getInstance();
-			c.setTime(event.getCreateTime());
-			c.add(Calendar.MINUTE, -10);
-			if (tracker.getStamp() > c.getTimeInMillis()) {
-				tracker.setStamp(c.getTimeInMillis());
-			}
+//			// 重新下载旧结果
+//			Calendar c = Calendar.getInstance();
+//			c.setTime(event.getCreateTime());
+//			c.add(Calendar.MINUTE, -10);
+//			if (tracker.getStamp() > c.getTimeInMillis()) {
+//				tracker.setStamp(c.getTimeInMillis());
+//			}
 		}
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("fileProduceExecutor");
 		executor.execute(new DataFileProducer(tracker));

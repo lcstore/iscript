@@ -80,6 +80,7 @@ public class UrlTest {
 		List<String> lineList = FileUtils.readLines(new File("src/test/resources/data/tm.brandId.txt"), "UTF-8");
 		Set<String> lineSet = new HashSet<String>(lineList);
 		StringBuilder sb = new StringBuilder();
+		int count = 0;
 		for (String brand : lineSet) {
 			if (sb.length() > 0) {
 				sb.append(",");

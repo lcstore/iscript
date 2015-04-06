@@ -26,6 +26,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.http.HttpClientFactory;
+import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.http.ProxySocketFactory;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -110,6 +111,15 @@ public class ConfigProxyDetector implements ConfigParser {
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
 			fillStatus(tBean, res, domain);
+			if (1 == tBean.getVerifyStatus()) {
+				get = newSocketProxyGet("http://www.mi.com/", proxyIp, port);
+				String html = HttpClientUtils.getContent(client, get);
+				if (html.indexOf("http://www.mi.com/favicon.ico") < 0) {
+					tBean.setStatus(0);
+					tBean.setVerifyStatus(-1);
+					tBean.setRemark("Can not pass double check:" + get.getURI());
+				}
+			}
 		} catch (Exception e) {
 			logger.warn("SocketProxy url:" + url + ",proxy:" + proxyIp + ":" + port + ",cause:", e);
 		} finally {
@@ -136,6 +146,15 @@ public class ConfigProxyDetector implements ConfigParser {
 			HttpContext context = new BasicHttpContext();
 			HttpResponse res = client.execute(get, context);
 			fillStatus(tBean, res, domain);
+			if (1 == tBean.getVerifyStatus()) {
+				get = newHttpProxyGet("http://www.mi.com/", proxyIp, port);
+				String html = HttpClientUtils.getContent(client, get);
+				if (html.indexOf("http://www.mi.com/favicon.ico") < 0) {
+					tBean.setStatus(0);
+					tBean.setVerifyStatus(-1);
+					tBean.setRemark("Can not pass double check:" + get.getURI());
+				}
+			}
 		} catch (Exception e) {
 			logger.warn("HttpProxy url:" + url + ",proxy:" + proxyIp + ":" + port + ",cause:", e);
 		} finally {

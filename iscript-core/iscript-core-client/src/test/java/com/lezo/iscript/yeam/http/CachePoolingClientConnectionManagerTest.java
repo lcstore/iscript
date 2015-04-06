@@ -226,8 +226,8 @@ public class CachePoolingClientConnectionManagerTest {
 		// request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new
 		// HttpHost("107.182.17.243", 7808, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("183.250.179.29", 80, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("117.177.243.35", 80, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("117.177.243.35", 80)));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("202.101.96.154", 8888, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("127.0.0.1", 8080, "http"));
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

@@ -16,8 +16,8 @@ import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.yeam.tasker.cache.ProxyCacher;
 
 public class ReloadProxyTimer {
-	private static final int MAX_PROXY_LEN = 200;
-	private static final int MIN_SUCCSS_COUNT = 5;
+	private static final int MAX_PROXY_LEN = 800;
+	private static final int MIN_SUCCSS_COUNT = 10;
 	private static Logger log = Logger.getLogger(ReloadProxyTimer.class);
 	private static volatile boolean running = false;
 	@Autowired
@@ -68,11 +68,10 @@ public class ReloadProxyTimer {
 		Collections.sort(tempList, new Comparator<ProxyDetectDto>() {
 			@Override
 			public int compare(ProxyDetectDto o1, ProxyDetectDto o2) {
-				long subMills = o2.getUpdateTime().getTime() - o1.getUpdateTime().getTime();
-				int hours = (int) (subMills / 3600000);
+				int timeCmpValue = o2.getUpdateTime().compareTo(o1.getUpdateTime());
 				// 更新时间倒序排
-				if (hours != 0) {
-					return hours;
+				if (timeCmpValue != 0) {
+					return timeCmpValue;
 				}
 				// 一小时内跟新的，按成功数倒排
 				int sCount = o2.getLastSuccessCount() - o1.getLastSuccessCount();
@@ -80,7 +79,7 @@ public class ReloadProxyTimer {
 					return sCount;
 				}
 				// http > socket
-				return o1.getType() - o2.getType();
+				return o1.getType().compareTo(o2.getType());
 			}
 		});
 		int toIndex = tempList.size() < MAX_PROXY_LEN ? tempList.size() : MAX_PROXY_LEN;

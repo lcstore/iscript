@@ -5,6 +5,7 @@ import java.net.Proxy;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -18,6 +19,7 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.lezo.iscript.utils.ProxyUtils;
 import com.lezo.iscript.yeam.task.TaskParamUtils;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -28,8 +30,7 @@ public class HttpClientUtils {
 		return getContent(client, get, DEFAULT_CHARSET);
 	}
 
-	public static String getContent(DefaultHttpClient client, HttpUriRequest request, String charsetName)
-			throws Exception {
+	public static String getContent(DefaultHttpClient client, HttpUriRequest request, String charsetName) throws Exception {
 		HttpResponse response = null;
 		try {
 			response = client.execute(request);
@@ -64,7 +65,7 @@ public class HttpClientUtils {
 		convertToProxyRequest(get, proxyHost, proxyPort, proxyType);
 		return get;
 	}
-	
+
 	public static HttpPost createHttpPost(String url, TaskWritable taskWritable) {
 		String proxyHost = TaskParamUtils.getOrDefault(taskWritable, "proxyHost", null);
 		Integer proxyPort = TaskParamUtils.getOrDefault(taskWritable, "proxyPort", null);
@@ -78,8 +79,10 @@ public class HttpClientUtils {
 		return post;
 	}
 
-	public static HttpUriRequest convertToProxyRequest(HttpUriRequest request, String proxyHost, Integer proxyPort,
-			Integer proxyType) {
+	public static HttpUriRequest convertToProxyRequest(HttpUriRequest request, String proxyHost, Integer proxyPort, Integer proxyType) {
+		if (StringUtils.isBlank(proxyHost) || !ProxyUtils.isPort(proxyPort)) {
+			return request;
+		}
 		proxyType = proxyType == null ? 0 : proxyType;
 		switch (proxyType) {
 		case 1: {
@@ -87,8 +90,7 @@ public class HttpClientUtils {
 			break;
 		}
 		case 2: {
-			request.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY,
-					new Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved(proxyHost, proxyPort)));
+			request.getParams().setParameter(ProxySocketFactory.SOCKET_PROXY, new Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved(proxyHost, proxyPort)));
 			break;
 		}
 		default:
@@ -97,8 +99,7 @@ public class HttpClientUtils {
 		return request;
 	}
 
-	public static String getCharsetOrDefault(Header contentType, byte[] dataBytes, String defaultCharset)
-			throws Exception {
+	public static String getCharsetOrDefault(Header contentType, byte[] dataBytes, String defaultCharset) throws Exception {
 		String charset = getCharsetFromHead(contentType);
 		if (charset != null) {
 			return charset;
