@@ -84,12 +84,12 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
-		parser = new ConfigProxyDetector();
 		parser = new ConfigProxySeedHandler();
 		parser = new ConfigYhdBrandList();
 		// parser = new ConfigYhdBrandShop();
 		parser = new ConfigJdBrandShop();
 		parser = new ConfigTmallBrandShop();
+		parser = new ConfigProxyDetector();
 		// parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
@@ -103,7 +103,8 @@ public class ConfigParserTest {
 		url = "http://www.jd.com/pinpai/1000.html?enc=utf-8&vt=3#filter";
 		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
 		url = "http://list.tmall.com/search_product.htm?brand=29295&sort=s&style=w#J_Filter";
-		// url = "http://www.yhd.com/brand/c21306.html";
+//		url = "http://www.yelp.com/biz/ikes-place-san-francisco";
+		 url = "http://www.yhd.com/brand/c21306.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -114,8 +115,10 @@ public class ConfigParserTest {
 		task.put("url", url);
 
 		// http
-		task.put("proxyHost", "202.101.96.154");
-		task.put("proxyPort", 8888);
+		task.put("proxyHost", "60.29.248.142");
+		task.put("proxyPort", 8080);
+		task.put("proxyHost", "127.0.0.1");
+		task.put("proxyPort", 1234);
 		task.put("proxyType", 1);
 		// socket
 		// task.put("ip", "103.246.161.194");

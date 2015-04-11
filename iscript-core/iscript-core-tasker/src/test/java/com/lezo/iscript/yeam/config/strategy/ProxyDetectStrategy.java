@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -95,7 +96,8 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 		tWritable.put("retry", retry + 1);
 		Integer level = JSONUtils.getInteger(argsObject, "level");
 		level = level == null ? 0 : level;
-		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()) + ",rs:" + rsObject + ",ex:" + exObject);
+		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()) + ",rs:"
+				+ rsObject + ",ex:" + exObject);
 		TaskCacher.getInstance().getQueue(rWritable.getType()).offer(tWritable, level);
 	}
 
@@ -107,10 +109,10 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 
 		public ProxyDetectTimer() {
 			checkStatusList = new ArrayList<Integer>();
-//			checkStatusList.add(ProxyDetectDto.STATUS_WORK);
+			// checkStatusList.add(ProxyDetectDto.STATUS_WORK);
 			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
 			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
-//			checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
+			// checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 		}
 
 		public void run() {
@@ -129,7 +131,8 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 					int totalCount = 0;
 					Long fromId = 0L;
 					while (true) {
-						List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromId(fromId, limit, status);
+						List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromId(fromId, limit,
+								status);
 						offerDetectTasks(dtoList, taskId);
 						for (ProxyDetectDto dto : dtoList) {
 							if (dto.getId() > fromId) {
@@ -158,32 +161,32 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			List<TaskPriorityDto> taskDtos = new ArrayList<TaskPriorityDto>();
 			JSONObject argsObject = new JSONObject();
 			JSONUtils.put(argsObject, "strategy", "ProxyDetectStrategy");
+			List<String> urlSet = new ArrayList<String>();
+			urlSet.add("http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter");
 			for (ProxyDetectDto dto : dtoList) {
-				JSONUtils.put(argsObject, "id", dto.getId());
-				JSONUtils.put(argsObject, "ip", dto.getIp());
-				JSONUtils.put(argsObject, "port", dto.getPort());
-				JSONUtils.put(argsObject, "proxyType", dto.getType());
-				TaskPriorityDto taskDto = new TaskPriorityDto();
-				taskDto.setBatchId(taskId);
-				taskDto.setType("ConfigProxyDetector");
-				// nonuse status,change url to get a chance.
-				if (dto.getRetryTimes() > 0) {
-					taskDto.setUrl(dto.getUrl());
-				} else {
-					taskDto.setUrl(DEFAULT_DETECT_URL);
+				urlSet.add(dto.getUrl());
+				for (String sUrl : urlSet) {
+					JSONUtils.put(argsObject, "id", dto.getId());
+					JSONUtils.put(argsObject, "ip", dto.getIp());
+					JSONUtils.put(argsObject, "port", dto.getPort());
+					JSONUtils.put(argsObject, "proxyType", dto.getType());
+					TaskPriorityDto taskDto = new TaskPriorityDto();
+					taskDto.setBatchId(taskId);
+					taskDto.setType("ConfigProxyDetector");
+					sUrl = StringUtils.isEmpty(sUrl) ? DEFAULT_DETECT_URL : sUrl;
+					taskDto.setUrl(sUrl);
+					taskDto.setLevel(1);
+					taskDto.setSource("tasker");
+					taskDto.setCreatTime(new Date());
+					taskDto.setStatus(TaskConstant.TASK_NEW);
+					taskDto.setParams(argsObject.toString());
+					taskDtos.add(taskDto);
 				}
-				taskDto.setLevel(1);
-				taskDto.setSource("tasker");
-				taskDto.setCreatTime(new Date());
-				taskDto.setStatus(TaskConstant.TASK_NEW);
-				taskDto.setParams(argsObject.toString());
-				taskDtos.add(taskDto);
 			}
-//			StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
+			// StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
 			taskPriorityService.batchInsert(taskDtos);
 			logger.info(String.format("add task to DB,size:%d", taskDtos.size()));
 		}
-
 	}
 
 	@Override

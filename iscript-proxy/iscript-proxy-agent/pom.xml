@@ -11,8 +11,8 @@
 	<groupId>com</groupId>
 	<artifactId>iscript-proxy-agent</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>iscript-proxy-agent Maven Webapp</name>
+	<packaging>jar</packaging>
+	<name>iscript-proxy-agent</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
