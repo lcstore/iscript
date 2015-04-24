@@ -8,6 +8,8 @@ import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.utils.PropertiesUtils;
+
 public class LaunchListener implements ServletContextListener {
 	private static Logger logger = LoggerFactory.getLogger(LaunchListener.class);
 
@@ -19,13 +21,13 @@ public class LaunchListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
-		int port = 1234;
+		int port = Integer.valueOf(PropertiesUtils.getOrDefault("port", "8080"));
 		logger.info("About to start server on port: " + port);
-		HttpProxyServerBootstrap bootstrap = DefaultHttpProxyServer.bootstrapFromFile("./littleproxy.properties")
-				.withPort(port).withAllowLocalOnly(false);
-		bootstrap.withFiltersSource(new CustomHttpFiltersSource() );
-		logger.info("About to start...");
+		HttpProxyServerBootstrap bootstrap = DefaultHttpProxyServer.bootstrap().withPort(port)
+				.withAllowLocalOnly(false);
+		bootstrap.withFiltersSource(new CustomHttpFiltersSource());
 		bootstrap.start();
+		logger.info("start on port:" + port);
 	}
 
 }

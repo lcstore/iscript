@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 import com.lezo.iscript.yeam.io.IoConstant;
+import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
+import com.lezo.iscript.yeam.mina.SessionSender;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
 public class ConfigIoFilter extends IoFilterAdapter {
@@ -21,6 +24,10 @@ public class ConfigIoFilter extends IoFilterAdapter {
 		IoRespone ioRespone = (IoRespone) message;
 		if (IoConstant.EVENT_TYPE_CONFIG == ioRespone.getType()) {
 			updateConfig(ioRespone);
+			IoRequest ioRequest = new IoRequest();
+			ioRequest.setType(IoRequest.REQUEST_REPORT);
+			ioRequest.setHeader(HeaderUtils.getHeader().toString());
+			SessionSender.getInstance().send(ioRequest);
 		} else {
 			nextFilter.messageReceived(session, message);
 		}

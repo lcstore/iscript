@@ -129,6 +129,7 @@ public class DataFileProducer implements Runnable {
 				dataFileWrapper.setDomain(descriptor.getDomain());
 				dataFileWrapper.setItem(item);
 				executor.execute(new DataFileConsumer(type, dataFileWrapper));
+				addCount++;
 			} catch (Exception e) {
 				logger.warn("File:" + item.getPath() + ",cause:", e);
 			}

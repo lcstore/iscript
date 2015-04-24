@@ -29,8 +29,8 @@ public class ProxyServiceImplTest {
 		ProxyDetectServiceImpl proxyDetectService = new ProxyDetectServiceImpl();
 		proxyDetectService.setProxyDetectDao(proxyDetectDao);
 
-		Long fromId = 3604028L;
-		Integer limit = 10000;
+		Long fromId = 941040L;
+		Integer limit = 1000;
 		int sum = 0;
 		long startMills = System.currentTimeMillis();
 		while (true) {

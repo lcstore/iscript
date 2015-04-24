@@ -1,14 +1,14 @@
 package com.lezo.iscript.yeam.mina;
 
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
 
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.common.storage.StorageTimeTrigger;
 import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.yeam.io.IoRequest;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.storage.ResultFutureStorager;
 
 public class ClientMain {
@@ -47,5 +47,19 @@ public class ClientMain {
 				}
 			}
 		}, 60000L, 1000L);
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					IoRequest ioRequest = new IoRequest();
+					ioRequest.setType(IoRequest.REQUEST_REPORT);
+					ioRequest.setHeader(HeaderUtils.getHeader().toString());
+					SessionSender.getInstance().send(ioRequest);
+					logger.info("client heartbeat.head:" + ioRequest.getHeader());
+				} catch (Exception e) {
+					logger.warn("client report,cause:", e);
+				}
+			}
+		}, 1000L, 60000L);
 	}
 }

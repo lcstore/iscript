@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -304,15 +306,13 @@ public class ScriptTest {
 	}
 
 	@Test
-	public void testException() {
-		try {
-			String aa = null;
-			throw new IllegalArgumentException("args error...");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("--------------------");
-			System.out.println(ExceptionUtils.getStackTrace(e));
-		}
+	public void testException() throws Exception {
+		Context cx = Context.enter();
+		ScriptableObject scope = cx.initStandardObjects();
+		ScriptableObject.putProperty(scope, "_url", "http://item.jd.com/1258277.html");
+		String source = FileUtils.readFileToString(new File("src/test/resources/jdPack.js"), "UTF-8");
+		cx.evaluateString(scope, source, "cmd", -1, null);
+		NativeObject dataObject = (NativeObject) ScriptableObject.getProperty(scope, "data");
+		System.err.println(dataObject);
 	}
 }

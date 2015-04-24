@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.json.JSONObject;
 import org.slf4j.Logger;

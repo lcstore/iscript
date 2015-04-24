@@ -8,7 +8,6 @@
 		<result column="IP" property="ip" />
 		<result column="PORT" property="port" />
 		<result column="ADDR_CODE" property="addrCode" />
-		<result column="SOURCE" property="source" />
 		<result column="REGION_NAME" property="regionName" />
 		<result column="ISP_NAME" property="ispName" />
 		<result column="IS_DELETE" property="isDelete" />
@@ -22,7 +21,6 @@
 		IP
 		,PORT
 		,ADDR_CODE
-		,SOURCE
 		,REGION_NAME
 		,ISP_NAME
 		,IS_DELETE
@@ -39,12 +37,11 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.addrCode},#{item.source},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark},#{item.seedId})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark},#{item.seedId})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyAddrDto">
 		UPDATE T_PROXY_ADDR SET
-		SOURCE=#{source},
 		REGION_NAME=#{regionName},
 		ISP_NAME=#{ispName},
 		IS_DELETE=#{isDelete},

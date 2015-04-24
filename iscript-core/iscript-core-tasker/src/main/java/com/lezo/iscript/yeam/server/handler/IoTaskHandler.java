@@ -54,9 +54,6 @@ public class IoTaskHandler implements MessageHandler {
 	}
 
 	public Object pushTasks(JSONObject hObject, IoSession ioSession) {
-		if (!HeadCacher.getInstace().putIfVary(IoConstant.EVENT_TYPE_TASK, hObject)) {
-			return 0;
-		}
 		Integer tsize = JSONUtils.getInteger(hObject, "tsize");
 		if (tsize >= MIN_TASK_SIZE) {
 			return 0;
@@ -93,7 +90,7 @@ public class IoTaskHandler implements MessageHandler {
 				}
 			}
 			if (!taskOffers.isEmpty()) {
-				assignProxyForTasks(taskOffers);
+//				assignProxyForTasks(taskOffers);
 				IoRespone ioRespone = new IoRespone();
 				ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
 				ioRespone.setData(taskOffers);

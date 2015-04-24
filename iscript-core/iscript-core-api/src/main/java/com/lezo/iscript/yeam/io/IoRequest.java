@@ -7,7 +7,9 @@ public class IoRequest implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7718380647031578364L;
-	private int type = IoConstant.EVENT_TYPE_NONE;
+	public static final int REQUEST_REPORT = 0;
+	public static final int REQUEST_RESULT = 1;
+	private int type = REQUEST_REPORT;
 	private String header;
 	private Object data;
 

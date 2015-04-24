@@ -13,7 +13,7 @@ public class HeadCacher {
 	private HeadCacher() {
 	}
 
-	public static HeadCacher getInstace() {
+	private static HeadCacher getInstace() {
 		return INSTANCE;
 	}
 

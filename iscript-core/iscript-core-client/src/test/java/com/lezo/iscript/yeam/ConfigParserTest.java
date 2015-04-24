@@ -118,7 +118,7 @@ public class ConfigParserTest {
 		task.put("proxyHost", "60.29.248.142");
 		task.put("proxyPort", 8080);
 		task.put("proxyHost", "127.0.0.1");
-		task.put("proxyPort", 1234);
+		task.put("proxyPort", 8900);
 		task.put("proxyType", 1);
 		// socket
 		// task.put("ip", "103.246.161.194");

@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.BatchIterator;
-import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.mina.SessionSender;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
@@ -41,7 +40,7 @@ public class ResultFutureClassifier implements Runnable {
 			List<ResultWritable> blockList = new ArrayList<ResultWritable>(it.next());
 			JSONObject hObject = HeaderUtils.getHeader();
 			IoRequest ioRequest = new IoRequest();
-			ioRequest.setType(IoConstant.EVENT_TYPE_RESULT);
+			ioRequest.setType(IoRequest.REQUEST_RESULT);
 			ioRequest.setHeader(hObject.toString());
 			ioRequest.setData(blockList);
 			SessionSender.getInstance().send(ioRequest);

@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.io.IoConstant;
+import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
+import com.lezo.iscript.yeam.mina.SessionSender;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.rest.data.BaiduPcsRester;
 import com.lezo.rest.data.ClientRest;
@@ -28,6 +30,10 @@ public class TokenIoFilter extends IoFilterAdapter {
 		IoRespone ioRespone = (IoRespone) message;
 		if (IoConstant.EVENT_TYPE_TOKEN == ioRespone.getType()) {
 			updateToken(ioRespone);
+			IoRequest ioRequest = new IoRequest();
+			ioRequest.setType(IoRequest.REQUEST_REPORT);
+			ioRequest.setHeader(HeaderUtils.getHeader().toString());
+			SessionSender.getInstance().send(ioRequest);
 		} else {
 			nextFilter.messageReceived(session, message);
 		}
@@ -62,7 +68,8 @@ public class TokenIoFilter extends IoFilterAdapter {
 			}
 		}
 		JSONUtils.put(HeaderUtils.getHeader(), "tokenStamp", maxStamp);
-		logger.info("finish to update token. tokenStamp:" + maxStamp + ",updateCount:" + tokenList.size() + ",removeCount:" + removeCount + ",putCount:" + putCount);
+		logger.info("finish to update token. tokenStamp:" + maxStamp + ",updateCount:" + tokenList.size()
+				+ ",removeCount:" + removeCount + ",putCount:" + putCount);
 
 	}
 

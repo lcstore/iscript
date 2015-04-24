@@ -1,5 +1,6 @@
 package com.lezo.iscript.yeam.resultmgr;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,32 @@ public class DataMessageHandler {
 	private MessageService messageService;
 	private List<String> nameList;
 	private Integer limit = 10;
+	private List<MessageDto> hardList;
+
+	public DataMessageHandler() {
+		this.hardList = new ArrayList<MessageDto>();
+		MessageDto eDto = new MessageDto();
+		Date date = null;
+		String msg = "{'3c01a711-a892-4c96-a6c2-99ab2e206bda':[],'3aa6c0d0-1ddc-4e52-b92e-cacda4451e02':[],'d557832c-d268-4b24-a800-55f78322ff88':[]}";
+		try {
+			date = DateUtils.parseDate("20150417", "yyyyMMdd");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		eDto.setCreateTime(date);
+		eDto.setDataBucket("idocs");
+		eDto.setDataDomain("baidu.com");
+		eDto.setMessage(msg);
+		eDto.setName("ConfigProxyDetector");
+		this.hardList.add(eDto);
+
+		eDto.setCreateTime(date);
+		eDto.setDataBucket("istore_doc");
+		eDto.setDataDomain("baidu.com");
+		eDto.setMessage(msg);
+		eDto.setName("ConfigProxyDetector");
+		this.hardList.add(eDto);
+	}
 
 	public void run() {
 		if (running.get()) {
@@ -56,6 +84,10 @@ public class DataMessageHandler {
 				queryList.set(0, name);
 				List<MessageDto> initList = messageService.getMessageDtos(queryList, 0, limit);
 				dtoList.addAll(initList);
+			}
+			if (!this.hardList.isEmpty()) {
+				dtoList.addAll(this.hardList);
+				this.hardList.clear();
 			}
 			logger.info("Query.name:{},limit:{},size:{}.", nameList, limit, dtoList.size());
 			Set<Long> idSet = new HashSet<Long>(dtoList.size());

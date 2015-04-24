@@ -57,9 +57,6 @@ public class IoTokenHandler implements MessageHandler {
 		if (bufferStamp.equals(tokenStamp)) {
 			return;
 		}
-		if (!HeadCacher.getInstace().putIfVary(IoConstant.EVENT_TYPE_TOKEN, hObject)) {
-			return;
-		}
 		List<String> tokenList = new ArrayList<String>();
 		Iterator<Entry<String, ClientTokenDto>> it = tokenBuffer.unmodifyIterator();
 		while (it.hasNext()) {

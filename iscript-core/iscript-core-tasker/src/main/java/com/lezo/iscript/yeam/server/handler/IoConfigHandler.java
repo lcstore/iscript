@@ -55,9 +55,6 @@ public class IoConfigHandler implements MessageHandler {
 		if (cstamp.equals(stamp)) {
 			return;
 		}
-		if (!HeadCacher.getInstace().putIfVary(IoConstant.EVENT_TYPE_CONFIG, hObject)) {
-			return;
-		}
 		List<ConfigWritable> configWritables = new ArrayList<ConfigWritable>();
 		Iterator<Entry<String, ConfigWritable>> it = configBuffer.unmodifyIterator();
 		while (it.hasNext()) {

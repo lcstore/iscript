@@ -3,9 +3,7 @@ package com.lezo.iscript.yeam.server;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.mina.core.service.IoAcceptor;
@@ -21,31 +19,18 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
-import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.service.crawler.service.SessionHisService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoRequest;
-import com.lezo.iscript.yeam.server.handler.IoConfigHandler;
-import com.lezo.iscript.yeam.server.handler.IoResultHandler;
-import com.lezo.iscript.yeam.server.handler.IoTaskHandler;
-import com.lezo.iscript.yeam.server.handler.IoTokenHandler;
-import com.lezo.iscript.yeam.server.handler.MessageHandler;
 
 public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
-	private List<MessageHandler> handlers;
+	private ClientEventDispatcher clientEventDispatcher = new ClientEventDispatcher();
 
 	public IoServer(int port) throws IOException {
-		this.handlers = new ArrayList<MessageHandler>();
-		this.handlers.add(new IoResultHandler());
-		this.handlers.add(new IoConfigHandler());
-		this.handlers.add(new IoTokenHandler());
-		this.handlers.add(new IoTaskHandler());
-
 		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
 		if (logger.isDebugEnabled()) {
@@ -61,7 +46,7 @@ public class IoServer extends IoHandlerAdapter {
 		IoAcceptorHolder.setIoAcceptor(acceptor);
 
 		resetSessions();
-		resetProxys();
+		// resetProxys();
 		logger.info("start to listener port:" + port + " for IoServer..");
 	}
 
@@ -70,30 +55,13 @@ public class IoServer extends IoHandlerAdapter {
 		sessionHisService.updateUpSessionToInterrupt();
 	}
 
-	private void resetProxys() {
-		ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
-		List<Long> idList = new ArrayList<Long>();
-		List<ProxyDetectDto> workList = proxyDetectService.getProxyDetectDtosFromId(0L, Integer.MAX_VALUE,
-				ProxyDetectDto.STATUS_WORK);
-		for (ProxyDetectDto dto : workList) {
-			idList.add(dto.getId());
-		}
-		proxyDetectService.batchUpdateProxyStatus(idList, ProxyDetectDto.STATUS_RETRY);
-	}
-
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		add2Attribute(session, SessionHisDto.REQUEST_SIZE, 1);
-		addNewSession(session, message);
-		// ClientEventNotifier.doNotify(session, message);
-		// IoRequest ioRequest = (IoRequest) message;
-		// requestProceser.execute(new MessageAccepter(ioRequest, session));
-		callHandlers(session, message);
-	}
-
-	private void callHandlers(IoSession session, Object message) {
-		for (MessageHandler handler : handlers) {
-			handler.handleMessage(session, message);
+		if (message instanceof IoRequest) {
+			addNewSession(session, message);
+			IoRequest ioRequest = (IoRequest) message;
+			clientEventDispatcher.fireEvent(session, ioRequest);
 		}
 	}
 
@@ -127,16 +95,17 @@ public class IoServer extends IoHandlerAdapter {
 	}
 
 	private void addNewSession(IoSession session, Object message) {
-		if (!session.containsAttribute(SessionHisDto.CLIEN_NAME) && message instanceof IoRequest) {
-			IoRequest ioRequest = (IoRequest) message;
-			JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
-			String name = JSONUtils.getString(hObject, SessionHisDto.CLIEN_NAME);
-			if (!StringUtils.isEmpty(name)) {
-				logger.info(String.format("add new client:%s", name));
-				session.setAttribute(SessionHisDto.CLIEN_NAME, name);
-			} else {
-				logger.warn(String.format("can not found name from %s", hObject));
-			}
+		if (session.containsAttribute(SessionHisDto.CLIEN_NAME)) {
+			return;
+		}
+		IoRequest ioRequest = (IoRequest) message;
+		JSONObject hObject = JSONUtils.getJSONObject(ioRequest.getHeader());
+		String name = JSONUtils.getString(hObject, SessionHisDto.CLIEN_NAME);
+		if (!StringUtils.isEmpty(name)) {
+			logger.info(String.format("add new client:%s", name));
+			session.setAttribute(SessionHisDto.CLIEN_NAME, name);
+		} else {
+			logger.warn(String.format("can not found name from %s", hObject));
 		}
 	}
 

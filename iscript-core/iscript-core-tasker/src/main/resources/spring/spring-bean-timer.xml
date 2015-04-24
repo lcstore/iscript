@@ -38,7 +38,7 @@
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="cacheConfigTimer" method="run"
-			fixed-delay="30000" />
+			fixed-delay="300000" />
 	</task:scheduled-tasks>
 
 	<task:scheduled-tasks scheduler="scheduler">
@@ -53,30 +53,32 @@
 
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="saveSessionTimer" method="run"
-			cron="0 0/5 * * * ?" />
+			fixed-delay="300000"/>
 	</task:scheduled-tasks>
 	<bean id="writeFlushTimer" class="com.lezo.iscript.yeam.resultmgr.writer.WriteFlushTimer">
 	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="writeFlushTimer" method="run"
-			cron="0 0/1 * * * ?" />
+			fixed-delay="60000"/>
 	</task:scheduled-tasks>
 	<bean id="RefreshClientTokenTimer" class="com.lezo.iscript.yeam.tasker.RefreshClientTokenTimer">
 	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="RefreshClientTokenTimer" method="run"
-			cron="0 0/5 * * * ?" />
+			fixed-delay="300000"/>
 	</task:scheduled-tasks>
 	<bean id="LoadClientTokenTimer" class="com.lezo.iscript.yeam.tasker.LoadClientTokenTimer">
 	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="LoadClientTokenTimer" method="run"
-			cron="0 0/2 * * * ?" />
+			fixed-delay="300000" />
 	</task:scheduled-tasks>
+	<!-- 
 	<bean id="ReloadProxyTimer" class="com.lezo.iscript.yeam.tasker.ReloadProxyTimer">
 	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="ReloadProxyTimer" method="run"
 			fixed-delay="300000" />
 	</task:scheduled-tasks>
+	 -->
 </beans>
