@@ -28,6 +28,7 @@ public class ConfigIoFilter extends IoFilterAdapter {
 			ioRequest.setType(IoRequest.REQUEST_REPORT);
 			ioRequest.setHeader(HeaderUtils.getHeader().toString());
 			SessionSender.getInstance().send(ioRequest);
+			logger.info("config report head:" + ioRequest.getHeader());
 		} else {
 			nextFilter.messageReceived(session, message);
 		}

@@ -16,7 +16,6 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.server.HeadCacher;
 import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 import com.lezo.iscript.yeam.server.SendUtils;
 import com.lezo.iscript.yeam.tasker.cache.ProxyCacher;
@@ -26,8 +25,8 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class IoTaskHandler implements MessageHandler {
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(IoTaskHandler.class);
-	private static final int PER_OFFER_SIZE = 15;
-	private static final int MIN_TASK_SIZE = 5;
+	public static final int PER_OFFER_SIZE = 50;
+	public static final int MIN_TASK_SIZE = 10;
 
 	@Override
 	public void handleMessage(IoSession session, Object message) {

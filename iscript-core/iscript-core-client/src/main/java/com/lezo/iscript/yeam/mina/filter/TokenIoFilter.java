@@ -34,6 +34,7 @@ public class TokenIoFilter extends IoFilterAdapter {
 			ioRequest.setType(IoRequest.REQUEST_REPORT);
 			ioRequest.setHeader(HeaderUtils.getHeader().toString());
 			SessionSender.getInstance().send(ioRequest);
+			logger.info("token report head:" + ioRequest.getHeader());
 		} else {
 			nextFilter.messageReceived(session, message);
 		}

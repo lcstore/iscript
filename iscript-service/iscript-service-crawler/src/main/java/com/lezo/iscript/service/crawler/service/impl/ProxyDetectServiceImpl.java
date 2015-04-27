@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dao.ProxyDetectDao;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
+import com.lezo.iscript.service.crawler.service.ProxyAddrService;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.utils.BatchIterator;
 
@@ -28,6 +29,8 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	private static Logger logger = LoggerFactory.getLogger(ProxyDetectServiceImpl.class);
 	@Autowired
 	private ProxyDetectDao proxyDetectDao;
+	@Autowired
+	private ProxyAddrService proxyAddrService;
 
 	@Override
 	public void batchInsertProxyDetectDtos(List<ProxyDetectDto> dtoList) {
@@ -126,6 +129,25 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 		batchInsertProxyDetectDtos(insertDtos);
 		batchUpdateProxyDetectDtos(updateDtos);
 		logger.info("save ProxyDetectDto.insert:" + insertDtos.size() + ",update:" + updateDtos.size());
+		doDetectSummary(dtoList);
+	}
+
+	private void doDetectSummary(List<ProxyDetectDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return;
+		}
+		Map<Integer, Set<String>> useableCodeMap = new HashMap<Integer, Set<String>>();
+		for (ProxyDetectDto dto : dtoList) {
+			Set<String> codeSet = useableCodeMap.get(dto.getStatus());
+			if (codeSet == null) {
+				codeSet = new HashSet<String>();
+				useableCodeMap.put(dto.getStatus(), codeSet);
+			}
+			codeSet.add(dto.getAddrCode());
+		}
+		for (Entry<Integer, Set<String>> entry : useableCodeMap.entrySet()) {
+			proxyAddrService.batchUpdateProxyDetectByCodeList(new ArrayList<String>(entry.getValue()), entry.getKey());
+		}
 	}
 
 	private void doAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos, List<ProxyDetectDto> updateDtos) {

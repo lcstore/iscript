@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dao.ProxyAddrDao;
 import com.lezo.iscript.service.crawler.dto.ProxyAddrDto;
 import com.lezo.iscript.service.crawler.service.ProxyAddrService;
@@ -66,6 +67,7 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 		if (CollectionUtils.isEmpty(dtoList)) {
 			return;
 		}
+		UnifyValueUtils.unifyQuietly(dtoList);
 		ensureAddrCodeFilled(dtoList);
 		synchronized (ProxyAddrServiceImpl.class) {
 			List<ProxyAddrDto> insertList = new ArrayList<ProxyAddrDto>();
@@ -158,6 +160,22 @@ public class ProxyAddrServiceImpl implements ProxyAddrService {
 	@Override
 	public List<ProxyAddrDto> getProxyAddrDtosByCreateTime(Date afterTime) {
 		return proxyAddrDao.getProxyAddrDtosByCreateTime(afterTime);
+	}
+
+	@Override
+	public void batchUpdateProxyDetectByCodeList(List<String> codeList, int usable) {
+		BatchIterator<String> it = new BatchIterator<String>(codeList, 500);
+		while (it.hasNext()) {
+			proxyAddrDao.batchUpdateProxyDetectByCodeList(it.next(), usable);
+		}
+	}
+
+	@Override
+	public void batchUpdateProxyRegionById(List<ProxyAddrDto> dtoList) {
+		BatchIterator<ProxyAddrDto> it = new BatchIterator<ProxyAddrDto>(dtoList);
+		while (it.hasNext()) {
+			proxyAddrDao.batchUpdateProxyRegionById(it.next());
+		}
 	}
 
 }

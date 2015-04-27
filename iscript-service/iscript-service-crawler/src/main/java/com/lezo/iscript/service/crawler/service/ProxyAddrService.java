@@ -17,4 +17,8 @@ public interface ProxyAddrService {
 	List<ProxyAddrDto> getNullRegionProxyAddrDtos(Long fromId, Integer type, Integer limit);
 
 	List<ProxyAddrDto> getProxyAddrDtosByCreateTime(Date afterTime);
+
+	void batchUpdateProxyDetectByCodeList(List<String> codeList, int usable);
+
+	void batchUpdateProxyRegionById(List<ProxyAddrDto> dtoList);
 }

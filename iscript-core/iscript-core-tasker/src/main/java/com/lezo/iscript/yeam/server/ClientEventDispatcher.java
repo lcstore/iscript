@@ -17,7 +17,6 @@ import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
 public class ClientEventDispatcher {
-	private static final int MIN_TASK_SIZE = 5;
 
 	public void fireEvent(IoSession session, IoRequest ioRequest) {
 		if (ioRequest == null) {
@@ -60,7 +59,7 @@ public class ClientEventDispatcher {
 			return stamp > 0 ? new IoConfigHandler() : null;
 		}
 		Integer tsize = JSONUtils.getInteger(hObject, "tsize");
-		if (tsize < MIN_TASK_SIZE) {
+		if (tsize < IoTaskHandler.MIN_TASK_SIZE) {
 			return TaskCacher.getInstance().getTypeCount() > 0 ? new IoTaskHandler() : null;
 		}
 		return null;

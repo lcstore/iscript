@@ -49,6 +49,7 @@ import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
+import com.lezo.iscript.yeam.config.ConfigProxyRegion;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
@@ -90,6 +91,7 @@ public class ConfigParserTest {
 		parser = new ConfigJdBrandShop();
 		parser = new ConfigTmallBrandShop();
 		parser = new ConfigProxyDetector();
+		parser = new ConfigProxyRegion();
 		// parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
@@ -116,9 +118,8 @@ public class ConfigParserTest {
 
 		// http
 		task.put("proxyHost", "60.29.248.142");
+		task.put("proxyHost", "213.85.92.10");
 		task.put("proxyPort", 8080);
-		task.put("proxyHost", "127.0.0.1");
-		task.put("proxyPort", 8900);
 		task.put("proxyType", 1);
 		// socket
 		// task.put("ip", "103.246.161.194");

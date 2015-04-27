@@ -37,13 +37,16 @@ public class SaveSessionTimer {
 			for (Entry<Long, IoSession> entry : sessionMap.entrySet()) {
 				IoSession session = entry.getValue();
 				SessionHisDto sessionHisDto = getSessionHisDto(session);
-				if (session.getCloseFuture().isClosed()) {
-					sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
-					closeCount++;
-				}
 				if (StringUtils.isEmpty(sessionHisDto.getClienName())) {
 					logger.warn("empty name.id:" + sessionHisDto.getSessionId() + "," + sessionHisDto);
 					continue;
+				}
+				if (System.currentTimeMillis() - session.getLastBothIdleTime() > 60000) {
+					logger.warn("idle session.id:" + sessionHisDto.getSessionId() + "," + sessionHisDto);
+				}
+				if (session.getCloseFuture().isClosed()) {
+					sessionHisDto.setStatus(SessionHisDto.STATUS_DOWN);
+					closeCount++;
 				}
 				copyList.add(sessionHisDto);
 			}

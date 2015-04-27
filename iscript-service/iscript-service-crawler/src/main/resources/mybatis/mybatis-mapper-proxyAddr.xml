@@ -4,18 +4,26 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyAddrDao">
 	<resultMap type="ProxyAddrDto" id="RM_ProxyAddrDto">
-		<result column="ID" property="id" />
-		<result column="IP" property="ip" />
-		<result column="PORT" property="port" />
-		<result column="ADDR_CODE" property="addrCode" />
-		<result column="REGION_NAME" property="regionName" />
-		<result column="ISP_NAME" property="ispName" />
-		<result column="IS_DELETE" property="isDelete" />
-		<result column="CREATE_TIME" property="createTime" />
-		<result column="UPDATE_TIME" property="updateTime" />
-		<result column="TYPE" property="type" />
-		<result column="REMARK" property="remark" />
-		<result column="SEED_ID" property="seedId" />
+		<result column="ID" property="id"/>
+		<result column="IP" property="ip"/>
+		<result column="PORT" property="port"/>
+		<result column="ADDR_CODE" property="addrCode"/>
+		<result column="REGION_NAME" property="regionName"/>
+		<result column="ISP_NAME" property="ispName"/>
+		<result column="IS_DELETE" property="isDelete"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="TYPE" property="type"/>
+		<result column="REMARK" property="remark"/>
+		<result column="SEED_ID" property="seedId"/>
+		<result column="MAP_TYPE" property="mapType"/>
+		<result column="MAP_LAT" property="mapLat"/>
+		<result column="MAP_LNG" property="mapLng"/>
+		<result column="FAIL_COUNT" property="failCount"/>
+		<result column="SUCCESS_COUNT" property="successCount"/>
+		<result column="LAST_SUCCESS_COUNT" property="lastSuccessCount"/>
+		<result column="REGION_COUNTRY" property="regionCountry"/>
+		<result column="REGION_CITY" property="regionCity"/>
 	</resultMap>
 	<sql id="ProxyAddrDto-coloumn-list">
 		IP
@@ -29,6 +37,14 @@
 		,TYPE
 		,REMARK
 		,SEED_ID
+		,MAP_TYPE
+		,MAP_LAT
+		,MAP_LNG
+		,FAIL_COUNT
+		,SUCCESS_COUNT
+		,LAST_SUCCESS_COUNT
+		,REGION_COUNTRY
+		,REGION_CITY
 	</sql>
 	<insert id="batchInsert" parameterType="ProxyAddrDto">
 		INSERT INTO T_PROXY_ADDR(
@@ -37,19 +53,53 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.ip},#{item.port},#{item.addrCode},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark},#{item.seedId})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark},#{item.seedId},#{item.mapType},#{item.mapLat},#{item.mapLng},#{item.failCount},#{item.successCount},#{item.lastSuccessCount},#{item.regionCountry},#{item.regionCity})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProxyAddrDto">
 		UPDATE T_PROXY_ADDR SET
-		REGION_NAME=#{regionName},
-		ISP_NAME=#{ispName},
-		IS_DELETE=#{isDelete},
-		TYPE=#{type},
-		REMARK=#{remark},
-		SEED_ID=#{seedId},
-		UPDATE_TIME=#{updateTime}
+		REGION_NAME=#{regionName}
+		,ISP_NAME=#{ispName}
+		,IS_DELETE=#{isDelete}
+		,TYPE=#{type}
+		,REMARK=#{remark}
+		,SEED_ID=#{seedId}
+		,MAP_TYPE=#{mapType}
+		,MAP_LAT=#{mapLat}
+		,MAP_LNG=#{mapLng}
+		,FAIL_COUNT=#{failCount}
+		,SUCCESS_COUNT=#{successCount}
+		,LAST_SUCCESS_COUNT=#{lastSuccessCount}
+		,REGION_COUNTRY=#{regionCountry}
+		,REGION_CITY=#{regionCity}
 		WHERE ID=#{id}
+	</update>
+	<update id="batchUpdateProxyRegionById" parameterType="ProxyAddrDto">
+		UPDATE T_PROXY_ADDR SET
+		REGION_NAME=#{regionName}
+		,REGION_COUNTRY=#{regionCountry}
+		,REGION_CITY=#{regionCity}
+		,ISP_NAME=#{ispName}
+		,MAP_TYPE=#{mapType}
+		,MAP_LAT=#{mapLat}
+		,MAP_LNG=#{mapLng}
+		WHERE ID=#{id}
+	</update>
+	<update id="batchUpdateProxyDetectByCodeList" parameterType="map">
+		UPDATE T_PROXY_ADDR SET
+		ADDR_CODE=ADDR_CODE
+		<if test="usable ==1">
+		,SUCCESS_COUNT=SUCCESS_COUNT+1
+		,LAST_SUCCESS_COUNT=LAST_SUCCESS_COUNT+1
+		</if>
+		<if test="usable !=1">
+		,FAIL_COUNT=FAIL_COUNT+1
+		,LAST_SUCCESS_COUNT=0
+		</if>
+		WHERE
+		<foreach collection="codeList" open="ADDR_CODE IN(" separator="," close=")" item="code">
+		  #{code}
+		</foreach>
 	</update>
 	<select id="getProxyAddrDtosByAddrCodes" parameterType="map"
 		resultMap="RM_ProxyAddrDto">

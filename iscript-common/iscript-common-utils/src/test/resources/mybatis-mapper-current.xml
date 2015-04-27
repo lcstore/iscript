@@ -2,69 +2,81 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ClientTokenDao">
-	<resultMap type="ClientTokenDto" id="RM_ClientTokenDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProxyAddrDao">
+	<resultMap type="ProxyAddrDto" id="RM_ProxyAddrDto">
 		<result column="ID" property="id"/>
-		<result column="CLIENT_TYPE" property="clientType"/>
-		<result column="CLIENT_BUCKET" property="clientBucket"/>
-		<result column="CLIENT_DOMAIN" property="clientDomain"/>
-		<result column="CLIENT_KEY" property="clientKey"/>
-		<result column="CLIENT_SECRET" property="clientSecret"/>
-		<result column="CLIENT_PARAMS" property="clientParams"/>
-		<result column="REFRESH_TOKEN" property="refreshToken"/>
-		<result column="ACCESS_TOKEN" property="accessToken"/>
-		<result column="SUCCESS_COUNT" property="successCount"/>
-		<result column="FAIL_COUNT" property="failCount"/>
-		<result column="LAST_MESSGE" property="lastMessge"/>
-		<result column="NEXT_REFRESH_TIME" property="nextRefreshTime"/>
+		<result column="IP" property="ip"/>
+		<result column="PORT" property="port"/>
+		<result column="ADDR_CODE" property="addrCode"/>
+		<result column="REGION_NAME" property="regionName"/>
+		<result column="ISP_NAME" property="ispName"/>
 		<result column="IS_DELETE" property="isDelete"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="TYPE" property="type"/>
+		<result column="REMARK" property="remark"/>
+		<result column="SEED_ID" property="seedId"/>
+		<result column="MAP_TYPE" property="mapType"/>
+		<result column="MAP_LAT" property="mapLat"/>
+		<result column="MAP_LNG" property="mapLng"/>
+		<result column="FAIL_COUNT" property="failCount"/>
+		<result column="SUCCESS_COUNT" property="successCount"/>
+		<result column="LAST_SUCCESS_COUNT" property="lastSuccessCount"/>
+		<result column="REGION_COUNTRY" property="regionCountry"/>
+		<result column="REGION_CITY" property="regionCity"/>
 	</resultMap>
-	<sql id="ClientTokenDto-coloumn-list">
-		CLIENT_TYPE
-		,CLIENT_BUCKET
-		,CLIENT_DOMAIN
-		,CLIENT_KEY
-		,CLIENT_SECRET
-		,CLIENT_PARAMS
-		,REFRESH_TOKEN
-		,ACCESS_TOKEN
-		,SUCCESS_COUNT
-		,FAIL_COUNT
-		,LAST_MESSGE
-		,NEXT_REFRESH_TIME
+	<sql id="ProxyAddrDto-coloumn-list">
+		IP
+		,PORT
+		,ADDR_CODE
+		,REGION_NAME
+		,ISP_NAME
 		,IS_DELETE
 		,CREATE_TIME
 		,UPDATE_TIME
+		,TYPE
+		,REMARK
+		,SEED_ID
+		,MAP_TYPE
+		,MAP_LAT
+		,MAP_LNG
+		,FAIL_COUNT
+		,SUCCESS_COUNT
+		,LAST_SUCCESS_COUNT
+		,REGION_COUNTRY
+		,REGION_CITY
 	</sql>
-	<insert id="batchInsert" parameterType="ClientTokenDto">
-		INSERT INTO T_CLIENT_TOKEN(
-		<include refid="ClientTokenDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="ProxyAddrDto">
+		INSERT INTO T_PROXY_ADDR(
+		<include refid="ProxyAddrDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.clientType},#{item.clientBucket},#{item.clientDomain},#{item.clientKey},#{item.clientSecret},#{item.clientParams},#{item.refreshToken},#{item.accessToken},#{item.successCount},#{item.failCount},#{item.lastMessge},#{item.nextRefreshTime},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.ip},#{item.port},#{item.addrCode},#{item.regionName},#{item.ispName},#{item.isDelete},#{item.createTime},#{item.updateTime},#{item.type},#{item.remark},#{item.seedId},#{item.mapType},#{item.mapLat},#{item.mapLng},#{item.failCount},#{item.successCount},#{item.lastSuccessCount},#{item.regionCountry},#{item.regionCity})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="ClientTokenDto">
-		UPDATE T_CLIENT_TOKEN SET
-		CLIENT_TYPE=#{clientType}
-		,CLIENT_BUCKET=#{clientBucket}
-		,CLIENT_DOMAIN=#{clientDomain}
-		,CLIENT_KEY=#{clientKey}
-		,CLIENT_SECRET=#{clientSecret}
-		,CLIENT_PARAMS=#{clientParams}
-		,REFRESH_TOKEN=#{refreshToken}
-		,ACCESS_TOKEN=#{accessToken}
-		,SUCCESS_COUNT=#{successCount}
-		,FAIL_COUNT=#{failCount}
-		,LAST_MESSGE=#{lastMessge}
-		,NEXT_REFRESH_TIME=#{nextRefreshTime}
+	<update id="batchUpdate" parameterType="ProxyAddrDto">
+		UPDATE T_PROXY_ADDR SET
+		IP=#{ip}
+		,PORT=#{port}
+		,ADDR_CODE=#{addrCode}
+		,REGION_NAME=#{regionName}
+		,ISP_NAME=#{ispName}
 		,IS_DELETE=#{isDelete}
 		,CREATE_TIME=#{createTime}
 		,UPDATE_TIME=#{updateTime}
+		,TYPE=#{type}
+		,REMARK=#{remark}
+		,SEED_ID=#{seedId}
+		,MAP_TYPE=#{mapType}
+		,MAP_LAT=#{mapLat}
+		,MAP_LNG=#{mapLng}
+		,FAIL_COUNT=#{failCount}
+		,SUCCESS_COUNT=#{successCount}
+		,LAST_SUCCESS_COUNT=#{lastSuccessCount}
+		,REGION_COUNTRY=#{regionCountry}
+		,REGION_CITY=#{regionCity}
 		WHERE ID=#{id}
 	</update>
 </mapper>

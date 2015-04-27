@@ -21,4 +21,8 @@ public interface ProxyAddrDao {
 	List<ProxyAddrDto> getProxyAddrDtosByFromId(@Param("fromId") Long fromId, @Param("limit") Integer limit);
 
 	void batchDeleteByIds(@Param("idList") List<String> idList);
+
+	void batchUpdateProxyDetectByCodeList(@Param("codeList") List<String> codeList,@Param("usable")  int usable);
+
+	void batchUpdateProxyRegionById(List<ProxyAddrDto> dtoList);
 }

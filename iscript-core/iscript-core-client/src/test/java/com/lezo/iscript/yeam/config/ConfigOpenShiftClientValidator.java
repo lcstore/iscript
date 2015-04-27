@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.yeam.http.HttpClientManager;
-import com.lezo.iscript.yeam.mina.utils.ClientPropertiesUtils;
+import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -25,7 +25,7 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
 	private Timer timer;
 
 	public ConfigOpenShiftClientValidator() {
-		final String clientName = ClientPropertiesUtils.getProperty("name");
+		final String clientName = HeaderUtils.CLIENT_NAME;
 		if (clientName.indexOf("openshift") >= 0) {
 			final Map<String, String> name2UrlMap = new HashMap<String, String>();
 			name2UrlMap.put("openshift", "http://osclient-iscript.rhcloud.com/");

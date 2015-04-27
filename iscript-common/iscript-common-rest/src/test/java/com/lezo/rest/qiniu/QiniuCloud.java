@@ -54,12 +54,12 @@ public class QiniuCloud {
 
 	@Test
 	public void testDelete() throws Exception {
-		String bucketName = "p1001";
+		String bucketName = "d1002";
 		QiniuBucketMac bucketMac = QiniuBucketMacFactory.getBucketMac(bucketName);
 		Mac mac = bucketMac.getMac();
 		RSClient rs = new RSClient(mac);
 		RSFClient client = new RSFClient(mac);
-		String key = "iscript/2014";
+		String key = "iscript/201502";
 		String marker = "";
 		ListPrefixRet ret = null;
 		while (true) {
