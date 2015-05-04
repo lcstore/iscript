@@ -122,7 +122,8 @@ public class ElementJavaObject extends NativeJavaObject {
 		org.w3c.dom.Element childElement = element.getOwnerDocument().createElement(tagName);
 		element.appendChild(childElement);
 		if (xmlElement.hasContent()) {
-			childElement.setTextContent(xmlElement.getTextTrim());
+//			childElement.setTextContent(xmlElement.getTextTrim());
+			childElement.setNodeValue(xmlElement.getTextTrim());
 		}
 		childElement.setNodeValue(xmlElement.getStringValue());
 		Iterator<?> ait = xmlElement.attributeIterator();

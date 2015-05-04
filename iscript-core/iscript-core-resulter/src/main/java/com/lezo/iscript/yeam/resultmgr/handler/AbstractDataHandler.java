@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.resultmgr.ExecutorUtils;
 
 public abstract class AbstractDataHandler implements DataHandler {
 	private static Logger logger = LoggerFactory.getLogger(AbstractDataHandler.class);
@@ -43,6 +44,7 @@ public abstract class AbstractDataHandler implements DataHandler {
 			sb.append(",cause:");
 			logger.warn(sb.toString(), ex);
 		}
+		logger.info("handle type:" + type + ",executor:" + ExecutorUtils.getDataConsumeExecutor());
 	}
 
 	protected void finalCall(String type, JSONObject gObject, long start) {

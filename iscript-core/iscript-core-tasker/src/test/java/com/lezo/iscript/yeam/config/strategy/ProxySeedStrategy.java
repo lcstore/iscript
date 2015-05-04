@@ -19,6 +19,7 @@ import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.ProxySeedDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.ProxySeedService;
+import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
@@ -61,6 +62,7 @@ public class ProxySeedStrategy implements ResultStrategy, Closeable {
 
 	private class StrategyTimer extends TimerTask {
 		private ProxySeedService proxySeedService = SpringBeanUtils.getBean(ProxySeedService.class);
+		private TaskPriorityService taskPriorityService = SpringBeanUtils.getBean(TaskPriorityService.class);
 
 		public StrategyTimer() {
 		}
@@ -89,7 +91,7 @@ public class ProxySeedStrategy implements ResultStrategy, Closeable {
 					TaskPriorityDto taskDto = createPriorityDto(seedDto.getUrl(), type, argsObject);
 					taskList.add(taskDto);
 				}
-				getTaskPriorityDtoBuffer().addAll(taskList);
+				taskPriorityService.batchInsert(taskList);
 				logger.info("Offer task:{},size:{}", type, taskList.size());
 			} catch (Exception ex) {
 				logger.warn(ExceptionUtils.getStackTrace(ex));

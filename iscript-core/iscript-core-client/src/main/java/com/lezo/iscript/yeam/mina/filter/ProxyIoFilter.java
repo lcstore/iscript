@@ -19,12 +19,14 @@ public class ProxyIoFilter extends IoFilterAdapter {
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session, Object message) throws Exception {
-		IoRespone ioRespone = (IoRespone) message;
-		if (IoConstant.EVENT_TYPE_PROXY == ioRespone.getType()) {
-			addProxys(ioRespone);
-		} else {
-			nextFilter.messageReceived(session, message);
+		if (message instanceof IoRespone) {
+			IoRespone ioRespone = (IoRespone) message;
+			if (IoConstant.EVENT_TYPE_PROXY == ioRespone.getType()) {
+				addProxys(ioRespone);
+				return;
+			}
 		}
+		nextFilter.messageReceived(session, message);
 	}
 
 	private void addProxys(IoRespone ioRespone) {

@@ -22,15 +22,8 @@ public class ProxyDetectWriter implements ObjectWriter<ProxyDetectDto> {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
-		saveDetectList(dataList);
-	}
-
-	private void saveDetectList(List<ProxyDetectDto> detectList) {
-		if (detectList.isEmpty()) {
-			return;
-		}
 		synchronized (ProxyDetectWriter.class) {
-			callService.batchSaveProxyDetectDtos(detectList);
+			callService.batchSaveProxyDetectDtos(dataList);
 		}
 	}
 

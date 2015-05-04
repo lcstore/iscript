@@ -60,7 +60,7 @@ public class EnvjsUtils {
 		// create adapt window,location,document
 		LocationAdapt location = new LocationAdapt();
 		DocumentAdapt documentAdapt = new DocumentAdapt(document, location);
-		documentAdapt.setUserData("g_scope_key", scope, null);
+//		documentAdapt.setUserData("g_scope_key", scope, null);
 		// init host script object
 		ScriptableObject.putProperty(scope, "document", Context.toObject(documentAdapt, scope));
 		ScriptableObject.putProperty(scope, "navigator", Context.toObject(new NavigatorAdapt(), scope));

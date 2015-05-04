@@ -19,7 +19,7 @@ public abstract class AbstractConsumeListener implements ConsumeListener {
 			}
 			getHandler().handle(type, gObject);
 		} catch (Exception ex) {
-
+			logger.warn("type:" + type + " cause:", ex);
 		}
 
 	}

@@ -136,6 +136,7 @@ public class ConfigProxyDetector implements ConfigParser {
 		get.addHeader("Referer", referUrl);
 		get.addHeader("User-Agent",
 				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
+		get.addHeader("Cookie", "ATS_PASS=0");
 		VerifyMsg msg = new VerifyMsg();
 		long start = System.currentTimeMillis();
 		try {
@@ -148,6 +149,7 @@ public class ConfigProxyDetector implements ConfigParser {
 				byte[] dataBytes = EntityUtils.toByteArray(entity);
 				String charsetName = HttpClientUtils.getCharsetOrDefault(entity.getContentType(), dataBytes, "UTF-8");
 				String html = new String(dataBytes, charsetName);
+//				FileUtils.writeStringToFile(new File("src/test/resources/data/" + res.hashCode() + ".html"), html);
 				msg.setCode(-1);
 				if (html != null && html.contains(checkValue)) {
 					msg.setCode(1);

@@ -24,12 +24,14 @@ public class TaskIoFilter extends IoFilterAdapter {
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session, Object message) throws Exception {
-		IoRespone ioRespone = (IoRespone) message;
-		if (IoConstant.EVENT_TYPE_TASK == ioRespone.getType()) {
-			addTasks(ioRespone);
-		} else {
-			nextFilter.messageReceived(session, message);
+		if (message instanceof IoRespone) {
+			IoRespone ioRespone = (IoRespone) message;
+			if (IoConstant.EVENT_TYPE_TASK == ioRespone.getType()) {
+				addTasks(ioRespone);
+				return;
+			}
 		}
+		nextFilter.messageReceived(session, message);
 	}
 
 	private void addTasks(IoRespone ioRespone) {
@@ -45,7 +47,8 @@ public class TaskIoFilter extends IoFilterAdapter {
 			Future<ResultWritable> future = caller.submit(new TaskWorker(taskWritable));
 			storager.getStorageBuffer().add(future);
 		}
-		String msg = String.format("Get task:%d,Queue:%d,working:%d", taskList.size(), caller.getQueue().size(), caller.getActiveCount());
+		String msg = String.format("Get task:%d,Queue:%d,working:%d", taskList.size(), caller.getQueue().size(),
+				caller.getActiveCount());
 		logger.info(msg);
 	}
 

@@ -7,6 +7,9 @@
 	<bean id="ioServer" class="com.lezo.iscript.yeam.server.IoServer" >
 		<constructor-arg index="0" value="${port}"></constructor-arg>
 	</bean>
+	<bean id="ClientToServerProxyIoHandler" class="com.lezo.iscript.yeam.proxy.ClientToServerProxyIoHandler" >
+		<constructor-arg index="0" value="${proxy_port}"></constructor-arg>
+	</bean>
 	<bean id="resultController" class="com.lezo.iscript.yeam.resultmgr.ResultController">
 	</bean>
 </beans>

@@ -1,12 +1,11 @@
 package com.lezo.iscript.yeam.mina;
 
+import java.io.Serializable;
+
 import org.apache.mina.core.future.IoFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
-import org.slf4j.Logger;
-
-import com.lezo.iscript.yeam.io.IoRequest;
 
 public class SessionSender {
 	private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SessionSender.class);
@@ -28,7 +27,7 @@ public class SessionSender {
 		return instance;
 	}
 
-	public void send(IoRequest request) {
+	public void send(Serializable request) {
 		WriteFuture wfuture = ioClient.getSession().write(request);
 		// wfuture.awaitUninterruptibly();
 		wfuture.addListener(new IoFutureListener<IoFuture>() {
@@ -41,7 +40,7 @@ public class SessionSender {
 		});
 	}
 
-	public boolean send(IoRequest request, long timeoutMillis) {
+	public boolean send(Serializable request, long timeoutMillis) {
 		WriteFuture wfuture = ioClient.getSession().write(request);
 		return wfuture.awaitUninterruptibly(timeoutMillis);
 	}

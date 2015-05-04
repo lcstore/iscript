@@ -28,7 +28,7 @@
 
 
 	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
-		<property name="limit" value="100" />
+		<property name="limit" value="50" />
 		<property name="nameList">
 			<list>
 				<!-- 
@@ -62,7 +62,7 @@
 		scheduler="scheduler" />
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
-			fixed-rate="120000"/>
+			fixed-rate="60000"/>
 	</task:scheduled-tasks>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="flushWriterTimer" method="run"

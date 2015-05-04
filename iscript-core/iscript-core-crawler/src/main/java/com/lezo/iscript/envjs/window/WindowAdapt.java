@@ -127,7 +127,8 @@ public class WindowAdapt implements EventTarget {
 	}
 
 	private Scriptable getGloableScope() {
-		Object gObject = document.getUserData(GLOABLE_SCOPE_KEY);
+//		Object gObject = document.getUserData(GLOABLE_SCOPE_KEY);
+		Object gObject = null;
 		return gObject == null ? null : (Scriptable) gObject;
 	}
 

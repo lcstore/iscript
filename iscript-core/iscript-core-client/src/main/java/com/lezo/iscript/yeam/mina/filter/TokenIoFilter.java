@@ -27,17 +27,19 @@ public class TokenIoFilter extends IoFilterAdapter {
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session, Object message) throws Exception {
-		IoRespone ioRespone = (IoRespone) message;
-		if (IoConstant.EVENT_TYPE_TOKEN == ioRespone.getType()) {
-			updateToken(ioRespone);
-			IoRequest ioRequest = new IoRequest();
-			ioRequest.setType(IoRequest.REQUEST_REPORT);
-			ioRequest.setHeader(HeaderUtils.getHeader().toString());
-			SessionSender.getInstance().send(ioRequest);
-			logger.info("token report head:" + ioRequest.getHeader());
-		} else {
-			nextFilter.messageReceived(session, message);
+		if (message instanceof IoRespone) {
+			IoRespone ioRespone = (IoRespone) message;
+			if (IoConstant.EVENT_TYPE_TOKEN == ioRespone.getType()) {
+				updateToken(ioRespone);
+				IoRequest ioRequest = new IoRequest();
+				ioRequest.setType(IoRequest.REQUEST_REPORT);
+				ioRequest.setHeader(HeaderUtils.getHeader().toString());
+				SessionSender.getInstance().send(ioRequest);
+				logger.info("token report head:" + ioRequest.getHeader());
+				return;
+			}
 		}
+		nextFilter.messageReceived(session, message);
 	}
 
 	private void updateToken(IoRespone ioRespone) {

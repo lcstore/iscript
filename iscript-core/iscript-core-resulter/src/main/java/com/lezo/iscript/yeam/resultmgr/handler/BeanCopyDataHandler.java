@@ -1,5 +1,7 @@
 package com.lezo.iscript.yeam.resultmgr.handler;
 
+import java.io.BufferedWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -28,6 +31,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.MethodUtils;
 import com.lezo.iscript.utils.ObjectUtils;
 import com.lezo.iscript.yeam.resultmgr.ConfigClassUtils;
+import com.lezo.iscript.yeam.resultmgr.FileBuffer;
 import com.lezo.iscript.yeam.resultmgr.writer.BufferWriterManager;
 
 @Component
@@ -90,7 +94,8 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		return dataArray;
 	}
 
-	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
+	private void addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject)
+			throws Exception {
 		if (dataArray == null || dataArray.length() < 1) {
 			return;
 		}
@@ -110,6 +115,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		}
 		int len = dataArray.length();
 		List<Object> dataList = new ArrayList<Object>(len);
+		BufferedWriter bw = FileBuffer.getInstance().getBufferedWriter();
 		for (int i = 0; i < len; i++) {
 			Object destObject = ObjectUtils.newCopyObject(dtoClass);
 			JSONObject rObject = dataArray.getJSONObject(i);
@@ -117,11 +123,22 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 			try {
 				addProperties(destObject, rObject, argsObject);
 				dataList.add(destObject);
+				if ("ConfigProxyDetector".equals(type)) {
+					ObjectMapper mapper = new ObjectMapper();
+					StringWriter sw = new StringWriter();
+					mapper.writeValue(sw, destObject);
+					bw.append(rObject.toString());
+					bw.append("\r\n		");
+					bw.append(sw.toString());
+					bw.append("\r\n\r\n");
+				}
 			} catch (Exception e) {
 				logger.warn("add data fail.cause:", e);
 			}
 		}
 		writer.write(dataList);
+
+		bw.flush();
 	}
 
 	private JSONArray getHitDataArray(JSONArray dataArray, Class<?> dtoClass) throws Exception {

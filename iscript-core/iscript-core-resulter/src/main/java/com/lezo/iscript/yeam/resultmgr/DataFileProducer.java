@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryDescriptor;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryLockUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryTracker;
@@ -27,7 +26,7 @@ import com.lezo.rest.data.RestList;
 public class DataFileProducer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(DataFileProducer.class);
 	private static final String DIR_SEPARATOR = "/";
-	private ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("fileConsumeExecutor");
+	private ThreadPoolExecutor executor = ExecutorUtils.getFileConsumeExecutor();
 	private DirectoryTracker tracker;
 
 	public DataFileProducer(DirectoryTracker tracker) {
@@ -76,6 +75,7 @@ public class DataFileProducer implements Runnable {
 		} else {
 			paramMap.put("limit", "" + limit);
 		}
+		long startStamp = this.tracker.getStamp();
 		while (true) {
 			listTimes++;
 			long startMills = System.currentTimeMillis();
@@ -96,6 +96,9 @@ public class DataFileProducer implements Runnable {
 					createDataFileConsumer(descriptor, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
+					if (this.tracker.getStamp() - startStamp >= 10 * 60 * 1000) {
+						break;
+					}
 				} else {
 					// throw new RuntimeException(descriptor.getBucketName() +
 					// ":" + this.tracker.getDescriptor().getDirectoryKey() +

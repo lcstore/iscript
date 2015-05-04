@@ -122,32 +122,39 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	@Override
 	public void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
+		doDetectSummary(dtoList);
 		UnifyValueUtils.unifyQuietly(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		List<ProxyDetectDto> updateDtos = new ArrayList<ProxyDetectDto>();
 		doAssort(dtoList, insertDtos, updateDtos);
 		batchInsertProxyDetectDtos(insertDtos);
 		batchUpdateProxyDetectDtos(updateDtos);
-		logger.info("save ProxyDetectDto.insert:" + insertDtos.size() + ",update:" + updateDtos.size());
-		doDetectSummary(dtoList);
+		logger.info("save ProxyDetectDto.insert:" + insertDtos.size() + ",update:" + updateDtos.size() + ",total:"
+				+ dtoList.size());
 	}
 
 	private void doDetectSummary(List<ProxyDetectDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
 			return;
 		}
-		Map<Integer, Set<String>> useableCodeMap = new HashMap<Integer, Set<String>>();
+		Map<String, Set<String>> keyCodeMap = new HashMap<String, Set<String>>();
 		for (ProxyDetectDto dto : dtoList) {
-			Set<String> codeSet = useableCodeMap.get(dto.getStatus());
+			String key = dto.getStatus() + ":" + dto.getDomain();
+			Set<String> codeSet = keyCodeMap.get(key);
 			if (codeSet == null) {
 				codeSet = new HashSet<String>();
-				useableCodeMap.put(dto.getStatus(), codeSet);
+				keyCodeMap.put(key, codeSet);
 			}
 			codeSet.add(dto.getAddrCode());
 		}
-		for (Entry<Integer, Set<String>> entry : useableCodeMap.entrySet()) {
-			proxyAddrService.batchUpdateProxyDetectByCodeList(new ArrayList<String>(entry.getValue()), entry.getKey());
+		for (Entry<String, Set<String>> entry : keyCodeMap.entrySet()) {
+			String key = entry.getKey();
+			Integer status = Integer.valueOf(key.split(":")[0]);
+			proxyAddrService.batchUpdateProxyDetectByCodeList(new ArrayList<String>(entry.getValue()), status);
+			logger.info("detect summary,status:" + key + ",code size:" + entry.getValue().size() + ",total:"
+					+ dtoList.size());
 		}
+
 	}
 
 	private void doAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos, List<ProxyDetectDto> updateDtos) {

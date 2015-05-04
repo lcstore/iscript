@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.yeam.resultmgr.DataFileProducer;
+import com.lezo.iscript.yeam.resultmgr.ExecutorUtils;
 
 public class DirectoryEventListener {
 
@@ -32,7 +33,6 @@ public class DirectoryEventListener {
 //				tracker.setStamp(c.getTimeInMillis());
 //			}
 		}
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) SpringBeanUtils.getBean("fileProduceExecutor");
-		executor.execute(new DataFileProducer(tracker));
+		ExecutorUtils.getFileProduceExecutor().execute(new DataFileProducer(tracker));
 	}
 }

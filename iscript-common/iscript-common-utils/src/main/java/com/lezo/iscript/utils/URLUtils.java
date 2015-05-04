@@ -76,7 +76,7 @@ public class URLUtils {
 	}
 
 	public static String getHost(String url) {
-		String sMark = "http://";
+		String sMark = "://";
 		int fromIndex = url.indexOf(sMark);
 		fromIndex += sMark.length();
 		int toIndex = url.indexOf("/", fromIndex);

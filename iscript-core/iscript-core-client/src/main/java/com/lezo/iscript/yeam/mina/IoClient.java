@@ -13,6 +13,9 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.client.order.ISessionOrder;
+import com.lezo.iscript.client.order.ProxySessionOrder;
+import com.lezo.iscript.yeam.io.IoOrder;
 import com.lezo.iscript.yeam.mina.filter.ConfigIoFilter;
 import com.lezo.iscript.yeam.mina.filter.ProxyIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TaskIoFilter;
@@ -48,7 +51,8 @@ public class IoClient extends IoHandlerAdapter {
 	private void configConnector() {
 		this.connector = new NioSocketConnector();
 		this.connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
-		this.connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
+		this.connector.getFilterChain()
+				.addLast("codec", new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));
 		if (logger.isDebugEnabled()) {
 			this.connector.getFilterChain().addLast("logger", new LoggingFilter());
 		}
@@ -95,6 +99,16 @@ public class IoClient extends IoHandlerAdapter {
 		if (StringUtils.isEmpty(value)) {
 			throw new IllegalArgumentException("please set property[" + key + "]");
 		}
+	}
+
+	@Override
+	public void messageReceived(IoSession session, Object message) throws Exception {
+		if (!(message instanceof IoOrder)) {
+			return;
+		}
+		ISessionOrder sessionOrder = new ProxySessionOrder();
+		IoOrder ioOrder = (IoOrder) message;
+		sessionOrder.execute(ioOrder, session);
 	}
 
 }

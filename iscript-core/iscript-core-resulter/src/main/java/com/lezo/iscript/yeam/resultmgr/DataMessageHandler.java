@@ -61,6 +61,8 @@ public class DataMessageHandler {
 		eDto.setMessage(msg);
 		eDto.setName("ConfigProxyDetector");
 		this.hardList.add(eDto);
+		//ignore above msg
+		this.hardList.clear();
 	}
 
 	public void run() {

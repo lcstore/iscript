@@ -2,10 +2,11 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
+import com.lezo.iscript.common.CloneObject;
 import com.lezo.iscript.common.UnifyValueAnnotation;
 import com.lezo.iscript.utils.InetAddressUtils;
 
-public class ProxyAddrDto {
+public class ProxyAddrDto extends CloneObject<ProxyAddrDto>{
 	public static final int TYPE_UNKNOWN = 0;
 	public static final int TYPE_HTTP = 1;
 	public static final int TYPE_SOCKET = 2;
@@ -21,9 +22,9 @@ public class ProxyAddrDto {
 	private Date updateTime;
 	private Integer type = TYPE_UNKNOWN;
 	private String remark = "";
-	
+
 	@UnifyValueAnnotation("0")
-	private Integer mapType=0;
+	private Integer mapType = 0;
 	@UnifyValueAnnotation("")
 	private String mapLat;
 	@UnifyValueAnnotation("")
@@ -54,6 +55,9 @@ public class ProxyAddrDto {
 	}
 
 	public String getIpString() {
+		if (ip == null) {
+			return "";
+		}
 		return InetAddressUtils.inet_ntoa(ip);
 	}
 

@@ -4,7 +4,7 @@
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
 
-	<bean name="blockPolicy" class="com.lezo.iscript.common.BlockPolicy" />
+	<!-- <bean name="blockPolicy" class="com.lezo.iscript.common.BlockPolicy" />
 
 	<bean id="fileProduceExecutor" class="com.lezo.iscript.common.ArrayBlockingQueueThreadPool">
 		<constructor-arg name="corePoolSize" value="2" />
@@ -26,29 +26,5 @@
 		<constructor-arg name="keepAliveTime" value="60000" />
 		<constructor-arg name="capacity" value="10000" />
 		<constructor-arg name="handler" ref="blockPolicy" />
-	</bean>
-	<!-- <bean id="qiniuMacFactory" class="com.lezo.iscript.yeam.resultmgr.QiniuMacFactory">
-		<property name="macMap">
-			<map>
-				<entry key="d1001.qiniudn.com">
-					<bean class="com.qiniu.api.auth.digest.Mac">
-						<constructor-arg name="accessKey" value="${qiniu_accessKey_d1001}" />
-						<constructor-arg name="secretKey" value="${qiniu_secretKey_d1001}" />
-					</bean>
-				</entry>
-				<entry key="d1002.qiniudn.com">
-					<bean class="com.qiniu.api.auth.digest.Mac">
-						<constructor-arg name="accessKey" value="${qiniu_accessKey_d1002}" />
-						<constructor-arg name="secretKey" value="${qiniu_secretKey_d1002}" />
-					</bean>
-				</entry>
-				<entry key="p1001.qiniudn.com">
-					<bean class="com.qiniu.api.auth.digest.Mac">
-						<constructor-arg name="accessKey" value="${qiniu_accessKey_p1001}" />
-						<constructor-arg name="secretKey" value="${qiniu_secretKey_p1001}" />
-					</bean>
-				</entry>
-			</map>
-		</property>
 	</bean> -->
 </beans>

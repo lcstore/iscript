@@ -49,7 +49,6 @@ import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
-import com.lezo.iscript.yeam.config.ConfigProxyRegion;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
@@ -91,7 +90,6 @@ public class ConfigParserTest {
 		parser = new ConfigJdBrandShop();
 		parser = new ConfigTmallBrandShop();
 		parser = new ConfigProxyDetector();
-		parser = new ConfigProxyRegion();
 		// parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
@@ -106,7 +104,10 @@ public class ConfigParserTest {
 		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
 		url = "http://list.tmall.com/search_product.htm?brand=29295&sort=s&style=w#J_Filter";
 //		url = "http://www.yelp.com/biz/ikes-place-san-francisco";
-		 url = "http://www.yhd.com/brand/c21306.html";
+		 url = "http://www.baidu.com/";
+//		 url = "https://www.baidu.com/";
+//		 url = "http://www.cnbeta.com/";
+//		 url = "http://www.yhd.com/brand/c21306.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -121,6 +122,10 @@ public class ConfigParserTest {
 		task.put("proxyHost", "213.85.92.10");
 		task.put("proxyPort", 8080);
 		task.put("proxyType", 1);
+		task.put("proxyHost", "115.231.97.251");
+		task.put("proxyHost", "127.0.0.1");
+		task.put("proxyPort", 3128);
+		task.put("proxyPort", 3189);
 		// socket
 		// task.put("ip", "103.246.161.194");
 		// task.put("port", 1080);
