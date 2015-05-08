@@ -29,6 +29,7 @@ public class IoTaskHandler implements MessageHandler {
 	public static final int PER_OFFER_SIZE = 50;
 	public static final int MIN_TASK_SIZE = 10;
 	private static final AtomicLong OFFER_ID = new AtomicLong(0);
+	private static final Object LOCKER = new Object();
 
 	@Override
 	public void handleMessage(IoSession session, Object message) {
@@ -60,54 +61,64 @@ public class IoTaskHandler implements MessageHandler {
 			return 0;
 		}
 		long start = System.currentTimeMillis();
-		TaskCacher taskCancher = TaskCacher.getInstance();
-		List<String> typeList = taskCancher.getNotEmptyTypeList();
-		List<TaskWritable> taskOffers = new ArrayList<TaskWritable>(PER_OFFER_SIZE);
-		int limit = 0;
 		int sendCount = 0;
-		if (!typeList.isEmpty()) {
-			// shuffle type to offer task random
-			// TODO: wrapper task before to push for the client
-			Collections.shuffle(typeList);
-			logger.info(String.format("Ready type:%s", typeList));
-			int cycle = 0;
+		List<TaskWritable> taskOffers = Collections.emptyList();
+		int limit = 0;
+		synchronized (LOCKER) {
+			TaskCacher taskCancher = TaskCacher.getInstance();
+			List<String> typeList = taskCancher.getNotEmptyTypeList();
 			TaskAssign taskAssign = getTaskAssign(typeList);
-			int remain = taskAssign.getMaxCountForClient();
 			limit = taskAssign.getMaxCountForType();
-			while (remain > 0 && ++cycle <= 3) {
-				for (String type : typeList) {
-					TaskQueue taskQueue = taskCancher.getQueue(type);
-					limit = limit > remain ? remain : limit;
-					synchronized (taskQueue) {
-						List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
-						if (!CollectionUtils.isEmpty(taskList)) {
-							for (TaskWritable task : taskList) {
-								task.put("oid", OFFER_ID.incrementAndGet());
-							}
-							remain -= taskList.size();
-							taskOffers.addAll(taskList);
-							if (remain < 1) {
-								break;
-							}
-						}
-					}
-				}
-			}
-			if (!taskOffers.isEmpty()) {
-				// assignProxyForTasks(taskOffers);
-				IoRespone ioRespone = new IoRespone();
-				ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
-				ioRespone.setData(taskOffers);
-				SendUtils.doSend(hObject, ioRespone, ioSession);
-				sendCount = taskOffers.size();
-			}
+			taskOffers = getOfferTasks(typeList, taskAssign);
 		}
+		if (!taskOffers.isEmpty()) {
+			// assignProxyForTasks(taskOffers);
+			IoRespone ioRespone = new IoRespone();
+			ioRespone.setType(IoConstant.EVENT_TYPE_TASK);
+			ioRespone.setData(taskOffers);
+			SendUtils.doSend(hObject, ioRespone, ioSession);
+			sendCount = taskOffers.size();
+		}
+
 		long cost = System.currentTimeMillis() - start;
 		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
 				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
 				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
 		logger.info(msg);
 		return sendCount;
+	}
+
+	private List<TaskWritable> getOfferTasks(List<String> typeList, TaskAssign taskAssign) {
+		if (CollectionUtils.isEmpty(typeList)) {
+			return Collections.emptyList();
+		}
+		List<TaskWritable> taskOffers = new ArrayList<TaskWritable>(PER_OFFER_SIZE);
+		Collections.shuffle(typeList);
+		logger.info(String.format("Ready type:%s", typeList));
+		int cycle = 0;
+		int limit = taskAssign.getMaxCountForType();
+		int remain = taskAssign.getMaxCountForClient();
+		TaskCacher taskCancher = TaskCacher.getInstance();
+		while (remain > 0 && ++cycle <= 3) {
+			for (String type : typeList) {
+				TaskQueue taskQueue = taskCancher.getQueue(type);
+				limit = limit > remain ? remain : limit;
+				synchronized (taskQueue) {
+					List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
+					if (!CollectionUtils.isEmpty(taskList)) {
+						for (TaskWritable task : taskList) {
+							task.put("oid", OFFER_ID.incrementAndGet());
+						}
+						remain -= taskList.size();
+						taskOffers.addAll(taskList);
+					}
+				}
+				if (remain < 1) {
+					break;
+				}
+			}
+		}
+		return taskOffers;
 	}
 
 	private void assignProxyForTasks(List<TaskWritable> taskOffers) {
@@ -143,22 +154,6 @@ public class IoTaskHandler implements MessageHandler {
 			}
 		}
 
-	}
-
-	private int getLimitSize(List<String> typeList) {
-		if (typeList.size() < 3) {
-			TaskCacher taskCancher = TaskCacher.getInstance();
-			int total = 0;
-			for (String type : typeList) {
-				total += taskCancher.getQueue(type).size();
-			}
-			if (total < PER_OFFER_SIZE * 20) {
-				return 2;
-			}
-		}
-		int limit = PER_OFFER_SIZE / typeList.size();
-		limit = limit <= 1 ? 2 : limit;
-		return limit;
 	}
 
 	private TaskAssign getTaskAssign(List<String> typeList) {
