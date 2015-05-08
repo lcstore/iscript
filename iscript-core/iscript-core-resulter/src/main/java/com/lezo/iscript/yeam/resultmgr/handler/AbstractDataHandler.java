@@ -44,7 +44,6 @@ public abstract class AbstractDataHandler implements DataHandler {
 			sb.append(",cause:");
 			logger.warn(sb.toString(), ex);
 		}
-		logger.info("handle type:" + type + ",executor:" + ExecutorUtils.getDataConsumeExecutor());
 	}
 
 	protected void finalCall(String type, JSONObject gObject, long start) {
@@ -52,7 +51,10 @@ public abstract class AbstractDataHandler implements DataHandler {
 		if (cost >= 30000) {
 			JSONObject argsObject = JSONUtils.get(gObject, "args");
 			String argsString = argsObject == null ? "" : argsObject.toString();
-			logger.warn("cost too long time.type:{},args:{},cost:{}", type, argsString, cost);
+			logger.warn("cost too long time.type:{},args:{},cost:{},executor:{}", type, argsString, cost,
+					ExecutorUtils.getDataConsumeExecutor());
+		} else {
+			logger.info("handle type:" + type + ",cost:" + cost + ",executor:" + ExecutorUtils.getDataConsumeExecutor());
 		}
 	}
 }

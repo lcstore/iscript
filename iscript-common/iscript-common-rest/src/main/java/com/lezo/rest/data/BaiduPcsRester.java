@@ -12,10 +12,12 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -69,8 +71,10 @@ public class BaiduPcsRester implements DataRestable {
 	}
 
 	private String convertPath(String targetPath) {
-		if (StringUtils.isNotEmpty(getRootPath()) && !targetPath.startsWith(getRootPath().substring(0, getRootPath().length() - 1))) {
-			targetPath = targetPath.startsWith("/") ? (getRootPath() + targetPath.substring(1)) : (getRootPath() + targetPath);
+		if (StringUtils.isNotEmpty(getRootPath())
+				&& !targetPath.startsWith(getRootPath().substring(0, getRootPath().length() - 1))) {
+			targetPath = targetPath.startsWith("/") ? (getRootPath() + targetPath.substring(1))
+					: (getRootPath() + targetPath);
 		}
 		targetPath = targetPath.replace("\\", "/");
 		return targetPath;
@@ -147,6 +151,11 @@ public class BaiduPcsRester implements DataRestable {
 		if (customRespone.getException() != null) {
 			throw customRespone.getException();
 		}
+		HttpResponse response = customRespone.getResponse();
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode < 200 || statusCode >= 300) {
+			throw new HttpResponseException(statusCode, response.getStatusLine().getReasonPhrase() + ",url:" + url);
+		}
 		RestList restFileList = new RestList();
 		String result = EntityUtils.toString(customRespone.getResponse().getEntity(), DEFAULT_CHASET_NAME);
 		JSONObject rsObject = JSONUtils.getJSONObject(result);
@@ -183,7 +192,8 @@ public class BaiduPcsRester implements DataRestable {
 		return restFileList;
 	}
 
-	private void addNameValuePair(List<NameValuePair> params, String key, Map<String, String> paramMap, String defaultValue) {
+	private void addNameValuePair(List<NameValuePair> params, String key, Map<String, String> paramMap,
+			String defaultValue) {
 		String destValue = paramMap == null ? null : paramMap.get(key);
 		if (StringUtils.isEmpty(destValue)) {
 			destValue = defaultValue;

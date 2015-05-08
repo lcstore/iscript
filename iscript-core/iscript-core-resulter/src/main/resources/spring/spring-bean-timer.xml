@@ -4,52 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-	<bean id="pullJdListTimer" class="com.lezo.iscript.yeam.crawler.PullJdListTimer">
-	</bean>
-	<bean id="wccSimilarSearchTimer" class="com.lezo.iscript.yeam.crawler.WccSimilarSearchTimer">
-	</bean>
-	<bean id="HuihuiSimilarSearcher" class="com.lezo.iscript.yeam.crawler.HuihuiSimilarSearcher">
-	</bean>
-	<bean id="BarCodeSimilarSearcher" class="com.lezo.iscript.yeam.crawler.BarCodeSimilarSearcher">
-	</bean>
-	<bean id="haole9BarCodeGetter" class="com.lezo.iscript.yeam.crawler.Haole9BarCodeGetter"
-		init-method="init">
-		<property name="barCodeItemStorager" ref="barCodeItemStorager"></property>
-	</bean>
-	<bean id="barCodeItemStorager" class="com.lezo.iscript.yeam.storage.BarCodeItemStorager">
-	</bean>
-	<bean id="storageTimeTrigger" class="com.lezo.iscript.common.storage.StorageTimeTrigger">
-		<property name="listeners">
-			<list>
-				<ref bean="barCodeItemStorager" />
-			</list>
-		</property>
-	</bean>
 
-
-	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
-		<property name="limit" value="50" />
-		<property name="nameList">
-			<list>
-				<!-- 
-				<value>ConfigJdProduct</value>
-				<value>ConfigJdPromotion</value>
-				<value>ConfigYhdPromotion</value> 
-				<value>ConfigJdBrandShop</value>
-				<value>ConfigProxyDetector</value>
-				<value>ConfigProxyCollector</value>
-				<value>ConfigYhdProduct</value>
-				<value>ConfigProxyCollector</value>
-				-->
-				<value>ConfigProxyDetector</value>
-				<value>ConfigProxyChecker</value> 
-				<value>ConfigProxySeedHandler</value>
-				<value>ConfigTmallBrandShop</value>
-				<value>ConfigYhdBrandShop</value>
-				<value>ConfigJdBrandShop</value>
- 			</list>
-		</property>
-	</bean>
 
 	<bean id="flushWriterTimer" class="com.lezo.iscript.yeam.resultmgr.writer.FlushWriterTimer"></bean>
 	<bean id="luceneIndexer" class="com.lezo.iscript.yeam.solr.LuceneIndexer"></bean>
@@ -60,10 +15,7 @@
 	<task:scheduler id="scheduler" pool-size="20" />
 	<task:annotation-driven executor="executor"
 		scheduler="scheduler" />
-	<task:scheduled-tasks scheduler="scheduler">
-		<task:scheduled ref="dataMessageHandler" method="run"
-			fixed-rate="60000"/>
-	</task:scheduled-tasks>
+	
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="flushWriterTimer" method="run"
 			cron="0 0/2 * * * ?" />
@@ -81,5 +33,17 @@
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="TokenToRestTimer" method="run"
 			fixed-rate="18000000"/>
+	</task:scheduled-tasks>
+	<bean id="EarliestMessageHandler" class="com.lezo.iscript.yeam.resultmgr.EarliestMessageHandler"></bean>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="EarliestMessageHandler" method="run"
+			fixed-rate="300000"/>
+	</task:scheduled-tasks>
+	
+	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
+	</bean>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="dataMessageHandler" method="run"
+			fixed-rate="120000"/>
 	</task:scheduled-tasks>
 </beans>

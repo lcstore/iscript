@@ -107,7 +107,8 @@ public class ConfigParserTest {
 		 url = "http://www.baidu.com/";
 //		 url = "https://www.baidu.com/";
 //		 url = "http://www.cnbeta.com/";
-//		 url = "http://www.yhd.com/brand/c21306.html";
+		 url = "http://list.yhd.com/c5066-0-0/?tc=0.0.16.CatMenu_Site_100000019_78010.86&tp=4.94808.161.3.4.KoZbPEM-11-6d7Av";
+		 url = "http://www.yhd.com/";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -122,10 +123,10 @@ public class ConfigParserTest {
 		task.put("proxyHost", "213.85.92.10");
 		task.put("proxyPort", 8080);
 		task.put("proxyType", 1);
-		task.put("proxyHost", "115.231.97.251");
-		task.put("proxyHost", "127.0.0.1");
-		task.put("proxyPort", 3128);
-		task.put("proxyPort", 3189);
+		task.put("proxyHost", "183.207.224.51");
+		task.put("proxyPort", 80);
+//		task.put("proxyPort", 3128);
+//		task.put("proxyPort", 3189);
 		// socket
 		// task.put("ip", "103.246.161.194");
 		// task.put("port", 1080);

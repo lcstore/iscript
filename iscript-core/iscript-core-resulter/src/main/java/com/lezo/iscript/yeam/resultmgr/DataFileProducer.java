@@ -96,9 +96,9 @@ public class DataFileProducer implements Runnable {
 					createDataFileConsumer(descriptor, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
-					if (this.tracker.getStamp() - startStamp >= 10 * 60 * 1000) {
-						break;
-					}
+//					if (this.tracker.getStamp() - startStamp >= 10 * 60 * 1000) {
+//						break;
+//					}
 				} else {
 					// throw new RuntimeException(descriptor.getBucketName() +
 					// ":" + this.tracker.getDescriptor().getDirectoryKey() +

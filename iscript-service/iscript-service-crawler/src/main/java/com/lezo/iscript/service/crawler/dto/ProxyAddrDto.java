@@ -2,11 +2,10 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-import com.lezo.iscript.common.CloneObject;
 import com.lezo.iscript.common.UnifyValueAnnotation;
 import com.lezo.iscript.utils.InetAddressUtils;
 
-public class ProxyAddrDto extends CloneObject<ProxyAddrDto>{
+public class ProxyAddrDto{
 	public static final int TYPE_UNKNOWN = 0;
 	public static final int TYPE_HTTP = 1;
 	public static final int TYPE_SOCKET = 2;

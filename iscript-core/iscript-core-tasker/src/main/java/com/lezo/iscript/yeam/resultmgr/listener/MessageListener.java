@@ -49,7 +49,7 @@ public class MessageListener implements IResultListener {
 		dto.setSource("tasker");
 		dto.setCreateTime(new Date());
 		dto.setUpdateTime(dto.getCreateTime());
-		dto.setStatus(MessageDto.NEW_MESSGE);
+		dto.setStatus(MessageDto.STATUS_NEW);
 		dto.setSortCode(0);
 		return dto;
 	}

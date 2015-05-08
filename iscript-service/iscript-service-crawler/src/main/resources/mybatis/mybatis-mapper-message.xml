@@ -63,6 +63,32 @@
 			#{id}
 		</foreach>
 	</update>
+	<update id="updateStatusByCreateTime" parameterType="map">
+		UPDATE T_MESSAGE SET
+		STATUS=#{toStatus}
+		<where>
+			<foreach collection="nameList" item="name" open="AND NAME IN("
+				close=")" separator=",">
+				#{name}
+			</foreach>
+			<if test="bucket==null">
+			 AND DATA_BUCKET IS NULL
+			</if>
+			<if test="bucket!=null">
+			 AND DATA_BUCKET=#{bucket}
+			</if>
+			<if test="domain==null">
+			 AND DATA_DOMAIN IS NULL
+			</if>
+			<if test="domain!=null">
+			 AND DATA_DOMAIN=#{domain}
+			</if>
+			AND STATUS=#{fromStatus}
+			<![CDATA[
+			AND CREATE_TIME<=#{beforCreateTime}
+			]]>
+		</where>
+	</update>
 	<select id="getMessageDtos" parameterType="map" resultMap="RM_MessageDto">
 		SELECT ID,
 		<include refid="MessageDto-coloumn-list" />
@@ -81,5 +107,31 @@
 			AND STATUS=#{status}
 		</if>
 		LIMIT #{limit}
+	</select>
+	
+	<select id="getMessageDtoByIdList" parameterType="map" resultMap="RM_MessageDto">
+		SELECT ID,
+		<include refid="MessageDto-coloumn-list" />
+		FROM T_MESSAGE
+		<where>
+			<foreach collection="idList" item="id" open="ID IN("
+				separator="," close=")">
+				#{id}
+			</foreach>
+		</where>
+	</select>
+	
+	<select id="getEarlyMessageByNameList" parameterType="map" resultMap="RM_MessageDto">
+		SELECT MIN(ID) AS ID,NAME,DATA_DOMAIN,DATA_BUCKET FROM T_MESSAGE
+		<where>
+			<foreach collection="nameList" item="name" open="NAME IN("
+				separator="," close=")">
+				#{name}
+			</foreach>
+			<if test="status != null">
+				AND STATUS=#{status}
+			</if>
+			GROUP BY NAME,DATA_DOMAIN,DATA_BUCKET
+		</where>
 	</select>
 </mapper>

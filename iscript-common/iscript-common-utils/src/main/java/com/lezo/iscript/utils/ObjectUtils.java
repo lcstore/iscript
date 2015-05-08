@@ -9,29 +9,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
-import com.lezo.iscript.common.CloneObject;
-
 public class ObjectUtils {
-	private static final ConcurrentHashMap<String, Object> BEAN_MAP = new ConcurrentHashMap<String, Object>();
-
-	@SuppressWarnings("unchecked")
-	public static <T> T newCopyObject(Class<T> clazz) throws Exception {
-		Object baseObject = BEAN_MAP.get(clazz.getName());
-		if (baseObject == null) {
-			baseObject = newObject(clazz);
-			BEAN_MAP.put(clazz.getName(), baseObject);
-			return (T) baseObject;
-		} else if (baseObject instanceof CloneObject) {
-			CloneObject<T> cloneObject = (CloneObject<T>) baseObject;
-			return (T) cloneObject.clone();
-		}
-		return newObject(clazz);
-	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T newObject(Class<T> clazz, Object... args) throws Exception {

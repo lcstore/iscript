@@ -26,12 +26,27 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
 
 	public ConfigOpenShiftClientValidator() {
 		final String clientName = HeaderUtils.CLIENT_NAME;
-		if (clientName.length() >= 30) {
-			final Map<String, String> name2UrlMap = new HashMap<String, String>();
+		final Map<String, String> name2UrlMap = new HashMap<String, String>();
+		if (clientName.startsWith("mp.")) {
+			name2UrlMap.put("mp.e1001", "http://e1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.e1002", "http://e1002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.e2001", "http://e2001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.e2002", "http://e2002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.dlinked", "http://dlinked.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.dl1001", "http://dl1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.dl1002", "http://dl1002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.p1001", "http://p1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.p1002", "http://p1002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.lcstore", "http://lcstore.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.v1001", "http://v1001.sturgeon.mopaas.com/");
+
+		} else if (clientName.length() >= 30) {
 			name2UrlMap.put("openshift.lcstore", "http://lcstore-iscript.rhcloud.com/");
 			name2UrlMap.put("openshift.d1001", "http://d1001-dlink.rhcloud.com/");
 			name2UrlMap.put("openshift.vcloudy", "http://vcloudy-vcloudy.rhcloud.com/");
 			name2UrlMap.put("openshift.verifyer", "http://verifyer-verifyer.rhcloud.com/");
+		}
+		if (!name2UrlMap.isEmpty()) {
 			this.timer = new Timer();
 			long delay = 60 * 1000L;
 			long period = 5 * 60 * 1000L;

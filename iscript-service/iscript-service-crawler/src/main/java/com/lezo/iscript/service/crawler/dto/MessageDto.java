@@ -5,7 +5,8 @@ import java.util.Date;
 import com.lezo.iscript.common.CloneObject;
 
 public class MessageDto extends CloneObject<MessageDto> {
-	public static final int NEW_MESSGE = 0;
+	public static final int STATUS_NEW = 0;
+	public static final int STATUS_DONE = -1;
 	private Long id;
 	private String name;
 	private String message;

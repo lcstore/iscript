@@ -31,14 +31,15 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(ProxyDetectStrategy.class);
-	private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
+	// private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
+	private static final String DEFAULT_DETECT_URL = "http://www.yhd.com/";
 	private static volatile boolean running = false;
 	private Timer timer;
 
 	public ProxyDetectStrategy() {
-		ProxyDetectTimer task = new ProxyDetectTimer();
-		this.timer = new Timer("ProxyDetectProducer");
-		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
+//		ProxyDetectTimer task = new ProxyDetectTimer();
+//		this.timer = new Timer("ProxyDetectProducer");
+//		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
 	}
 
 	@Override
@@ -173,7 +174,8 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 					TaskPriorityDto taskDto = new TaskPriorityDto();
 					taskDto.setBatchId(taskId);
 					taskDto.setType("ConfigProxyDetector");
-					sUrl = StringUtils.isEmpty(sUrl) ? DEFAULT_DETECT_URL : sUrl;
+//					sUrl = StringUtils.isEmpty(sUrl) ? DEFAULT_DETECT_URL : sUrl;
+					sUrl = DEFAULT_DETECT_URL;
 					taskDto.setUrl(sUrl);
 					taskDto.setLevel(1);
 					taskDto.setSource("tasker");

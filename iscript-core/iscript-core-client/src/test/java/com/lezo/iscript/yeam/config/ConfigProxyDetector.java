@@ -49,6 +49,7 @@ public class ConfigProxyDetector implements ConfigParser {
 		domainValueMap.put("mi.com", "http://www.mi.com/favicon.ico");
 		domainValueMap.put("baidu.com", "http://www.baidu.com/duty/");
 		domainValueMap.put("tmall.com", "J_ItemList");
+		domainValueMap.put("yhd.com", "http://d9.yihaodianimg.com/N02/M02");
 	}
 
 	@Override
@@ -83,6 +84,7 @@ public class ConfigProxyDetector implements ConfigParser {
 		String proxyHost = getHost(task);
 		String url = getDetectUrl(task);
 		ProxyDetectDto tBean = new ProxyDetectDto();
+		tBean.setStartMills(System.currentTimeMillis());
 		tBean.setIp(InetAddressUtils.inet_aton(proxyHost));
 		tBean.setPort(port);
 		tBean.setDetector(HeaderUtils.CLIENT_NAME);
@@ -112,6 +114,7 @@ public class ConfigProxyDetector implements ConfigParser {
 			}
 		}
 		limitRemarkLen(tBean);
+		tBean.setEndMills(System.currentTimeMillis());
 		DataBean rsBean = new DataBean();
 		rsBean.getDataList().add(tBean);
 		return rsBean;
@@ -247,6 +250,8 @@ public class ConfigProxyDetector implements ConfigParser {
 		private Integer verifyStatus = 0;
 		private String remark;
 		private Integer type = 0;
+		private long startMills;
+		private long endMills;
 
 		public Long getIp() {
 			return ip;
@@ -326,6 +331,22 @@ public class ConfigProxyDetector implements ConfigParser {
 
 		public void setVerifyStatus(Integer verifyStatus) {
 			this.verifyStatus = verifyStatus;
+		}
+
+		public long getStartMills() {
+			return startMills;
+		}
+
+		public void setStartMills(long startMills) {
+			this.startMills = startMills;
+		}
+
+		public long getEndMills() {
+			return endMills;
+		}
+
+		public void setEndMills(long endMills) {
+			this.endMills = endMills;
 		}
 
 	}

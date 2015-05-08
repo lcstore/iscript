@@ -22,14 +22,13 @@ public class DataLineConsumer implements Runnable {
 
 	@Override
 	public void run() {
-		long start = System.currentTimeMillis();
+//		long start = System.currentTimeMillis();
 		Iterator<Entry<String, ConsumeListener>> it = ConsumeListenerManager.getInstance().iterator();
 		while (it.hasNext()) {
 			Entry<String, ConsumeListener> entry = it.next();
 			entry.getValue().doConsume(type, data);
 		}
-		long cost = System.currentTimeMillis() - start;
-		logger.info("consume type:" + type + ",data hash:" + data.hashCode() + ",cost:" + cost);
+//		long cost = System.currentTimeMillis() - start;
 	}
 
 }

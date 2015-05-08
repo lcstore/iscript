@@ -3,11 +3,10 @@ package com.lezo.iscript.service.crawler.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.lezo.iscript.common.CloneObject;
 import com.lezo.iscript.common.UnifyValueAnnotation;
 import com.lezo.iscript.utils.InetAddressUtils;
 
-public class ProxyDetectDto extends CloneObject<ProxyDetectDto> implements Serializable {
+public class ProxyDetectDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// 状态,-2:禁用，-1:停用，0:重试，1:可用,2:工作中
 	public static final int STATUS_FORBIDDEN = -2;
@@ -221,14 +220,6 @@ public class ProxyDetectDto extends CloneObject<ProxyDetectDto> implements Seria
 
 	public void setType(Integer type) {
 		this.type = type;
-	}
-
-	@Override
-	public ProxyDetectDto clone() {
-		ProxyDetectDto cloneDto = super.clone();
-		cloneDto.setPort(-1);
-		cloneDto.setDetector("clone");
-		return cloneDto;
 	}
 
 }

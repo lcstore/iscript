@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.service.crawler.utils.ShopCacher;
@@ -21,7 +20,6 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.MethodUtils;
 import com.lezo.iscript.utils.ObjectUtils;
 
-@Component
 public class BeanCopyUtils {
 	private static Logger logger = LoggerFactory.getLogger(BeanCopyUtils.class);
 
@@ -89,7 +87,7 @@ public class BeanCopyUtils {
 	private static List<Object> addDestObject(String type, String clsName, JSONArray dataArray, JSONObject argsObject) throws Exception {
 		clsName = clsName.replace("BrandStoreDto", "BrandConfigVo");
 		Class<?> dtoClass = ConfigClassUtils.getDtoClass(clsName);
-		Object destObject = ObjectUtils.newCopyObject(dtoClass);
+		Object destObject = ObjectUtils.newObject(dtoClass);
 		int len = dataArray.length();
 		List<Object> dataList = new ArrayList<Object>(len);
 		for (int i = 0; i < len; i++) {

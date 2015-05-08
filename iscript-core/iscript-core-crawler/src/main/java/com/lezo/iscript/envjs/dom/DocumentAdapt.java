@@ -34,6 +34,11 @@ import com.lezo.iscript.envjs.window.LocationAdapt;
 import com.sun.org.apache.xerces.internal.dom.events.EventImpl;
 import com.sun.org.apache.xerces.internal.dom.events.MutationEventImpl;
 
+/**
+ * use jdk's w3c interface,not dom4j's interface 
+ * @author lezo
+ *
+ */
 @Deprecated
 public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 	private static Logger logger = Logger.getLogger(DocumentAdapt.class);
@@ -178,65 +183,65 @@ public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 		return document.hasAttributes();
 	}
 
-//	@Override
-//	public String getBaseURI() {
-//		return document.getBaseURI();
-//	}
-//
-//	@Override
-//	public short compareDocumentPosition(Node other) throws DOMException {
-//		return document.compareDocumentPosition(other);
-//	}
-//
-//	@Override
-//	public String getTextContent() throws DOMException {
-//		return document.getTextContent();
-//	}
-//
-//	@Override
-//	public void setTextContent(String textContent) throws DOMException {
-//		document.setTextContent(textContent);
-//	}
-//
-//	@Override
-//	public boolean isSameNode(Node other) {
-//		return document.isSameNode(other);
-//	}
-//
-//	@Override
-//	public String lookupPrefix(String namespaceURI) {
-//		return document.lookupPrefix(namespaceURI);
-//	}
-//
-//	@Override
-//	public boolean isDefaultNamespace(String namespaceURI) {
-//		return document.isDefaultNamespace(namespaceURI);
-//	}
-//
-//	@Override
-//	public String lookupNamespaceURI(String prefix) {
-//		return document.lookupNamespaceURI(prefix);
-//	}
-//
-//	@Override
-//	public boolean isEqualNode(Node arg) {
-//		return document.isEqualNode(arg);
-//	}
-//
-//	@Override
-//	public Object getFeature(String feature, String version) {
-//		return document.getFeature(feature, version);
-//	}
-//
-//	@Override
-//	public Object setUserData(String key, Object data, UserDataHandler handler) {
-//		return document.setUserData(key, data, handler);
-//	}
-//
-//	@Override
-//	public Object getUserData(String key) {
-//		return document.getUserData(key);
-//	}
+	@Override
+	public String getBaseURI() {
+		return document.getBaseURI();
+	}
+
+	@Override
+	public short compareDocumentPosition(Node other) throws DOMException {
+		return document.compareDocumentPosition(other);
+	}
+
+	@Override
+	public String getTextContent() throws DOMException {
+		return document.getTextContent();
+	}
+
+	@Override
+	public void setTextContent(String textContent) throws DOMException {
+		document.setTextContent(textContent);
+	}
+
+	@Override
+	public boolean isSameNode(Node other) {
+		return document.isSameNode(other);
+	}
+
+	@Override
+	public String lookupPrefix(String namespaceURI) {
+		return document.lookupPrefix(namespaceURI);
+	}
+
+	@Override
+	public boolean isDefaultNamespace(String namespaceURI) {
+		return document.isDefaultNamespace(namespaceURI);
+	}
+
+	@Override
+	public String lookupNamespaceURI(String prefix) {
+		return document.lookupNamespaceURI(prefix);
+	}
+
+	@Override
+	public boolean isEqualNode(Node arg) {
+		return document.isEqualNode(arg);
+	}
+
+	@Override
+	public Object getFeature(String feature, String version) {
+		return document.getFeature(feature, version);
+	}
+
+	@Override
+	public Object setUserData(String key, Object data, UserDataHandler handler) {
+		return document.setUserData(key, data, handler);
+	}
+
+	@Override
+	public Object getUserData(String key) {
+		return document.getUserData(key);
+	}
 
 	@Override
 	public DocumentType getDoctype() {
@@ -339,75 +344,74 @@ public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 		}
 	}
 
-//	@Override
-//	public String getInputEncoding() {
-//		return document.getInputEncoding();
-//	}
-//
-//	@Override
-//	public String getXmlEncoding() {
-//		return document.getXmlEncoding();
-//	}
-//
-//	@Override
-//	public boolean getXmlStandalone() {
-//		return document.getXmlStandalone();
-//	}
-//
-//	@Override
-//	public void setXmlStandalone(boolean xmlStandalone) throws DOMException {
-//		document.setXmlStandalone(xmlStandalone);
-//	}
-//
-//	@Override
-//	public String getXmlVersion() {
-//		return document.getXmlVersion();
-//	}
-//
-//	@Override
-//	public void setXmlVersion(String xmlVersion) throws DOMException {
-//		document.setXmlVersion(xmlVersion);
-//	}
-//
-//	@Override
-//	public boolean getStrictErrorChecking() {
-//		return document.getStrictErrorChecking();
-//	}
-//
-//	@Override
-//	public void setStrictErrorChecking(boolean strictErrorChecking) {
-//		document.setStrictErrorChecking(strictErrorChecking);
-//	}
-//
-//	@Override
-//	public String getDocumentURI() {
-//		return document.getDocumentURI();
-//	}
-//
-//	@Override
-//	public void setDocumentURI(String documentURI) {
-//		document.setDocumentURI(documentURI);
-//	}
-//
-//	@Override
-//	public Node adoptNode(Node source) throws DOMException {
-//		return document.adoptNode(source);
-//	}
-//
-//	@Override
-//	public DOMConfiguration getDomConfig() {
-//		return document.getDomConfig();
-//	}
-//
-//	@Override
-//	public void normalizeDocument() {
-//		document.normalizeDocument();
-//	}
-//
-//	@Override
-//	public Node renameNode(Node n, String namespaceURI, String qualifiedName) throws DOMException {
-//		return document.renameNode(n, namespaceURI, qualifiedName);
-//	}
+	@Override
+	public String getInputEncoding() {
+		return document.getInputEncoding();
+	}
+
+	@Override
+	public String getXmlEncoding() {
+		return document.getXmlEncoding();
+	}
+
+	@Override
+	public boolean getXmlStandalone() {
+		return document.getXmlStandalone();
+	}
+
+	@Override
+	public void setXmlStandalone(boolean xmlStandalone) throws DOMException {
+		document.setXmlStandalone(xmlStandalone);
+	}
+
+	@Override
+	public String getXmlVersion() {
+		return document.getXmlVersion();
+	}
+
+	@Override
+	public void setXmlVersion(String xmlVersion) throws DOMException {
+		document.setXmlVersion(xmlVersion);
+	}
+
+	@Override
+	public boolean getStrictErrorChecking() {
+		return document.getStrictErrorChecking();
+	}
+
+	@Override
+	public void setStrictErrorChecking(boolean strictErrorChecking) {
+		document.setStrictErrorChecking(strictErrorChecking);
+	}
+
+	@Override
+	public String getDocumentURI() {
+		return document.getDocumentURI();
+	}
+
+	@Override
+	public void setDocumentURI(String documentURI) {
+		document.setDocumentURI(documentURI);
+	}
+
+	@Override
+	public Node adoptNode(Node source) throws DOMException {
+		return document.adoptNode(source);
+	}
+
+	@Override
+	public DOMConfiguration getDomConfig() {
+		return document.getDomConfig();
+	}
+
+	@Override
+	public void normalizeDocument() {
+		document.normalizeDocument();
+	}
+
+	public Node renameNode(Node n, String namespaceURI, String qualifiedName) throws DOMException {
+		return document.renameNode(n, namespaceURI, qualifiedName);
+	}
 
 	public LocationAdapt getLocation() {
 		return location;
@@ -487,13 +491,12 @@ public class DocumentAdapt implements Document, EventTarget, DocumentEvent {
 		return this.body;
 	}
 
-	//
-	// @Override
-	// public void setBody(HTMLElement body) {
-	// synchronized (this) {
-	// this.body = body;
-	// }
-	// }
+//	@Override
+//	public void setBody(HTMLElement body) {
+//		synchronized (this) {
+//			this.body = body;
+//		}
+//	}
 
 	public HTMLCollection getImages() {
 		// TODO Auto-generated method stub
