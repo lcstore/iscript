@@ -1,10 +1,9 @@
 package com.lezo.iscript.yeam.tasker;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +25,7 @@ public class CacheTaskTimer {
 	private static final int ONE_FETCH_SIZE = 500;
 	private static Logger log = Logger.getLogger(CacheTaskTimer.class);
 	private static volatile boolean running = false;
+	private static final AtomicLong OFFER_ID = new AtomicLong(0);
 	private String tasker;
 	@Autowired
 	private TaskPriorityService taskPriorityService;
@@ -46,15 +46,20 @@ public class CacheTaskTimer {
 		}
 		try {
 			running = true;
-			Map<String, TypeConfigDto> typeMap = new HashMap<String, TypeConfigDto>();
+			log.info("add task.tasker[" + tasker + "],config size:" + typeConfigList.size());
 			for (TypeConfigDto dto : typeConfigList) {
-				typeMap.put(dto.getType(), dto);
-			}
-			List<String> typeList = new ArrayList<String>(typeMap.keySet());
-			List<TaskPriorityDto> typeLevelList = taskPriorityService.getTaskTypeLevels(typeList, TaskConstant.TASK_NEW);
-			log.info("add task.tasker[" + tasker + "],config size:" + typeConfigList.size() + ",typeLevel count:" + typeLevelList.size());
-			for (TaskPriorityDto dto : typeLevelList) {
-				cacheTasks(typeMap.get(dto.getType()), dto.getLevel());
+				List<Integer> leveList = dto.getLevelDescList();
+				StringBuilder sb = new StringBuilder();
+				for (Integer level : leveList) {
+					if (sb.length() > 0) {
+						sb.append(",");
+					}
+					sb.append(level);
+				}
+				log.info("cache type:" + dto.getType() + ",levelCount:" + leveList.size() + ",level:[" + sb + "]");
+				for (Integer level : leveList) {
+					cacheTasks(dto, level);
+				}
 			}
 		} finally {
 			running = false;
@@ -76,7 +81,8 @@ public class CacheTaskTimer {
 			if (remain < ONE_FETCH_SIZE) {
 				limit = remain;
 			}
-			List<TaskPriorityDto> taskList = taskPriorityService.getTaskPriorityDtos(typeConfigDto.getType(), level, TaskConstant.TASK_NEW, limit);
+			List<TaskPriorityDto> taskList = taskPriorityService.getTaskPriorityDtos(typeConfigDto.getType(), level,
+					TaskConstant.TASK_NEW, limit);
 			List<Long> taskIds = new ArrayList<Long>(taskList.size());
 			for (TaskPriorityDto dto : taskList) {
 				TaskWritable task = getTaskWritable(dto);
@@ -92,7 +98,8 @@ public class CacheTaskTimer {
 		}
 		addSize = addSize - remain;
 		String typeMsg = empty ? ".no more tasks." : "";
-		log.info("tasker[" + tasker + "],type[" + typeConfigDto.getType() + ":" + level + "].add:" + addSize + ",queue:" + queue.size() + typeMsg);
+		log.info("tasker[" + tasker + "],type[" + typeConfigDto.getType() + ":" + level + "].add:" + addSize
+				+ ",queue:" + queue.size() + typeMsg);
 	}
 
 	private TaskWritable getTaskWritable(TaskPriorityDto dto) {
@@ -103,6 +110,7 @@ public class CacheTaskTimer {
 		task.put("url", dto.getUrl());
 		task.put("level", dto.getLevel());
 		task.put("src", dto.getSource());
+		task.put("oid", OFFER_ID.incrementAndGet());
 		String param = dto.getParams();
 		try {
 			param = getStandardParam(param);

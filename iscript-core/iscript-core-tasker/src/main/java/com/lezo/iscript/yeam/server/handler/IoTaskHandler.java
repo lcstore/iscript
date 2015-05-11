@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.mina.core.session.IoSession;
@@ -28,7 +27,6 @@ public class IoTaskHandler implements MessageHandler {
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(IoTaskHandler.class);
 	public static final int PER_OFFER_SIZE = 50;
 	public static final int MIN_TASK_SIZE = 10;
-	private static final AtomicLong OFFER_ID = new AtomicLong(0);
 	private static final Object LOCKER = new Object();
 
 	@Override
@@ -106,9 +104,6 @@ public class IoTaskHandler implements MessageHandler {
 				synchronized (taskQueue) {
 					List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
 					if (!CollectionUtils.isEmpty(taskList)) {
-						for (TaskWritable task : taskList) {
-							task.put("oid", OFFER_ID.incrementAndGet());
-						}
 						remain -= taskList.size();
 						taskOffers.addAll(taskList);
 					}
@@ -158,6 +153,9 @@ public class IoTaskHandler implements MessageHandler {
 
 	private TaskAssign getTaskAssign(List<String> typeList) {
 		TaskAssign assign = new TaskAssign();
+		if (CollectionUtils.isEmpty(typeList)) {
+			return assign;
+		}
 		TaskCacher taskCancher = TaskCacher.getInstance();
 		int total = 0;
 		for (String type : typeList) {

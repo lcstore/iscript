@@ -18,8 +18,9 @@ public class BaiduPcsDataResterTest {
 	// String accessToken =
 	// "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
 	// private String bucket = "istore_doc";
-	String accessToken = "21.bbab445326661b526361f507d1a7305d.2592000.1433652624.4026763474-1856205";
-	private String bucket = "istore_doc";
+//	String accessToken = "21.bbab445326661b526361f507d1a7305d.2592000.1433652624.4026763474-1856205";
+	String accessToken = "21.ad2f5fb25bfaea4bea82efc054ba9b45.2592000.1433653314.4026763474-2920106";
+	private String bucket = "idocs";
 	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
@@ -63,6 +64,7 @@ public class BaiduPcsDataResterTest {
 		rester.setAccessToken(accessToken);
 		String path = "/apps/" + bucket;
 		String targetPath = "/apps/istore_doc/iscript/20150504/ConfigProxyDetector/8b13bf37-f6a4-43b0-ae25-ffb396248392";
+		targetPath = "/apps/idocs/iscript/20150509/ConfigProxyDetector/8f84c4ea-f64c-41b3-a4be-b84728b248a2";
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("limit", "30-40");
 		RestList fileList = rester.listFiles(targetPath, paramMap);

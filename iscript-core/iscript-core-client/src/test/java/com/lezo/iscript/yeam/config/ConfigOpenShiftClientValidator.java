@@ -39,12 +39,31 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
 			name2UrlMap.put("mp.p1002", "http://p1002.sturgeon.mopaas.com/");
 			name2UrlMap.put("mp.lcstore", "http://lcstore.sturgeon.mopaas.com/");
 			name2UrlMap.put("mp.v1001", "http://v1001.sturgeon.mopaas.com/");
-
+			name2UrlMap.put("mp.p2001", "http://p2001.sturgeon.mopaas.com/");
+			
+			name2UrlMap.put("jda1004", "http://jda1004.jd-app.com");
+			name2UrlMap.put("jda1003", "http://jda1003.jd-app.com");
+			name2UrlMap.put("jda1001", "http://jda1001.jd-app.com");
+			name2UrlMap.put("jda1002", "http://jda1002.jd-app.com");
 		} else if (clientName.length() >= 30) {
 			name2UrlMap.put("openshift.lcstore", "http://lcstore-iscript.rhcloud.com/");
 			name2UrlMap.put("openshift.d1001", "http://d1001-dlink.rhcloud.com/");
 			name2UrlMap.put("openshift.vcloudy", "http://vcloudy-vcloudy.rhcloud.com/");
 			name2UrlMap.put("openshift.verifyer", "http://verifyer-verifyer.rhcloud.com/");
+
+		} else if (clientName.indexOf("jd") >= 0) {
+			name2UrlMap.put("mp.e1001", "http://e1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.e1002", "http://e1002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.e2001", "http://e2001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.e2002", "http://e2002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.dlinked", "http://dlinked.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.dl1001", "http://dl1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.dl1002", "http://dl1002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.p1001", "http://p1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.p1002", "http://p1002.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.lcstore", "http://lcstore.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.v1001", "http://v1001.sturgeon.mopaas.com/");
+			name2UrlMap.put("mp.p2001", "http://p2001.sturgeon.mopaas.com/");
 		}
 		if (!name2UrlMap.isEmpty()) {
 			this.timer = new Timer();

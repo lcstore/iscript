@@ -47,7 +47,7 @@ public class JSONUtils {
 	}
 
 	public static <T> T get(JSONObject jObj, String key) {
-		if (!jObj.isNull(key)) {
+		if (jObj != null && !jObj.isNull(key)) {
 			try {
 				return (T) jObj.get(key);
 			} catch (JSONException e) {

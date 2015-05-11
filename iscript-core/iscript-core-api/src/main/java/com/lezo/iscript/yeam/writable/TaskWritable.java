@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class TaskWritable implements Serializable {
 	private static final long serialVersionUID = 6494574310364649978L;
+	public static final int LEVEL_MIN = 1;
+	public static final int LEVEL_MAX = 10000;
 	private Long id;
 	private Map<String, Object> args = new HashMap<String, Object>();
 

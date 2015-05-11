@@ -10,7 +10,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,9 +36,9 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public ProxyDetectStrategy() {
-//		ProxyDetectTimer task = new ProxyDetectTimer();
-//		this.timer = new Timer("ProxyDetectProducer");
-//		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
+		ProxyDetectTimer task = new ProxyDetectTimer();
+		this.timer = new Timer("ProxyDetectProducer");
+		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
 	}
 
 	@Override
@@ -127,7 +126,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			try {
 				logger.info("Detect proxy is start...");
 				running = true;
-				int limit = 1000;
+				int limit = 500;
 				for (int status : checkStatusList) {
 					int totalCount = 0;
 					Long fromId = 0L;
@@ -163,27 +162,24 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			JSONObject argsObject = new JSONObject();
 			JSONUtils.put(argsObject, "strategy", "ProxyDetectStrategy");
 			List<String> urlSet = new ArrayList<String>();
-			// urlSet.add("http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter");
+			urlSet.add("http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter");
 			for (ProxyDetectDto dto : dtoList) {
-				urlSet.add(dto.getUrl());
-				for (String sUrl : urlSet) {
-					JSONUtils.put(argsObject, "id", dto.getId());
-					JSONUtils.put(argsObject, "ip", dto.getIp());
-					JSONUtils.put(argsObject, "port", dto.getPort());
-					JSONUtils.put(argsObject, "proxyType", dto.getType());
-					TaskPriorityDto taskDto = new TaskPriorityDto();
-					taskDto.setBatchId(taskId);
-					taskDto.setType("ConfigProxyDetector");
-//					sUrl = StringUtils.isEmpty(sUrl) ? DEFAULT_DETECT_URL : sUrl;
-					sUrl = DEFAULT_DETECT_URL;
-					taskDto.setUrl(sUrl);
-					taskDto.setLevel(1);
-					taskDto.setSource("tasker");
-					taskDto.setCreatTime(new Date());
-					taskDto.setStatus(TaskConstant.TASK_NEW);
-					taskDto.setParams(argsObject.toString());
-					taskDtos.add(taskDto);
-				}
+				JSONUtils.put(argsObject, "id", dto.getId());
+				JSONUtils.put(argsObject, "ip", dto.getIp());
+				JSONUtils.put(argsObject, "port", dto.getPort());
+				JSONUtils.put(argsObject, "proxyType", dto.getType());
+				TaskPriorityDto taskDto = new TaskPriorityDto();
+				taskDto.setBatchId(taskId);
+				taskDto.setType("ConfigProxyDetector");
+				// sUrl = StringUtils.isEmpty(sUrl) ? DEFAULT_DETECT_URL : sUrl;
+				String sUrl = DEFAULT_DETECT_URL;
+				taskDto.setUrl(sUrl);
+				taskDto.setLevel(1);
+				taskDto.setSource("tasker");
+				taskDto.setCreatTime(new Date());
+				taskDto.setStatus(TaskConstant.TASK_NEW);
+				taskDto.setParams(argsObject.toString());
+				taskDtos.add(taskDto);
 			}
 			// StorageBufferFactory.getStorageBuffer(TaskPriorityDto.class).addAll(taskDtos);
 			taskPriorityService.batchInsert(taskDtos);

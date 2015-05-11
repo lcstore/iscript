@@ -39,8 +39,8 @@ public class RetryListener implements IResultListener {
 		}
 		tWritable.put("retry", retry + 1);
 		logger.warn(String.format("type:%s,taskId:%s,retry:%s...", result.getType(), result.getTaskId(), retry));
-		Integer level = JSONUtils.getInteger(argsObject, "level");
-		level = level == null ? 0 : level;
-		TaskCacher.getInstance().getQueue(result.getType()).offer(tWritable, level);
+//		Integer level = JSONUtils.getInteger(argsObject, "level");
+//		level = level == null ? 0 : level;
+		TaskCacher.getInstance().getQueue(result.getType()).offer(tWritable, TaskWritable.LEVEL_MAX);
 	}
 }

@@ -34,6 +34,7 @@ public class TaskWorker implements Callable<ResultWritable> {
 		long start = System.currentTimeMillis();
 		ResultWritable rsWritable = new ResultWritable();
 		rsWritable.setTaskId(task.getId());
+		task.put("tid", task.getId());
 		JSONObject callBackObject = new JSONObject();
 		JSONObject argsObject = new JSONObject(task.getArgs());
 		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
@@ -48,7 +49,8 @@ public class TaskWorker implements Callable<ResultWritable> {
 			// argsObject.remove("type");
 			ConfigParser parser = ConfigParserBuffer.getInstance().getParser(type);
 			if (parser == null) {
-				throw new IllegalArgumentException("No config for type:" + type + ",id:" + task.getId() + ",args:" + argsObject);
+				throw new IllegalArgumentException("No config for type:" + type + ",id:" + task.getId() + ",args:"
+						+ argsObject);
 			}
 			String sReturn = parser.doParse(task);
 			rsWritable.setStatus(ResultWritable.RESULT_SUCCESS);
@@ -60,7 +62,8 @@ public class TaskWorker implements Callable<ResultWritable> {
 				JSONUtils.put(storageObject, "rs", storageDataObject);
 				List<JSONObject> dataList = new ArrayList<JSONObject>(1);
 				dataList.add(storageObject);
-//				QiniuBucketMac bucketMac = QiniuBucketMacFactory.getRandomBucketMac();
+				// QiniuBucketMac bucketMac =
+				// QiniuBucketMacFactory.getRandomBucketMac();
 				ClientRest clientRest = ClientRestFactory.getInstance().getRandom();
 				JSONUtils.put(argsObject, "data_bucket", clientRest.getBucket());
 				JSONUtils.put(argsObject, "data_domain", clientRest.getDomain());
@@ -84,7 +87,8 @@ public class TaskWorker implements Callable<ResultWritable> {
 			JSONUtils.put(callBackObject, "args", argsObject);
 			rsWritable.setResult(callBackObject.toString());
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("done task:%d,type:%s,status:%d,cost:%d", task.getId(), type, rsWritable.getStatus(), cost);
+			String msg = String.format("done task:%d,type:%s,status:%d,cost:%d", task.getId(), type,
+					rsWritable.getStatus(), cost);
 			logger.info(msg);
 		}
 		return rsWritable;

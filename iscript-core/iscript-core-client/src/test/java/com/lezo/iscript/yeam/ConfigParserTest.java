@@ -84,12 +84,12 @@ public class ConfigParserTest {
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
-		parser = new ConfigProxySeedHandler();
 		parser = new ConfigYhdBrandList();
 		// parser = new ConfigYhdBrandShop();
 		parser = new ConfigJdBrandShop();
 		parser = new ConfigTmallBrandShop();
 		parser = new ConfigProxyDetector();
+		parser = new ConfigProxySeedHandler();
 		// parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
@@ -109,6 +109,7 @@ public class ConfigParserTest {
 //		 url = "http://www.cnbeta.com/";
 		 url = "http://list.yhd.com/c5066-0-0/?tc=0.0.16.CatMenu_Site_100000019_78010.86&tp=4.94808.161.3.4.KoZbPEM-11-6d7Av";
 		 url = "http://www.yhd.com/";
+		 url = "http://www.youdaili.net/Daili/Socks/3166.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");

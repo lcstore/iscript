@@ -127,9 +127,6 @@
 		<if test="status!=null">
 			AND STATUS=#{status}
 		</if>
-		<![CDATA[
-		  AND CUR_COST<5000
-		]]>
 		LIMIT #{limit}
 	</select>
 	<select id="getProxyDetectDtosFromStatus" parameterType="map"

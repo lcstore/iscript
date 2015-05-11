@@ -122,7 +122,7 @@ public class ProxySeedStrategy implements ResultStrategy, Closeable {
 			paramObject.remove("src");
 			paramObject.remove("ctime");
 			if (taskPriorityDto.getLevel() == null) {
-				taskPriorityDto.setLevel(0);
+				taskPriorityDto.setLevel(1);
 			}
 			taskPriorityDto.setParams(paramObject.toString());
 			return taskPriorityDto;

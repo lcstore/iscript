@@ -12,10 +12,11 @@
 		<result column="STATUS" property="status" />
 		<result column="CREATE_TIME" property="createTime" />
 		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="LEVEL_LANG" property="levelLang" />
 	</resultMap>
 	<sql id="TypeConfigDto-coloumn-list">
 		TYPE ,TASKER ,MIN_SIZE ,MAX_SIZE ,STATUS ,CREATE_TIME
-		,UPDATE_TIME
+		,UPDATE_TIME,LEVEL_LANG
 	</sql>
 	<insert id="batchInsert" parameterType="TypeConfigDto">
 		INSERT INTO T_TYPE_CONFIG(
@@ -24,14 +25,18 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.tasker},#{item.minSize},#{item.maxSize},#{item.status},#{item.createTime},#{item.updateTime})
+			(#{item.type},#{item.tasker},#{item.minSize},#{item.maxSize},#{item.status},#{item.createTime},#{item.updateTime},#{item.levelLang})
 		</foreach>
 	</insert>
 	<update id="update-one-TypeConfigDto" parameterType="TypeConfigDto">
 		UPDATE
 		T_TYPE_CONFIG SET
-		TASKER=#{tasker}, MIN_SIZE=#{minSize},
-		MAX_SIZE=#{maxSize}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+		TASKER=#{tasker}
+		,MIN_SIZE=#{minSize}
+		,MAX_SIZE=#{maxSize}
+		,STATUS=#{status}
+		,UPDATE_TIME=#{updateTime}
+		,LEVEL_LANG=#{levelLang}
 		WHERE
 		ID=#{id}
 	</update>
