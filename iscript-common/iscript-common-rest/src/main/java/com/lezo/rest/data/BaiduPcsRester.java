@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -153,12 +154,17 @@ public class BaiduPcsRester implements DataRestable {
 		}
 		HttpResponse response = customRespone.getResponse();
 		int statusCode = response.getStatusLine().getStatusCode();
-		if (statusCode < 200 || statusCode >= 300) {
+		if (statusCode != 404 && (statusCode < 200 || statusCode >= 300)) {
 			throw new HttpResponseException(statusCode, response.getStatusLine().getReasonPhrase() + ",url:" + url);
 		}
 		RestList restFileList = new RestList();
 		String result = EntityUtils.toString(customRespone.getResponse().getEntity(), DEFAULT_CHASET_NAME);
 		JSONObject rsObject = JSONUtils.getJSONObject(result);
+		Integer errCode = JSONUtils.getInteger(rsObject, "error_code");
+		if (errCode != null && errCode == 31066) {
+			restFileList.setEOF(true);
+			restFileList.setDataList(new ArrayList<RestFile>(0));
+		}
 		JSONArray listArray = (JSONArray) (rsObject == null ? null : JSONUtils.get(rsObject, "list"));
 		if (listArray != null) {
 			int len = listArray.length();

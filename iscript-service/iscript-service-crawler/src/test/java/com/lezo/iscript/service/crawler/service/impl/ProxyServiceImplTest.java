@@ -18,7 +18,8 @@ import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.URLUtils;
 
 public class ProxyServiceImplTest {
-	private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
+//	private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
+	private static final String DEFAULT_DETECT_URL = "http://www.yhd.com/";
 
 	@Test
 	public void testBatchInsertIfAbsent() throws Exception {
@@ -29,7 +30,7 @@ public class ProxyServiceImplTest {
 		ProxyDetectServiceImpl proxyDetectService = new ProxyDetectServiceImpl();
 		proxyDetectService.setProxyDetectDao(proxyDetectDao);
 
-		Long fromId = 941040L;
+		Long fromId = 0L;
 		Integer limit = 1000;
 		int sum = 0;
 		long startMills = System.currentTimeMillis();

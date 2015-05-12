@@ -199,6 +199,9 @@ public class ProxyDetectDto implements Serializable {
 	}
 
 	public String getAddrCode() {
+		if (addrCode == null) {
+			addrCode = getIp() + "" + getPort();
+		}
 		return addrCode;
 	}
 

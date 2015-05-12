@@ -79,13 +79,9 @@
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
-					<!-- <requestLog implementation="org.eclipse.jetty.server.NCSARequestLog">
-						<filename>target/access.log</filename>
-						<retainDays>90</retainDays>
-						<append>false</append>
-						<extended>false</extended>
-						<logTimeZone>GMT+8:00</logTimeZone>
-					</requestLog> -->
+					<!-- <requestLog implementation="org.eclipse.jetty.server.NCSARequestLog"> 
+						<filename>target/access.log</filename> <retainDays>90</retainDays> <append>false</append> 
+						<extended>false</extended> <logTimeZone>GMT+8:00</logTimeZone> </requestLog> -->
 					<systemProperties>
 						<systemProperty>
 							<name>productionMode</name>

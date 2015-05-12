@@ -41,7 +41,6 @@ import com.lezo.iscript.yeam.config.Config1688Category;
 import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
-import com.lezo.iscript.yeam.config.ConfigClientWake;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
 import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
@@ -581,19 +580,6 @@ public class ConfigParserTest {
 		try {
 			String result = (String) parser.doParse(task);
 			System.out.println(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	public void testConfigClientWake() throws Exception {
-		ConfigParser parser = new ConfigClientWake();
-		TaskWritable task = new TaskWritable();
-		try {
-			// String result = (String) parser.doParse(task);
-			// System.out.println(result);
-			Thread.currentThread().join();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

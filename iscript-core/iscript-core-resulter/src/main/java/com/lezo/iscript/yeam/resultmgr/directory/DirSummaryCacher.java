@@ -49,10 +49,7 @@ public class DirSummaryCacher {
 					hasStream = new DirSummary();
 					hasStream.setDirBean(dirBean);
 
-					Calendar c = Calendar.getInstance();
-					c.setTime(dirBean.getCreateTime());
-					c.add(Calendar.MINUTE, -10);
-					hasStream.setFromStamp(c.getTimeInMillis());
+					hasStream.setFromStamp(dirBean.getCreateTime().getTime());
 					hasStream.setToStamp(hasStream.getFromStamp());
 					addDirStream(key, hasStream);
 				}

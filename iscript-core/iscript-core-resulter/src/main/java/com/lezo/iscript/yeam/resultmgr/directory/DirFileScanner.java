@@ -24,6 +24,7 @@ import com.lezo.rest.data.RestFile;
 import com.lezo.rest.data.RestList;
 
 public class DirFileScanner implements Runnable {
+	private static final long INTERVAL_BEFORE = 10 * 60 * 1000;
 	private static Logger logger = LoggerFactory.getLogger(DirFileScanner.class);
 	private ThreadPoolExecutor executor = ExecutorUtils.getFileConsumeExecutor();
 	private DirSummary dirStream;
@@ -72,7 +73,7 @@ public class DirFileScanner implements Runnable {
 		} else {
 			paramMap.put("limit", "" + limit);
 		}
-		while (true) {
+		while (!dirStream.isDone()) {
 			listTimes++;
 			long startMills = System.currentTimeMillis();
 			if (rester instanceof BaiduPcsRester) {
@@ -83,15 +84,16 @@ public class DirFileScanner implements Runnable {
 			List<RestFile> acceptList = null;
 			if (CollectionUtils.isNotEmpty(restList.getDataList())) {
 				fromCount += restList.getDataList().size();
-				acceptList = getAccepts(restList.getDataList(), dirStream.getToStamp());
+				acceptList = getAccepts(restList.getDataList());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
-					logger.info("directoryKey:" + dirBean.toDirKey() + ",stamp:" + dirStream.getToStamp()
-							+ ",acceptSum:" + count + ",result:" + restList.getDataList().size() + ",accept:"
-							+ acceptList.size() + ",listTimes:" + listTimes + ",listCost:" + costMills);
 					createDataFileConsumer(acceptList);
 					dirStream.setCount(dirStream.getCount() + acceptList.size());
 					dirStream.setToStamp(getMaxStamp(acceptList));
+					logger.info("directoryKey:" + dirBean.toDirKey() + ",stamp:" + dirStream.getToStamp()
+							+ ",acceptSum:" + count + ",result:" + restList.getDataList().size() + ",accept:"
+							+ acceptList.size() + ",listTimes:" + listTimes + ",listCost:" + costMills + ",fromStamp:"
+							+ dirStream.getFromStamp() + ",toStamp:" + dirStream.getToStamp());
 				} else {
 					long maxStamp = getMaxStamp(restList.getDataList());
 					logger.warn("directoryKey:" + dirBean.toDirKey() + ",listCount:" + restList.getDataList().size()
@@ -103,12 +105,14 @@ public class DirFileScanner implements Runnable {
 						+ costMills);
 			}
 			if (restList.isEOF()) {
+				dirStream.setDone(true);
 				// handle empty directory
 				if (CollectionUtils.isEmpty(acceptList)) {
 					dirStream.setToStamp(dirStream.getToStamp() + 1);
 				}
 				logger.info("list to EOF.directoryKey:" + dirBean.toDirKey() + ",listTimes:" + listTimes + ",maxCount:"
-						+ count + ",listCost:" + costMills);
+						+ count + ",listCost:" + costMills + ",fromStamp:" + dirStream.getFromStamp() + ",toStamp:"
+						+ dirStream.getToStamp());
 				break;
 			} else {
 				paramMap.put("marker", restList.getMarker());
@@ -150,16 +154,19 @@ public class DirFileScanner implements Runnable {
 		return max;
 	}
 
-	private List<RestFile> getAccepts(List<RestFile> restList, long stamp) {
+	private List<RestFile> getAccepts(List<RestFile> restList) {
 		if (CollectionUtils.isEmpty(restList)) {
 			return Collections.emptyList();
 		}
+		long fromStamp = dirStream.getFromStamp() - INTERVAL_BEFORE;
+		long toStamp = dirStream.getToStamp();
 		List<RestFile> itemList = new ArrayList<RestFile>(restList.size());
 		for (RestFile rs : restList) {
-			if (stamp > rs.getCreateTime()) {
-				continue;
+			if (dirStream.getFromStamp() == toStamp && rs.getCreateTime() >= fromStamp) {
+				itemList.add(rs);
+			} else if (dirStream.getFromStamp() != toStamp && rs.getCreateTime() >= toStamp) {
+				itemList.add(rs);
 			}
-			itemList.add(rs);
 		}
 		return itemList;
 	}

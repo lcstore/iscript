@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dao.ProxyDetectDao;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
-import com.lezo.iscript.service.crawler.service.ProxyAddrService;
 import com.lezo.iscript.service.crawler.service.ProxyDetectService;
 import com.lezo.iscript.utils.BatchIterator;
 
@@ -28,8 +27,6 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	private static Logger logger = LoggerFactory.getLogger(ProxyDetectServiceImpl.class);
 	@Autowired
 	private ProxyDetectDao proxyDetectDao;
-	@Autowired
-	private ProxyAddrService proxyAddrService;
 
 	@Override
 	public void batchInsertProxyDetectDtos(List<ProxyDetectDto> dtoList) {
@@ -121,7 +118,7 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 	@Override
 	public void batchSaveProxyDetectDtos(List<ProxyDetectDto> dtoList) {
 		ensureAddrCodeFilled(dtoList);
-		doDetectSummary(dtoList);
+//		doDetectSummary(dtoList);
 		UnifyValueUtils.unifyQuietly(dtoList);
 		List<ProxyDetectDto> insertDtos = new ArrayList<ProxyDetectDto>();
 		List<ProxyDetectDto> updateDtos = new ArrayList<ProxyDetectDto>();
@@ -132,29 +129,6 @@ public class ProxyDetectServiceImpl implements ProxyDetectService {
 				+ dtoList.size());
 	}
 
-	private void doDetectSummary(List<ProxyDetectDto> dtoList) {
-		if (CollectionUtils.isEmpty(dtoList)) {
-			return;
-		}
-		Map<String, Set<String>> keyCodeMap = new HashMap<String, Set<String>>();
-		for (ProxyDetectDto dto : dtoList) {
-			String key = dto.getStatus() + ":" + dto.getDomain();
-			Set<String> codeSet = keyCodeMap.get(key);
-			if (codeSet == null) {
-				codeSet = new HashSet<String>();
-				keyCodeMap.put(key, codeSet);
-			}
-			codeSet.add(dto.getAddrCode());
-		}
-		for (Entry<String, Set<String>> entry : keyCodeMap.entrySet()) {
-			String key = entry.getKey();
-			Integer status = Integer.valueOf(key.split(":")[0]);
-			proxyAddrService.batchUpdateProxyDetectByCodeList(new ArrayList<String>(entry.getValue()), status);
-			logger.info("detect summary,status:" + key + ",code size:" + entry.getValue().size() + ",total:"
-					+ dtoList.size());
-		}
-
-	}
 
 	private void doAssort(List<ProxyDetectDto> dtoList, List<ProxyDetectDto> insertDtos, List<ProxyDetectDto> updateDtos) {
 		Map<String, List<ProxyDetectDto>> domainDetectMap = new HashMap<String, List<ProxyDetectDto>>();

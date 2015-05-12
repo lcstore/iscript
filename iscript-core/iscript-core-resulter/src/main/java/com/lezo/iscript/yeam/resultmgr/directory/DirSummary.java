@@ -11,6 +11,7 @@ public class DirSummary {
 	private int count;
 	private long fromStamp;
 	private long toStamp;
+	private boolean isDone = false;
 	private Map<String, String> paramMap;
 
 	public DirSummary() {
@@ -60,5 +61,13 @@ public class DirSummary {
 
 	public Lock getLocker() {
 		return locker;
+	}
+
+	public boolean isDone() {
+		return isDone;
+	}
+
+	public synchronized void setDone(boolean isDone) {
+		this.isDone = isDone;
 	}
 }

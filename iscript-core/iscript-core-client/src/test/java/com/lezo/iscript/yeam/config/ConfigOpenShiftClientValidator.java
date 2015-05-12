@@ -45,11 +45,13 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
 			name2UrlMap.put("jda1003", "http://jda1003.jd-app.com");
 			name2UrlMap.put("jda1001", "http://jda1001.jd-app.com");
 			name2UrlMap.put("jda1002", "http://jda1002.jd-app.com");
-		} else if (clientName.length() >= 30) {
+		} else if (clientName.length() >= 30 || clientName.indexOf("heroku") >= 0) {
 			name2UrlMap.put("openshift.lcstore", "http://lcstore-iscript.rhcloud.com/");
 			name2UrlMap.put("openshift.d1001", "http://d1001-dlink.rhcloud.com/");
 			name2UrlMap.put("openshift.vcloudy", "http://vcloudy-vcloudy.rhcloud.com/");
 			name2UrlMap.put("openshift.verifyer", "http://verifyer-verifyer.rhcloud.com/");
+			
+			name2UrlMap.put("heroku.lezostore", "https://pacific-taiga-7679.herokuapp.com/");
 
 		} else if (clientName.indexOf("jd") >= 0) {
 			name2UrlMap.put("mp.e1001", "http://e1001.sturgeon.mopaas.com/");
