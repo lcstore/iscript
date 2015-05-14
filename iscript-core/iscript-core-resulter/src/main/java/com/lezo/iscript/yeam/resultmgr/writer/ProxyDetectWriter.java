@@ -36,7 +36,8 @@ public class ProxyDetectWriter implements ObjectWriter<ProxyDetectDto> {
 		synchronized (ProxyDetectWriter.class) {
 			callService.batchSaveProxyDetectDtos(dataList);
 		}
-		doDetectSummary(dataList);
+		//use a job to summary
+//		doDetectSummary(dataList);
 	}
 
 	private void doDetectSummary(List<ProxyDetectDto> dtoList) {

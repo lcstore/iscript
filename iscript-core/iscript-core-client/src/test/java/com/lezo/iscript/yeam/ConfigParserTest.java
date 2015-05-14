@@ -4,9 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,6 +27,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -34,7 +35,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 
+import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.Config1688Category;
@@ -49,6 +53,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyChecker;
 import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
+import com.lezo.iscript.yeam.config.ConfigProxySeedHandler.ProxyAddrDto;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigYhdBrandList;
@@ -102,13 +107,13 @@ public class ConfigParserTest {
 		url = "http://www.jd.com/pinpai/1000.html?enc=utf-8&vt=3#filter";
 		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
 		url = "http://list.tmall.com/search_product.htm?brand=29295&sort=s&style=w#J_Filter";
-//		url = "http://www.yelp.com/biz/ikes-place-san-francisco";
-		 url = "http://www.baidu.com/";
-//		 url = "https://www.baidu.com/";
-//		 url = "http://www.cnbeta.com/";
-		 url = "http://list.yhd.com/c5066-0-0/?tc=0.0.16.CatMenu_Site_100000019_78010.86&tp=4.94808.161.3.4.KoZbPEM-11-6d7Av";
-		 url = "http://www.yhd.com/";
-		 url = "http://www.youdaili.net/Daili/Socks/3166.html";
+		// url = "http://www.yelp.com/biz/ikes-place-san-francisco";
+		url = "http://www.baidu.com/";
+		// url = "https://www.baidu.com/";
+		// url = "http://www.cnbeta.com/";
+		url = "http://list.yhd.com/c5066-0-0/?tc=0.0.16.CatMenu_Site_100000019_78010.86&tp=4.94808.161.3.4.KoZbPEM-11-6d7Av";
+		url = "http://www.yhd.com/";
+		url = "http://www.youdaili.net/Daili/Socks/3166.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -125,8 +130,8 @@ public class ConfigParserTest {
 		task.put("proxyType", 1);
 		task.put("proxyHost", "183.207.224.51");
 		task.put("proxyPort", 80);
-//		task.put("proxyPort", 3128);
-//		task.put("proxyPort", 3189);
+		// task.put("proxyPort", 3128);
+		// task.put("proxyPort", 3189);
 		// socket
 		// task.put("ip", "103.246.161.194");
 		// task.put("port", 1080);
@@ -285,19 +290,35 @@ public class ConfigParserTest {
 	}
 
 	@Test
-	public void test() throws Exception {
-		ConfigParser parser = new StringLinker();
-		TaskWritable task = new TaskWritable();
-		// task.put("x", "i am lezo");
-		// task.put("y", "i am lezo");
-		// try {
-		// String result = (String) parser.doParse(task);
-		// System.out.println(result);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// throw e;
-		// }
-		System.out.println(new Date(0));
+	public void testProxySeedHandler() throws Exception {
+		// 185.46.151.122 3128
+		ConfigProxySeedHandler parser = new ConfigProxySeedHandler();
+		String source = FileUtils.readFileToString(new File("src/test/resources/data/proxylist.hidemyass.com.har"),
+				"UTF-8");
+		String decodePageFun = " var src =args.source;  var oData = eval('(' + src + ')'); src = oData.log.entries[0].response.content.text; oData = eval('(' + src + ')');";
+		decodePageFun = FileUtils.readFileToString(new File("src/test/resources/proxydecoder.js"), "UTF-8");
+		// source = parser.doDecode(source, decodePageFun);
+		List<ProxyAddrDto> proxyList = parser.findProxy(source, decodePageFun);
+
+		System.err.println("proxyList:" + proxyList.size());
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, proxyList);
+		String dataString = writer.toString();
+		System.err.println("dataString:" + dataString);
+	}
+
+	@Test
+	public void testProxyWeb() throws Exception {
+		String source=FileUtils.readFileToString(new File("src/test/resources/prxys.com.urlbuilder.js"),"UTF-8");
+		Context cx = Context.enter();
+		Scriptable parent = ScriptableUtils.getJSONScriptable();
+		Scriptable newScope = cx.newObject(parent);
+		newScope.setPrototype(parent);
+		newScope.setParentScope(null);
+		Object rsObject = cx.evaluateString(newScope, source, "decode", 0, null);
+		String src = Context.toString(rsObject);
+		java.lang.System.err.println(src);
 	}
 
 	@Test

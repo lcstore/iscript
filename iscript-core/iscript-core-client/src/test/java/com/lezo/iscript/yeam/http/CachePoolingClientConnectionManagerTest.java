@@ -216,7 +216,8 @@ public class CachePoolingClientConnectionManagerTest {
 
 	@Test
 	public void testHttpProxy() throws Exception {
-		URI uri = new URI("http://1111.ip138.com/ic.asp");
+//		URI uri = new URI("http://1111.ip138.com/ic.asp");
+		URI uri = new URI("http://httpbin.org/ip");
 		DefaultHttpClient client = new DefaultHttpClient();
 		// client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new
 		// HttpHost("107.182.17.243", 7808, "http"));
@@ -227,7 +228,7 @@ public class CachePoolingClientConnectionManagerTest {
 		// HttpHost("107.182.17.243", 7808, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("183.250.179.29", 80, "http"));
 		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("202.101.96.154", 8888, "http"));
-		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("127.0.0.1", 8080, "http"));
+		request.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, new HttpHost("222.188.10.1", 1080, "http"));
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

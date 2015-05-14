@@ -31,8 +31,8 @@ public class ProxyCheckStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public ProxyCheckStrategy() {
-		ProxyDetectTimer task = new ProxyDetectTimer();
-		this.timer = new Timer(this.getName());
+//		ProxyDetectTimer task = new ProxyDetectTimer();
+//		this.timer = new Timer(this.getName());
 //		this.timer.schedule(task, 1 * 60 * 1000, 24*10  * 60 * 60 * 1000);
 	}
 

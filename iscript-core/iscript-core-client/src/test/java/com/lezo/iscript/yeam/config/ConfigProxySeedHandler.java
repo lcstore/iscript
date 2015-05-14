@@ -184,14 +184,14 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		}
 	}
 
-	private List<ProxyAddrDto> findProxy(String source, String decodePageFun) throws JSONException {
+	public List<ProxyAddrDto> findProxy(String source, String decodePageFun) throws JSONException {
 		source = doDecode(source, decodePageFun);
 		JSONArray proxyArray = doProxyParser(source);
 		List<ProxyAddrDto> dtoList = convert2Dto(proxyArray);
 		return dtoList;
 	}
 
-	private String doDecode(String html, String decodePageFun) {
+	public String doDecode(String html, String decodePageFun) {
 		if (StringUtils.isEmpty(decodePageFun)) {
 			return html;
 		}
@@ -321,7 +321,7 @@ public class ConfigProxySeedHandler implements ConfigParser {
 		return newScope;
 	}
 
-	private static class ProxyAddrDto {
+	public static class ProxyAddrDto {
 		private Long seedId;
 		private Long ip;
 		private Integer port;

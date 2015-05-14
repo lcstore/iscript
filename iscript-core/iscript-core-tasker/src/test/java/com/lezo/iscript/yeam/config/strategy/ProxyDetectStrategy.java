@@ -36,9 +36,9 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public ProxyDetectStrategy() {
-		ProxyDetectTimer task = new ProxyDetectTimer();
-		this.timer = new Timer("ProxyDetectProducer");
-		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
+//		ProxyDetectTimer task = new ProxyDetectTimer();
+//		this.timer = new Timer("ProxyDetectProducer");
+//		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
 	}
 
 	@Override
