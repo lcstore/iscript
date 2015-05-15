@@ -82,7 +82,6 @@
 		<mysql.version>5.1.33</mysql.version>
 		<commons.beanutils.version>1.8.3</commons.beanutils.version>
 		<derby.version>10.10.1.1</derby.version>
-		<javax.servlet.version>3.1.0</javax.servlet.version>
 		<quartz.version>2.2.1</quartz.version>
 		<maven-war-plugin.version>2.2.1</maven-war-plugin.version>
 		<slf4j.version>1.7.7</slf4j.version>
@@ -100,5 +99,9 @@
 		<joda-time.version>2.2</joda-time.version>
 		<qiniu.version>6.1.0</qiniu.version>
 		<netty.version>4.0.22.Final</netty.version>
+		<jetty-maven.version>8.1.16.v20140903</jetty-maven.version>
+		<!--<scope>provided</scope>-->
+		<servlet-api.version>2.5</servlet-api.version>
+		<jstl.version>1.2</jstl.version>
 	</properties>
 </project>

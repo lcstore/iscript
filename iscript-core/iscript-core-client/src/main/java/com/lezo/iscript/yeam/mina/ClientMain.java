@@ -13,9 +13,9 @@ import com.lezo.iscript.yeam.storage.ResultFutureStorager;
 public class ClientMain {
 	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ClientMain.class);
 
-	// public static void main(String[] args) {
-	// new ClientMain().start();
-	// }
+	public static void main(String[] args) {
+		new ClientMain().start();
+	}
 
 	public void start() {
 		IoClient ioClient = new IoClient();

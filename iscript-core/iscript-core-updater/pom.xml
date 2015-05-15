@@ -8,14 +8,12 @@
 		<artifactId>iscript-core</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>iscript-core-client</artifactId>
+	<artifactId>iscript-core-updater</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>iscript-core-client</name>
+	<name>iscript-core-updater</name>
 	<url>http://maven.apache.org</url>
-
 	<build>
-		<finalName>client</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -34,22 +32,13 @@
 						<contextPath>/</contextPath>
 					</webApp>
 					<stopKey>webx</stopKey>
-					<stopPort>8818</stopPort>
+					<stopPort>8123</stopPort>
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>8089</port>
+							<port>9000</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
-					<!-- <requestLog implementation="org.eclipse.jetty.server.NCSARequestLog"> 
-						<filename>target/access.log</filename> <retainDays>90</retainDays> <append>false</append> 
-						<extended>false</extended> <logTimeZone>GMT+8:00</logTimeZone> </requestLog> -->
-					<systemProperties>
-						<systemProperty>
-							<name>productionMode</name>
-							<value>${productionMode}</value>
-						</systemProperty>
-					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -59,13 +48,13 @@
 					<appendAssemblyId>false</appendAssemblyId>
 					<archive>
 						<manifest>
-							<mainClass>com.lezo.iscript.yeam.mina.ClientMain</mainClass>
+							<mainClass>com.dianping.poi.proxy.update.UpdateLauncher</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<finalName>client-runner</finalName>
+					<finalName>updater-runner</finalName>
 				</configuration>
 				<executions>
 					<execution>
@@ -77,40 +66,30 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- 打包source文件为jar文件 -->
+			<!-- <plugin> <artifactId>maven-source-plugin</artifactId> <version>2.1</version> 
+				<configuration> <attach>true</attach> <encoding>UTF-8</encoding> </configuration> 
+				<executions> <execution> <phase>compile</phase> <goals> <goal>jar</goal> 
+				</goals> </execution> </executions> </plugin> -->
 		</plugins>
+		<finalName>updater</finalName>
 	</build>
 	
-	<dependencies>
+		<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>iscript-core-api</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>iscript-common-utils</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>iscript-core-crawler</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>iscript-common-rest</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.json</groupId>
-					<artifactId>org.json</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
-			<version>${mina.version}</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -126,3 +105,4 @@
 		</dependency>
 	</dependencies>
 </project>
+

@@ -21,7 +21,8 @@ public class HeaderUtils {
 		String userName = ClientPropertiesUtils.getProperty("client_name");
 		userName = StringUtils.isBlank(userName) ? System.getenv("client_name") : userName;
 		userName = StringUtils.isBlank(userName) ? System.getProperty("user.name", "unknown") : userName;
-		CLIENT_NAME = String.format("%s@%s", userName, MAC_ADDR);
+//		CLIENT_NAME = String.format("%s@%s", userName, MAC_ADDR);
+		CLIENT_NAME = userName;
 		JSONUtils.put(headObject, "name", CLIENT_NAME);
 		logger.info("this client name=" + CLIENT_NAME);
 	}
