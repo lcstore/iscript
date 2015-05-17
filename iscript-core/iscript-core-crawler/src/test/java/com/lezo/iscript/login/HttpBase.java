@@ -1,6 +1,5 @@
 package com.lezo.iscript.login;
 
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -11,9 +10,7 @@ import java.security.cert.X509Certificate;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
@@ -39,10 +36,10 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import com.lezo.iscript.crawler.http.GzipHttpRequestInterceptor;
-import com.lezo.iscript.crawler.http.GzipHttpResponseInterceptor;
-import com.lezo.iscript.crawler.http.HttpParamsConstant;
-import com.lezo.iscript.crawler.http.UserAgentManager;
+import com.lezo.iscript.rest.http.GzipHttpRequestInterceptor;
+import com.lezo.iscript.rest.http.GzipHttpResponseInterceptor;
+import com.lezo.iscript.rest.http.HttpParamsConstant;
+import com.lezo.iscript.rest.http.UserAgentManager;
 
 public class HttpBase {
 	public static void addProxy(DefaultHttpClient client) {

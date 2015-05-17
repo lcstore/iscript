@@ -9,8 +9,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 

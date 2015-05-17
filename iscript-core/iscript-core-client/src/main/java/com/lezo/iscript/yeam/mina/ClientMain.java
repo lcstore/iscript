@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import com.lezo.iscript.common.storage.StorageListener;
 import com.lezo.iscript.common.storage.StorageTimeTrigger;
+import com.lezo.iscript.utils.PropertiesUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
@@ -18,6 +19,8 @@ public class ClientMain {
 	}
 
 	public void start() {
+		PropertiesUtils.loadQuietly(PropertiesUtils.class.getClassLoader().getResourceAsStream("config/client.properties"));
+
 		IoClient ioClient = new IoClient();
 		SessionSender.getInstance().setIoClient(ioClient);
 

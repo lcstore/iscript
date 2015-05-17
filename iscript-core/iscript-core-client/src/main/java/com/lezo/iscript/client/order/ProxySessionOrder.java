@@ -16,21 +16,21 @@ import org.apache.mina.core.session.IoSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.lezo.iscript.rest.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.http.HttpClientManager;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.io.IoOrder;
 import com.lezo.iscript.yeam.mina.SessionSender;
 
 public class ProxySessionOrder extends AbstractSessionOrder {
 	private static final String HEAD_SPLIT = ": ";
 	private static final String DEFAULT_CHARSET = "UTF-8";
+	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 
 	@Override
 	protected void doOrder(IoOrder ioOrder, IoSession ioSession) {
 		StringTokenizer tokenizer = new StringTokenizer(ioOrder.getData().toString(), "\r\n");
 		String urlString = tokenizer.nextToken();
-		DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 		HttpUriRequest request = createRequest(urlString);
 		while (tokenizer.hasMoreTokens()) {
 			String line = tokenizer.nextToken();

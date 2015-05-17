@@ -16,7 +16,7 @@ import com.baidu.pcs.BaiduPCSClient;
 import com.lezo.rest.jos.JosRestClient;
 
 public class JosSkuFetcher {
-	private static Logger log = Logger.getLogger(ConsoleLogger.class);
+	private static Logger log = Logger.getLogger(JosSkuFetcher.class);
 	private static Logger rsLogger = Logger.getLogger(ResultLogger.class);
 
 	/**

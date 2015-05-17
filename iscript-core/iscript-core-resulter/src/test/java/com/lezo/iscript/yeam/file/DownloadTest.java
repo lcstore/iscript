@@ -11,7 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Test;
 
-import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.qiniu.api.auth.digest.Mac;
 import com.qiniu.api.config.Config;
 import com.qiniu.api.rs.GetPolicy;

@@ -6,5 +6,5 @@ public interface IUpdateManager {
 
 	String getCurrentVersion();
 
-	boolean extractTo(File destFile);
+	boolean extractTo(File destFile) throws Exception;
 }

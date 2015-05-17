@@ -38,9 +38,9 @@ public class JdBrandShopStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public JdBrandShopStrategy() {
-		CreateTaskTimer task = new CreateTaskTimer();
-		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, 60 * 1000, 10 * 24 * 60 * 60 * 1000);
+//		CreateTaskTimer task = new CreateTaskTimer();
+//		this.timer = new Timer("CreateTaskTimer");
+//		this.timer.schedule(task, 60 * 1000, 10 * 24 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {

@@ -28,7 +28,7 @@ import org.w3c.dom.NodeList;
 import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.envjs.PrototypeJavaObject;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 

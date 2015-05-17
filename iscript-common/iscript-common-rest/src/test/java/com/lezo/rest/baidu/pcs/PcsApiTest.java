@@ -13,12 +13,9 @@ import org.apache.http.ParseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -28,6 +25,7 @@ import com.baidu.pcs.BaiduPCSActionInfo.PCSFileInfoResponse;
 import com.baidu.pcs.BaiduPCSActionInfo.PCSListInfoResponse;
 import com.baidu.pcs.BaiduPCSActionInfo.PCSSimplefiedResponse;
 import com.baidu.pcs.BaiduPCSClient;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 
 public class PcsApiTest {
 	// String accessToken =
@@ -47,7 +45,7 @@ public class PcsApiTest {
 
 	@Test
 	public void testRestList() throws Exception {
-		DefaultHttpClient hc = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient hc = HttpClientUtils.createHttpClient();
 		String path = "/apps/idocs";
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -103,7 +101,7 @@ public class PcsApiTest {
 
 	@Test
 	public void testRestDownload() throws Exception {
-		DefaultHttpClient hc = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient hc = HttpClientUtils.createHttpClient();
 		String path = "/apps/idocs";
 		String source = path + "/testDir/file.temp";
 
@@ -139,7 +137,7 @@ public class PcsApiTest {
 
 	@Test
 	public void testRestUpload() throws Exception {
-		DefaultHttpClient hc = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient hc = HttpClientUtils.createHttpClient();
 		String path = "/apps/idocs";
 		String target = path + "/testDir/file.temp.01";
 		String source = "asdstjekwtjewp,wel234392380523409";

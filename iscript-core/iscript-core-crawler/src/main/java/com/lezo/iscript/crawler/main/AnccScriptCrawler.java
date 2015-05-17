@@ -23,12 +23,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.lezo.iscript.crawler.http.AnccVerifyRequestInterceptor;
-import com.lezo.iscript.crawler.http.HttpBrowserManager;
-import com.lezo.iscript.crawler.http.ImageResponseHandler;
-import com.lezo.iscript.crawler.http.SimpleHttpBrowser;
-import com.lezo.iscript.crawler.http.SimpleResponseHandler;
 import com.lezo.iscript.ocr.ANCCOCRParser;
+import com.lezo.iscript.rest.http.HttpBrowserManager;
+import com.lezo.iscript.rest.http.ImageResponseHandler;
+import com.lezo.iscript.rest.http.SimpleHttpBrowser;
+import com.lezo.iscript.rest.http.SimpleResponseHandler;
 
 public class AnccScriptCrawler {
 	private static Logger log = Logger.getLogger(AnccScriptCrawler.class);

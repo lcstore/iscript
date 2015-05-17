@@ -23,7 +23,7 @@ import org.jsoup.select.Elements;
 
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.file.PersistentCollector;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;

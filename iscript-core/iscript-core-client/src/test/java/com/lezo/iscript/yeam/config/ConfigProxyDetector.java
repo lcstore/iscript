@@ -24,13 +24,14 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.proxy.ProxyClientUtils;
+import com.lezo.iscript.rest.http.HttpClientFactory;
+import com.lezo.iscript.rest.http.HttpClientUtils;
+import com.lezo.iscript.rest.http.ProxySocketFactory;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.URLUtils;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.http.HttpClientFactory;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.iscript.yeam.http.ProxySocketFactory;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
@@ -132,7 +133,7 @@ public class ConfigProxyDetector implements ConfigParser {
 	}
 
 	private VerifyMsg doVerify(String url, String proxyHost, Integer port, Integer type, String checkValue) {
-		HttpGet get = HttpClientUtils.createHttpGet(url, proxyHost, port, type);
+		HttpGet get = ProxyClientUtils.createHttpGet(url, proxyHost, port, type);
 		int index = url.indexOf("#");
 		index = index < 0 ? url.length() : index;
 		String referUrl = url.substring(0, index);

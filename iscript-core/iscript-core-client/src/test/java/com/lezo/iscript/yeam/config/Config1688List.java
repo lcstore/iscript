@@ -15,8 +15,8 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.http.HttpClientFactory;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
+import com.lezo.iscript.rest.http.HttpClientFactory;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 

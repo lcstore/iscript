@@ -35,7 +35,7 @@ import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;

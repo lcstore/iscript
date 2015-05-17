@@ -24,11 +24,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.lezo.iscript.proxy.ProxyClientUtils;
+import com.lezo.iscript.rest.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.file.PersistentCollector;
-import com.lezo.iscript.yeam.http.HttpClientManager;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
@@ -92,7 +93,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 		}
 		TimeUnit.SECONDS.sleep(new Random().nextInt(60));
 		// HttpGet get = new HttpGet(url);
-		HttpGet get = HttpClientUtils.createHttpGet(url, task);
+		HttpGet get = ProxyClientUtils.createHttpGet(url, task);
 		get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 		get.addHeader("Accept-Encoding", "gzip, deflate");
 		get.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");

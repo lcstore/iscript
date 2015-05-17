@@ -6,15 +6,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.lezo.iscript.rest.http.HttpClientFactory;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
-import com.lezo.iscript.yeam.buffer.HttpClientFactory;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryDescriptor;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryLockUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirectoryTracker;

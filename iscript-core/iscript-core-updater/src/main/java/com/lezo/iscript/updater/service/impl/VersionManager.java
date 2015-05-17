@@ -11,12 +11,12 @@ import com.lezo.iscript.updater.service.IVersionManager;
 
 public class VersionManager implements IVersionManager {
 	private static Logger logger = LoggerFactory.getLogger(VersionManager.class);
-	private static final String VERSION_NAME = "version.txt";
+	private static final String VERSION_NAME = "client-version.txt";
 	private static final String DEFAUL_CHARSET = "UTF-8";
-	private String version = "";
+	private String version = TO_UPDATE_VERSION;
 
 	public VersionManager() {
-		File versionFile = new File("agent", VERSION_NAME);
+		File versionFile = new File(VERSION_NAME);
 		if (versionFile.exists()) {
 			try {
 				String curVersion = FileUtils.readFileToString(versionFile, DEFAUL_CHARSET);
@@ -35,7 +35,7 @@ public class VersionManager implements IVersionManager {
 
 	@Override
 	public void changeTo(String newVersion) {
-		File versionFile = new File("agent", VERSION_NAME);
+		File versionFile = new File(VERSION_NAME);
 		try {
 			FileUtils.writeStringToFile(versionFile, newVersion, DEFAUL_CHARSET);
 			this.version = newVersion;

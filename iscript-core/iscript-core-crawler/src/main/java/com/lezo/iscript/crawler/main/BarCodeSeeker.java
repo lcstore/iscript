@@ -1,22 +1,15 @@
 package com.lezo.iscript.crawler.main;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.URI;
-
-import javax.imageio.ImageIO;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
 
 import com.lezo.iscript.crawler.config.ConfigHolder;
-import com.lezo.iscript.crawler.http.HttpBrowserManager;
-import com.lezo.iscript.crawler.http.ImageResponseHandler;
-import com.lezo.iscript.crawler.http.SimpleHttpBrowser;
 import com.lezo.iscript.ocr.ANCCOCRParser;
+import com.lezo.iscript.rest.http.HttpBrowserManager;
+import com.lezo.iscript.rest.http.ImageResponseHandler;
+import com.lezo.iscript.rest.http.SimpleHttpBrowser;
 
 public class BarCodeSeeker {
 

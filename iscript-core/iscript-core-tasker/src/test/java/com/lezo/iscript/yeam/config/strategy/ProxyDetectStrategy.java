@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,9 +23,7 @@ import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
-import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.writable.ResultWritable;
-import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private static Logger logger = LoggerFactory.getLogger(ProxyDetectStrategy.class);
@@ -48,58 +45,9 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 
 	@Override
 	public void handleResult(ResultWritable rWritable) {
-		if (ResultWritable.RESULT_FAIL == rWritable.getStatus()) {
-			addRetry(rWritable);
-		} else if (ResultWritable.RESULT_SUCCESS == rWritable.getStatus()) {
-			// if ("ConfigProxyDetector".equals(rWritable.getType())) {
-			// JSONObject jObject =
-			// JSONUtils.getJSONObject(rWritable.getResult());
-			// JSONObject argsObject = JSONUtils.get(jObject, "args");
-			// String rsString = JSONUtils.getString(jObject, "rs");
-			// List<ProxyDetectDto> dtoList = new ArrayList<ProxyDetectDto>();
-			// try {
-			// JSONObject rootObject = new JSONObject(rsString);
-			// // addResults(rootObject, argsObject, dtoList);
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// }
-			// if (!dtoList.isEmpty()) {
-			// getStorageBuffer().addAll(dtoList);
-			// }
-			// logger.info("add ProxyDetectDto to buffer,size:" + dtoList.size()
-			// + ",total:"
-			// + getStorageBuffer().size());
-			// }
-		}
 
 	}
 
-	private void addRetry(ResultWritable rWritable) {
-		JSONObject jObject = JSONUtils.getJSONObject(rWritable.getResult());
-		JSONObject argsObject = JSONUtils.get(jObject, "args");
-		JSONObject exObject = JSONUtils.get(jObject, "ex");
-		String rsString = JSONUtils.getString(jObject, "rs");
-		JSONObject rsObject = JSONUtils.getJSONObject(rsString);
-		TaskWritable tWritable = new TaskWritable();
-		tWritable.setId(rWritable.getTaskId());
-		Iterator<?> it = argsObject.keys();
-		while (it.hasNext()) {
-			String key = it.next().toString();
-			tWritable.put(key, JSONUtils.getObject(argsObject, key));
-		}
-		Integer retry = (Integer) tWritable.get("retry");
-		if (retry == null) {
-			retry = 0;
-		} else if (retry >= 3) {
-			return;
-		}
-		tWritable.put("retry", retry + 1);
-		Integer level = JSONUtils.getInteger(argsObject, "level");
-		level = level == null ? 0 : level;
-		logger.warn("retry task:" + tWritable.getId() + ",args:" + new JSONObject(tWritable.getArgs()) + ",rs:"
-				+ rsObject + ",ex:" + exObject);
-		TaskCacher.getInstance().getQueue(rWritable.getType()).offer(tWritable, level);
-	}
 
 	private class ProxyDetectTimer extends TimerTask {
 		private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
@@ -133,6 +81,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 					while (true) {
 						List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromId(fromId, limit,
 								status);
+						taskId = UUID.randomUUID().toString();
 						offerDetectTasks(dtoList, taskId);
 						for (ProxyDetectDto dto : dtoList) {
 							if (dto.getId() > fromId) {

@@ -1,5 +1,6 @@
 package com.lezo.iscript.updater.utils;
 
+import java.lang.management.ManagementFactory;
 import java.net.UnknownHostException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ public class NameUtils {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		return String.format("%s@%s", userName, localHost);
+		String name = ManagementFactory.getRuntimeMXBean().getName();
+		return String.format("%s@%s@%s", userName, localHost, name);
 	}
 }

@@ -11,14 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigEtaoSimilar implements ConfigParser {
 	private static Logger logger = LoggerFactory.getLogger(ConfigEtaoSimilar.class);
-	private DefaultHttpClient client = HttpClientManager.getProxyHttpClient();
+	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private List<String> detectUrls;
 	private static final String DETECTOR = HeaderUtils.CLIENT_NAME;
 

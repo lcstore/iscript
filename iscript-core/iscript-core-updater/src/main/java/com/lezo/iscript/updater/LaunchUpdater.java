@@ -1,12 +1,9 @@
 package com.lezo.iscript.updater;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +17,13 @@ import com.lezo.iscript.updater.service.impl.VersionManager;
 import com.lezo.iscript.updater.utils.PropertiesUtils;
 
 public class LaunchUpdater {
-	private static final int MAX_RETRY_COUNT = 5;
 	private static Logger logger = LoggerFactory.getLogger(LaunchUpdater.class);
 	private IVersionManager versionManager = new VersionManager();
 	private IUpdateManager updateManager = new UpdateManager();
 	private IAgentManager agentManager = new AgentManager();
 
+	// TODO when updater stop[kill -15 pid],the client-runner.jar auto been
+	// delete.
 	public static void main(String[] args) throws Exception {
 		PropertiesUtils.loadQuietly(PropertiesUtils.class.getClassLoader().getResourceAsStream("updater.properties"));
 
@@ -41,15 +39,19 @@ public class LaunchUpdater {
 			try {
 				launcher.execute(args);
 				TimeUnit.MILLISECONDS.sleep(60000);
+			} catch (IAgentManager.AgentManagerExcepton ex) {
+				launcher.getVersionManager().changeTo(IVersionManager.TO_UPDATE_VERSION);
+				logger.error("agent manager fail,try to update.cause:", ex);
+				TimeUnit.MILLISECONDS.sleep(30000);
 			} catch (Exception ex) {
 				logger.error("cause:", ex);
-				TimeUnit.MILLISECONDS.sleep(10000);
+				TimeUnit.MILLISECONDS.sleep(30000);
 			}
 		}
 
 	}
 
-	private void execute(String[] args) {
+	private void execute(String[] args) throws Exception {
 		long startMills = System.currentTimeMillis();
 		String oldVerion = versionManager.getVersion();
 		String newVersion = updateManager.getCurrentVersion();
@@ -58,38 +60,29 @@ public class LaunchUpdater {
 			return;
 		}
 		if (oldVerion.equals(newVersion)) {
-			if (IAgentManager.STATUS_RUNNING != agentManager.getStatus()) {
-				logger.info("try to start agent by current version:" + oldVerion);
-				turnTo(IAgentManager.STATUS_RUNNING, MAX_RETRY_COUNT);
-				if (IAgentManager.STATUS_RUNNING != agentManager.getStatus()) {
-					versionManager.changeTo(IVersionManager.TO_UPDATE_VERSION);
-					logger.warn("fail to start agent by current version:" + oldVerion + ",try to update new agent");
-				} else {
-					logger.info("success to start agent by current version:" + oldVerion);
-				}
+			if (IAgentManager.STATUS_UP != agentManager.getStatus()) {
+				logger.info("start agent by current version:" + oldVerion);
+				getAgentManager().start();
 			}
 			return;
 		}
 		logger.info("update agent version,from:" + oldVerion + ",to:" + newVersion);
-		File newAgentFile = new File("temp", IAgentManager.AGENT_NAME);
-		if (!updateManager.extractTo(newAgentFile)) {
-			logger.warn("fail to extract new version:" + newVersion + ",To:" + newAgentFile);
+		File tmpFile = new File(IAgentManager.AGENT_NAME + ".tmp");
+		if (!updateManager.extractTo(tmpFile)) {
+			logger.warn("fail to extract new version:" + newVersion + ",To:" + tmpFile);
 			return;
 		}
-		turnTo(IAgentManager.STATUS_DOWN, MAX_RETRY_COUNT);
-		File workAgentFile = new File("agent", IAgentManager.AGENT_NAME);
-		try {
-			FileUtils.forceDeleteOnExit(workAgentFile);
-			FileUtils.copyFile(newAgentFile, workAgentFile);
-			FileUtils.deleteDirectory(newAgentFile.getParentFile());
-		} catch (IOException e) {
-			versionManager.changeTo(IVersionManager.TO_UPDATE_VERSION);
-			logger.warn("fail to apply new agent file", e);
-			return;
+		getAgentManager().stop();
+		File destFile = new File(IAgentManager.AGENT_NAME);
+		if (tmpFile.exists()) {
+			destFile.deleteOnExit();
+			if (!tmpFile.renameTo(destFile)) {
+				logger.warn("cannot rename from:" + tmpFile + ",to:" + destFile);
+			}
 		}
-		turnTo(IAgentManager.STATUS_RUNNING, MAX_RETRY_COUNT);
+		getAgentManager().start();
 		long cost = System.currentTimeMillis() - startMills;
-		if (agentManager.getStatus() != IAgentManager.STATUS_RUNNING) {
+		if (agentManager.getStatus() != IAgentManager.STATUS_UP) {
 			newVersion = IVersionManager.TO_UPDATE_VERSION;
 			logger.warn("fail to start new agent.changeTo:" + newVersion + ",to update again..");
 			versionManager.changeTo(newVersion);
@@ -99,25 +92,11 @@ public class LaunchUpdater {
 		}
 	}
 
-	private void turnTo(int toStatus, int maxRetryCount) {
-		int maxRetry = maxRetryCount;
-		while (maxRetry-- > 0 && agentManager.getStatus() != toStatus) {
-			try {
-				if (IAgentManager.STATUS_DOWN == toStatus) {
-					agentManager.stop();
-				} else if (IAgentManager.STATUS_RUNNING == toStatus) {
-					agentManager.start();
-				}
-			} catch (FileNotFoundException e) {
-				logger.warn("turn agent to status:" + toStatus + ",cause:", e);
-				break;
-			} catch (Exception e) {
-				logger.warn("turn agent to status:" + toStatus + ".leave retry time:" + maxRetry + ",cause:", e);
-			}
-		}
-	}
-
 	public IAgentManager getAgentManager() {
 		return agentManager;
+	}
+
+	public IVersionManager getVersionManager() {
+		return versionManager;
 	}
 }

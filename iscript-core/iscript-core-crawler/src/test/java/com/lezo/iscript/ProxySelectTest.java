@@ -20,7 +20,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -45,11 +44,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.crawler.http.GzipHttpRequestInterceptor;
-import com.lezo.iscript.crawler.http.GzipHttpResponseInterceptor;
-import com.lezo.iscript.crawler.http.HttpParamsConstant;
-import com.lezo.iscript.crawler.http.SimpleHttpRequestRetryHandler;
-import com.lezo.iscript.crawler.http.UserAgentManager;
+import com.lezo.iscript.rest.http.GzipHttpRequestInterceptor;
+import com.lezo.iscript.rest.http.GzipHttpResponseInterceptor;
+import com.lezo.iscript.rest.http.HttpParamsConstant;
+import com.lezo.iscript.rest.http.SimpleHttpRequestRetryHandler;
+import com.lezo.iscript.rest.http.UserAgentManager;
 
 public class ProxySelectTest {
 	private Logger log = LoggerFactory.getLogger(getClass());

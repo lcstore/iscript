@@ -1,33 +1,16 @@
 package com.lezo.encrypt;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.binary.Base64;
 
 import com.lezo.iscript.utils.encrypt.Encryptor;
 
-import sun.misc.BASE64Encoder;
-
 public class Base64Encryptor implements Encryptor {
-	private BASE64Encoder encoder = new BASE64Encoder();
+	private Base64 encoder = new Base64();
 
 	@Override
 	public String encript(byte[] source) throws Exception {
-		InputStream in = new ByteArrayInputStream(source);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-		try {
-			encoder.encode(in, out);
-			out.flush();
-			return new String(out.toByteArray());
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			IOUtils.closeQuietly(in);
-			IOUtils.closeQuietly(out);
-		}
+		byte[] dest = encoder.encode(source);
+		return new String(dest);
 	}
 
 	@Override

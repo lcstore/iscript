@@ -9,7 +9,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.lezo.rest.baidu.pcs.PcsClient;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 
 /**
  * @author lezo
@@ -23,7 +23,7 @@ public class KanBoxResterTest {
 		rester.setDomain("kanbox.com");
 		rester.setAccessToken("253966875101559bf51eac3a5a41ba62");
 		try {
-			DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
+			DefaultHttpClient client = HttpClientUtils.createHttpClient();
 			rester.setClient(client);
 		} catch (Exception e) {
 			e.printStackTrace();

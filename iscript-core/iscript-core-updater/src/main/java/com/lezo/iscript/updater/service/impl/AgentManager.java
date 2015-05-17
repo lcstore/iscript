@@ -1,7 +1,6 @@
 package com.lezo.iscript.updater.service.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,56 +36,67 @@ public class AgentManager implements IAgentManager {
 	}
 
 	@Override
-	public synchronized void start() throws Exception {
-		File workAgentFile = new File("agent", IAgentManager.AGENT_NAME);
+	public synchronized void start() throws AgentManagerExcepton {
+		File workAgentFile = new File(IAgentManager.AGENT_NAME);
 		if (!workAgentFile.exists()) {
-			throw new FileNotFoundException(workAgentFile.getAbsolutePath());
+			throw new AgentManagerExcepton("Not found file:" + workAgentFile.getAbsolutePath());
 		}
-		// String[] cmdArr = new String[] { "/bin/sh", "-c",
-		// "java -Dclient_name=" + NameUtils.APP_NAME + " -jar " +
-		// workAgentFile.getAbsolutePath() };
-		String[] cmdArr = new String[] { "java", "-Dclient_name=" + NameUtils.APP_NAME, "-jar",
-				workAgentFile.getAbsolutePath() };
+		workAgentFile.setWritable(true, true);
+		StringBuilder sb = new StringBuilder();
+		sb.append("java ");
+		sb.append("-Dclient_name=");
+		sb.append(NameUtils.APP_NAME);
+		sb.append(" -jar ");
+		sb.append(workAgentFile.getAbsolutePath());
+		String execString = sb.toString();
+		logger.info("ready to execute cmd:" + execString);
+		String[] cmdArr = new String[] { "/bin/sh", "-c", execString };
 		int index = 0;
 		logger.info("start agent[" + (++index) + "],setup agent jar:" + workAgentFile);
-		Process process = Runtime.getRuntime().exec(cmdArr);
+		Process process = null;
+		try {
+			process = Runtime.getRuntime().exec(cmdArr);
+		} catch (IOException e) {
+			throw new AgentManagerExcepton("exec cmd", e);
+		}
 		setAgentProcess(process);
-		// int code = this.process.waitFor();
 		setIoChecher(new Timer("ioChecker"));
 		getIoChecher().schedule(new TimerTask() {
 
 			@Override
 			public void run() {
-				if (getAgentProcess() != null) {
-					try {
-						byte[] buffer = new byte[1024];
-						while (getAgentProcess().getInputStream().available() > 0) {
-							getAgentProcess().getInputStream().read(buffer);
-							setLastActive(System.currentTimeMillis());
-							// print the log when debug is enable.
-							if (logger.isDebugEnabled()) {
-								logger.info(new String(buffer, "UTF-8"));
-							}
+				if (getAgentProcess() != null && IAgentManager.STATUS_UP != getStatus()) {
+					return;
+				}
+				try {
+					byte[] buffer = new byte[1024];
+					while (getAgentProcess().getInputStream().available() > 0) {
+						setLastActive(System.currentTimeMillis());
+						int len = getAgentProcess().getInputStream().read(buffer);
+						// print the log when debug is enable.
+						logger.info(new String(buffer, 0, len, "UTF-8"));
+						if (logger.isDebugEnabled()) {
 						}
-						while (getAgentProcess().getErrorStream().available() > 0) {
-							getAgentProcess().getErrorStream().read(buffer);
-							setLastActive(System.currentTimeMillis());
-							logger.warn(new String(buffer, "UTF-8"));
-							if (logger.isDebugEnabled()) {
-							}
+					}
+					while (getAgentProcess().getErrorStream().available() > 0) {
+						setLastActive(System.currentTimeMillis());
+						int len = getAgentProcess().getErrorStream().read(buffer);
+						logger.warn(new String(buffer, 0, len, "UTF-8"));
+						if (logger.isDebugEnabled()) {
 						}
-					} catch (IOException ex) {
-						logger.error("checking agent io.cause:", ex);
 					}
-					if (STATUS_RUNNING == getStatus() && System.currentTimeMillis() - lastActive > 120000) {
-						logger.warn("agent dead.stop agent to restart");
-						stop();
-					}
+				} catch (IOException ex) {
+					logger.error("checking agent io.cause:", ex);
+				}
+				if (STATUS_UP == getStatus() && System.currentTimeMillis() - lastActive > 120000) {
+					logger.warn("agent dead.stop agent to restart");
+					stop();
+					setLastActive(System.currentTimeMillis());
 				}
 			}
 		}, 0, 1000);
 		logger.info("start agent[" + (++index) + "],start io checher");
-		setStatus(STATUS_RUNNING);
+		setStatus(STATUS_UP);
 		logger.info("start agent success. done all step(" + index + ") ....");
 	}
 

@@ -8,10 +8,10 @@ import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.proxy.ProxyBuffer;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRespone;
-import com.lezo.iscript.yeam.proxy.ProxyBuffer;
 import com.lezo.iscript.yeam.writable.ProxyWritable;
 
 public class ProxyIoFilter extends IoFilterAdapter {

@@ -16,8 +16,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.rest.QiniuBucketMacFactory;
-import com.lezo.rest.baidu.pcs.PcsClient;
 
 public class QiniuResterTest {
 	private static final String CHARSET_NAME = "UTF-8";
@@ -25,9 +25,9 @@ public class QiniuResterTest {
 	String rootPath = "/apps/idocs";
 	QiniuRester rester = new QiniuRester();
 
-	@Test
+//	@Test
 	public void testUpload() throws Exception {
-		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		rester.setClient(client);
 		rester.setBucket("p1001");
 		rester.setDomain("p1001.qiniudn.com");
@@ -39,9 +39,9 @@ public class QiniuResterTest {
 		Assert.assertTrue(rester.upload(targetPath, dataBytes));
 	}
 
-	@Test
+//	@Test
 	public void testUploadLines() throws Exception {
-		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		rester.setClient(client);
 		rester.setBucket("p1001");
 		rester.setDomain("p1001.qiniudn.com");
@@ -70,7 +70,7 @@ public class QiniuResterTest {
 
 	@Test
 	public void testDownload() throws Exception {
-		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		rester.setClient(client);
 		rester.setBucket("p1001");
 		rester.setDomain("p1001.qiniudn.com");
@@ -90,7 +90,7 @@ public class QiniuResterTest {
 
 	@Test
 	public void testLists() throws Exception {
-		DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
+		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		rester.setClient(client);
 		rester.setBucket("p1001");
 		rester.setDomain("p1001.qiniudn.com");
@@ -102,7 +102,7 @@ public class QiniuResterTest {
 		System.err.println("data:" + fileList.getDataList().size());
 	}
 
-	@Test
+//	@Test
 	public void testStringTokenizer() throws IOException {
 		String content = FileUtils.readFileToString(new File("src/main/resources/file.temp"), "UTF-8");
 		StringTokenizer tokenizer = new StringTokenizer(content, "\n");

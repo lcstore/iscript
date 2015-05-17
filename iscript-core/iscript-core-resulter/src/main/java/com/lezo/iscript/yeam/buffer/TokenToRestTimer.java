@@ -6,11 +6,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.service.crawler.dto.ClientTokenDto;
 import com.lezo.iscript.service.crawler.service.ClientTokenService;
 import com.lezo.iscript.utils.JSONUtils;
@@ -23,7 +23,6 @@ import com.qiniu.api.auth.digest.Mac;
 public class TokenToRestTimer {
 	private static Logger logger = Logger.getLogger(TokenToRestTimer.class);
 	private static volatile boolean running = false;
-	private static DefaultHttpClient httpClient = HttpClientFactory.createHttpClient();
 	private AtomicLong stamp = new AtomicLong(0);
 	@Autowired
 	private ClientTokenService clientTokenService;
@@ -80,14 +79,14 @@ public class TokenToRestTimer {
 			rester.setAccessToken(dto.getAccessToken());
 			rester.setBucket(bucket);
 			rester.setDomain(domain);
-			rester.setClient(httpClient);
+			rester.setClient(HttpClientManager.getDefaultHttpClient());
 			clientRest.setRester(rester);
 
 		} else if ("qiniu.com".equals(type)) {
 			QiniuRester rester = new QiniuRester();
 			rester.setBucket(bucket);
 			rester.setDomain(domain);
-			rester.setClient(httpClient);
+			rester.setClient(HttpClientManager.getDefaultHttpClient());
 			rester.setMac(new Mac(dto.getClientKey(), dto.getClientSecret()));
 			clientRest.setRester(rester);
 		} else {

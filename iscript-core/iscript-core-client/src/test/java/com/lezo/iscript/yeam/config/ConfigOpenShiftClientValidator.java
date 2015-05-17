@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.yeam.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -41,10 +41,10 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
 			name2UrlMap.put("mp.v1001", "http://v1001.sturgeon.mopaas.com/");
 			name2UrlMap.put("mp.p2001", "http://p2001.sturgeon.mopaas.com/");
 			
-			name2UrlMap.put("jda1004", "http://jda1004.jd-app.com");
-			name2UrlMap.put("jda1003", "http://jda1003.jd-app.com");
-			name2UrlMap.put("jda1001", "http://jda1001.jd-app.com");
-			name2UrlMap.put("jda1002", "http://jda1002.jd-app.com");
+//			name2UrlMap.put("jda1004", "http://jda1004.jd-app.com");
+//			name2UrlMap.put("jda1003", "http://jda1003.jd-app.com");
+//			name2UrlMap.put("jda1001", "http://jda1001.jd-app.com");
+//			name2UrlMap.put("jda1002", "http://jda1002.jd-app.com");
 		} else if (clientName.length() >= 30 || clientName.indexOf("heroku") >= 0) {
 			name2UrlMap.put("openshift.lcstore", "http://lcstore-iscript.rhcloud.com/");
 			name2UrlMap.put("openshift.d1001", "http://d1001-dlink.rhcloud.com/");

@@ -9,8 +9,8 @@ import org.apache.mina.core.session.IoSession;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.http.HttpClientManager;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;

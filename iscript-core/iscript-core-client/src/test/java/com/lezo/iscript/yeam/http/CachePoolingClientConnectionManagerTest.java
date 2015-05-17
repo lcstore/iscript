@@ -3,7 +3,6 @@ package com.lezo.iscript.yeam.http;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.SocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
@@ -35,12 +34,14 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.net.SocketAppender;
 import org.junit.Test;
 
-import com.lezo.iscript.crawler.http.HttpParamsConstant;
-import com.lezo.iscript.crawler.http.SimpleHttpRequestRetryHandler;
-import com.lezo.iscript.crawler.http.UserAgentManager;
+import com.lezo.iscript.proxy.ProxyClientUtils;
+import com.lezo.iscript.rest.http.HttpParamsConstant;
+import com.lezo.iscript.rest.http.ProxySocketFactory;
+import com.lezo.iscript.rest.http.ShuffleCacheDnsResolver;
+import com.lezo.iscript.rest.http.SimpleHttpRequestRetryHandler;
+import com.lezo.iscript.rest.http.UserAgentManager;
 
 /**
  * @author lezo
@@ -256,10 +257,10 @@ public class CachePoolingClientConnectionManagerTest {
 
 		HttpUriRequest request = null;
 		// http
-		request = HttpClientUtils.createHttpGet(url, "117.177.243.35", 80, 1);
-		request = HttpClientUtils.createHttpGet(url, "183.216.164.240", 8123, 1);
+		request = ProxyClientUtils.createHttpGet(url, "117.177.243.35", 80, 1);
+		request = ProxyClientUtils.createHttpGet(url, "183.216.164.240", 8123, 1);
 		// socket
-		request = HttpClientUtils.createHttpGet(url, "202.197.127.139", 1080, 2);
+		request = ProxyClientUtils.createHttpGet(url, "202.197.127.139", 1080, 2);
 		HttpResponse resp = client.execute(request);
 		String html = (EntityUtils.toString(resp.getEntity(), "gbk"));
 		System.out.println(html);

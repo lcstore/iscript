@@ -24,7 +24,7 @@ public class UpdateManager implements IUpdateManager {
 	private DefaultHttpClient client = HttpUtils.getDefaultClient();
 
 	@Override
-	public boolean extractTo(File destFile) {
+	public boolean extractTo(File destFile) throws Exception {
 		String versionUrl = getBaseUrlPath() + "entity?name=" + NameUtils.APP_NAME;
 		HttpGet get = new HttpGet(versionUrl);
 		try {
@@ -36,7 +36,9 @@ public class UpdateManager implements IUpdateManager {
 				EntityUtils.consumeQuietly(respone.getEntity());
 			}
 		} catch (Exception e) {
-			logger.warn("write to file:" + destFile + ",cause:", e);
+			Exception ex = new RuntimeException("write to file:" + destFile + ",cause:");
+			ex.initCause(e);
+			throw ex;
 		} finally {
 			if (!get.isAborted()) {
 				get.abort();

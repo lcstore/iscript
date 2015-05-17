@@ -1,13 +1,16 @@
 package com.lezo.iscript.yeam.mina.filter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
+import org.json.JSONArray;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.config.ConfigParserBuffer;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
@@ -24,33 +27,43 @@ public class ConfigIoFilter extends IoFilterAdapter {
 		if (message instanceof IoRespone) {
 			IoRespone ioRespone = (IoRespone) message;
 			if (IoConstant.EVENT_TYPE_CONFIG == ioRespone.getType()) {
-				updateConfig(ioRespone);
-				IoRequest ioRequest = new IoRequest();
-				ioRequest.setType(IoRequest.REQUEST_REPORT);
-				ioRequest.setHeader(HeaderUtils.getHeader().toString());
-				SessionSender.getInstance().send(ioRequest);
-				logger.info("config report head:" + ioRequest.getHeader());
+				List<String> errorConfigs = updateConfig(ioRespone);
+				if (errorConfigs.isEmpty()) {
+					IoRequest ioRequest = new IoRequest();
+					ioRequest.setType(IoRequest.REQUEST_REPORT);
+					ioRequest.setHeader(HeaderUtils.getHeader().toString());
+					SessionSender.getInstance().send(ioRequest);
+					logger.info("config report head:" + ioRequest.getHeader());
+					HeaderUtils.getHeader().remove("errorConfigs");
+				} else {
+					JSONArray eArray = new JSONArray(errorConfigs);
+					JSONUtils.put(HeaderUtils.getHeader(), "errorConfigs", eArray);
+					logger.warn("config report error:" + errorConfigs.size());
+				}
 				return;
 			}
 		}
 		nextFilter.messageReceived(session, message);
 	}
 
-	private void updateConfig(IoRespone ioRespone) {
+	private List<String> updateConfig(IoRespone ioRespone) {
 		List<ConfigWritable> configList = getConfigList(ioRespone);
 		if (CollectionUtils.isEmpty(configList)) {
-			return;
+			return Collections.emptyList();
 		}
 		ConfigParserBuffer configBuffer = ConfigParserBuffer.getInstance();
 		int size = configList.size();
+		List<String> errorConfigs = new ArrayList<String>(configList.size());
 		for (int i = 0; i < size; i++) {
 			ConfigWritable configWritable = configList.get(i);
 			if (configBuffer.addConfig(configWritable.getName(), configWritable)) {
 				logger.info("update.config[" + configWritable.getName() + "].stamp:" + configWritable.getStamp());
 			} else {
+				errorConfigs.add(configWritable.getName());
 				logger.warn("fail load config[" + configWritable.getName() + "].stamp:" + configWritable.getStamp());
 			}
 		}
+		return errorConfigs;
 	}
 
 	@SuppressWarnings("unchecked")

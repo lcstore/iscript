@@ -1,6 +1,5 @@
 package com.lezo.iscript.login;
 
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -10,16 +9,11 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -36,7 +30,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -53,10 +46,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import com.lezo.iscript.crawler.http.GzipHttpRequestInterceptor;
-import com.lezo.iscript.crawler.http.GzipHttpResponseInterceptor;
-import com.lezo.iscript.crawler.http.HttpParamsConstant;
-import com.lezo.iscript.crawler.http.UserAgentManager;
+import com.lezo.iscript.rest.http.GzipHttpRequestInterceptor;
+import com.lezo.iscript.rest.http.GzipHttpResponseInterceptor;
+import com.lezo.iscript.rest.http.HttpParamsConstant;
+import com.lezo.iscript.rest.http.UserAgentManager;
 
 public class LoginAnalyer {
 	@Test

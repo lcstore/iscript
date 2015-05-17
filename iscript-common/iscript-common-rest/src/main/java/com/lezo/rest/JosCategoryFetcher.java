@@ -3,20 +3,18 @@ package com.lezo.rest;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.baidu.pcs.BaiduPCSClient;
 import com.baidu.pcs.BaiduPCSActionInfo.PCSFileInfoResponse;
+import com.baidu.pcs.BaiduPCSClient;
 import com.lezo.rest.jos.JosRestClient;
 
 public class JosCategoryFetcher {
-	private static Logger log = Logger.getLogger(ConsoleLogger.class);
+	private static Logger log = Logger.getLogger(JosCategoryFetcher.class);
 	private static Logger rsLogger = Logger.getLogger(ResultLogger.class);
 
 	/**

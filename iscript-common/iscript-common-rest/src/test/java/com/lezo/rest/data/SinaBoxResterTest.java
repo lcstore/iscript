@@ -7,7 +7,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.lezo.rest.baidu.pcs.PcsClient;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 
 /**
  * @author lezo
@@ -21,7 +21,7 @@ public class SinaBoxResterTest {
 		rester.setDomain("kanbox.com");
 		rester.setAccessToken("bd8cefd7566aabb7a305d31297ecd46e");
 		try {
-			DefaultHttpClient client = new DefaultHttpClient(PcsClient.createClientConnManager());
+			DefaultHttpClient client = HttpClientUtils.createHttpClient();
 			rester.setClient(client);
 		} catch (Exception e) {
 			e.printStackTrace();

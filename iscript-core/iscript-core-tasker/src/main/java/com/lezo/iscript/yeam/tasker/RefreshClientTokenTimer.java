@@ -1,6 +1,5 @@
 package com.lezo.iscript.yeam.tasker;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,12 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -35,6 +33,7 @@ public class RefreshClientTokenTimer {
 	private AtomicLong stamp = new AtomicLong(0);
 	@Autowired
 	private ClientTokenService clientTokenService;
+	private DefaultHttpClient client = new DefaultHttpClient();
 
 	public void run() {
 		if (running) {
@@ -112,7 +111,6 @@ public class RefreshClientTokenTimer {
 	}
 
 	private void refreshBaiduToken(List<ClientTokenDto> dtoList) {
-		CloseableHttpClient client = HttpClients.createDefault();
 		for (ClientTokenDto dto : dtoList) {
 			try {
 				refreshBaiduToken(client, dto);
@@ -120,14 +118,9 @@ public class RefreshClientTokenTimer {
 				log.warn("id:" + dto.getId() + ",cause:", e);
 			}
 		}
-		try {
-			client.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
-	private void refreshBaiduToken(CloseableHttpClient client, ClientTokenDto dto) throws Exception {
+	private void refreshBaiduToken(DefaultHttpClient client, ClientTokenDto dto) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("https://openapi.baidu.com/oauth/2.0/token?grant_type=refresh_token");
 		sb.append("&refresh_token=");
@@ -138,7 +131,7 @@ public class RefreshClientTokenTimer {
 		sb.append(dto.getClientSecret());
 		String url = sb.toString();
 		HttpUriRequest post = new HttpPost(url);
-		CloseableHttpResponse respone = client.execute(post);
+		HttpResponse respone = client.execute(post);
 		StatusLine statusLine = respone.getStatusLine();
 		String content = EntityUtils.toString(respone.getEntity(), "UTF-8");
 		dto.setLastMessge(content);
@@ -146,12 +139,12 @@ public class RefreshClientTokenTimer {
 			JSONObject jObject = JSONUtils.getJSONObject(content);
 			dto.setAccessToken(JSONUtils.getString(jObject, "access_token"));
 			dto.setRefreshToken(JSONUtils.getString(jObject, "refresh_token"));
-			dto.setNextRefreshTime(new Date(System.currentTimeMillis() + JSONUtils.getLong(jObject, "expires_in") * 1000 - AHEAD_MILLS));
+			dto.setNextRefreshTime(new Date(System.currentTimeMillis() + JSONUtils.getLong(jObject, "expires_in")
+					* 1000 - AHEAD_MILLS));
 			dto.setSuccessCount(dto.getSuccessCount() + 1);
 		} else {
 			dto.setFailCount(dto.getFailCount() + 1);
 			dto.setNextRefreshTime(new Date(System.currentTimeMillis() + AHEAD_MILLS));
 		}
-		respone.close();
 	}
 }

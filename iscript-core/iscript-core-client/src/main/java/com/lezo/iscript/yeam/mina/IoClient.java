@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.client.order.ISessionOrder;
 import com.lezo.iscript.client.order.ProxySessionOrder;
+import com.lezo.iscript.utils.PropertiesUtils;
 import com.lezo.iscript.yeam.io.IoOrder;
 import com.lezo.iscript.yeam.mina.filter.ConfigIoFilter;
 import com.lezo.iscript.yeam.mina.filter.ProxyIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TaskIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TimeIoFilter;
 import com.lezo.iscript.yeam.mina.filter.TokenIoFilter;
-import com.lezo.iscript.yeam.mina.utils.ClientPropertiesUtils;
 
 public class IoClient extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoClient.class);
@@ -33,8 +33,8 @@ public class IoClient extends IoHandlerAdapter {
 
 	public IoClient() {
 		super();
-		this.host = ClientPropertiesUtils.getProperty("host");
-		String sPort = ClientPropertiesUtils.getProperty("port");
+		this.host = PropertiesUtils.getProperty("host");
+		String sPort = PropertiesUtils.getProperty("port");
 		assertEmpty("host", host);
 		assertEmpty("port", sPort);
 		this.port = Integer.valueOf(sPort);

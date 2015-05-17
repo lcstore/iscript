@@ -2,24 +2,19 @@ package com.lezo.iscript.yeam;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.dom4j.io.SAXReader;
 import org.jsoup.Jsoup;
@@ -28,10 +23,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.NativeObject;
-import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
@@ -40,8 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.lezo.iscript.crawler.script.CommonContext;
 import com.lezo.iscript.envjs.EnvjsUtils;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.sun.jndi.toolkit.ctx.Continuation;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 
 public class TaobaoApiScriptTest {
 	private Logger logger = LoggerFactory.getLogger(getClass());

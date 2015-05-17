@@ -22,11 +22,13 @@ public class SendUtils {
 		WriteFuture writeFuture = ioSession.write(ioRespone);
 		if (!writeFuture.awaitUninterruptibly(IoConstant.WRITE_TIMEOUT)) {
 			long cost = System.currentTimeMillis() - start;
-			String msg = String.format("fail to push %s to client:%s,size:%s,cost:%s", getResponeType(ioRespone), clientName, size, cost);
+			String msg = String.format("fail to push %s to client:%s,size:%s,cost:%s,timeout:%s",
+					getResponeType(ioRespone), clientName, size, cost, IoConstant.WRITE_TIMEOUT);
 			logger.warn(msg, writeFuture.getException());
 		} else {
 			long cost = System.currentTimeMillis() - start;
-			logger.info("finish to push {}s to client:{},size:{},cost:{}", getResponeType(ioRespone), clientName, size, cost);
+			logger.info("finish to push {}s to client:{},size:{},cost:{}", getResponeType(ioRespone), clientName, size,
+					cost);
 		}
 	}
 

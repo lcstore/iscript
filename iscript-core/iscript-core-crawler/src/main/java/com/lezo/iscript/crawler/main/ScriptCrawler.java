@@ -5,9 +5,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
 
-import com.lezo.iscript.crawler.http.HttpBrowserManager;
-import com.lezo.iscript.crawler.http.SimpleHttpBrowser;
-import com.lezo.iscript.crawler.http.SimpleResponseHandler;
+import com.lezo.iscript.rest.http.HttpBrowserManager;
+import com.lezo.iscript.rest.http.SimpleHttpBrowser;
+import com.lezo.iscript.rest.http.SimpleResponseHandler;
 
 public class ScriptCrawler {
 	private static Logger log = Logger.getLogger(ScriptCrawler.class);

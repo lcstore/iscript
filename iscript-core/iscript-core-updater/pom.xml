@@ -48,7 +48,7 @@
 					<appendAssemblyId>false</appendAssemblyId>
 					<archive>
 						<manifest>
-							<mainClass>com.dianping.poi.proxy.update.UpdateLauncher</mainClass>
+							<mainClass>com.lezo.iscript.updater.LaunchUpdater</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

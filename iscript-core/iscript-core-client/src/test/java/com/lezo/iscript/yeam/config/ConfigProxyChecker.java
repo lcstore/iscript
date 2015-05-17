@@ -21,13 +21,13 @@ import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lezo.iscript.rest.http.HttpClientFactory;
+import com.lezo.iscript.rest.http.HttpClientUtils;
+import com.lezo.iscript.rest.http.ProxySocketFactory;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.yeam.http.HttpClientFactory;
-import com.lezo.iscript.yeam.http.HttpClientUtils;
-import com.lezo.iscript.yeam.http.ProxySocketFactory;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;

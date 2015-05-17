@@ -12,14 +12,19 @@ public class LaunchListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		logger.info("start to init updater..");
-		String[] args = new String[1];
-		try {
-			LaunchUpdater.main(args);
-		} catch (Exception e) {
-			RuntimeException ex = new RuntimeException("try to launch updater");
-			ex.initCause(e);
-			throw ex;
-		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					String[] args = new String[1];
+					LaunchUpdater.main(args);
+				} catch (Exception e) {
+					RuntimeException ex = new RuntimeException("try to launch updater");
+					ex.initCause(e);
+					throw ex;
+				}
+			}
+		}, "updater").start();
 		logger.info("updater is running..");
 	}
 
