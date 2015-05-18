@@ -1,0 +1,283 @@
+package com.lezo.iscript.crawler.dom;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.TypeInfo;
+import org.w3c.dom.UserDataHandler;
+
+public class ScriptAttr implements Attr {
+	private String name;
+	private String value;
+
+	public ScriptAttr(String name, String value) {
+		super();
+		this.name = name;
+		this.value = value;
+	}
+
+	@Override
+	public String getNodeName() {
+		return this.name;
+	}
+
+	@Override
+	public String getNodeValue() throws DOMException {
+		return this.value;
+	}
+
+	@Override
+	public void setNodeValue(String nodeValue) throws DOMException {
+		this.value = nodeValue;
+	}
+
+	@Override
+	public short getNodeType() {
+		return Node.ATTRIBUTE_NODE;
+	}
+
+	@Override
+	public Node getParentNode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NodeList getChildNodes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getFirstChild() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getLastChild() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getPreviousSibling() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getNextSibling() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NamedNodeMap getAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Document getOwnerDocument() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node insertBefore(Node newChild, Node refChild) throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node removeChild(Node oldChild) throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node appendChild(Node newChild) throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasChildNodes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Node cloneNode(boolean deep) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void normalize() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean isSupported(String feature, String version) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getNamespaceURI() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPrefix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPrefix(String prefix) throws DOMException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getBaseURI() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public short compareDocumentPosition(Node other) throws DOMException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getTextContent() throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setTextContent(String textContent) throws DOMException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean isSameNode(Node other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String lookupPrefix(String namespaceURI) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isDefaultNamespace(String namespaceURI) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String lookupNamespaceURI(String prefix) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEqualNode(Node arg) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Object getFeature(String feature, String version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object setUserData(String key, Object data, UserDataHandler handler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getUserData(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public boolean getSpecified() {
+		return false;
+	}
+
+	@Override
+	public String getValue() {
+		return this.value;
+	}
+
+	@Override
+	public void setValue(String value) throws DOMException {
+		this.value = value;
+	}
+
+	@Override
+	public Element getOwnerElement() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TypeInfo getSchemaTypeInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isId() {
+		return this.name == null ? false : "id".equals(this.name.toLowerCase());
+	}
+
+	@Override
+	public String toString() {
+		return "ScriptAttr [name=" + name + ", value=" + value + "]";
+	}
+
+}

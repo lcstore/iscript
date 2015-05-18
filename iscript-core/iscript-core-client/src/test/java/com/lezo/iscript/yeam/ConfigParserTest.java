@@ -69,7 +69,6 @@ import com.lezo.iscript.yeam.config.JDCid2PList;
 import com.lezo.iscript.yeam.config.Latest163News;
 import com.lezo.iscript.yeam.config.LatestSohuNews;
 import com.lezo.iscript.yeam.config.ScriptConfigParser;
-import com.lezo.iscript.yeam.config.StringLinker;
 import com.lezo.iscript.yeam.config.ZYueSigner;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -83,8 +82,7 @@ public class ConfigParserTest {
 
 	@Test
 	public void testConfig() throws Exception {
-		ConfigParser parser = new StringLinker();
-		parser = new ConfigJdPromotList();
+		ConfigParser parser = new ConfigJdPromotList();
 		// parser = new ConfigTmallList();
 		parser = new ConfigTmallProduct();
 		parser = new ConfigProxyChecker();
@@ -310,7 +308,7 @@ public class ConfigParserTest {
 
 	@Test
 	public void testProxyWeb() throws Exception {
-		String source=FileUtils.readFileToString(new File("src/test/resources/prxys.com.urlbuilder.js"),"UTF-8");
+		String source = FileUtils.readFileToString(new File("src/test/resources/prxys.com.urlbuilder.js"), "UTF-8");
 		Context cx = Context.enter();
 		Scriptable parent = ScriptableUtils.getJSONScriptable();
 		Scriptable newScope = cx.newObject(parent);

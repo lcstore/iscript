@@ -1,5 +1,8 @@
 package com.lezo.iscript.crawler.dom;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.jsoup.parser.Tag;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -22,13 +25,13 @@ import org.w3c.dom.html.HTMLDocument;
 import org.w3c.dom.html.HTMLElement;
 
 //HTMLDocument,DocumentTraversal, DocumentEvent, DocumentRange, DocumentView
-public class ScriptDocument implements HTMLDocument {
-	private org.jsoup.nodes.Document targetDocument;
+public class ScriptDocument extends ScriptElement implements HTMLDocument {
+	private ConcurrentHashMap<String, Node> identifiers = new ConcurrentHashMap<String, Node>();
+	protected String documentURI;
 
 	public ScriptDocument(org.jsoup.nodes.Document targetDocument) {
-		super();
-		this.targetDocument = targetDocument;
-		org.jsoup.select.Elements elements = this.targetDocument.getAllElements();
+		super(targetDocument, null);
+		setOwnerDocument(this);
 	}
 
 	@Override
@@ -45,13 +48,19 @@ public class ScriptDocument implements HTMLDocument {
 
 	@Override
 	public Element getDocumentElement() {
-
-		return null;
+		return this;
 	}
 
 	@Override
 	public Element createElement(String tagName) throws DOMException {
-		return null;
+		org.jsoup.nodes.Element targetEle = new org.jsoup.nodes.Element(Tag.valueOf(tagName), getBaseURI());
+		return createElement(targetEle);
+	}
+
+	public ScriptElement createElement(org.jsoup.nodes.Node target) throws DOMException {
+		ScriptElement element = new ScriptElement(target, this);
+		element.setOwnerDocument(this);
+		return element;
 	}
 
 	@Override
@@ -62,20 +71,19 @@ public class ScriptDocument implements HTMLDocument {
 
 	@Override
 	public Text createTextNode(String data) {
-		// TODO Auto-generated method stub
-		return null;
+		ScriptText scriptText = new ScriptText(data, getBaseURI());
+		scriptText.setOwnerDocument(this);
+		return scriptText;
 	}
 
 	@Override
 	public Comment createComment(String data) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ScriptComment(data, getBaseURI());
 	}
 
 	@Override
 	public CDATASection createCDATASection(String data) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ScriptCDATASection(data, getBaseURI());
 	}
 
 	@Override
@@ -86,8 +94,8 @@ public class ScriptDocument implements HTMLDocument {
 
 	@Override
 	public Attr createAttribute(String name) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ScriptAttr(name, "");
+
 	}
 
 	@Override
@@ -97,15 +105,106 @@ public class ScriptDocument implements HTMLDocument {
 	}
 
 	@Override
-	public NodeList getElementsByTagName(String tagname) {
-		// TODO Auto-generated method stub
-		return null;
+	public Node importNode(Node source, boolean deep) throws DOMException {
+		int type = source.getNodeType();
+		Node destNode = source;
+		switch (type) {
+		case ELEMENT_NODE: {
+			Element newElement = createElement(source.getNodeName());
+			newElement.setNodeValue(source.getNodeValue());
+			NamedNodeMap nnm = source.getAttributes();
+			if (nnm != null) {
+				for (int i = 0; i < nnm.getLength(); i++) {
+					Attr attr = (Attr) nnm.item(i);
+					newElement.setAttributeNode(attr);
+				}
+			}
+			NodeList cnList = source.getChildNodes();
+			if (cnList != null) {
+				for (int i = 0; i < cnList.getLength(); i++) {
+					Node newChild = cnList.item(i);
+					newElement.appendChild(newChild);
+				}
+			}
+			destNode = newElement;
+			break;
+		}
+		case ATTRIBUTE_NODE: {
+
+			break;
+		}
+
+		case TEXT_NODE: {
+			destNode = createTextNode(source.getNodeValue());
+			break;
+		}
+
+		case CDATA_SECTION_NODE: {
+			destNode = createCDATASection(source.getNodeValue());
+			break;
+		}
+
+		case ENTITY_REFERENCE_NODE: {
+			destNode = createEntityReference(source.getNodeName());
+			// the subtree is created according to this doc by the method
+			// above, so avoid carrying over original subtree
+			deep = false;
+			break;
+		}
+
+		case ENTITY_NODE: {
+			break;
+		}
+
+		case COMMENT_NODE: {
+			destNode = createComment(source.getNodeValue());
+			break;
+		}
+
+		default: { // Unknown node type
+			String msg = "unsupport node type:" + type;
+			throw new DOMException(DOMException.NOT_SUPPORTED_ERR, msg);
+		}
+		}
+		return destNode;
 	}
 
 	@Override
-	public Node importNode(Node importedNode, boolean deep) throws DOMException {
-		// TODO Auto-generated method stub
+	public Element getElementById(String elementId) {
+		Node idNode = identifiers.get(elementId);
+		if (idNode != null) {
+			return (Element) idNode;
+		}
+		Element idElement = getElementById(elementId, this);
+		if (idElement != null) {
+			identifiers.put(elementId, idElement);
+		}
+		return idElement;
+	}
+
+	private Element getElementById(String elementId, Node node) {
+		Node child;
+		Element result;
+		child = node.getFirstChild();
+		while (child != null) {
+			if (child instanceof Element) {
+				Element childElement = (Element) child;
+				String idString = childElement.getAttribute("id");
+				if (elementId.equals(idString)) {
+					return childElement;
+				}
+				result = getElementById(elementId, child);
+				if (result != null) {
+					return result;
+				}
+			}
+			child = child.getNextSibling();
+		}
 		return null;
+	}
+
+	public ConcurrentHashMap<String, Node> getIdentifiers() {
+		return identifiers;
 	}
 
 	@Override
@@ -117,18 +216,6 @@ public class ScriptDocument implements HTMLDocument {
 	@Override
 	public Attr createAttributeNS(String namespaceURI, String qualifiedName) throws DOMException {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NodeList getElementsByTagNameNS(String namespaceURI, String localName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Element getElementById(String elementId) {
-		org.jsoup.nodes.Element element = targetDocument.getElementById(elementId);
 		return null;
 	}
 
@@ -182,14 +269,12 @@ public class ScriptDocument implements HTMLDocument {
 
 	@Override
 	public String getDocumentURI() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.documentURI;
 	}
 
 	@Override
 	public void setDocumentURI(String documentURI) {
-		// TODO Auto-generated method stub
-
+		this.documentURI = documentURI;
 	}
 
 	@Override
@@ -212,228 +297,6 @@ public class ScriptDocument implements HTMLDocument {
 
 	@Override
 	public Node renameNode(Node n, String namespaceURI, String qualifiedName) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getNodeName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getNodeValue() throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setNodeValue(String nodeValue) throws DOMException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public short getNodeType() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Node getParentNode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NodeList getChildNodes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node getFirstChild() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node getLastChild() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node getPreviousSibling() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node getNextSibling() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NamedNodeMap getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Document getOwnerDocument() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node insertBefore(Node newChild, Node refChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node removeChild(Node oldChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Node appendChild(Node newChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean hasChildNodes() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Node cloneNode(boolean deep) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void normalize() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean isSupported(String feature, String version) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String getNamespaceURI() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getPrefix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setPrefix(String prefix) throws DOMException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getLocalName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean hasAttributes() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String getBaseURI() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public short compareDocumentPosition(Node other) throws DOMException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String getTextContent() throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setTextContent(String textContent) throws DOMException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean isSameNode(Node other) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String lookupPrefix(String namespaceURI) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isDefaultNamespace(String namespaceURI) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String lookupNamespaceURI(String prefix) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isEqualNode(Node arg) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Object getFeature(String feature, String version) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object setUserData(String key, Object data, UserDataHandler handler) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object getUserData(String key) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -548,8 +411,7 @@ public class ScriptDocument implements HTMLDocument {
 
 	@Override
 	public NodeList getElementsByName(String elementName) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getElementsByTagName(elementName);
 	}
 
 }

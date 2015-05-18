@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.mina.core.session.IoSession;
@@ -22,6 +23,8 @@ import com.lezo.iscript.yeam.writable.ConfigWritable;
 
 public class IoConfigHandler implements MessageHandler {
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(IoConfigHandler.class);
+	private static final ConcurrentHashMap<String, Long> LAST_REQUEST_MAP = new ConcurrentHashMap<String, Long>();
+	private static final long MIN_PERIOD_TIME = 60000;
 
 	public void handleMessage(IoSession session, Object message) {
 		IoRequest ioRequest = (IoRequest) message;
@@ -30,7 +33,17 @@ public class IoConfigHandler implements MessageHandler {
 		}
 		ensureConfigLoaded();
 		String header = ioRequest.getHeader();
-		pushConfigs(JSONUtils.getJSONObject(header), session);
+		JSONObject hObject = JSONUtils.getJSONObject(header);
+		String clientName = JSONUtils.getString(hObject, "name");
+		Long lastRequest = LAST_REQUEST_MAP.get(clientName);
+		if (lastRequest == null || System.currentTimeMillis() - lastRequest >= MIN_PERIOD_TIME) {
+			pushConfigs(hObject, session);
+			LAST_REQUEST_MAP.put(clientName, System.currentTimeMillis());
+		} else {
+			long cost = System.currentTimeMillis() - lastRequest;
+			logger.warn("force to close client:" + clientName + ",period:" + cost + ",too often request for config.");
+			session.close(true).awaitUninterruptibly();
+		}
 	}
 
 	private void ensureConfigLoaded() {

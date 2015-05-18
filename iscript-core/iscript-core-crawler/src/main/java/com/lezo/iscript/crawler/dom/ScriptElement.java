@@ -1,7 +1,16 @@
 package com.lezo.iscript.crawler.dom;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Attributes;
+import org.jsoup.parser.Tag;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -13,9 +22,20 @@ import org.w3c.dom.TypeInfo;
 import org.w3c.dom.UserDataHandler;
 
 public class ScriptElement implements Element {
-	private ScriptElement parent;
 	private List<ScriptElement> childList;
-	private org.jsoup.nodes.Element target;
+	private org.jsoup.nodes.Node target;
+	private ScriptElement parent;
+	private short nodeType = Node.ELEMENT_NODE;
+	protected volatile Object treeLock = this;
+	private volatile String prefix;
+	private Document ownerDocument;
+
+	ScriptElement(org.jsoup.nodes.Node target, ScriptElement parent) {
+		super();
+		this.target = target;
+		this.parent = parent;
+		this.childList = new ArrayList<ScriptElement>(4);
+	}
 
 	@Override
 	public String getNodeName() {
@@ -24,17 +44,28 @@ public class ScriptElement implements Element {
 
 	@Override
 	public String getNodeValue() throws DOMException {
-		return target.val();
+		if (this.target instanceof org.jsoup.nodes.Element) {
+			org.jsoup.nodes.Element element = (org.jsoup.nodes.Element) this.target;
+			return element.val();
+		} else if (this.target instanceof org.jsoup.nodes.TextNode) {
+			org.jsoup.nodes.TextNode textNode = (org.jsoup.nodes.TextNode) this.target;
+			return textNode.text();
+		}
+		return this.target.attr("value");
 	}
 
 	@Override
 	public void setNodeValue(String nodeValue) throws DOMException {
-		target.val(nodeValue);
+		if (this.target instanceof org.jsoup.nodes.Element) {
+			org.jsoup.nodes.Element element = (org.jsoup.nodes.Element) this.target;
+			element.val(nodeValue);
+		}
+		this.target.attr("value", nodeValue);
 	}
 
 	@Override
 	public short getNodeType() {
-		return 0;
+		return this.nodeType;
 	}
 
 	@Override
@@ -82,43 +113,92 @@ public class ScriptElement implements Element {
 
 	@Override
 	public NamedNodeMap getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		Attributes attrs = this.target.attributes();
+		if (attrs == null) {
+			return null;
+		}
+		List<Attribute> attrList = attrs.asList();
+		List<Node> destAttrList = new ArrayList<Node>(attrList.size());
+		for (Attribute attr : attrList) {
+			destAttrList.add(new ScriptAttr(attr.getKey(), attr.getValue()));
+		}
+		return new ScriptNamedNodeMap(destAttrList);
 	}
 
 	@Override
 	public Document getOwnerDocument() {
-		return null;
+		return this.ownerDocument;
 	}
 
 	@Override
 	public Node insertBefore(Node newChild, Node refChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized (this.treeLock) {
+			List<ScriptElement> nl = this.childList;
+			int idx = nl == null ? -1 : nl.indexOf(refChild);
+			if (idx == -1) {
+				throw new DOMException(DOMException.NOT_FOUND_ERR, "refChild not found");
+			}
+			org.jsoup.nodes.Element curTarget = new org.jsoup.nodes.Element(Tag.valueOf(newChild.getNodeName()),
+					newChild.getBaseURI());
+			ScriptElement sElement = new ScriptElement(curTarget, this);
+			nl.add(idx, sElement);
+		}
+		return newChild;
 	}
 
 	@Override
 	public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized (this.treeLock) {
+			List<ScriptElement> nl = this.childList;
+			int idx = nl == null ? -1 : nl.indexOf(oldChild);
+			if (idx == -1) {
+				throw new DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found");
+			}
+			ScriptElement newElement = null;
+			if (newChild instanceof ScriptElement) {
+				newElement = (ScriptElement) newChild;
+			} else {
+				newElement = ScriptElementUtils.toElement(newChild, this);
+			}
+			nl.set(idx, newElement);
+		}
+		return newChild;
 	}
 
 	@Override
 	public Node removeChild(Node oldChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized (this.treeLock) {
+			List<ScriptElement> nl = this.childList;
+			if (nl == null || !nl.remove(oldChild)) {
+				throw new DOMException(DOMException.NOT_FOUND_ERR, "oldChild not found");
+			}
+		}
+		return oldChild;
 	}
 
 	@Override
 	public Node appendChild(Node newChild) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized (this.treeLock) {
+			List<ScriptElement> nl = this.childList;
+			if (nl == null) {
+				nl = new ArrayList<ScriptElement>(3);
+				this.childList = nl;
+			}
+			ScriptElement newElement = null;
+			if (newChild instanceof ScriptElement) {
+				newElement = (ScriptElement) newChild;
+			} else {
+				newElement = ScriptElementUtils.toElement(newChild, this);
+			}
+			newElement.setParent(this);
+			nl.add(newElement);
+		}
+		return newChild;
 	}
 
 	@Override
 	public boolean hasChildNodes() {
-		// TODO Auto-generated method stub
-		return false;
+		return !this.childList.isEmpty();
 	}
 
 	@Override
@@ -136,7 +216,7 @@ public class ScriptElement implements Element {
 	@Override
 	public boolean isSupported(String feature, String version) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -147,14 +227,12 @@ public class ScriptElement implements Element {
 
 	@Override
 	public String getPrefix() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.prefix;
 	}
 
 	@Override
 	public void setPrefix(String prefix) throws DOMException {
-		// TODO Auto-generated method stub
-
+		this.prefix = prefix;
 	}
 
 	@Override
@@ -171,8 +249,7 @@ public class ScriptElement implements Element {
 
 	@Override
 	public String getBaseURI() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.target.baseUri();
 	}
 
 	@Override
@@ -243,50 +320,83 @@ public class ScriptElement implements Element {
 
 	@Override
 	public String getTagName() {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.target instanceof org.jsoup.nodes.Element) {
+			org.jsoup.nodes.Element element = (org.jsoup.nodes.Element) this.target;
+			return element.tagName();
+		}
+		return this.target.nodeName();
 	}
 
 	@Override
 	public String getAttribute(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		String normalName = this.normalizeAttributeName(name);
+		return this.target.attr(normalName);
 	}
 
 	@Override
 	public void setAttribute(String name, String value) throws DOMException {
-		// TODO Auto-generated method stub
+		String attributeKey = normalizeAttributeName(name);
+		this.target.attr(attributeKey, value);
+	}
 
+	protected final String normalizeAttributeName(String name) {
+		return name.toLowerCase();
 	}
 
 	@Override
 	public void removeAttribute(String name) throws DOMException {
-		// TODO Auto-generated method stub
-
+		String attributeKey = normalizeAttributeName(name);
+		this.target.removeAttr(attributeKey);
 	}
 
 	@Override
 	public Attr getAttributeNode(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		String key = this.normalizeAttributeName(name);
+		String value = getAttribute(key);
+		return value == null ? null : new ScriptAttr(key, value);
 	}
 
 	@Override
 	public Attr setAttributeNode(Attr newAttr) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		setAttribute(newAttr.getName(), newAttr.getValue());
+		return newAttr;
 	}
 
 	@Override
 	public Attr removeAttributeNode(Attr oldAttr) throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		removeAttribute(oldAttr.getName());
+		return oldAttr;
 	}
 
 	@Override
 	public NodeList getElementsByTagName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		boolean matchesAll = "*".equals(name);
+		List<Node> descendents = new LinkedList<Node>();
+		synchronized (this.treeLock) {
+			List<ScriptElement> nl = this.childList;
+			if (nl != null) {
+				Iterator<ScriptElement> i = nl.iterator();
+				while (i.hasNext()) {
+					ScriptElement child = i.next();
+					if (child instanceof Element) {
+						Element childElement = (Element) child;
+						if (matchesAll || isSameTag(childElement, name)) {
+							descendents.add(child);
+						}
+						NodeList sublist = childElement.getElementsByTagName(name);
+						int length = sublist.getLength();
+						for (int idx = 0; idx < length; idx++) {
+							descendents.add(sublist.item(idx));
+						}
+					}
+				}
+			}
+		}
+		return new ScriptNodeList(descendents);
+	}
+
+	protected static boolean isSameTag(Node node, String name) {
+		return node.getNodeName().equalsIgnoreCase(name);
 	}
 
 	@Override
@@ -327,8 +437,7 @@ public class ScriptElement implements Element {
 
 	@Override
 	public boolean hasAttribute(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		return getAttribute(name) != null;
 	}
 
 	@Override
@@ -345,8 +454,12 @@ public class ScriptElement implements Element {
 
 	@Override
 	public void setIdAttribute(String name, boolean isId) throws DOMException {
-		// TODO Auto-generated method stub
-
+		Attr idAttr = getAttributeNode(name);
+		if (idAttr == null) {
+			String msg = "NOT FOUN ATTR by name:" + name;
+			throw new DOMException(DOMException.NOT_FOUND_ERR, msg);
+		}
+		setIdAttributeNode(idAttr, isId);
 	}
 
 	@Override
@@ -357,8 +470,59 @@ public class ScriptElement implements Element {
 
 	@Override
 	public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException {
-		// TODO Auto-generated method stub
+		if (idAttr == null) {
+			throw new IllegalArgumentException("idAttr can not be null.");
+		}
+		ScriptDocument doc = (ScriptDocument) getOwnerDocument();
+		ConcurrentHashMap<String, Node> identifiers = doc.getIdentifiers();
+		if (!isId) {
+			identifiers.remove(idAttr.getValue());
+		} else {
+			identifiers.put(idAttr.getValue(), idAttr);
+		}
+	}
 
+	public void setNodeType(short nodeType) {
+		this.nodeType = nodeType;
+	}
+
+	public void setParent(ScriptElement parent) {
+		this.parent = parent;
+	}
+
+	void setOwnerDocument(Document ownerDocument) {
+		this.ownerDocument = ownerDocument;
+	}
+
+	public org.jsoup.nodes.Node getTarget() {
+		return target;
+	}
+
+	public void setTarget(org.jsoup.nodes.Node target) {
+		this.target = target;
+	}
+
+	public ScriptElement getParent() {
+		return parent;
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(this.target.nodeName()).append(getNodeType()).append(getParentNode())
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ScriptElement other = (ScriptElement) obj;
+		return new EqualsBuilder().append(this.target.nodeName(), other.getTarget().nodeName())
+				.append(getNodeType(), other.getNodeType()).append(getParentNode(), other.getParentNode()).isEquals();
 	}
 
 }

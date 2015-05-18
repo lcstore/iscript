@@ -1,45 +1,97 @@
- package com.lezo.iscript.crawler.dom;
+package com.lezo.iscript.crawler.dom;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.w3c.dom.UserDataHandler;
 
-public abstract class ScriptNode implements Node, NodeList {
-	private ScriptNode parent;
-	private org.jsoup.nodes.Node target;
+public class ScriptText implements Text {
+	private String text;
+	private String baseUri;
+	private Document ownerDocument;
+
+	ScriptText(String text, String baseUri) {
+		super();
+		this.text = text;
+		this.baseUri = baseUri;
+	}
 
 	@Override
-	public abstract String getNodeName();
+	public String getData() throws DOMException {
+		return this.text;
+	}
+
+	@Override
+	public void setData(String data) throws DOMException {
+		this.text = data;
+	}
+
+	@Override
+	public int getLength() {
+		return this.text.length();
+	}
+
+	@Override
+	public String substringData(int offset, int count) throws DOMException {
+		return this.text.substring(offset, offset + count);
+	}
+
+	@Override
+	public void appendData(String arg) throws DOMException {
+		this.text += arg;
+	}
+
+	@Override
+	public void insertData(int offset, String arg) throws DOMException {
+		StringBuffer buffer = new StringBuffer(this.text);
+		StringBuffer result = buffer.insert(offset, arg);
+		this.text = result.toString();
+	}
+
+	@Override
+	public void deleteData(int offset, int count) throws DOMException {
+		StringBuffer buffer = new StringBuffer(this.text);
+		StringBuffer result = buffer.delete(offset, offset + count);
+		this.text = result.toString();
+	}
+
+	@Override
+	public void replaceData(int offset, int count, String arg) throws DOMException {
+		StringBuffer buffer = new StringBuffer(this.text);
+		StringBuffer result = buffer.replace(offset, offset + count, arg);
+		this.text = result.toString();
+	}
+
+	@Override
+	public String getNodeName() {
+		return "#text";
+	}
 
 	@Override
 	public String getNodeValue() throws DOMException {
-		return null;
+		return this.text;
 	}
 
 	@Override
 	public void setNodeValue(String nodeValue) throws DOMException {
-		// TODO Auto-generated method stub
-
+		this.text = nodeValue;
 	}
 
 	@Override
 	public short getNodeType() {
-		// TODO Auto-generated method stub
-		return 0;
+		return Node.TEXT_NODE;
 	}
 
 	@Override
 	public Node getParentNode() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public NodeList getChildNodes() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -75,8 +127,7 @@ public abstract class ScriptNode implements Node, NodeList {
 
 	@Override
 	public Document getOwnerDocument() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.ownerDocument;
 	}
 
 	@Override
@@ -159,8 +210,7 @@ public abstract class ScriptNode implements Node, NodeList {
 
 	@Override
 	public String getBaseURI() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.baseUri;
 	}
 
 	@Override
@@ -171,14 +221,12 @@ public abstract class ScriptNode implements Node, NodeList {
 
 	@Override
 	public String getTextContent() throws DOMException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.text;
 	}
 
 	@Override
 	public void setTextContent(String textContent) throws DOMException {
-		// TODO Auto-generated method stub
-
+		this.text = textContent;
 	}
 
 	@Override
@@ -230,15 +278,31 @@ public abstract class ScriptNode implements Node, NodeList {
 	}
 
 	@Override
-	public Node item(int index) {
+	public Text splitText(int offset) throws DOMException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public int getLength() {
+	public boolean isElementContentWhitespace() {
 		// TODO Auto-generated method stub
-		return 0;
+		return false;
+	}
+
+	@Override
+	public String getWholeText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Text replaceWholeText(String content) throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	void setOwnerDocument(Document ownerDocument) {
+		this.ownerDocument = ownerDocument;
 	}
 
 }
