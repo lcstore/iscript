@@ -25,8 +25,8 @@ import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.lezo.iscript.crawler.dom.env.ScriptJavaObject;
 import com.lezo.iscript.envjs.EnvjsUtils;
-import com.lezo.iscript.envjs.PrototypeJavaObject;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -95,7 +95,7 @@ public class FDSSigner implements ConfigParser {
 				break;
 			}
 		}
-		PrototypeJavaObject documentObject = (PrototypeJavaObject) ScriptableObject.getProperty(scope, "document");
+		ScriptJavaObject documentObject = (ScriptJavaObject) ScriptableObject.getProperty(scope, "document");
 		DocumentAdapt document = (DocumentAdapt) Context.jsToJava(documentObject, DocumentAdapt.class);
 		NodeList scriptList = document.getElementsByTagName("script");
 		Node firstNode = scriptList.item(0);

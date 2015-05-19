@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
-import org.jsoup.parser.Tag;
+import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -20,8 +20,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.TypeInfo;
 import org.w3c.dom.UserDataHandler;
+import org.w3c.dom.html.HTMLElement;
 
-public class ScriptElement implements Element {
+public class ScriptElement implements HTMLElement {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<ScriptElement> childList;
 	private org.jsoup.nodes.Node target;
 	private ScriptElement parent;
@@ -30,11 +35,12 @@ public class ScriptElement implements Element {
 	private volatile String prefix;
 	private Document ownerDocument;
 
-	ScriptElement(org.jsoup.nodes.Node target, ScriptElement parent) {
-		super();
+	ScriptElement(Scriptable scope, org.jsoup.nodes.Node target, ScriptElement parent, Class<?> destClass) {
+		// super(scope, null, destClass, true);
 		this.target = target;
 		this.parent = parent;
 		this.childList = new ArrayList<ScriptElement>(4);
+		// super.initMembers();
 	}
 
 	@Override
@@ -50,6 +56,9 @@ public class ScriptElement implements Element {
 		} else if (this.target instanceof org.jsoup.nodes.TextNode) {
 			org.jsoup.nodes.TextNode textNode = (org.jsoup.nodes.TextNode) this.target;
 			return textNode.text();
+		} else if (this.target instanceof org.jsoup.nodes.DataNode) {
+			org.jsoup.nodes.DataNode dataNode = (org.jsoup.nodes.DataNode) this.target;
+			return dataNode.getWholeData();
 		}
 		return this.target.attr("value");
 	}
@@ -92,23 +101,39 @@ public class ScriptElement implements Element {
 
 	@Override
 	public Node getFirstChild() {
-		return childList.get(0);
+		return childList.isEmpty() ? null : childList.get(0);
 	}
 
 	@Override
 	public Node getLastChild() {
 		int size = childList.size();
-		return childList.get(size - 1);
+		return childList.isEmpty() ? null : childList.get(size - 1);
 	}
 
 	@Override
 	public Node getPreviousSibling() {
-		return parent == null ? null : parent.getChildNodes().item(target.siblingIndex() - 1);
+		if (parent == null) {
+			return null;
+		}
+		NodeList childList = parent.getChildNodes();
+		if (childList == null) {
+			return null;
+		}
+		int index = target.siblingIndex() - 1;
+		return index < 0 || index >= childList.getLength() ? null : childList.item(index);
 	}
 
 	@Override
 	public Node getNextSibling() {
-		return parent == null ? null : parent.getChildNodes().item(target.siblingIndex() + 1);
+		if (parent == null) {
+			return null;
+		}
+		NodeList childList = parent.getChildNodes();
+		if (childList == null) {
+			return null;
+		}
+		int index = target.siblingIndex() + 1;
+		return index < 0 || index >= childList.getLength() ? null : childList.item(index);
 	}
 
 	@Override
@@ -138,10 +163,12 @@ public class ScriptElement implements Element {
 			if (idx == -1) {
 				throw new DOMException(DOMException.NOT_FOUND_ERR, "refChild not found");
 			}
-			org.jsoup.nodes.Element curTarget = new org.jsoup.nodes.Element(Tag.valueOf(newChild.getNodeName()),
-					newChild.getBaseURI());
-			ScriptElement sElement = new ScriptElement(curTarget, this);
-			nl.add(idx, sElement);
+
+			ScriptElement newElement = (ScriptElement) newChild;
+			ScriptElement refElement = (ScriptElement) refChild;
+			
+			refElement.getTarget().before(newElement.getTarget());
+			nl.add(idx, newElement);
 		}
 		return newChild;
 	}
@@ -523,6 +550,63 @@ public class ScriptElement implements Element {
 		ScriptElement other = (ScriptElement) obj;
 		return new EqualsBuilder().append(this.target.nodeName(), other.getTarget().nodeName())
 				.append(getNodeType(), other.getNodeType()).append(getParentNode(), other.getParentNode()).isEquals();
+	}
+
+	// /////////////////////
+
+	@Override
+	public String getId() {
+		return getAttribute("id");
+	}
+
+	@Override
+	public void setId(String id) {
+		setAttribute("id", id);
+	}
+
+	@Override
+	public String getTitle() {
+		return getAttribute("title");
+	}
+
+	@Override
+	public void setTitle(String title) {
+		setAttribute("title", title);
+	}
+
+	@Override
+	public String getLang() {
+		return getAttribute("lang");
+	}
+
+	@Override
+	public void setLang(String lang) {
+		setAttribute("lang", lang);
+	}
+
+	@Override
+	public String getDir() {
+		return getAttribute("dir");
+	}
+
+	@Override
+	public void setDir(String dir) {
+		setAttribute("dir", dir);
+	}
+
+	@Override
+	public String getClassName() {
+		return getAttribute("class");
+	}
+
+	@Override
+	public void setClassName(String className) {
+		setAttribute("class", className);
+	}
+
+	@Override
+	public String toString() {
+		return "ScriptElement";
 	}
 
 }

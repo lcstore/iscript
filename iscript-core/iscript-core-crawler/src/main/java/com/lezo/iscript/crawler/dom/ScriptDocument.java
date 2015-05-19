@@ -1,7 +1,11 @@
 package com.lezo.iscript.crawler.dom;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.parser.Tag;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -9,7 +13,6 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
@@ -19,19 +22,34 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
-import org.w3c.dom.UserDataHandler;
 import org.w3c.dom.html.HTMLCollection;
 import org.w3c.dom.html.HTMLDocument;
 import org.w3c.dom.html.HTMLElement;
 
+import sun.org.mozilla.javascript.internal.annotations.JSFunction;
+
+import com.lezo.iscript.crawler.dom.env.ScriptLocation;
+import com.lezo.iscript.crawler.dom.env.ScriptWindow;
+import com.lezo.iscript.utils.URLUtils;
+
 //HTMLDocument,DocumentTraversal, DocumentEvent, DocumentRange, DocumentView
 public class ScriptDocument extends ScriptElement implements HTMLDocument {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ConcurrentHashMap<String, Node> identifiers = new ConcurrentHashMap<String, Node>();
 	protected String documentURI;
+	private String referrer;
+	private ScriptLocation location;
+	private org.jsoup.nodes.Document targetDocument;
 
-	public ScriptDocument(org.jsoup.nodes.Document targetDocument) {
-		super(targetDocument, null);
+	public ScriptDocument(ScriptWindow window, org.jsoup.nodes.Document targetDocument) {
+		super(window.getScriptable(), targetDocument, null, ScriptDocument.class);
 		setOwnerDocument(this);
+		this.targetDocument = targetDocument;
+		window.setDocument(this);
+		this.location = new ScriptLocation(getBaseURI());
 	}
 
 	@Override
@@ -52,14 +70,19 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 	}
 
 	@Override
+	@JSFunction
 	public Element createElement(String tagName) throws DOMException {
 		org.jsoup.nodes.Element targetEle = new org.jsoup.nodes.Element(Tag.valueOf(tagName), getBaseURI());
-		return createElement(targetEle);
+		return createElementByNode(targetEle);
 	}
 
-	public ScriptElement createElement(org.jsoup.nodes.Node target) throws DOMException {
-		ScriptElement element = new ScriptElement(target, this);
+	public ScriptElement createElementByNode(org.jsoup.nodes.Node target) throws DOMException {
+		ScriptElement element = new ScriptElement(null, target, this, ScriptElement.class);
 		element.setOwnerDocument(this);
+		String idValue = target.attr("id");
+		if (StringUtils.isNotBlank(idValue)) {
+			identifiers.putIfAbsent(idValue, element);
+		}
 		return element;
 	}
 
@@ -269,12 +292,12 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 
 	@Override
 	public String getDocumentURI() {
-		return this.documentURI;
+		return getBaseURI();
 	}
 
 	@Override
 	public void setDocumentURI(String documentURI) {
-		this.documentURI = documentURI;
+		this.targetDocument.setBaseUri(documentURI);
 	}
 
 	@Override
@@ -303,38 +326,34 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 
 	@Override
 	public String getTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.targetDocument.title();
 	}
 
 	@Override
 	public void setTitle(String title) {
-		// TODO Auto-generated method stub
-
+		this.targetDocument.title(title);
 	}
 
 	@Override
 	public String getReferrer() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.referrer;
 	}
 
 	@Override
 	public String getDomain() {
-		// TODO Auto-generated method stub
-		return null;
+		return URLUtils.getHost(getURL());
 	}
 
 	@Override
 	public String getURL() {
-		// TODO Auto-generated method stub
-		return null;
+		return getBaseURI();
 	}
 
 	@Override
 	public HTMLElement getBody() {
-		// TODO Auto-generated method stub
-		return null;
+		NodeList bodyNList = getElementsByTagName("body");
+		Node toNode = bodyNList == null || bodyNList.getLength() < 1 ? null : bodyNList.item(0);
+		return (HTMLElement) toNode;
 	}
 
 	@Override
@@ -399,8 +418,27 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 
 	@Override
 	public void write(String text) {
-		// TODO Auto-generated method stub
+		Document newDom = Jsoup.parseBodyFragment(text, getBaseURI());
+		NodeList headNList = getElementsByTagName("head");
+		Node headNode = headNList.item(0);
+		ScriptElement toElement = (ScriptElement) headNode;
+		addChild(toElement, newDom.head().childNodesCopy());
+		// add body
+		toElement = (ScriptElement) getBody();
+		addChild(toElement, newDom.body().childNodesCopy());
+	}
 
+	private void addChild(ScriptElement toElement, List<org.jsoup.nodes.Node> childList) {
+		if (childList == null) {
+			return;
+		}
+		int len = childList.size();
+		for (int i = 0; i < len; i++) {
+			org.jsoup.nodes.Node ch = childList.get(i);
+			org.jsoup.nodes.Element target = (org.jsoup.nodes.Element) toElement.getTarget();
+			target.appendChild(ch);
+			ScriptHtmlParser.doCopy(ch, toElement, this);
+		}
 	}
 
 	@Override
@@ -412,6 +450,27 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 	@Override
 	public NodeList getElementsByName(String elementName) {
 		return super.getElementsByTagName(elementName);
+	}
+
+	public org.jsoup.nodes.Document getTargetDocument() {
+		return targetDocument;
+	}
+
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
+	}
+
+	@Override
+	public String toString() {
+		return "Document";
+	}
+
+	public ScriptLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(ScriptLocation location) {
+		this.location = location;
 	}
 
 }

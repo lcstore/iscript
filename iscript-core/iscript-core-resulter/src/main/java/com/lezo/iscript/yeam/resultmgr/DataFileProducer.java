@@ -96,9 +96,10 @@ public class DataFileProducer implements Runnable {
 					createDataFileConsumer(descriptor, acceptList);
 					this.tracker.setFileCount(this.tracker.getFileCount() + acceptList.size());
 					this.tracker.setStamp(getMaxStamp(acceptList));
-//					if (this.tracker.getStamp() - startStamp >= 10 * 60 * 1000) {
-//						break;
-//					}
+					// if (this.tracker.getStamp() - startStamp >= 10 * 60 *
+					// 1000) {
+					// break;
+					// }
 				} else {
 					// throw new RuntimeException(descriptor.getBucketName() +
 					// ":" + this.tracker.getDescriptor().getDirectoryKey() +
@@ -159,7 +160,17 @@ public class DataFileProducer implements Runnable {
 		List<RestFile> itemList = new ArrayList<RestFile>(restList.size());
 		for (RestFile rs : restList) {
 			if (stamp > rs.getCreateTime()) {
-				continue;
+				String path = rs.getPath();
+				char dotChar = '.';
+				int toIndex = path.lastIndexOf(dotChar);
+				int fromIndex = path.lastIndexOf(dotChar, toIndex - 1);
+				String strStamp = path.substring(fromIndex + 1, toIndex);
+				Long fileStamp = Long.valueOf(strStamp);
+				if (stamp > fileStamp) {
+					continue;
+				} else {
+					logger.warn("illegal stamp.path:" + rs.getPath());
+				}
 			}
 			itemList.add(rs);
 		}

@@ -18,13 +18,14 @@ public class BaiduPcsDataResterTest {
 	// String accessToken =
 	// "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
 	// private String bucket = "istore_doc";
-//	String accessToken = "21.bbab445326661b526361f507d1a7305d.2592000.1433652624.4026763474-1856205";
+	// String accessToken =
+	// "21.bbab445326661b526361f507d1a7305d.2592000.1433652624.4026763474-1856205";
 	String accessToken = "21.ad2f5fb25bfaea4bea82efc054ba9b45.2592000.1433653314.4026763474-2920106";
 	private String bucket = "idocs";
 	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
-//	@Test
+	// @Test
 	public void testUpload() throws Exception {
 		DefaultHttpClient client = HttpClientUtils.createHttpClient();
 		rester.setClient(client);
@@ -71,8 +72,16 @@ public class BaiduPcsDataResterTest {
 		paramMap.put("limit", "0-40");
 		RestList fileList = rester.listFiles(targetPath, paramMap);
 		for (RestFile dFile : fileList.getDataList()) {
-			System.err.println(dFile.getPath() + ":" + dFile.getUpdateTime());
+			System.err.println(dFile.getPath() + ":" + dFile.getUpdateTime() + ":" + dFile.getCreateTime());
 		}
 		System.err.println("size:" + fileList.getDataList().size() + ",marker:" + fileList.getMarker());
+	}
+
+	@Test
+	public void testGetStamp() {
+		String path = "18/ConfigProxyDetector/5/ConfigProxyDetector.20150518.1431888580228.gz";
+		int toIndex = path.lastIndexOf(".");
+		int fromIndex = path.lastIndexOf(".", toIndex - 1);
+		System.out.println(fromIndex + "," + toIndex + ":" + path.substring(fromIndex + 1, toIndex));
 	}
 }
