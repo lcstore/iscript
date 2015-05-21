@@ -15,7 +15,7 @@ public class ScriptNodeList implements NodeList {
 
 	@Override
 	public Node item(int index) {
-		return nodeList.get(index);
+		return index < 0 || index >= getLength() ? null : nodeList.get(index);
 	}
 
 	@Override

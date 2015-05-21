@@ -26,30 +26,22 @@ import org.w3c.dom.html.HTMLCollection;
 import org.w3c.dom.html.HTMLDocument;
 import org.w3c.dom.html.HTMLElement;
 
-import sun.org.mozilla.javascript.internal.annotations.JSFunction;
-
-import com.lezo.iscript.crawler.dom.env.ScriptLocation;
-import com.lezo.iscript.crawler.dom.env.ScriptWindow;
+import com.lezo.iscript.crawler.dom.browser.ScriptLocation;
 import com.lezo.iscript.utils.URLUtils;
 
 //HTMLDocument,DocumentTraversal, DocumentEvent, DocumentRange, DocumentView
 public class ScriptDocument extends ScriptElement implements HTMLDocument {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private ConcurrentHashMap<String, Node> identifiers = new ConcurrentHashMap<String, Node>();
 	protected String documentURI;
 	private String referrer;
 	private ScriptLocation location;
 	private org.jsoup.nodes.Document targetDocument;
 
-	public ScriptDocument(ScriptWindow window, org.jsoup.nodes.Document targetDocument) {
-		super(window.getScriptable(), targetDocument, null, ScriptDocument.class);
-		setOwnerDocument(this);
+	public ScriptDocument(org.jsoup.nodes.Document targetDocument) {
+		super(targetDocument, null);
 		this.targetDocument = targetDocument;
-		window.setDocument(this);
 		this.location = new ScriptLocation(getBaseURI());
+		setOwnerDocument(this);
 	}
 
 	@Override
@@ -70,14 +62,13 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 	}
 
 	@Override
-	@JSFunction
 	public Element createElement(String tagName) throws DOMException {
 		org.jsoup.nodes.Element targetEle = new org.jsoup.nodes.Element(Tag.valueOf(tagName), getBaseURI());
 		return createElementByNode(targetEle);
 	}
 
 	public ScriptElement createElementByNode(org.jsoup.nodes.Node target) throws DOMException {
-		ScriptElement element = new ScriptElement(null, target, this, ScriptElement.class);
+		ScriptElement element = new ScriptElement(target, this);
 		element.setOwnerDocument(this);
 		String idValue = target.attr("id");
 		if (StringUtils.isNotBlank(idValue)) {
@@ -418,6 +409,8 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 
 	@Override
 	public void write(String text) {
+		// XXX head script will be appendChild to body
+		// XXX body script will be sibling to current script
 		Document newDom = Jsoup.parseBodyFragment(text, getBaseURI());
 		NodeList headNList = getElementsByTagName("head");
 		Node headNode = headNList.item(0);
@@ -462,7 +455,7 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 
 	@Override
 	public String toString() {
-		return "Document";
+		return "ScriptDocument";
 	}
 
 	public ScriptLocation getLocation() {

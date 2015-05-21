@@ -12,15 +12,8 @@
 		gads.src = (useSSL ? 'https:' : 'http:')
 				+ '//www.googletagservices.com/tag/js/gpt.js';
 		var node = document.getElementsByTagName('script')[0];
+		gads.src = gads.src.replace(/tag/gm,'REG');
 		node.parentNode.insertBefore(gads, node);
-		
-		var nd = document.getElementsByTagName('script')[0];
-		gads = document.createElement('script');
-		gads.async = false;
-		gads.type = 'text/javascript';
-		gads.src = document.location.href;
-		gads.refer = nd.src;
-		nd.parentNode.insertBefore(gads, nd);
 	})();
 </script>
 </head>

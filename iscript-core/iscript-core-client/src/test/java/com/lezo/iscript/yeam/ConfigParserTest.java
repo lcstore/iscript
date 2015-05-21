@@ -89,9 +89,9 @@ public class ConfigParserTest {
 		parser = new ConfigYhdBrandList();
 		// parser = new ConfigYhdBrandShop();
 		parser = new ConfigJdBrandShop();
-		parser = new ConfigTmallBrandShop();
 		parser = new ConfigProxyDetector();
 		parser = new ConfigProxySeedHandler();
+		parser = new ConfigTmallBrandShop();
 		// parser = new ConfigGoogleChecker();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
@@ -112,6 +112,7 @@ public class ConfigParserTest {
 		url = "http://list.yhd.com/c5066-0-0/?tc=0.0.16.CatMenu_Site_100000019_78010.86&tp=4.94808.161.3.4.KoZbPEM-11-6d7Av";
 		url = "http://www.yhd.com/";
 		url = "http://www.youdaili.net/Daili/Socks/3166.html";
+		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
@@ -143,6 +144,7 @@ public class ConfigParserTest {
 		// task.put("seedId", "1");
 		// task.put("CreateUrlsFun",
 		// "var oUrlArr = [];var maxCount=50;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return JSON.stringify(oUrlArr);");
+		task.getArgs().remove("proxyHost");
 		String returnObject = parser.doParse(task);
 		System.out.println("result:" + returnObject);
 	}

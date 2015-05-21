@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.lezo.iscript.crawler.dom.env.ScriptJavaObject;
+import com.lezo.iscript.crawler.dom.rhino.ScriptJavaObject;
 import com.lezo.iscript.envjs.dom.DocumentAdapt;
 import com.lezo.iscript.envjs.dom.ElementJavaObject;
 

@@ -1,4 +1,4 @@
-{"proxyHost":"60.29.248.142","proxyType":1,"proxyPort":8080,"type":"ConfigTmallBrandShop","bid":"839a9a5d-4da7-4534-a58f-f478a9a2af87","url":"http://list.tmall.com/search_product.htm?brand=3266761&sort=s&style=w#J_Filter"}
+{"proxyHost":"183.207.224.51","brandCode":"330","proxyType":1,"proxyPort":80,"brandName":"悠哈","url":"http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter"}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML><HEAD>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312"> 
@@ -7,41 +7,4 @@
 </HEAD><BODY>
 <H1>错误</H1>
 <H2>您所请求的网址（URL）无法获取</H2>
-<HR noshade size="1px">
-<P>
-当尝试读取以下网址（URL）时：
-<A HREF="http://login.tmall.com?from=sm&amp;redirectURL=http%3A%2F%2Fsec.taobao.com%2Fquery.htm%3Faction%3DQueryAction%26event_submit_do_login%3Dok%26smApp%3Dtmallsearch%26smPolicy%3Dtmallsearch-product-anti_Spider-html-checklogin%26smCharset%3DGBK%26smTag%3DNjAuMjkuMjQ4LjE0MiwsYTc5YjFiYjM1ODYyNDg3ZTk5MWJlZDljMjFiNzYxOWE%253D%26smReturn%3Dhttp%253A%252F%252Flist.tmall.com%252Fsearch_product.htm%253Fbrand%253D3266761%2526sort%253Ds%2526style%253Dw%26smSign%3DfSzuqhTZxOlp%252F71zdeeu2g%253D%253D">http://login.tmall.com?from=sm&amp;redirectURL=http%3A%2F%2Fsec.taobao.com%2Fquery.htm%3Faction%3DQueryAction%26event_submit_do_login%3Dok%26smApp%3Dtmallsearch%26smPolicy%3Dtmallsearch-product-anti_Spider-html-checklogin%26smCharset%3DGBK%26smTag%3DNjAuMjkuMjQ4LjE0MiwsYTc5YjFiYjM1ODYyNDg3ZTk5MWJlZDljMjFiNzYxOWE%253D%26smReturn%3Dhttp%253A%252F%252Flist.tmall.com%252Fsearch_product.htm%253Fbrand%253D3266761%2526sort%253Ds%2526style%253Dw%26smSign%3DfSzuqhTZxOlp%252F71zdeeu2g%253D%253D</A>
-<P>
-发生了下列的错误：
-<UL>
-<LI>
-<STRONG>
-Invalid URL
-<BR>
-无效的网址
-</STRONG>
-</UL>
 
-<P>
-Some aspect of the requested URL is incorrect.  Possible problems:
-<BR>
-输入网址的某些地方有误，可能是因为：
-<UL>
-<LI>Missing or incorrect access protocol (should be `http://'' or similar)
-<BR>缺少或不正确的通讯协议（应该如 `http://''或类似的开头）
-<LI>Missing hostname
-<BR>缺少欲连结的主机名称
-<LI>Illegal double-escape in the URL-Path
-<BR>网址路径中有不合法双重转义符
-<LI>Illegal character in hostname; underscores are not allowed
-<BR>主机名称中包含不合法的字符；下划线是不允许的。
-</UL>
-</P>
-<P>本缓存服务器管理员：<A HREF="mailto:webmaster">webmaster</A>
-
-<BR clear="all">
-<HR noshade size="1px">
-<ADDRESS>
-Generated Wed, 08 Apr 2015 14:49:45 GMT by TJHY248-142.opi.com (squid/2.6.STABLE21)
-</ADDRESS>
-</BODY></HTML>

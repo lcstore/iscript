@@ -38,6 +38,7 @@ import com.lezo.iscript.yeam.server.session.ProxySessionCacher;
 public class IoServer extends IoHandlerAdapter {
 	private static final String HTTP_NEW_LINE = "\r\n";
 	private static final String CHARSET_NAME = "UTF-8";
+	private static final long MAX_IO_IDLE_TIME = 10 * 60 * 1000;
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
 	private ClientEventDispatcher clientEventDispatcher = new ClientEventDispatcher();
@@ -51,8 +52,9 @@ public class IoServer extends IoHandlerAdapter {
 		acceptor.getFilterChain().addLast("exceutor", new ExecutorFilter());
 		acceptor.setHandler(this);
 		acceptor.getSessionConfig().setReadBufferSize(2048);
-		// 读写 通道均在600 秒内无任何操作就进入空闲状态
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 600);
+		// 读写 通道均在300 秒内无任何操作就进入空闲状态
+		// session.getFilterChain().fireSessionIdle(status); will be call
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 300);
 		acceptor.bind(new InetSocketAddress(port));
 
 		IoAcceptorHolder.setIoAcceptor(acceptor);
@@ -211,7 +213,13 @@ public class IoServer extends IoHandlerAdapter {
 	public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
 		if (session.isBothIdle()) {
 			SessionHisDto sessionDto = getSessionHisDto(session);
-			logger.info(String.format("idle session:%s", sessionDto));
+			long cost = System.currentTimeMillis() - session.getLastIoTime();
+			if (cost > MAX_IO_IDLE_TIME) {
+				session.close(true).awaitUninterruptibly();
+				logger.warn(String.format("close idle session:%s,idleMills:%s", sessionDto, cost));
+			} else {
+				logger.info(String.format("idle session:%s,idleMills:%s", sessionDto, cost));
+			}
 		}
 	}
 

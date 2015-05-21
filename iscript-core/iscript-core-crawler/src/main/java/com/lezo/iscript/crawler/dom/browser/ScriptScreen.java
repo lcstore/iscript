@@ -1,4 +1,4 @@
-package com.lezo.iscript.crawler.dom.env;
+package com.lezo.iscript.crawler.dom.browser;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;

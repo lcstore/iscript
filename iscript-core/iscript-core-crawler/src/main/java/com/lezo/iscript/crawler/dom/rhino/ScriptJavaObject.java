@@ -1,4 +1,4 @@
-package com.lezo.iscript.crawler.dom.env;
+package com.lezo.iscript.crawler.dom.rhino;
 
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
@@ -36,7 +36,7 @@ public class ScriptJavaObject extends NativeJavaObject {
 		Object originObject = unwrap();
 		if (NodeList.class.isInstance(originObject)) {
 			NodeList nl = (NodeList) originObject;
-			return nl.item(index);
+			return doReturn(nl.item(index), start);
 		}
 		if (has(index, start)) {
 			result = super.get(index, start);

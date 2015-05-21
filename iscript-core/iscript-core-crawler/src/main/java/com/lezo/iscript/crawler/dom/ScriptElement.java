@@ -23,10 +23,6 @@ import org.w3c.dom.UserDataHandler;
 import org.w3c.dom.html.HTMLElement;
 
 public class ScriptElement implements HTMLElement {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private List<ScriptElement> childList;
 	private org.jsoup.nodes.Node target;
 	private ScriptElement parent;
@@ -35,8 +31,7 @@ public class ScriptElement implements HTMLElement {
 	private volatile String prefix;
 	private Document ownerDocument;
 
-	ScriptElement(Scriptable scope, org.jsoup.nodes.Node target, ScriptElement parent, Class<?> destClass) {
-		// super(scope, null, destClass, true);
+	ScriptElement(org.jsoup.nodes.Node target, ScriptElement parent) {
 		this.target = target;
 		this.parent = parent;
 		this.childList = new ArrayList<ScriptElement>(4);
@@ -165,6 +160,8 @@ public class ScriptElement implements HTMLElement {
 			}
 
 			ScriptElement newElement = (ScriptElement) newChild;
+			newElement.setParent(this);
+			
 			ScriptElement refElement = (ScriptElement) refChild;
 			
 			refElement.getTarget().before(newElement.getTarget());

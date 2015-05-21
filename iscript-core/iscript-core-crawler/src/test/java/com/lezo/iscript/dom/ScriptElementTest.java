@@ -3,9 +3,11 @@ package com.lezo.iscript.dom;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
@@ -15,7 +17,7 @@ import org.w3c.dom.NodeList;
 
 import com.lezo.iscript.crawler.dom.ScriptDocument;
 import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
-import com.lezo.iscript.crawler.dom.env.ScriptWindow;
+import com.lezo.iscript.crawler.dom.browser.ScriptWindow;
 
 public class ScriptElementTest {
 
@@ -61,14 +63,101 @@ public class ScriptElementTest {
 	@Test
 	public void testElementScript() throws Exception {
 		String source = FileUtils.readFileToString(new File("src/test/resources/data/test.element.html"), "UTF-8");
-		Document doc = Jsoup.parse(source);
+		Document doc = Jsoup.parse(source,"http://localhost.com");
 		ScriptWindow window = new ScriptWindow();
-		ScriptDocument scriptDocument = ScriptHtmlParser.parser(window, doc);
+		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
 		window.setDocument(scriptDocument);
 		System.err.println("before:" + doc);
 		Element scriptEle = doc.select("script").first();
 		System.err.println("script:" + scriptEle.html());
 		window.eval(scriptEle.html());
 		System.err.println("after:" + doc);
+	}
+
+	@Test
+	public void testDictScript() throws Exception {
+		String source = FileUtils.readFileToString(new File("src/test/resources/data/dict.cn.html"), "UTF-8");
+		Document doc = Jsoup.parse(source);
+		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
+		Elements scriptEls = doc.select("script");
+		ScriptWindow window = new ScriptWindow();
+		window.setDocument(scriptDocument);
+		int index = 0;
+		for (Element ele : scriptEls) {
+			String script = ele.html();
+			if (StringUtils.isBlank(script)) {
+				continue;
+			}
+			index++;
+			System.out.println("index:" + index + ":\n" + script);
+			window.eval(script);
+		}
+		Assert.assertEquals("http://dict.cn", Context.toString(ScriptableObject.getProperty(window, "dict_homepath")));
+
+		System.err.println("after:" + doc);
+	}
+	@Test
+	public void testRegExpScript() throws Exception {
+		String source = FileUtils.readFileToString(new File("src/test/resources/data/test.regex.html"), "UTF-8");
+		Document doc = Jsoup.parse(source);
+		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
+		Elements scriptEls = doc.select("script");
+		ScriptWindow window = new ScriptWindow();
+		window.setDocument(scriptDocument);
+		int index = 0;
+		for (Element ele : scriptEls) {
+			String script = ele.html();
+			if (StringUtils.isBlank(script)) {
+				continue;
+			}
+			index++;
+			System.out.println("index:" + index + ":\n" + script);
+			window.eval(script);
+		}
+		System.err.println("after:" + doc);
+	}
+	@Test
+	public void testBrowserScript() throws Exception {
+		String source = FileUtils.readFileToString(new File("src/test/resources/data/test.browser.html"), "UTF-8");
+		Document doc = Jsoup.parse(source);
+		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
+		Elements scriptEls = doc.select("script");
+		ScriptWindow window = new ScriptWindow();
+		window.setDocument(scriptDocument);
+		int index = 0;
+		for (Element ele : scriptEls) {
+			String script = ele.html();
+			if (StringUtils.isBlank(script)) {
+				continue;
+			}
+			index++;
+			System.out.println("index:" + index + ":\n" + script);
+			window.eval(script);
+		}
+		System.err.println("after:" + doc);
+	}
+	@Test
+	public void testTmallScript() throws Exception {
+		String source = FileUtils.readFileToString(new File("src/test/resources/data/tm.html"), "UTF-8");
+		Document doc = Jsoup.parse(source);
+		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
+		Elements scriptEls = doc.select("f script");
+		ScriptWindow window = new ScriptWindow();
+		window.setDocument(scriptDocument);
+		
+		String baseScript = FileUtils.readFileToString(new File("src/test/resources/data/tm.index.js"), "UTF-8");
+//		window.eval("setInterval=function(aExpression,aTimeInMs){ return window.setInterval(aExpression,aTimeInMs); };");
+		window.eval(baseScript);
+		int index = 0;
+		for (Element ele : scriptEls) {
+			String script = ele.html();
+			if (StringUtils.isBlank(script)) {
+				continue;
+			}
+			index++;
+			System.out.println("index:" + index + ":\n" + script);
+			window.eval(script);
+		}
+//		System.err.println("after:" + doc);
 	}
 }

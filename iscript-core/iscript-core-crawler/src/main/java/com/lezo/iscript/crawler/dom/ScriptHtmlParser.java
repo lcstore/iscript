@@ -4,16 +4,10 @@ import java.util.List;
 
 import org.jsoup.nodes.Node;
 
-import com.lezo.iscript.crawler.dom.env.ScriptWindow;
-
 public class ScriptHtmlParser {
 
 	public static ScriptDocument parser(org.jsoup.nodes.Document document) {
-		return parser(new ScriptWindow(), document);
-	}
-
-	public static ScriptDocument parser(ScriptWindow window, org.jsoup.nodes.Document document) {
-		ScriptDocument scriptDocument = new ScriptDocument(window, document);
+		ScriptDocument scriptDocument = new ScriptDocument(document);
 		List<Node> childList = document.childNodes();
 		for (Node child : childList) {
 			doCopy(child, scriptDocument, scriptDocument);

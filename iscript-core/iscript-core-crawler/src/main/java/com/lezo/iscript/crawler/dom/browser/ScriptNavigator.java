@@ -1,4 +1,4 @@
-package com.lezo.iscript.crawler.dom.env;
+package com.lezo.iscript.crawler.dom.browser;
 
 public class ScriptNavigator {
 	private String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36";
@@ -6,13 +6,11 @@ public class ScriptNavigator {
 	private String appVersion = "5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36";
 	private String appName = "Netscape";
 	private String appCodeName = "Mozilla";
+	private String vendor = "";
+	private String product = "Gecko";
 
 	public ScriptNavigator() {
 		super();
-	}
-
-	public String getAppMinorVersion() {
-		return null;
 	}
 
 	public String getPlatform() {
@@ -24,11 +22,11 @@ public class ScriptNavigator {
 	}
 
 	public String getVendor() {
-		return null;
+		return this.vendor;
 	}
 
 	public String getProduct() {
-		return null;
+		return this.product;
 	}
 
 	public boolean javaEnabled() {
@@ -94,6 +92,10 @@ public class ScriptNavigator {
 
 	public void setAppCodeName(String appCodeName) {
 		this.appCodeName = appCodeName;
+	}
+
+	public void setMimeTypes(MimeTypesCollection mimeTypes) {
+		this.mimeTypes = mimeTypes;
 	}
 
 }

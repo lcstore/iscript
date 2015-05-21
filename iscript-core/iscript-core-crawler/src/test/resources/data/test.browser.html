@@ -11,16 +11,12 @@
 		var useSSL = 'https:' == document.location.protocol;
 		gads.src = (useSSL ? 'https:' : 'http:')
 				+ '//www.googletagservices.com/tag/js/gpt.js';
+		var ua = window.navigator.userAgent;
+		gads.ua = ua;
 		var node = document.getElementsByTagName('script')[0];
 		node.parentNode.insertBefore(gads, node);
-		
-		var nd = document.getElementsByTagName('script')[0];
-		gads = document.createElement('script');
-		gads.async = false;
-		gads.type = 'text/javascript';
-		gads.src = document.location.href;
-		gads.refer = nd.src;
-		nd.parentNode.insertBefore(gads, nd);
+		//global function
+		setTimeout("var x=10,y=100; var z=x+y; java.lang.System.out.println('sum:'+z);", 100);
 	})();
 </script>
 </head>
