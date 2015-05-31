@@ -21,6 +21,8 @@
 		<result column="CREATE_TIME" property="createTime" />
 		<result column="UPDATE_TIME" property="updateTime" />
 		<result column="CATEGORY_NAV" property="categoryNav" />
+		<result column="TOKEN_BRAND" property="tokenBrand" />
+		<result column="TOKEN_CATEGORY" property="tokenCategory" />
 	</resultMap>
 	<sql id="ProductDto-coloumn-list">
 		SITE_ID
@@ -39,6 +41,8 @@
 		,CREATE_TIME
 		,UPDATE_TIME
 		,CATEGORY_NAV
+		,TOKEN_BRAND
+		,TOKEN_CATEGORY
 	</sql>
 	<insert id="batchInsert" parameterType="ProductDto">
 		INSERT INTO T_PRODUCT(
@@ -47,7 +51,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.unionUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime},#{item.categoryNav})
+			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.unionUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime},#{item.categoryNav},#{item.tokenBrand},#{item.tokenCategory})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="ProductDto">
@@ -63,7 +67,9 @@
 		IMG_URL=#{imgUrl},
 		ONSAIL_TIME=#{onsailTime},
 		UPDATE_TIME=#{updateTime},
-		CATEGORY_NAV=#{categoryNav}
+		CATEGORY_NAV=#{categoryNav},
+		TOKEN_BRAND=#{tokenBrand},
+		TOKEN_CATEGORY=#{tokenCategory}
 		WHERE ID=#{id}
 	</update>
 	<select id="getProductDtos" parameterType="map" resultMap="RM_ProductDto">

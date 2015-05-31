@@ -104,7 +104,7 @@ public class BrandServiceImpl implements BrandService {
 				if (newDto != null) {
 					newDto.setId(oldDto.getId());
 					newDto.setSynonymCode(minCode);
-					if(StringUtils.isBlank(newDto.getRegion())){
+					if (StringUtils.isBlank(newDto.getRegion())) {
 						newDto.setRegion(oldDto.getRegion());
 					}
 					hasSet.add(key);
@@ -231,14 +231,22 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public List<BrandDto> getBrandDtoByBrandNameList(List<String> brandNameList) {
-		if(CollectionUtils.isEmpty(brandNameList)){
+		if (CollectionUtils.isEmpty(brandNameList)) {
 			return Collections.emptyList();
 		}
 		List<String> sCodeList = this.brandDao.getSynonymCodesByNameList(brandNameList);
-		if(CollectionUtils.isEmpty(sCodeList)){
+		if (CollectionUtils.isEmpty(sCodeList)) {
 			return Collections.emptyList();
 		}
 		return this.brandDao.getBrandDtoBySynonymCodeList(sCodeList);
+	}
+
+	@Override
+	public List<BrandDto> getBrandDtoFromId(Long fromId, int limit) {
+		if (limit < 1) {
+			return Collections.emptyList();
+		}
+		return this.brandDao.getBrandDtoFromId(fromId, limit);
 	}
 
 }

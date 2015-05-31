@@ -21,6 +21,8 @@ public class ProductDto {
 
 	private Integer siteId;
 	private String categoryNav;
+	private String tokenBrand;
+	private String tokenCategory;
 
 	public Long getId() {
 		return id;
@@ -158,5 +160,21 @@ public class ProductDto {
 
 	public void setCategoryNav(String categoryNav) {
 		this.categoryNav = categoryNav;
+	}
+
+	public String getTokenBrand() {
+		return tokenBrand;
+	}
+
+	public void setTokenBrand(String tokenBrand) {
+		this.tokenBrand = tokenBrand;
+	}
+
+	public String getTokenCategory() {
+		return tokenCategory;
+	}
+
+	public void setTokenCategory(String tokenCategory) {
+		this.tokenCategory = tokenCategory;
 	}
 }

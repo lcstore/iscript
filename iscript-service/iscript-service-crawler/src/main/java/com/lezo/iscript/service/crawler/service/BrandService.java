@@ -13,4 +13,6 @@ public interface BrandService extends BaseService<BrandDto> {
 	List<BrandDto> getBrandStoreDtoByIds(List<Long> idList);
 
 	List<BrandDto> getBrandDtoByBrandNameList(List<String> brandNameList);
+
+	List<BrandDto> getBrandDtoFromId(Long fromId, int limit);
 }

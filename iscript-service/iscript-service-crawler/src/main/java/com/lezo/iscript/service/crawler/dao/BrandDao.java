@@ -18,4 +18,6 @@ public interface BrandDao extends BaseDao<BrandDto> {
 	List<String> getSynonymCodesByNameList(@Param("brandNameList") List<String> brandNameList);
 
 	List<BrandDto> getBrandDtoBySynonymCodeList(@Param("synonymCodeList")List<String> synonymCodeList);
+
+	List<BrandDto> getBrandDtoFromId(@Param("fromId")Long fromId,@Param("limit") int limit);
 }
