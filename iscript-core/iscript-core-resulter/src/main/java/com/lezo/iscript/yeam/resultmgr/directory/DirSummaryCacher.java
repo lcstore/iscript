@@ -50,12 +50,25 @@ public class DirSummaryCacher {
 					hasStream.setDirBean(dirBean);
 
 					hasStream.setFromStamp(dirBean.getCreateTime().getTime());
-					hasStream.setToStamp(hasStream.getFromStamp());
+					hasStream.setToStamp(toSuitStamp(hasStream.getFromStamp()));
 					addDirStream(key, hasStream);
 				}
 			}
 		}
 		ExecutorUtils.getFileProduceExecutor().execute(new DirFileScanner(hasStream));
+	}
+
+	private long toSuitStamp(long currentMills) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(currentMills);
+		if (0 == c.get(Calendar.HOUR_OF_DAY) && c.get(Calendar.MINUTE) < 30) {
+			c.set(Calendar.MINUTE, 0);
+			c.set(Calendar.SECOND, 0);
+		} else {
+			c.add(Calendar.MINUTE, -15);
+			c.set(Calendar.SECOND, 0);
+		}
+		return c.getTimeInMillis();
 	}
 
 }

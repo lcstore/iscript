@@ -13,10 +13,11 @@
 		<result column="CREATE_TIME" property="createTime" />
 		<result column="UPDATE_TIME" property="updateTime" />
 		<result column="LEVEL_LANG" property="levelLang" />
+		<result column="ASSIGN_MAX_SIZE" property="assignMaxSize" />
 	</resultMap>
 	<sql id="TypeConfigDto-coloumn-list">
 		TYPE ,TASKER ,MIN_SIZE ,MAX_SIZE ,STATUS ,CREATE_TIME
-		,UPDATE_TIME,LEVEL_LANG
+		,UPDATE_TIME,LEVEL_LANG,ASSIGN_MAX_SIZE
 	</sql>
 	<insert id="batchInsert" parameterType="TypeConfigDto">
 		INSERT INTO T_TYPE_CONFIG(
@@ -25,7 +26,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.type},#{item.tasker},#{item.minSize},#{item.maxSize},#{item.status},#{item.createTime},#{item.updateTime},#{item.levelLang})
+			(#{item.type},#{item.tasker},#{item.minSize},#{item.maxSize},#{item.status},#{item.createTime},#{item.updateTime},#{item.levelLang},#{assignMaxSize})
 		</foreach>
 	</insert>
 	<update id="update-one-TypeConfigDto" parameterType="TypeConfigDto">
@@ -37,6 +38,7 @@
 		,STATUS=#{status}
 		,UPDATE_TIME=#{updateTime}
 		,LEVEL_LANG=#{levelLang}
+		,ASSIGN_MAX_SIZE=#{assignMaxSize}
 		WHERE
 		ID=#{id}
 	</update>

@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
-import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -20,9 +19,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.TypeInfo;
 import org.w3c.dom.UserDataHandler;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventException;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.html.HTMLElement;
 
-public class ScriptElement implements HTMLElement {
+public class ScriptElement implements HTMLElement, EventTarget {
 	private List<ScriptElement> childList;
 	private org.jsoup.nodes.Node target;
 	private ScriptElement parent;
@@ -161,9 +164,9 @@ public class ScriptElement implements HTMLElement {
 
 			ScriptElement newElement = (ScriptElement) newChild;
 			newElement.setParent(this);
-			
+
 			ScriptElement refElement = (ScriptElement) refChild;
-			
+
 			refElement.getTarget().before(newElement.getTarget());
 			nl.add(idx, newElement);
 		}
@@ -604,6 +607,33 @@ public class ScriptElement implements HTMLElement {
 	@Override
 	public String toString() {
 		return "ScriptElement";
+	}
+
+	public void addEventListener(String type, EventListener listener) {
+		addEventListener(type, listener, false);
+	}
+
+	@Override
+	public void addEventListener(String type, EventListener listener, boolean useCapture) {
+		ScriptDocument scriptDocument = (ScriptDocument) getOwnerDocument();
+		scriptDocument.addEventListener(this, type, listener, useCapture);
+
+	}
+
+	public void removeEventListener(String type, EventListener listener) {
+		removeEventListener(type, listener, false);
+	}
+
+	@Override
+	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
+		ScriptDocument scriptDocument = (ScriptDocument) getOwnerDocument();
+		scriptDocument.removeEventListener(this, type, listener, useCapture);
+	}
+
+	@Override
+	public boolean dispatchEvent(Event event) throws EventException {
+		ScriptDocument scriptDocument = (ScriptDocument) getOwnerDocument();
+		return scriptDocument.dispatchEvent(this, event);
 	}
 
 }

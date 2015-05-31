@@ -12,11 +12,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.common.buffer.StampBeanBuffer;
+import com.lezo.iscript.common.buffer.StampGetable;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
 import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.service.crawler.service.TypeConfigService;
 import com.lezo.iscript.yeam.task.TaskConstant;
+import com.lezo.iscript.yeam.tasker.buffer.StampBufferHolder;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -46,6 +49,7 @@ public class CacheTaskTimer {
 		}
 		try {
 			running = true;
+			doTypeConfigBuffer(typeConfigList);
 			log.info("add task.tasker[" + tasker + "],config size:" + typeConfigList.size());
 			for (TypeConfigDto dto : typeConfigList) {
 				List<Integer> leveList = dto.getLevelDescList();
@@ -65,6 +69,22 @@ public class CacheTaskTimer {
 			running = false;
 		}
 
+	}
+
+	private void doTypeConfigBuffer(List<TypeConfigDto> typeConfigList) {
+		StampBeanBuffer<TypeConfigDto> typeConfigBuffer = StampBufferHolder.getTypeConfigBuffer();
+		typeConfigBuffer.addAll(typeConfigList, new StampGetable<TypeConfigDto>() {
+
+			@Override
+			public long getStamp(TypeConfigDto bean) {
+				return bean.getUpdateTime().getTime();
+			}
+
+			@Override
+			public String getName(TypeConfigDto bean) {
+				return bean.getType();
+			}
+		});
 	}
 
 	private void cacheTasks(TypeConfigDto typeConfigDto, int level) {

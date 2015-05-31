@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -33,26 +34,28 @@ public class LocalClientTest {
 	private static Logger logger = LoggerFactory.getLogger(LocalClientTest.class);
 
 	public static void main(String[] args) throws Exception {
-		ExecutorService executor = Executors.newFixedThreadPool(2);
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 		List<String> lineList = FileUtils.readLines(new File("src/test/resources/data/tm.brandId.work.txt"), "UTF-8");
 		String taskId = UUID.randomUUID().toString();
 		String type = "ConfigTmallBrandShop";
 		Queue<Future<ResultWritable>> futureQueue = new LinkedBlockingQueue<Future<ResultWritable>>();
 		Long index = 0L;
 		for (String brandId : lineList) {
-			String url = "http://list.tmall.com/search_product.htm?brand=" + brandId + "&sort=s&style=w#J_Filter";
+			String url = "http://list.tmall.com/search_product.htm?brand=" + brandId + "&sort=s&style=w";
 			final TaskWritable task = new TaskWritable();
 			task.put("url", url);
 			task.put("type", type);
 			task.put("bid", taskId);
+			task.put("retry", 0);
 			task.setId(++index);
 			Future<ResultWritable> future = executor.submit(new CallTask(task));
 			futureQueue.add(future);
 		}
-		Writer out = new FileWriter(new File("src/test/resources/data/tm.brand.result.txt"), true);
+		Writer out = new FileWriter(new File("src/test/resources/data/tm.brand.result." + System.currentTimeMillis()
+				+ ".txt"), true);
 		BufferedWriter bw = new BufferedWriter(out);
-		long timeout = 60;
-		while (!futureQueue.isEmpty()) {
+		long timeout = 10;
+		while (!futureQueue.isEmpty() || executor.getActiveCount() > 0 || !executor.getQueue().isEmpty()) {
 			logger.info("future:" + futureQueue.size() + ",sleep:" + timeout);
 			TimeUnit.SECONDS.sleep(timeout);
 			Iterator<Future<ResultWritable>> it = futureQueue.iterator();
@@ -65,15 +68,28 @@ public class LocalClientTest {
 					if (resultWritable.getStatus() == ResultWritable.RESULT_FAIL) {
 						logger.warn("fail:" + returnObject);
 						Integer retry = JSONUtils.getInteger(argsObject, "retry");
+						if (retry != null && retry < 3) {
+							final TaskWritable task = new TaskWritable();
+							task.put("url", JSONUtils.getString(argsObject, "url"));
+							task.put("type", JSONUtils.getString(argsObject, "type"));
+							task.put("bid", JSONUtils.getString(argsObject, "bid"));
+							task.put("retry", retry + 1);
+							task.setId(resultWritable.getTaskId());
+							Future<ResultWritable> retryFuture = executor.submit(new CallTask(task));
+							futureQueue.add(retryFuture);
+						}
 					} else {
-						JSONObject storageDataObject = JSONUtils.getJSONObject(returnObject, ClientConstant.KEY_STORAGE_RESULT);
+						JSONObject storageDataObject = JSONUtils.getJSONObject(returnObject,
+								ClientConstant.KEY_STORAGE_RESULT);
 						if (storageDataObject != null) {
 							JSONObject storageObject = new JSONObject();
 							JSONUtils.put(storageObject, "args", argsObject);
 							JSONUtils.put(storageObject, "rs", storageDataObject);
 							bw.append(storageObject.toString());
+							bw.append("\n");
 						}
-						JSONObject callBackDataObject = JSONUtils.getJSONObject(returnObject, ClientConstant.KEY_CALLBACK_RESULT);
+						JSONObject callBackDataObject = JSONUtils.getJSONObject(returnObject,
+								ClientConstant.KEY_CALLBACK_RESULT);
 						if (callBackDataObject != null && callBackDataObject.has("nextList")) {
 							JSONArray nextList = JSONUtils.get(callBackDataObject, "nextList");
 							for (int i = 0; i < nextList.length(); i++) {
@@ -142,7 +158,8 @@ public class LocalClientTest {
 				JSONUtils.put(callBackObject, "args", argsObject);
 				rsWritable.setResult(callBackObject.toString());
 				long cost = System.currentTimeMillis() - start;
-				String msg = String.format("done task:%d,type:%s,status:%d,cost:%d", task.getId(), type, rsWritable.getStatus(), cost);
+				String msg = String.format("done task:%d,type:%s,status:%d,cost:%d", task.getId(), type,
+						rsWritable.getStatus(), cost);
 				logger.info(msg);
 			}
 			return rsWritable;

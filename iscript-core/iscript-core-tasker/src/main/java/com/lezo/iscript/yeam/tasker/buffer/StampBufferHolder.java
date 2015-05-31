@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam.tasker.buffer;
 
 import com.lezo.iscript.common.buffer.StampBeanBuffer;
 import com.lezo.iscript.service.crawler.dto.ClientTokenDto;
+import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.writable.ConfigWritable;
 
@@ -15,6 +16,7 @@ public class StampBufferHolder {
 	private static final StampBeanBuffer<ClientTokenDto> CLIENT_TOKEN_BUFFER = new StampBeanBuffer<ClientTokenDto>();
 	private static final StampBeanBuffer<ConfigWritable> CONFIG_BUFFER = new StampBeanBuffer<ConfigWritable>();
 	private static final StampBeanBuffer<ResultStrategy> STRATEGY_BUFFER = new StampBeanBuffer<ResultStrategy>();
+	private static final StampBeanBuffer<TypeConfigDto> TYPE_CONFIG_BUFFER = new StampBeanBuffer<TypeConfigDto>();
 
 	public static StampBeanBuffer<ClientTokenDto> getClientTokenBuffer() {
 		return CLIENT_TOKEN_BUFFER;
@@ -26,5 +28,9 @@ public class StampBufferHolder {
 
 	public static StampBeanBuffer<ResultStrategy> getStrategyBuffer() {
 		return STRATEGY_BUFFER;
+	}
+
+	public static StampBeanBuffer<TypeConfigDto> getTypeConfigBuffer() {
+		return TYPE_CONFIG_BUFFER;
 	}
 }

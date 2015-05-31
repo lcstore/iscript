@@ -124,11 +124,11 @@ public class ConfigParserTest {
 
 		// http
 		task.put("proxyHost", "60.29.248.142");
-		task.put("proxyHost", "213.85.92.10");
-		task.put("proxyPort", 8080);
-		task.put("proxyType", 1);
-		task.put("proxyHost", "183.207.224.51");
+		task.put("proxyHost", "122.225.106.35");
 		task.put("proxyPort", 80);
+		task.put("proxyType", 1);
+//		task.put("proxyHost", "183.207.224.51");
+//		task.put("proxyPort", 80);
 		// task.put("proxyPort", 3128);
 		// task.put("proxyPort", 3189);
 		// socket

@@ -1,6 +1,7 @@
 package com.lezo.iscript.dom;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextAction;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -18,6 +21,7 @@ import org.w3c.dom.NodeList;
 import com.lezo.iscript.crawler.dom.ScriptDocument;
 import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
 import com.lezo.iscript.crawler.dom.browser.ScriptWindow;
+import com.lezo.iscript.crawler.dom.rhino.ContextUtils;
 
 public class ScriptElementTest {
 
@@ -63,7 +67,7 @@ public class ScriptElementTest {
 	@Test
 	public void testElementScript() throws Exception {
 		String source = FileUtils.readFileToString(new File("src/test/resources/data/test.element.html"), "UTF-8");
-		Document doc = Jsoup.parse(source,"http://localhost.com");
+		Document doc = Jsoup.parse(source, "http://localhost.com");
 		ScriptWindow window = new ScriptWindow();
 		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
 		window.setDocument(scriptDocument);
@@ -92,10 +96,12 @@ public class ScriptElementTest {
 			System.out.println("index:" + index + ":\n" + script);
 			window.eval(script);
 		}
-		Assert.assertEquals("http://dict.cn", Context.toString(ScriptableObject.getProperty(window, "dict_homepath")));
+		Assert.assertEquals("http://dict.cn",
+				Context.toString(ScriptableObject.getProperty(window.getScope(), "dict_homepath")));
 
 		System.err.println("after:" + doc);
 	}
+
 	@Test
 	public void testRegExpScript() throws Exception {
 		String source = FileUtils.readFileToString(new File("src/test/resources/data/test.regex.html"), "UTF-8");
@@ -116,13 +122,14 @@ public class ScriptElementTest {
 		}
 		System.err.println("after:" + doc);
 	}
+
 	@Test
 	public void testBrowserScript() throws Exception {
 		String source = FileUtils.readFileToString(new File("src/test/resources/data/test.browser.html"), "UTF-8");
 		Document doc = Jsoup.parse(source);
 		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
 		Elements scriptEls = doc.select("script");
-		ScriptWindow window = new ScriptWindow();
+		final ScriptWindow window = new ScriptWindow();
 		window.setDocument(scriptDocument);
 		int index = 0;
 		for (Element ele : scriptEls) {
@@ -134,19 +141,24 @@ public class ScriptElementTest {
 			System.out.println("index:" + index + ":\n" + script);
 			window.eval(script);
 		}
-		System.err.println("after:" + doc);
+		long timeout = 200;
+		System.err.println("wait second:" + timeout);
+		TimeUnit.MILLISECONDS.sleep(timeout);
+		// System.err.println("after:" + doc);
 	}
+
 	@Test
 	public void testTmallScript() throws Exception {
+		String url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
 		String source = FileUtils.readFileToString(new File("src/test/resources/data/tm.html"), "UTF-8");
-		Document doc = Jsoup.parse(source);
+		Document doc = Jsoup.parse(source, url);
 		ScriptDocument scriptDocument = ScriptHtmlParser.parser(doc);
 		Elements scriptEls = doc.select("f script");
 		ScriptWindow window = new ScriptWindow();
 		window.setDocument(scriptDocument);
-		
+
 		String baseScript = FileUtils.readFileToString(new File("src/test/resources/data/tm.index.js"), "UTF-8");
-//		window.eval("setInterval=function(aExpression,aTimeInMs){ return window.setInterval(aExpression,aTimeInMs); };");
+		// window.eval("setInterval=function(aExpression,aTimeInMs){ return window.setInterval(aExpression,aTimeInMs); };");
 		window.eval(baseScript);
 		int index = 0;
 		for (Element ele : scriptEls) {
@@ -158,6 +170,12 @@ public class ScriptElementTest {
 			System.out.println("index:" + index + ":\n" + script);
 			window.eval(script);
 		}
-//		System.err.println("after:" + doc);
+		while (true) {
+			long timeout = 1000;
+
+			System.err.println("wait second:" + timeout + ",ck:" + scriptDocument.getCookie());
+			TimeUnit.MILLISECONDS.sleep(timeout);
+		}
+		// System.err.println("after:" + doc);
 	}
 }

@@ -5,19 +5,17 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.apache.log4j.spi.LoggerFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,10 +23,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
 
 import com.lezo.iscript.proxy.ProxyClientUtils;
-import com.lezo.iscript.rest.http.HttpClientFactory;
+import com.lezo.iscript.rest.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.file.PersistentCollector;
@@ -38,8 +36,7 @@ import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigTmallBrandShop implements ConfigParser {
-	private static Logger logger = org.slf4j.LoggerFactory.getLogger(ConfigTmallBrandShop.class);
-	private static final DefaultHttpClient client = HttpClientFactory.createHttpClient();
+	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	public static final int SITE_ID = 1013;
 
 	@Override
@@ -80,11 +77,17 @@ public class ConfigTmallBrandShop implements ConfigParser {
 
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
+		TimeUnit.SECONDS.sleep(new Random().nextInt(1000));
 		// HttpGet get = new HttpGet(url);
-		String html = getContent(url, task);
+		HttpGet get = ProxyClientUtils.createHttpGet(url, task);
+		get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		get.addHeader("Accept-Encoding", "gzip, deflate");
+		get.addHeader("User-Agent",
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");
+		String html = HttpClientUtils.getContent(client, get, "gbk");
 		int index = html.indexOf("search_shopitem");
 		index = index < 0 ? html.indexOf("productShop-name") : index;
-		if (index < 0) {
+		if (index < 0 && html.indexOf("J_Filter") < 0) {
 			FileUtils.writeStringToFile(new File("src/test/resources/tmall.txt"),
 					JSONUtils.getJSONObject(task.getArgs()) + "\n" + html);
 			throw new RuntimeException("can not found search_shopitem.args:" + JSONUtils.getJSONObject(task.getArgs()));
@@ -102,6 +105,7 @@ public class ConfigTmallBrandShop implements ConfigParser {
 			String mainBrand = getMainBrandName(brandSet);
 			String synonym = brandSet.toString();
 			String brandCode = matcher.find() ? matcher.group(1) : (String) task.get("brandCode");
+			Set<String> shopSet = new HashSet<String>();
 			for (Element item : itemEls) {
 				ShopVo shopVo = new ShopVo();
 				shopVo.setShopUrl(item.absUrl("href"));
@@ -110,6 +114,9 @@ public class ConfigTmallBrandShop implements ConfigParser {
 				} else {
 					shopVo.setShopName(item.select("h3").first().text().trim());
 				}
+				if (shopSet.contains(shopVo.getShopName())) {
+					continue;
+				}
 				parserType(shopVo);
 				shopVo.setBrandName(mainBrand);
 				shopVo.setBrandUrl(url);
@@ -117,34 +124,11 @@ public class ConfigTmallBrandShop implements ConfigParser {
 				shopVo.setSynonyms(synonym);
 				shopVo.setRegion(region);
 				rsBean.getDataList().add(shopVo);
+				shopSet.add(shopVo.getShopName());
 			}
 			addNexts(rsBean, dom);
 		}
 		return rsBean;
-	}
-
-	private String getContent(String url, TaskWritable task) throws Exception {
-		HttpGet get = ProxyClientUtils.createHttpGet(url, task);
-		get.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		get.addHeader("Accept-Encoding", "gzip, deflate");
-		get.addHeader("User-Agent",
-				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:36.0) Gecko/20100101 Firefox/36.0");
-		int max = 8;
-		int index = 0;
-		while (index++ < max) {
-			HttpResponse resp = client.execute(get);
-			int statusCode = resp.getStatusLine().getStatusCode();
-			if (statusCode == 200) {
-				return EntityUtils.toString(resp.getEntity(), "GBK");
-			} else if (statusCode == 302) {
-				Header header = resp.getLastHeader("Location");
-				if (header != null) {
-					get = ProxyClientUtils.createHttpGet(header.getValue(), task);
-					logger.warn("direct to:" + header.getValue() + ",index:" + index);
-				}
-			}
-		}
-		return null;
 	}
 
 	private void addNexts(DataBean rsBean, Document dom) {

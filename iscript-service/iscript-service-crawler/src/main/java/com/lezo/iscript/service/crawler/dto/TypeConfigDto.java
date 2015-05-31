@@ -39,6 +39,11 @@ public class TypeConfigDto {
 	private String levelLang;
 	private List<Integer> levelDescList;
 
+	/**
+	 * 每次分配给爬虫的最大数量
+	 */
+	private Integer assignMaxSize = -1;
+
 	public Long getId() {
 		return id;
 	}
@@ -182,5 +187,13 @@ public class TypeConfigDto {
 			}
 		}
 		return dataSet;
+	}
+
+	public Integer getAssignMaxSize() {
+		return assignMaxSize;
+	}
+
+	public void setAssignMaxSize(Integer assignMaxSize) {
+		this.assignMaxSize = assignMaxSize;
 	}
 }

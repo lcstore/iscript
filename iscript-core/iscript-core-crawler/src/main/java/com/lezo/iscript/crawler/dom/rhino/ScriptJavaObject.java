@@ -20,11 +20,12 @@ public class ScriptJavaObject extends NativeJavaObject {
 		} else if (prototype != null) {
 			result = prototype.get(name, start);
 		}
-		if (result == null) {
+		if (result == null || result == Scriptable.NOT_FOUND) {
 			Object originObject = unwrap();
 			if (Element.class.isInstance(originObject)) {
 				Element element = (Element) originObject;
 				result = element.getAttribute(name);
+				return doReturn(result, start);
 			}
 		}
 		return doReturn(result, start);
@@ -48,26 +49,22 @@ public class ScriptJavaObject extends NativeJavaObject {
 
 	@Override
 	public void put(String name, Scriptable start, Object value) {
-		Object originObject = unwrap();
-		if (Element.class.isInstance(originObject)) {
-			Element element = (Element) originObject;
-			element.setAttribute(name, value.toString());
-			return;
-		}
+		boolean isDone = false;
 		if (has(name, start)) {
 			super.put(name, start, value);
-		} else if (prototype != null) {
+			isDone = true;
+		}
+		if (!isDone) {
+			Object originObject = unwrap();
+			if (Element.class.isInstance(originObject)) {
+				Element element = (Element) originObject;
+				element.setAttribute(name, value.toString());
+				isDone = true;
+			}
+		}
+		if (!isDone && prototype != null) {
 			prototype.put(name, start, value);
 		}
-		// if (value instanceof BaseFunction) {
-		// if (javaObject instanceof Document || javaObject instanceof
-		// WindowAdapt) {
-		// if (!ScriptableObject.hasProperty(start, name) &&
-		// !ScriptableObject.hasProperty(parent, name)) {
-		// ScriptableObject.putProperty(start, name, value);
-		// }
-		// }
-		// }
 	}
 
 	@Override

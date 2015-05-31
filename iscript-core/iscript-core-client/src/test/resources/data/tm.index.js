@@ -47,7 +47,6 @@
     function t() {
         try {
             var r = o(), t = n.lingshao(r.cls);
-            java.lang.System.out.println("isg:"+t);
             e.set("isg", t, 30)
         } catch (i) {
         }
@@ -111,7 +110,6 @@
             } catch (s) {
             }
             "number" == typeof h && (h = new Date, h.setTime(h.getTime() + 864e5 * e)), h instanceof Date && (a += "; expires=" + h.toUTCString()), o && (a += "; domain=" + o), a += "; path=/", i && (a += "; secure"), document.cookie = r + "=" + a
-            java.lang.System.out.println("cookie:" + document.cookie);
         },del: function(r, t, e, o) {
             this.set(r, "", -1, t, e, o)
         }}, o = function() {

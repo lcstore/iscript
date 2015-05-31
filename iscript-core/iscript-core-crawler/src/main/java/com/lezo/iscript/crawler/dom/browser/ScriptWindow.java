@@ -3,8 +3,6 @@ package com.lezo.iscript.crawler.dom.browser;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,15 +12,12 @@ import javax.swing.Timer;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.FunctionObject;
-import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tools.shell.Environment;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventException;
 import org.w3c.dom.events.EventListener;
@@ -30,9 +25,8 @@ import org.w3c.dom.events.EventTarget;
 
 import com.lezo.iscript.crawler.dom.ScriptDocument;
 import com.lezo.iscript.crawler.dom.rhino.ContextUtils;
-import com.lezo.iscript.crawler.dom.rhino.ScriptContextFactory;
 
-public class ScriptWindow extends ImporterTopLevel implements EventTarget {
+public class ScriptWindow implements EventTarget {
 	/**
 	 * 
 	 */
@@ -75,57 +69,43 @@ public class ScriptWindow extends ImporterTopLevel implements EventTarget {
 	private static AtomicInteger timerIdCounter = new AtomicInteger(0);
 	private ConcurrentHashMap<Integer, TimerWrapper> timerMap = new ConcurrentHashMap<Integer, TimerWrapper>();
 
+	private ScriptableObject scope;
+
 	public ScriptWindow() {
 		this(null);
 	}
 
-	public ScriptWindow(ScriptableObject parent) {
-		init(ScriptContextFactory.getFactory(), false);
+	public ScriptWindow(final ScriptableObject parent) {
+		super();
 		this.navigator = new ScriptNavigator();
 		this.screen = new ScriptScreen();
+		initContext(parent);
+	}
+
+	private void initContext(final ScriptableObject parent) {
 		final ScriptWindow target = this;
 		final ScriptNavigator navigator = this.navigator;
 		final ScriptScreen screen = this.screen;
-		// ContextUtils.doAction(new ContextAction() {
-		// @Override
-		// public Object run(Context cx) {
-		// Scriptable scope = cx.initStandardObjects(target);
-		// ScriptableObject.putProperty(scope, "navigator",
-		// Context.toObject(navigator, scope));
-		// ScriptableObject.putProperty(scope, "screen", screen);
-		// ScriptableObject.putProperty(scope, "window", target);
-		// Method[] methods = target.getClass().getMethods();
-		// for (Method mth : methods) {
-		// if (!mth.isAccessible()) {
-		// continue;
-		// }
-		// FunctionObject newFunction = new GlobalFunctionObject(mth.getName(),
-		// mth, target);
-		// ScriptableObject.putProperty(scope, mth.getName(), newFunction);
-		// }
-		// return scope;
-		// }
-		// });
-		// ScriptableObject.putProperty(this, "screen", this.screen);
-		// ScriptableObject.putProperty(this, "window", this);
-	}
+		ContextUtils.doAction(new ContextAction() {
+			@Override
+			public Object run(Context cx) {
+				Scriptable scope = cx.initStandardObjects(parent);
 
-	private static class GlobalFunctionObject extends FunctionObject {
+				// set window to top Scriptable
+				Scriptable scriptable = Context.toObject(target, scope);
+				scriptable.setParentScope(null);
+				scriptable.setPrototype(scope);
+				scope.setParentScope(scriptable);
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+				ScriptableObject.putProperty(scope, "navigator", Context.toObject(navigator, scope));
+				ScriptableObject.putProperty(scope, "screen", Context.toObject(screen, scope));
+				ScriptableObject.putProperty(scope, "window", scriptable);
 
-		private GlobalFunctionObject(String name, Member methodOrConstructor, Scriptable parentScope) {
-			super(name, methodOrConstructor, parentScope);
-		}
-
-		@Override
-		public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-			return super.call(cx, scope, getParentScope(), args);
-			// return super.call(cx, scope, thisObj, args);
-		}
+				ScriptableObject.putProperty(scope, "Element", Element.class);
+				setScope((ScriptableObject) scope);
+				return scope;
+			}
+		});
 	}
 
 	public int setInterval(final Function aFunction, final double aTimeInMs) {
@@ -208,7 +188,7 @@ public class ScriptWindow extends ImporterTopLevel implements EventTarget {
 				if (function == null) {
 					throw new IllegalStateException("Cannot perform operation. Function is no longer available.");
 				}
-				ContextUtils.call(this.window, this.window, function, new Object[0]);
+				ContextUtils.call(getScope(), getScope(), function, new Object[0]);
 			} catch (Exception err) {
 				logger.warn("timerId:" + this.timerId + ",cause:", err);
 			}
@@ -276,15 +256,16 @@ public class ScriptWindow extends ImporterTopLevel implements EventTarget {
 		if (aTimeInMs > Integer.MAX_VALUE || aTimeInMs < 0) {
 			throw new IllegalArgumentException("Timeout value " + aTimeInMs + " is not supported.");
 		}
-		final int timeId = generateTimerID();
-		ActionListener task = new ExpressActionListener(this, aExpression, timeId, true);
+		final int timerId = generateTimerID();
+		ActionListener task = new ExpressActionListener(this, aExpression, timerId, true);
 		int t = (int) aTimeInMs;
 		if (t < 1) {
 			t = 1;
 		}
 		Timer timer = new Timer(t, task);
 		timer.setRepeats(false); // The only difference with setInterval
-		return timeId;
+		this.putAndStartTask(timerId, timer, aExpression);
+		return timerId;
 	}
 
 	public int setTimeout(final Function aFunction, double aTimeInMs) {
@@ -312,7 +293,7 @@ public class ScriptWindow extends ImporterTopLevel implements EventTarget {
 	}
 
 	public Object eval(String source) {
-		return ContextUtils.call(this, source, "window.eval");
+		return ContextUtils.call(getScope(), source, "window.eval");
 	}
 
 	public void focus() {
@@ -644,7 +625,7 @@ public class ScriptWindow extends ImporterTopLevel implements EventTarget {
 			ContextUtils.doAction(new ContextAction() {
 				@Override
 				public Object run(Context cx) {
-					Scriptable scope = cx.initStandardObjects(target);
+					Scriptable scope = target.getScope();
 					ScriptableObject.putProperty(scope, "document", Context.toObject(scriptDocument, scope));
 					ScriptableObject.putProperty(scope, "location",
 							Context.toObject(scriptDocument.getLocation(), scope));
@@ -672,35 +653,16 @@ public class ScriptWindow extends ImporterTopLevel implements EventTarget {
 		}
 	}
 
-	@Override
+	public ScriptableObject getScope() {
+		return scope;
+	}
+
+	public void setScope(ScriptableObject scope) {
+		this.scope = scope;
+	}
+
 	public String getClassName() {
-		return getClass().getSimpleName();
-	}
-
-	public void init(ContextFactory factory, final boolean sealed) {
-		factory.call(new ContextAction() {
-			public Object run(Context cx) {
-				init(cx, sealed);
-				return null;
-			}
-		});
-	}
-
-	protected void init(Context cx, boolean sealed) {
-		super.initStandardObjects(cx, sealed);
-		Environment.defineClass(this);
-		Environment environment = new Environment(this);
-		defineProperty("environment", environment, ScriptableObject.DONTENUM);
-
-		Method[] methods = this.getClass().getMethods();
-		for (Method mth : methods) {
-			if (!mth.isAccessible()) {
-				continue;
-			}
-			FunctionObject newFunction = new GlobalFunctionObject(mth.getName(), mth, this);
-			defineProperty(mth.getName(), newFunction, ScriptableObject.DONTENUM);
-		}
-		defineProperty("window", this, ScriptableObject.DONTENUM);
+		return "ScriptWindow";
 	}
 
 }

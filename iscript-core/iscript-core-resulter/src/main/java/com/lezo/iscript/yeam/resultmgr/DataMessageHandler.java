@@ -37,12 +37,13 @@ public class DataMessageHandler {
 			int total = 0;
 			int doneCount = 0;
 			int count = 0;
+			int waitCount = 0;
 			List<DirSummary> notChangeList = new ArrayList<DirSummary>();
 			while (it.hasNext()) {
 				total++;
 				Entry<String, DirSummary> entry = it.next();
 				DirSummary dirSummary = entry.getValue();
-				if (dirSummary.getToStamp() != dirSummary.getFromStamp()) {
+				if (dirSummary.getToStamp() != dirSummary.getFromStamp() || dirSummary.isDone()) {
 					count++;
 					DirMeta dirBean = dirSummary.getDirBean();
 					List<String> nameList = new ArrayList<String>();
@@ -61,19 +62,19 @@ public class DataMessageHandler {
 						it.remove();
 						logger.info("done,dirKey:" + dirBean.toDirKey());
 					} else {
-						dirSummary.setFromStamp(dirSummary.getToStamp());
+						waitCount++;
+						// dirSummary.setFromStamp(dirSummary.getToStamp());
 					}
 				} else {
 					notChangeList.add(dirSummary);
 				}
 			}
 			long cost = System.currentTimeMillis() - start;
-			int waitCount = notChangeList.size();
 			logger.info("handle DirMeta,total:" + total + ",handleCount:" + count + ",doneCount:" + doneCount
-					+ ",waitCount:" + waitCount + ",cost:" + cost);
+					+ ",waitCount:" + waitCount + ",noChange:" + notChangeList.size() + ",cost:" + cost);
 			for (DirSummary summary : notChangeList) {
 				logger.warn("no change.key:" + summary.getDirBean().toDirKey() + ",count:" + summary.getCount()
-						+ ",toStamp:" + summary.getToStamp());
+						+ ",toStamp:" + summary.getToStamp() + ",fromStamp:" + summary.getFromStamp());
 			}
 		} catch (Exception e) {
 			long cost = System.currentTimeMillis() - start;

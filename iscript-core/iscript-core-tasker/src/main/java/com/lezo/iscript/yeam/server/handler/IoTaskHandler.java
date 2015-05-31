@@ -2,7 +2,10 @@ package com.lezo.iscript.yeam.server.handler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -11,13 +14,16 @@ import org.apache.mina.core.session.IoSession;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.lezo.iscript.common.buffer.StampBeanBuffer;
 import com.lezo.iscript.service.crawler.dto.ProxyDetectDto;
+import com.lezo.iscript.service.crawler.dto.TypeConfigDto;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
 import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 import com.lezo.iscript.yeam.server.SendUtils;
+import com.lezo.iscript.yeam.tasker.buffer.StampBufferHolder;
 import com.lezo.iscript.yeam.tasker.cache.ProxyCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskCacher;
 import com.lezo.iscript.yeam.tasker.cache.TaskQueue;
@@ -58,16 +64,10 @@ public class IoTaskHandler implements MessageHandler {
 		if (tsize >= MIN_TASK_SIZE) {
 			return 0;
 		}
-		long start = System.currentTimeMillis();
 		int sendCount = 0;
 		List<TaskWritable> taskOffers = Collections.emptyList();
-		int limit = 0;
 		synchronized (LOCKER) {
-			TaskCacher taskCancher = TaskCacher.getInstance();
-			List<String> typeList = taskCancher.getNotEmptyTypeList();
-			TaskAssign taskAssign = getTaskAssign(typeList);
-			limit = taskAssign.getMaxCountForType();
-			taskOffers = getOfferTasks(typeList, taskAssign);
+			taskOffers = getOfferTasks(hObject);
 		}
 		if (!taskOffers.isEmpty()) {
 			// assignProxyForTasks(taskOffers);
@@ -77,43 +77,93 @@ public class IoTaskHandler implements MessageHandler {
 			SendUtils.doSend(hObject, ioRespone, ioSession);
 			sendCount = taskOffers.size();
 		}
-
-		long cost = System.currentTimeMillis() - start;
-		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
-				taskOffers.size(), JSONUtils.getString(hObject, "name"), JSONUtils.getString(hObject, "tactive"),
-				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
-		logger.info(msg);
 		return sendCount;
 	}
 
-	private List<TaskWritable> getOfferTasks(List<String> typeList, TaskAssign taskAssign) {
+	private List<TaskWritable> getOfferTasks(JSONObject hObject) {
+		long start = System.currentTimeMillis();
+		TaskCacher taskCancher = TaskCacher.getInstance();
+		List<String> typeList = taskCancher.getNotEmptyTypeList();
 		if (CollectionUtils.isEmpty(typeList)) {
 			return Collections.emptyList();
 		}
 		List<TaskWritable> taskOffers = new ArrayList<TaskWritable>(PER_OFFER_SIZE);
 		Collections.shuffle(typeList);
 		logger.info(String.format("Ready type:%s", typeList));
-		int cycle = 0;
+		TaskAssign taskAssign = getTaskAssign(typeList);
 		int limit = taskAssign.getMaxCountForType();
 		int remain = taskAssign.getMaxCountForClient();
-		TaskCacher taskCancher = TaskCacher.getInstance();
+		int cycle = 0;
+		StampBeanBuffer<TypeConfigDto> typeConfigBuffer = StampBufferHolder.getTypeConfigBuffer();
+		Map<String, Integer> typCountMap = new HashMap<String, Integer>();
 		while (remain > 0 && ++cycle <= 3) {
 			for (String type : typeList) {
+				int assignlimit = getAssignLimit(type, typCountMap, typeConfigBuffer);
+				assignlimit = Math.min(limit, assignlimit);
+				assignlimit = Math.min(remain, assignlimit);
+				if (assignlimit < 1) {
+					continue;
+				}
 				TaskQueue taskQueue = taskCancher.getQueue(type);
-				limit = limit > remain ? remain : limit;
-				synchronized (taskQueue) {
-					List<TaskWritable> taskList = taskQueue.pollDecsLevel(limit);
-					if (!CollectionUtils.isEmpty(taskList)) {
-						remain -= taskList.size();
-						taskOffers.addAll(taskList);
+				List<TaskWritable> taskList = taskQueue.pollDecsLevel(assignlimit);
+				if (!CollectionUtils.isEmpty(taskList)) {
+					remain -= taskList.size();
+					taskOffers.addAll(taskList);
+					Integer oldCount = typCountMap.get(type);
+					if (oldCount == null) {
+						oldCount = 0;
+					}
+					typCountMap.put(type, oldCount + taskList.size());
+					if (remain < 1) {
+						break;
 					}
 				}
-				if (remain < 1) {
-					break;
-				}
+
 			}
 		}
+		String clientName = JSONUtils.getString(hObject, "name");
+		if (!typCountMap.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("assign to client:");
+			sb.append(clientName);
+			sb.append(",typeCount:");
+			sb.append(typeList.size());
+			sb.append(",assign tasks[");
+			String suffix = ", ";
+			boolean hasElement = false;
+			for (Entry<String, Integer> entry : typCountMap.entrySet()) {
+				if (hasElement) {
+					sb.append(suffix);
+				}
+				sb.append(entry.getKey());
+				sb.append("=");
+				sb.append(entry.getValue());
+				hasElement = true;
+			}
+			sb.append("]");
+			logger.info(sb.toString());
+		}
+		long cost = System.currentTimeMillis() - start;
+		String msg = String.format("Offer %s task for client:%s,[tactive:%s,Largest:%s,tsize:%s](%s),cost:%s",
+				taskOffers.size(), clientName, JSONUtils.getString(hObject, "tactive"),
+				JSONUtils.getString(hObject, "tmax"), JSONUtils.getString(hObject, "tsize"), limit, cost);
+		logger.info(msg);
 		return taskOffers;
+	}
+
+	private int getAssignLimit(String type, Map<String, Integer> typCountMap,
+			StampBeanBuffer<TypeConfigDto> typeConfigBuffer) {
+		TypeConfigDto bean = typeConfigBuffer.getBean(type);
+		if (bean == null) {
+			logger.warn("can not get TypeConfigDto:" + type);
+			return Integer.MAX_VALUE;
+		}
+		if (bean.getAssignMaxSize() == null || bean.getAssignMaxSize() == -1) {
+			return Integer.MAX_VALUE;
+		}
+		Integer hasCount = typCountMap.get(type);
+		hasCount = hasCount == null ? 0 : hasCount;
+		return bean.getAssignMaxSize() - hasCount;
 	}
 
 	private void assignProxyForTasks(List<TaskWritable> taskOffers) {

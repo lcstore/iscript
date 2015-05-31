@@ -60,7 +60,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			// checkStatusList.add(ProxyDetectDto.STATUS_WORK);
 			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
 			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
-			checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
+//			checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 		}
 
 		public void run() {

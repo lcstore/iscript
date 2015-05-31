@@ -68,6 +68,7 @@ public class BaiduPcsDataResterTest {
 		targetPath = "/apps/idocs/iscript/20150509/ConfigProxyDetector/8f84c4ea-f64c-41b3-a4be-b84728b248a2";
 		targetPath = "/apps/idocs/iscript/20150518/ConfigProxySeedHandler/68d5807a-4ad1-485e-90f5-bc99d7645274";
 		targetPath = "/apps/idocs/iscript/20150518/ConfigProxyDetector/5";
+		targetPath = "/apps/idocs/iscript/20150526/ConfigTmallBrandShop/4c17ebd2-ae53-4418-b6a4-f4963b569c8a";
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("limit", "0-40");
 		RestList fileList = rester.listFiles(targetPath, paramMap);

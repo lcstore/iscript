@@ -24,7 +24,6 @@ import com.lezo.rest.data.RestFile;
 import com.lezo.rest.data.RestList;
 
 public class DirFileScanner implements Runnable {
-	private static final long INTERVAL_BEFORE = 10 * 60 * 1000;
 	private static Logger logger = LoggerFactory.getLogger(DirFileScanner.class);
 	private ThreadPoolExecutor executor = ExecutorUtils.getFileConsumeExecutor();
 	private DirSummary dirStream;
@@ -89,7 +88,6 @@ public class DirFileScanner implements Runnable {
 					count += acceptList.size();
 					createDataFileConsumer(acceptList);
 					dirStream.setCount(dirStream.getCount() + acceptList.size());
-					dirStream.setToStamp(getMaxStamp(acceptList));
 					logger.info("directoryKey:" + dirBean.toDirKey() + ",stamp:" + dirStream.getToStamp()
 							+ ",acceptSum:" + count + ",result:" + restList.getDataList().size() + ",accept:"
 							+ acceptList.size() + ",listTimes:" + listTimes + ",listCost:" + costMills + ",fromStamp:"
@@ -106,10 +104,6 @@ public class DirFileScanner implements Runnable {
 			}
 			if (restList.isEOF()) {
 				dirStream.setDone(true);
-				// handle empty directory
-				if (CollectionUtils.isEmpty(acceptList)) {
-					dirStream.setToStamp(dirStream.getToStamp() + 1);
-				}
 				logger.info("list to EOF.directoryKey:" + dirBean.toDirKey() + ",listTimes:" + listTimes + ",maxCount:"
 						+ count + ",listCost:" + costMills + ",fromStamp:" + dirStream.getFromStamp() + ",toStamp:"
 						+ dirStream.getToStamp());
@@ -158,16 +152,36 @@ public class DirFileScanner implements Runnable {
 		if (CollectionUtils.isEmpty(restList)) {
 			return Collections.emptyList();
 		}
-		long fromStamp = dirStream.getFromStamp() - INTERVAL_BEFORE;
-		long toStamp = dirStream.getToStamp();
+		long stamp = dirStream.getToStamp();
+		long maxStamp = stamp;
 		List<RestFile> itemList = new ArrayList<RestFile>(restList.size());
 		for (RestFile rs : restList) {
-			if (dirStream.getFromStamp() == toStamp && rs.getCreateTime() >= fromStamp) {
+			long curStamp = rs.getCreateTime();
+			if (curStamp >= stamp) {
+				maxStamp = maxStamp < curStamp ? curStamp : maxStamp;
 				itemList.add(rs);
-			} else if (dirStream.getFromStamp() != toStamp && rs.getCreateTime() >= toStamp) {
-				itemList.add(rs);
+				continue;
 			}
+			curStamp = getStampByName(rs.getPath());
+			if (curStamp >= stamp) {
+				itemList.add(rs);
+				maxStamp = maxStamp < curStamp ? curStamp : maxStamp;
+				logger.warn("illegal stamp.path:" + rs.getPath());
+			}
+		}
+		if (!itemList.isEmpty()) {
+			dirStream.setToStamp(maxStamp);
 		}
 		return itemList;
 	}
+
+	private long getStampByName(String path) {
+		char dotChar = '.';
+		int toIndex = path.lastIndexOf(dotChar);
+		int fromIndex = path.lastIndexOf(dotChar, toIndex - 1);
+		String strStamp = path.substring(fromIndex + 1, toIndex);
+		Long fileStamp = Long.valueOf(strStamp);
+		return fileStamp;
+	}
+
 }
