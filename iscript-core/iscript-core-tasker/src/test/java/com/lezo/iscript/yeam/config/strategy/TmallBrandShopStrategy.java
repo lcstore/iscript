@@ -38,9 +38,9 @@ public class TmallBrandShopStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public TmallBrandShopStrategy() {
-		CreateTaskTimer task = new CreateTaskTimer();
-		this.timer = new Timer("CreateTaskTimer");
-		this.timer.schedule(task, 60 * 1000, 240 * 60 * 60 * 1000);
+//		CreateTaskTimer task = new CreateTaskTimer();
+//		this.timer = new Timer("CreateTaskTimer");
+//		this.timer.schedule(task, 60 * 1000, 240 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {

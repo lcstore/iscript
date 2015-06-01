@@ -14,3 +14,4 @@ deploy.sh
 jdbc.properties
 logs/
 .DS_Store
+iscript-core/iscript-core-tasker/src/main/resources/db/
