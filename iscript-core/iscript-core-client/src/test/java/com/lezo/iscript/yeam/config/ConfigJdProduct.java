@@ -22,17 +22,19 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.rest.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.rest.http.HttpClientManager;
-import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -154,12 +156,26 @@ public class ConfigJdProduct implements ConfigParser {
 					destScript = "var window={}; " + destScript;
 					destScript += " var skuid=pageConfig.product.skuid;";
 					destScript += " var name=pageConfig.product.name;";
+					destScript += " var colorSize=pageConfig.product.colorSize;";
+					destScript += " var oClr; for(var i=0;i<colorSize.length;i++){ if(colorSize[i].SkuId==skuid){ oClr=colorSize[i]; break;}};";
+					destScript += " oClr['color']=oClr.Color;delete oClr.Color;";
+					destScript += " oClr['ram']=oClr.Spec;delete oClr.Spec;";
+					destScript += " oClr['net']=oClr.Size;delete oClr.Size;";
+					destScript += " delete oClr.SkuId;";
 					evaluateString(destScript, new ScopeCallBack() {
 						@Override
-						public void doCallBack(ScriptableObject scope, Object targetObject) {
+						public void doCallBack(Scriptable scope, Object targetObject) {
 							ProductBean tBean = (ProductBean) targetObject;
 							tBean.setProductCode(Context.toString(ScriptableObject.getProperty(scope, "skuid")));
 							tBean.setProductName(Context.toString(ScriptableObject.getProperty(scope, "name")));
+							Object jsObject = ScriptableObject.getProperty(scope, "oClr");
+							Object sClr = NativeJSON.stringify(Context.getCurrentContext(), scope, jsObject, null, null);
+
+							tBean.setProductAttr(sClr.toString());
+							// String sClr = ((JSONObject)
+							// Context.jsToJava(ScriptableObject.getProperty(scope,
+							// "sClr"), JSONObject.class)).toString();
+							// tBean.setProductAttr(sClr);
 						}
 					}, tBean);
 					tBean.setProductUrl(url);
@@ -169,6 +185,26 @@ public class ConfigJdProduct implements ConfigParser {
 					addBarCode(tBean, dom, task);
 					addStock(tBean, dom, task);
 					addShopInfo(tBean, dom, task);
+					Elements attrEls = dom.select("#product-detail-2 table.Ptable tr:has(td.tdTitle)");
+					JSONObject normalObject = new JSONObject();
+					for (Element attrEle : attrEls) {
+						Elements tdEls = attrEle.select("td");
+						String key = "";
+						String value = "";
+						for (Element td : tdEls) {
+							if (td.hasClass("tdTitle")) {
+								key = td.ownText().trim().toLowerCase();
+							} else {
+								value = td.ownText().trim();
+							}
+						}
+						JSONUtils.put(normalObject, key, value);
+					}
+					JSONObject attrObject = new JSONObject();
+					JSONUtils.put(attrObject, "normal", normalObject);
+					JSONUtils.put(attrObject, "vary", tBean.getProductAttr());
+
+					tBean.setProductAttr(attrObject.toString());
 				}
 				Elements noStockEls = dom.select("div.itemover-title h3 strong:contains(该商品已下柜)");
 				if (!noStockEls.isEmpty()) {
@@ -193,7 +229,8 @@ public class ConfigJdProduct implements ConfigParser {
 
 	private void addShopInfo(ProductBean tBean, Document dom, TaskWritable task) throws Exception {
 		// http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=1015367811
-		String sUrl = String.format("http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=%s", tBean.getProductCode());
+		String sUrl = String.format("http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=%s",
+				tBean.getProductCode());
 		HttpGet get = createHttpGetWithIp(sUrl);
 		String html = HttpClientUtils.getContent(client, get);
 		String source = "function setPopInfo(data){return data;}; ";
@@ -264,7 +301,9 @@ public class ConfigJdProduct implements ConfigParser {
 
 	private void addComment(ProductBean tBean, Document dom) throws Exception {
 		// http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=1095329&callback=getCommentCount
-		String mUrl = String.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount", tBean.getProductCode());
+		String mUrl = String
+				.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount",
+						tBean.getProductCode());
 		HttpGet get = createHttpGetWithIp(mUrl);
 		get.addHeader("Referer", dom.baseUri());
 		String html = HttpClientUtils.getContent(client, get);
@@ -276,7 +315,7 @@ public class ConfigJdProduct implements ConfigParser {
 		html += "var pCmm = oCmm.PoorCount;";
 		evaluateString(html, new ScopeCallBack() {
 			@Override
-			public void doCallBack(ScriptableObject scope, Object targetObject) {
+			public void doCallBack(Scriptable scope, Object targetObject) {
 				ProductBean tBean = (ProductBean) targetObject;
 				Object cmmObject = ScriptableObject.getProperty(scope, "iCmm");
 				tBean.setCommentNum(cmmObject == null ? null : Integer.valueOf(Context.toString(cmmObject)));
@@ -304,7 +343,8 @@ public class ConfigJdProduct implements ConfigParser {
 			}
 		}
 		saleTimeAs = null;
-		Elements brandAs = dom.select("div[id^=product-detail].mc ul.detail-list li:containsOwn(品牌),div.breadcrumb span a[href*=.jd.com/pinpai]");
+		Elements brandAs = dom
+				.select("div[id^=product-detail].mc ul.detail-list li:containsOwn(品牌),div.breadcrumb span a[href*=.jd.com/pinpai]");
 		if (!brandAs.isEmpty()) {
 			String sBrandName = brandAs.first().text();
 			sBrandName = sBrandName.replace("品牌：", "");
@@ -357,7 +397,8 @@ public class ConfigJdProduct implements ConfigParser {
 		if (StringUtils.isEmpty(tBean.getProductCode())) {
 			return;
 		}
-		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s", tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
+		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s",
+				tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
 		HttpGet get = createHttpGetWithIp(sUrl);
 		String html = HttpClientUtils.getContent(client, get);
 		html = html.replaceAll("jsonp[0-9]+", "var oData =callback");
@@ -367,7 +408,7 @@ public class ConfigJdProduct implements ConfigParser {
 
 		evaluateString(html, new ScopeCallBack() {
 			@Override
-			public void doCallBack(ScriptableObject scope, Object targetObject) {
+			public void doCallBack(Scriptable scope, Object targetObject) {
 				ProductBean tBean = (ProductBean) targetObject;
 				Object pObject = ScriptableObject.getProperty(scope, "price");
 				Object mObject = ScriptableObject.getProperty(scope, "mkprice").toString();
@@ -381,7 +422,8 @@ public class ConfigJdProduct implements ConfigParser {
 	private void evaluateString(String source, ScopeCallBack callBack, Object targetObject) {
 		try {
 			Context cx = Context.enter();
-			ScriptableObject scope = cx.initStandardObjects();
+			ScriptableObject parent = (ScriptableObject) ScriptableUtils.getJSONScriptable();
+			Scriptable scope = cx.initStandardObjects(parent);
 			cx.evaluateString(scope, source, "<cmd>", 0, null);
 			callBack.doCallBack(scope, targetObject);
 			scope = null;
@@ -410,7 +452,7 @@ public class ConfigJdProduct implements ConfigParser {
 	}
 
 	interface ScopeCallBack {
-		void doCallBack(ScriptableObject scope, Object targetObject);
+		void doCallBack(Scriptable scope, Object targetObject);
 	}
 
 	private class ProductBean {

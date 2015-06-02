@@ -56,4 +56,22 @@
 		,TOKEN_GATEGORY=#{tokenGategory}
 		WHERE ID=#{id}
 	</update>
+	
+	<select id="getProductStandardDtoBySimilarCodes" parameterType="map" resultMap="RM_ProductStandardDto">
+	   SELECT * FROM T_PRODUCT_STANDARD
+	   <where>
+	      <foreach collection="similarCodeList" item="sCode" open="SIMILAR_CODE IN(" separator="," close=")">
+	         #{sCode}
+	      </foreach>
+	    </where>
+	</select>
+	<select id="getProductStandardDtoByProductCodes" parameterType="map" resultMap="RM_MatchDto">
+	    SELECT * FROM T_PRODUCT_STANDARD
+	    <where>
+	      SITE_ID=#{siteId}
+	      <foreach collection="codeList" item="pCode" open="AND PRODUCT_CODE IN(" separator="," close=")">
+	         #{pCode}
+	      </foreach>
+	    </where>
+	</select>
 </mapper>

@@ -55,8 +55,8 @@ public class SimilarDtoStorageCaller {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<SimilarDto> hasDtos = similarService.getSimilarDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey());
+			List<SimilarDto> hasDtos = similarService.getSimilarDtoByProductCodes(entry.getKey(),
+					new ArrayList<String>(entry.getValue()));
 			Set<String> hasCodeSet = new HashSet<String>();
 			Map<Long, Long> similarCodeMap = new HashMap<Long, Long>();
 			for (SimilarDto oldDto : hasDtos) {
@@ -99,7 +99,7 @@ public class SimilarDtoStorageCaller {
 
 	private void handleSource(SimilarDto newDto, SimilarDto oldDto) {
 		JSONObject srcObject = null;
-		String content = oldDto.getSource();
+		String content = "";
 		if (StringUtils.isEmpty(content)) {
 			srcObject = new JSONObject();
 		} else {
@@ -116,12 +116,12 @@ public class SimilarDtoStorageCaller {
 				srcObject = JSONUtils.getJSONObject(content);
 			}
 		}
-		Integer count = JSONUtils.getInteger(srcObject, newDto.getSource());
+		Integer count = JSONUtils.getInteger(srcObject, "");
 		if (count == null) {
 			count = 0;
 		}
-		JSONUtils.put(srcObject, newDto.getSource(), count + 1);
-		newDto.setSource(srcObject.toString());
+		JSONUtils.put(srcObject, "", count + 1);
+		// newDto.setSource(srcObject.toString());
 	}
 
 	private void handleEmptyFileds(SimilarDto newDto, SimilarDto oldDto) {

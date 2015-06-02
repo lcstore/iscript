@@ -147,8 +147,7 @@ public class DetailSearchTimer {
 			codeSet.add(dto.getProductCode());
 		}
 		for (Entry<Integer, Set<String>> entry : shopMap.entrySet()) {
-			List<SimilarDto> hasDtos = similarService.getSimilarDtos(new ArrayList<String>(entry.getValue()),
-					entry.getKey());
+			List<SimilarDto> hasDtos = similarService.getSimilarDtoByProductCodes(entry.getKey(),new ArrayList<String>(entry.getValue()));
 			Set<String> hasCodeSet = new HashSet<String>();
 			Map<Long, Long> similarCodeMap = new HashMap<Long, Long>();
 			for (SimilarDto oldDto : hasDtos) {
@@ -213,7 +212,6 @@ public class DetailSearchTimer {
 			dto.setProductCode(code);
 			dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
 			dto.setImgUrl(JSONUtils.getString(mObject, "image"));
-			dto.setSource("wcc");
 			similarDtos.add(dto);
 		}
 	}

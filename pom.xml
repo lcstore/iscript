@@ -69,7 +69,7 @@
 		<commons-collections.version>4.0</commons-collections.version>
 		<commons-io.version>2.1</commons-io.version>
 		<httpcomponents.version>4.1.1</httpcomponents.version>
-		<rhino.version>1.7R2</rhino.version>
+		<rhino.version>1.7.6</rhino.version>
 		<jsoup.version>1.8.1</jsoup.version>
 		<wrapper.version>3.5.20</wrapper.version>
 		<imageio.version>1.1-alpha</imageio.version>
@@ -103,5 +103,6 @@
 		<!--<scope>provided</scope>-->
 		<servlet-api.version>2.5</servlet-api.version>
 		<jstl.version>1.2</jstl.version>
+		<lombok.version>1.16.4</lombok.version>
 	</properties>
 </project>

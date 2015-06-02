@@ -109,7 +109,6 @@ public class HuihuiSimilarSearcher {
 		dto.setProductPrice(JSONUtils.getFloat(argsObject, "price"));
 		dto.setImgUrl(JSONUtils.getString(argsObject, "imgUrl"));
 		dto.setBarCode(JSONUtils.getString(argsObject, "barCode"));
-		dto.setSource(parser.getName());
 		similarDtos.add(dto);
 		for (int i = 0; i < oList.length(); i++) {
 			try {
@@ -156,7 +155,6 @@ public class HuihuiSimilarSearcher {
 			}
 			dto.setProductCode(code);
 			dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
-			dto.setSource(parser.getName());
 			dto.setCreateTime(new Date());
 			dto.setUpdateTime(dto.getCreateTime());
 			similarDtos.add(dto);

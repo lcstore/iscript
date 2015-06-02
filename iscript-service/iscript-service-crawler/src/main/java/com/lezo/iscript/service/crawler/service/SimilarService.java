@@ -9,12 +9,6 @@ public interface SimilarService {
 
 	void batchUpdateSimilarDtos(List<SimilarDto> dtoList);
 
-	List<SimilarDto> getSimilarDtos(List<String> codeList, Integer siteId);
+	List<SimilarDto> getSimilarDtoByProductCodes(Integer siteId, List<String> codeList);
 
-	List<SimilarDto> getSimilarDtoBySimilarCodes(List<Long> similarCodeList, List<Integer> siteList);
-
-	List<Long> getSimilarCodeByCodeAsc(Long fromCode, Integer limit);
-
-	List<SimilarDto> getSimilarDtoByCodeAndPrice(List<Long> sCodeList, List<String> pCodeList, Float fromPrice, Float toPrice, Integer offset, Integer limit);
-	Integer getCountSimilarDtoByCodeAndPrice(List<Long> sCodeList, List<String> pCodeList, Float fromPrice, Float toPrice);
 }

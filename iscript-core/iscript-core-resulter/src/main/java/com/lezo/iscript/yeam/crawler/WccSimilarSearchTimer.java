@@ -109,7 +109,6 @@ public class WccSimilarSearchTimer {
 		dto.setProductPrice(JSONUtils.getFloat(argsObject, "wPrice"));
 		dto.setImgUrl(JSONUtils.getString(argsObject, "wImgUrl"));
 		dto.setBarCode(JSONUtils.getString(argsObject, "wBCode"));
-		dto.setSource("wcc");
 		similarDtos.add(dto);
 		for (int i = 0; i < oList.length(); i++) {
 			try {
@@ -156,7 +155,6 @@ public class WccSimilarSearchTimer {
 			dto.setProductCode(code);
 			dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
 			dto.setImgUrl(JSONUtils.getString(mObject, "image"));
-			dto.setSource("wcc");
 			dto.setCreateTime(new Date());
 			dto.setUpdateTime(dto.getCreateTime());
 			similarDtos.add(dto);
