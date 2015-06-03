@@ -10,14 +10,13 @@ import org.junit.Test;
 public class DaoConfigUtilsTest {
 
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() throws IOException {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_PRODUCT_STANDARD";
-		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.ProductStandardDao";
+		String tableName = "T_PRODUCT";
+		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.ProductDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);

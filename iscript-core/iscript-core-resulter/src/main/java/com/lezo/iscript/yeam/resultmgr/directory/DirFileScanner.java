@@ -78,12 +78,16 @@ public class DirFileScanner implements Runnable {
 		} else {
 			paramMap.put("limit", "" + limit);
 		}
+		String limitKey = "limit";
 		while (!dirStream.isDone()) {
 			listTimes++;
 			long startMills = System.currentTimeMillis();
 			if (rester instanceof BaiduPcsRester) {
-				paramMap.put("limit", fromCount + "-" + (fromCount + limit));
+				paramMap.put(limitKey, fromCount + "-" + (fromCount + limit));
 			}
+
+			bw.append(limitKey + ":" + paramMap.get(limitKey));
+			bw.append("\n");
 			RestList restList = rester.listFiles(dirBean.toDirPath(), paramMap);
 			long costMills = System.currentTimeMillis() - startMills;
 			List<RestFile> acceptList = null;

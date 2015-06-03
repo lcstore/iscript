@@ -2,58 +2,84 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStandardDao">
-	<resultMap type="ProductStandardDto" id="RM_ProductStandardDto">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductDao">
+	<resultMap type="ProductDto" id="RM_ProductDto">
 		<result column="ID" property="id"/>
-		<result column="SIMILAR_CODE" property="similarCode"/>
 		<result column="SITE_ID" property="siteId"/>
 		<result column="SHOP_ID" property="shopId"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
 		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="MARKET_PRICE" property="marketPrice"/>
 		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="PRODUCT_BRAND" property="productBrand"/>
+		<result column="PRODUCT_MODEL" property="productModel"/>
+		<result column="PRODUCT_ATTR" property="productAttr"/>
 		<result column="BAR_CODE" property="barCode"/>
 		<result column="IMG_URL" property="imgUrl"/>
-		<result column="TOKEN_BRAND" property="tokenBrand"/>
-		<result column="TOKEN_GATEGORY" property="tokenGategory"/>
+		<result column="UNION_URL" property="unionUrl"/>
+		<result column="ONSAIL_TIME" property="onsailTime"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="CATEGORY_NAV" property="categoryNav"/>
+		<result column="TOKEN_BRAND" property="tokenBrand"/>
+		<result column="TOKEN_CATEGORY" property="tokenCategory"/>
+		<result column="SPU_CODES" property="spuCodes"/>
+		<result column="SPU_VARY" property="spuVary"/>
 	</resultMap>
-	<sql id="ProductStandardDto-coloumn-list">
-		SIMILAR_CODE
-		,SITE_ID
+	<sql id="ProductDto-coloumn-list">
+		SITE_ID
 		,SHOP_ID
 		,PRODUCT_CODE
 		,PRODUCT_NAME
+		,MARKET_PRICE
 		,PRODUCT_URL
+		,PRODUCT_BRAND
+		,PRODUCT_MODEL
+		,PRODUCT_ATTR
 		,BAR_CODE
 		,IMG_URL
-		,TOKEN_BRAND
-		,TOKEN_GATEGORY
+		,UNION_URL
+		,ONSAIL_TIME
 		,CREATE_TIME
 		,UPDATE_TIME
+		,CATEGORY_NAV
+		,TOKEN_BRAND
+		,TOKEN_CATEGORY
+		,SPU_CODES
+		,SPU_VARY
 	</sql>
-	<insert id="batchInsert" parameterType="ProductStandardDto">
-		INSERT INTO T_PRODUCT_STANDARD(
-		<include refid="ProductStandardDto-coloumn-list" />
+	<insert id="batchInsert" parameterType="ProductDto">
+		INSERT INTO T_PRODUCT(
+		<include refid="ProductDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.createTime},#{item.updateTime})
+			(#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.marketPrice},#{item.productUrl},#{item.productBrand},#{item.productModel},#{item.productAttr},#{item.barCode},#{item.imgUrl},#{item.unionUrl},#{item.onsailTime},#{item.createTime},#{item.updateTime},#{item.categoryNav},#{item.tokenBrand},#{item.tokenCategory},#{item.spuCodes},#{item.spuVary})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="ProductStandardDto">
-		UPDATE T_PRODUCT_STANDARD SET
-		SIMILAR_CODE=#{similarCode}
-		,SITE_ID=#{siteId}
+	<update id="batchUpdate" parameterType="ProductDto">
+		UPDATE T_PRODUCT SET
+		SITE_ID=#{siteId}
 		,SHOP_ID=#{shopId}
 		,PRODUCT_CODE=#{productCode}
 		,PRODUCT_NAME=#{productName}
+		,MARKET_PRICE=#{marketPrice}
 		,PRODUCT_URL=#{productUrl}
+		,PRODUCT_BRAND=#{productBrand}
+		,PRODUCT_MODEL=#{productModel}
+		,PRODUCT_ATTR=#{productAttr}
 		,BAR_CODE=#{barCode}
 		,IMG_URL=#{imgUrl}
+		,UNION_URL=#{unionUrl}
+		,ONSAIL_TIME=#{onsailTime}
+		,CREATE_TIME=#{createTime}
+		,UPDATE_TIME=#{updateTime}
+		,CATEGORY_NAV=#{categoryNav}
 		,TOKEN_BRAND=#{tokenBrand}
-		,TOKEN_GATEGORY=#{tokenGategory}
+		,TOKEN_CATEGORY=#{tokenCategory}
+		,SPU_CODES=#{spuCodes}
+		,SPU_VARY=#{spuVary}
 		WHERE ID=#{id}
 	</update>
 </mapper>

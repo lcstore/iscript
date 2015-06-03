@@ -23,6 +23,9 @@ public class ProductDto {
 	private String categoryNav;
 	private String tokenBrand;
 	private String tokenCategory;
+	
+	private String spuCodes;
+	private String spuVary;
 
 	public Long getId() {
 		return id;
@@ -176,5 +179,21 @@ public class ProductDto {
 
 	public void setTokenCategory(String tokenCategory) {
 		this.tokenCategory = tokenCategory;
+	}
+
+	public String getSpuCodes() {
+		return spuCodes;
+	}
+
+	public void setSpuCodes(String spuCodes) {
+		this.spuCodes = spuCodes;
+	}
+
+	public String getSpuVary() {
+		return spuVary;
+	}
+
+	public void setSpuVary(String spuVary) {
+		this.spuVary = spuVary;
 	}
 }

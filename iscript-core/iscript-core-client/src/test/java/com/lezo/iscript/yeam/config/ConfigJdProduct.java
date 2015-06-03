@@ -157,9 +157,9 @@ public class ConfigJdProduct implements ConfigParser {
 					destScript += " var skuid=pageConfig.product.skuid;";
 					destScript += " var name=pageConfig.product.name;";
 					destScript += " var colorSize=pageConfig.product.colorSize;";
-					destScript += " var oClr; for(var i=0;i<colorSize.length;i++){ if(colorSize[i].SkuId==skuid){ oClr=colorSize[i]; break;}};";
+					destScript += " var oClr,sCodes; for(var i=0;i<colorSize.length;i++){ if(colorSize[i].SkuId==skuid){ oClr=colorSize[i];}else{sCodes= !sCodes?colorSize[i].SkuId:sCodes+','+colorSize[i].SkuId;}};";
 					destScript += " oClr['color']=oClr.Color;delete oClr.Color;";
-					destScript += " oClr['ram']=oClr.Spec;delete oClr.Spec;";
+					destScript += " oClr['rom']=oClr.Spec;delete oClr.Spec;";
 					destScript += " oClr['net']=oClr.Size;delete oClr.Size;";
 					destScript += " delete oClr.SkuId;";
 					destScript += " var sClr = JSON.stringify(oClr);";
@@ -171,12 +171,8 @@ public class ConfigJdProduct implements ConfigParser {
 							tBean.setProductName(Context.toString(ScriptableObject.getProperty(scope, "name")));
 							Object jsObject = ScriptableObject.getProperty(scope, "oClr");
 							Object sClr = NativeJSON.stringify(Context.getCurrentContext(), scope, jsObject, null, null);
-
-							tBean.setProductAttr(sClr.toString());
-							// String sClr = ((JSONObject)
-							// Context.jsToJava(ScriptableObject.getProperty(scope,
-							// "sClr"), JSONObject.class)).toString();
-							// tBean.setProductAttr(sClr);
+							tBean.setSpuVary(sClr.toString());
+							tBean.setSpuCodes(Context.toString(ScriptableObject.getProperty(scope, "sCodes")));
 						}
 					}, tBean);
 					tBean.setProductUrl(url);
@@ -201,11 +197,7 @@ public class ConfigJdProduct implements ConfigParser {
 						}
 						JSONUtils.put(normalObject, key, value);
 					}
-					JSONObject attrObject = new JSONObject();
-					JSONUtils.put(attrObject, "normal", normalObject);
-					JSONUtils.put(attrObject, "vary", tBean.getProductAttr());
-
-					tBean.setProductAttr(attrObject.toString());
+					tBean.setProductAttr(normalObject.toString());
 				}
 				Elements noStockEls = dom.select("div.itemover-title h3 strong:contains(该商品已下柜)");
 				if (!noStockEls.isEmpty()) {
@@ -477,6 +469,9 @@ public class ConfigJdProduct implements ConfigParser {
 		private Integer siteId = 1001;
 		private Integer goodComment;
 		private Integer poorComment;
+		
+		private String spuCodes;
+		private String spuVary;
 
 		// shopDto
 		private Integer shopId;
@@ -658,6 +653,22 @@ public class ConfigJdProduct implements ConfigParser {
 
 		public void setShopId(Integer shopId) {
 			this.shopId = shopId;
+		}
+
+		public String getSpuCodes() {
+			return spuCodes;
+		}
+
+		public void setSpuCodes(String spuCodes) {
+			this.spuCodes = spuCodes;
+		}
+
+		public String getSpuVary() {
+			return spuVary;
+		}
+
+		public void setSpuVary(String spuVary) {
+			this.spuVary = spuVary;
 		}
 
 	}
