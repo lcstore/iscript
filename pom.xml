@@ -104,5 +104,6 @@
 		<servlet-api.version>2.5</servlet-api.version>
 		<jstl.version>1.2</jstl.version>
 		<lombok.version>1.16.4</lombok.version>
+		<commons-codec.version>1.6</commons-codec.version>
 	</properties>
 </project>

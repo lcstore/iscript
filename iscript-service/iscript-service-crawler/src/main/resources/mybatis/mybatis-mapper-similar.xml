@@ -80,7 +80,7 @@
 		,IS_STANDARD=#{isStandard}
 		WHERE ID=#{id}
 	</update>
-	<select id="getSimilarDtoByProductCodes" parameterType="map" parameterMap="RM_SimilarDto">
+	<select id="getSimilarDtoByProductCodes" parameterType="map" resultMap="RM_SimilarDto">
 	     SELECT * FROM T_SIMILAR
 	      <where>
 	      SITE_ID=#{siteId}
@@ -89,7 +89,7 @@
 	      </foreach>
 	    </where>
   	</select>
-	<select id="getSimilarDtoBySimilarCodes" parameterType="map" parameterMap="RM_SimilarDto">
+	<select id="getSimilarDtoBySimilarCodes" parameterType="map" resultMap="RM_SimilarDto">
 	     SELECT * FROM T_SIMILAR
 	      <where>
 	      <foreach collection="similarCodeList" item="sCode" open="SIMILAR_CODE IN(" separator="," close=")">

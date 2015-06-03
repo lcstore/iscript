@@ -162,6 +162,7 @@ public class ConfigJdProduct implements ConfigParser {
 					destScript += " oClr['ram']=oClr.Spec;delete oClr.Spec;";
 					destScript += " oClr['net']=oClr.Size;delete oClr.Size;";
 					destScript += " delete oClr.SkuId;";
+					destScript += " var sClr = JSON.stringify(oClr);";
 					evaluateString(destScript, new ScopeCallBack() {
 						@Override
 						public void doCallBack(Scriptable scope, Object targetObject) {
@@ -422,8 +423,7 @@ public class ConfigJdProduct implements ConfigParser {
 	private void evaluateString(String source, ScopeCallBack callBack, Object targetObject) {
 		try {
 			Context cx = Context.enter();
-			ScriptableObject parent = (ScriptableObject) ScriptableUtils.getJSONScriptable();
-			Scriptable scope = cx.initStandardObjects(parent);
+			Scriptable scope = cx.initStandardObjects();
 			cx.evaluateString(scope, source, "<cmd>", 0, null);
 			callBack.doCallBack(scope, targetObject);
 			scope = null;
