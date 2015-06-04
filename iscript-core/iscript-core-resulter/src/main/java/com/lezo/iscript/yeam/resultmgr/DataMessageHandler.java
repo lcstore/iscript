@@ -32,7 +32,10 @@ public class DataMessageHandler {
 		long start = System.currentTimeMillis();
 		try {
 			running.set(true);
-			logger.info("start to do DataMessageHandler ..");
+			logger.info("start to do DataMessageHandler.");
+			logger.info("FileProduceExecutor:" + ExecutorUtils.getFileProduceExecutor());
+			logger.info("FileConsumeExecutor:" + ExecutorUtils.getFileConsumeExecutor());
+			logger.info("DataConsumeExecutor:" + ExecutorUtils.getDataConsumeExecutor());
 			Iterator<Entry<String, DirSummary>> it = DirSummaryCacher.getInstance().iterator();
 			int total = 0;
 			int doneCount = 0;

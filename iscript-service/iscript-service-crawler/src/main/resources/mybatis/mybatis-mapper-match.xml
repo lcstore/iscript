@@ -5,6 +5,8 @@
 <mapper namespace="com.lezo.iscript.service.crawler.dao.MatchDao">
 	<resultMap type="MatchDto" id="RM_MatchDto">
 		<result column="ID" property="id"/>
+		<result column="WARE_TYPE" property="wareType"/>
+		<result column="WARE_CODE" property="wareCode"/>
 		<result column="SIMILAR_CODE" property="similarCode"/>
 		<result column="SITE_ID" property="siteId"/>
 		<result column="SHOP_ID" property="shopId"/>
@@ -28,7 +30,9 @@
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="MatchDto-coloumn-list">
-		SIMILAR_CODE
+		WARE_TYPE
+		,WARE_CODE
+		,SIMILAR_CODE
 		,SITE_ID
 		,SHOP_ID
 		,PRODUCT_CODE
@@ -57,12 +61,14 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.wareType},#{item.wareCode},#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="MatchDto">
 		UPDATE T_MATCH SET
-		SIMILAR_CODE=#{similarCode}
+		WARE_TYPE=#{wareType}
+		,WARE_CODE=#{wareCode}
+		,SIMILAR_CODE=#{similarCode}
 		,SITE_ID=#{siteId}
 		,SHOP_ID=#{shopId}
 		,PRODUCT_CODE=#{productCode}
@@ -81,9 +87,9 @@
 		,CONFIRM_MODEL=#{confirmModel}
 		,IS_STANDARD=#{isStandard}
 		,IS_DELETE=#{isDelete}
+		,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
-	
 	<select id="getMatchDtoByIds" parameterType="map" resultMap="RM_MatchDto">
 	    SELECT * FROM T_MATCH
 	    <where>

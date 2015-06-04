@@ -19,7 +19,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,11 +29,9 @@ import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.lezo.iscript.crawler.dom.ScriptDocument;
-import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
-import com.lezo.iscript.crawler.dom.browser.ScriptWindow;
 import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.rest.http.HttpClientUtils;
+import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
@@ -42,10 +39,11 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ConfigJdProduct implements ConfigParser {
+public class CopyOfConfigJdProduct implements ConfigParser {
 	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 	private HttpDirector httpDirector = new HttpDirector(client);
-	public static final Integer SITE_ID = 1001;
+	private static final String EMTPY_RESULT = new JSONObject().toString();
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static int[] stockArr = { 0, -1, 1 };
 	private static Pattern oBarCodeReg = Pattern.compile("条形码[\\s]*([0-9]{13,})");
 	private static Map<String, String> hostIpMap = new HashMap<String, String>();
@@ -141,9 +139,6 @@ public class ConfigJdProduct implements ConfigParser {
 			if (isHome(dom)) {
 				return null;
 			}
-			ScriptDocument scriptDocument = ScriptHtmlParser.parser(dom);
-			ScriptWindow window = new ScriptWindow();
-			window.setDocument(scriptDocument);
 			Elements scriptAs = dom.select("script");
 			ProductBean tBean = new ProductBean();
 			if (!scriptAs.isEmpty()) {
@@ -158,40 +153,35 @@ public class ConfigJdProduct implements ConfigParser {
 					}
 				}
 				if (destScript != null) {
-					window.eval(destScript);
-					Object jsObject = ScriptableObject.getProperty(window.getScope(), "pageConfig");
-					Object sPageConfig = NativeJSON.stringify(Context.getCurrentContext(), window.getScope(), jsObject,
-							null, null);
-					JSONObject oPageConfig = JSONUtils.getJSONObject(sPageConfig);
-					JSONObject oProduct = JSONUtils.getJSONObject(oPageConfig, "product");
-					String skuid = JSONUtils.getString(oProduct, "skuid");
-					String name = JSONUtils.getString(oProduct, "name");
-					tBean.setProductCode(skuid);
-					tBean.setProductName(name);
-					tBean.setProductUrl(url);
-
-					JSONArray oColorSizeArray = JSONUtils.get(oProduct, "colorSize");
-					StringBuilder sb = new StringBuilder();
-					for (int i = 0; i < oColorSizeArray.length(); i++) {
-						JSONObject oColor = oColorSizeArray.getJSONObject(i);
-						String curSkuid = JSONUtils.getString(oColor, "SkuId");
-						if (skuid.equals(curSkuid)) {
-							oColor.remove("SkuId");
-							tBean.setSpuVary(oColor.toString());
-						} else {
-							if (sb.length() > 0) {
-								sb.append(",");
-							}
-							sb.append(curSkuid);
+					destScript = "var window={}; " + destScript;
+					destScript += " var skuid=pageConfig.product.skuid;";
+					destScript += " var name=pageConfig.product.name;";
+					destScript += " var colorSize=pageConfig.product.colorSize;";
+					destScript += " var oClr,sCodes; for(var i=0;i<colorSize.length;i++){ if(colorSize[i].SkuId==skuid){ oClr=colorSize[i];}else{sCodes= !sCodes?colorSize[i].SkuId:sCodes+','+colorSize[i].SkuId;}};";
+					destScript += " oClr['color']=oClr.Color;delete oClr.Color;";
+					destScript += " oClr['rom']=oClr.Spec;delete oClr.Spec;";
+					destScript += " oClr['net']=oClr.Size;delete oClr.Size;";
+					destScript += " delete oClr.SkuId;";
+					destScript += " var sClr = JSON.stringify(oClr);";
+					evaluateString(destScript, new ScopeCallBack() {
+						@Override
+						public void doCallBack(Scriptable scope, Object targetObject) {
+							ProductBean tBean = (ProductBean) targetObject;
+							tBean.setProductCode(Context.toString(ScriptableObject.getProperty(scope, "skuid")));
+							tBean.setProductName(Context.toString(ScriptableObject.getProperty(scope, "name")));
+							Object jsObject = ScriptableObject.getProperty(scope, "oClr");
+							Object sClr = NativeJSON.stringify(Context.getCurrentContext(), scope, jsObject, null, null);
+							tBean.setSpuVary(sClr.toString());
+							tBean.setSpuCodes(Context.toString(ScriptableObject.getProperty(scope, "sCodes")));
 						}
-					}
-					tBean.setSpuCodes(sb.toString());
-					addPrice(tBean, dom, window);
+					}, tBean);
+					tBean.setProductUrl(url);
+					addPrice(tBean, dom);
 					addAttributes(tBean, dom);
-					addComment(tBean, dom, window);
+					addComment(tBean, dom);
 					addBarCode(tBean, dom, task);
-					addStock(tBean, dom, task, window);
-					addShopInfo(tBean, dom, task, window);
+					addStock(tBean, dom, task);
+					addShopInfo(tBean, dom, task);
 					Elements attrEls = dom.select("#product-detail-2 table.Ptable tr:has(td.tdTitle)");
 					JSONObject normalObject = new JSONObject();
 					for (Element attrEle : attrEls) {
@@ -230,7 +220,7 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 	}
 
-	private void addShopInfo(ProductBean tBean, Document dom, TaskWritable task, ScriptWindow window) throws Exception {
+	private void addShopInfo(ProductBean tBean, Document dom, TaskWritable task) throws Exception {
 		// http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=1015367811
 		String sUrl = String.format("http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=%s",
 				tBean.getProductCode());
@@ -241,9 +231,12 @@ public class ConfigJdProduct implements ConfigParser {
 		source += html + ";";
 		source += "var sDataResult = JSON.stringify(oData);";
 
-		window.eval(source);
+		Context cx = Context.enter();
+		Scriptable coreScriptable = ScriptableUtils.getCoreScriptable();
+		ScriptableObject scope = null;
+		scope = (ScriptableObject) cx.initStandardObjects((ScriptableObject) coreScriptable);
+		cx.evaluateString(scope, source, "<cmd>", 0, null);
 
-		Scriptable scope = window.getScope();
 		String sDataResult = Context.toString(ScriptableObject.getProperty(scope, "sDataResult"));
 		JSONObject dObject = JSONUtils.getJSONObject(sDataResult);
 		if (dObject == null || StringUtils.isEmpty(JSONUtils.getString(dObject, "vender"))) {
@@ -278,14 +271,13 @@ public class ConfigJdProduct implements ConfigParser {
 		return !dom.select("li#nav-home.curr a:contains(首页)").isEmpty();
 	}
 
-	private void addStock(ProductBean tBean, Document dom, TaskWritable task, ScriptWindow window) throws Exception {
+	private void addStock(ProductBean tBean, Document dom, TaskWritable task) throws Exception {
 		// a./--// b."--\" c.\r\n mark to string \r\n
 		String source = "var debug = {};\r\ndebug.log = function(msg) {\r\n	if (msg) {\r\n		java.lang.System.out.println(msg);\r\n	} else {\r\n		java.lang.System.out.println(\"NULL OR Undefine.\");\r\n	}\r\n}\r\nfunction getCityId() {\r\n	var sCid = '78'\r\n	if (args.regionname == 'BJ') {\r\n		sCid = '72';\r\n	} else if (args.regionname == 'GZ') {\r\n		sCid = '1601';\r\n	} else if (args.regionname == 'WH') {\r\n		sCid = '1381';\r\n	} else if (args.regionname == 'CD') {\r\n		sCid = '1930';\r\n	}\r\n	return sCid;\r\n}\r\nfunction getRegionCodeObj() {\r\n	var oRegion = {};\r\n	var sLocation = '&provinceid=2&cityid=78&areaid=79'\r\n	if (args.regionname == 'BJ') {\r\n		oRegion.provinceid = 1;\r\n		oRegion.cityid = 72;\r\n		oRegion.areaid = 4137;\r\n		oRegion.townid = 0;\r\n		sLocation = '&provinceid=1&cityid=72&areaid=4137&townid=0';\r\n	} else if (args.regionname == 'GZ') {\r\n		oRegion.provinceid = 19;\r\n		oRegion.cityid = 1601;\r\n		oRegion.areaid = 3633;\r\n		oRegion.townid = 35726;\r\n		sLocation = '&provinceid=19&cityid=1601&areaid=3633&townid=35726';\r\n	} else if (args.regionname == 'WH') {\r\n		oRegion.provinceid = 17;\r\n		oRegion.cityid = 1381;\r\n		oRegion.areaid = 3582;\r\n		oRegion.townid = 50739;\r\n		sLocation = '&provinceid=17&cityid=1381&areaid=3582&townid=50739';\r\n	} else if (args.regionname == 'CD') {\r\n		oRegion.provinceid = 22;\r\n		oRegion.cityid = 1930;\r\n		oRegion.areaid = 4284;\r\n		oRegion.townid = 0;\r\n		sLocation = '&provinceid=22&cityid=1930&areaid=4284&townid=0';\r\n	} else {\r\n		oRegion.provinceid = 2;\r\n		oRegion.cityid = 2811;\r\n		oRegion.areaid = 2860;\r\n		oRegion.townid = 0;\r\n		sLocation = '&provinceid=2&cityid=2811&areaid=2860&townid=0'\r\n	}\r\n	return oRegion;\r\n}\r\nfunction getCode() {\r\n	var _url = args.url;\r\n	var codeReg = new RegExp(\"[0-9]{5,}\", \"gm\");\r\n	var match = _url.match(codeReg);\r\n	if (match && match[0]) {\r\n		return match[0];\r\n	}\r\n	return \"\";\r\n}\r\nfunction getJSONObj(sHtml) {\r\n	var oJObjReg = new RegExp('{.*}', 'gm'), oMatch = sHtml.match(oJObjReg);\r\n	var sJObj = (oMatch) ? oMatch[0] : \"{}\";\r\n	return eval('(' + sJObj + ')');\r\n}\r\nfunction getSkuId_new(cid, aid, eleSkuIdKey) {\r\n	if (eleSkuIdKey && eleSkuIdKey.length > 0) {\r\n		var areas = null;\r\n		for (var i = 0, j = eleSkuIdKey.length; i < j; i++) {\r\n			if (eleSkuIdKey[i].area && eleSkuIdKey[i].area[cid + \"\"]) {\r\n				areas = eleSkuIdKey[i].area[cid + \"\"];\r\n				if (areas.length == 0 || areas[0] + \"\" == \"0\") {\r\n					return eleSkuIdKey[i].SkuId;\r\n				} else if (areas.length > 0) {\r\n					for (var a = 0, b = areas.length; a < b; a++) {\r\n						if (areas[a] + \"\" == aid + \"\") {\r\n							return eleSkuIdKey[i].SkuId;\r\n						}\r\n					}\r\n				}\r\n			}\r\n		}\r\n	}\r\n	return 0;\r\n}\r\nfunction chooseSkuToArea(provinceId, cityId, areaId, oConfig) {\r\n	var pageConfig = oConfig.pageConfig;\r\n	var eleSkuIdKey = oConfig.eleSkuIdKey;\r\n	var currentSkuId = (pageConfig && pageConfig.product) ? pageConfig.product.skuid\r\n			: '';\r\n	var currentSkuKey = (pageConfig && pageConfig.product) ? pageConfig.product.skuidkey\r\n			: '';\r\n	var isAreaProduct = (eleSkuIdKey) ? true : false;\r\n	if (isAreaProduct && provinceId > 0 && cityId > 0 && areaId > 0) {\r\n		currentSkuId = 0;\r\n		currentSkuKey = \"\";\r\n		var eleRegion = '';\r\n		if (eleRegion) {\r\n			var provinceCitys = eleRegion[provinceId + \"\"];\r\n			if (provinceCitys && provinceCitys.citys\r\n					&& provinceCitys.citys.length > 0) {\r\n				for (var i = 0, j = provinceCitys.citys.length; i < j; i++) {\r\n					if (provinceCitys.citys[i].IdCity == cityId) {\r\n						currentSkuId = provinceCitys.citys[i].SkuId;\r\n						break;\r\n					}\r\n				}\r\n			}\r\n		} else {\r\n			currentSkuId = getSkuId_new(cityId, areaId, eleSkuIdKey);\r\n		}\r\n		if (eleSkuIdKey && eleSkuIdKey.length > 0) {\r\n			for (var i = 0, j = eleSkuIdKey.length; i < j; i++) {\r\n				if (eleSkuIdKey[i].SkuId == currentSkuId) {\r\n					currentSkuKey = eleSkuIdKey[i].Key;\r\n					break;\r\n				}\r\n			}\r\n		}\r\n	}\r\n	debug.log('currentSkuKey:' + currentSkuKey);\r\n	return [ currentSkuKey, currentSkuId ];\r\n}\r\nfunction getRegionConfig(body, oConfig) {\r\n	var oEleRegion_as = body.select('div#product-intro > script[type]');\r\n	if (oEleRegion_as && oEleRegion_as.first()) {\r\n		var sEleRegion = oEleRegion_as.first().html();\r\n		if (!sEleRegion || '' == sEleRegion) {\r\n			return oConfig;\r\n		}\r\n		eval(' ' + sEleRegion + ' ');\r\n		if (typeof (warestatus) != 'undefined') {\r\n			oConfig.warestatus = warestatus;\r\n		}\r\n		if (typeof (eleSkuIdKey) != 'undefined') {\r\n			oConfig.eleSkuIdKey = eleSkuIdKey;\r\n		}\r\n	}\r\n	return oConfig;\r\n}\r\nfunction getPageConfig(body, oConfig) {\r\n	var head = body.previousElementSibling(), oScript = head\r\n			.select('script');\r\n	for (var i = 0; i < oScript.size(); i++) {\r\n		var sHtml = oScript.get(i).html();\r\n		if (sHtml.indexOf('pageConfig')>0) {\r\n			sHtml = sHtml.replace('\\'\\',', '\"\",');\r\n			sHtml = sHtml.replace('\\'\\'', '\"\"');\r\n			sHtml = 'var window = {};' + sHtml;\r\n			eval(' ' + sHtml + ' ');\r\n			if (typeof (pageConfig) != 'undefined') {\r\n				oConfig.pageConfig = pageConfig;\r\n			}\r\n			break;\r\n		}\r\n	}\r\n	return oConfig;\r\n}\r\nfunction getWareinfo(body, oConfig) {\r\n	var oWareinfo = body.select('#book-price li.sub > script[type]');\r\n	if (oWareinfo.isEmpty()) {\r\n		return oConfig;\r\n	}\r\n	var sWareinfo = oWareinfo.first().html();\r\n	if (!sWareinfo || '' == sWareinfo) {\r\n		return oConfig;\r\n	}\r\n	eval(' ' + sWareinfo + ' ');\r\n	if (typeof (wareinfo) != 'undefined') {\r\n		oConfig.wareinfo = wareinfo;\r\n	}\r\n	return oConfig;\r\n}\r\nfunction getSkuKey(body) {\r\n	var cityId = getCityId(), skuId = '', sSkuKey = '';\r\n	var oSkuidkey_as = body.select('#skuidkey');\r\n	if (oSkuidkey_as && oSkuidkey_as.first()) {\r\n		sSkuKey = oSkuidkey_as.first().ownText();\r\n		return sSkuKey;\r\n	}\r\n	var oEleRegion_as = body.select('div#product-intro > script[type]');\r\n	if (oEleRegion_as && oEleRegion_as.first()) {\r\n		var sEleRegion = oEleRegion_as.first().html();\r\n		eval(' ' + sEleRegion + ' ');\r\n		var oRegionArr = sEleRegion.split('=');\r\n		debug.log('sEleRegion:' + sEleRegion);\r\n		if (oRegionArr.length > 3) {\r\n			var sCitySkuId = oRegionArr[2], sSkuIdKey = oRegionArr[3], sCitySkuId = sCitySkuId\r\n					.substring(0, sCitySkuId.lastIndexOf(';')), sSkuIdKey = sSkuIdKey\r\n					.substring(0, sSkuIdKey.lastIndexOf(';'));\r\n			var oCitySkuIdJSON = eval('(' + sCitySkuId + ')');\r\n			var oSkuIdKeyJSON = eval('(' + sSkuIdKey + ')');\r\n			for ( var n in oCitySkuIdJSON) {\r\n				var citysArr = oCitySkuIdJSON[n].citys;\r\n				for (var i = 0; i < citysArr.length; i++) {\r\n					if (citysArr[i].IdCity == cityId) {\r\n						skuId = citysArr[i].SkuId;\r\n						break;\r\n					}\r\n				}\r\n			}\r\n			if (skuId) {\r\n				for ( var index in oSkuIdKeyJSON) {\r\n					var oSK = oSkuIdKeyJSON[index];\r\n					if (oSK.SkuId == skuId) {\r\n						sSkuKey = oSK.Key;\r\n						break;\r\n					}\r\n				}\r\n			}\r\n			debug.log('090--skuId:' + skuId);\r\n			debug.log('sSkuKey:' + sSkuKey);\r\n		}\r\n	}\r\n	if (sSkuKey) {\r\n		return sSkuKey;\r\n	}\r\n	var head = body.previousElementSibling(), oScript = head\r\n			.select('script[type]');\r\n	for (var i = 0; i < oScript.size(); i++) {\r\n		var sHtml = oScript.get(i).html();\r\n		if (sHtml.contains('pageConfig')) {\r\n			var index = sHtml.indexOf('=');\r\n			sHtml = sHtml.substring(index + 1);\r\n			index = sHtml.indexOf(';');\r\n			if (index > 0) {\r\n				sHtml = sHtml.substring(0, index);\r\n			}\r\n			var oConfigJSON = eval('(' + sHtml + ')');\r\n			debug.log('stock-sSkuKey:' + sHtml);\r\n			if (oConfigJSON.product) {\r\n				sSkuKey = oConfigJSON.product.skuidkey;\r\n			}\r\n			break;\r\n		}\r\n	}\r\n	if (sSkuKey) {\r\n		return sSkuKey;\r\n	}\r\n	var oWareinfo = body.select('#book-price li.sub > script[type]'); sWareinfo = oWareinfo\r\n			.first().html(), oWareJSON = getJSONObj(sWareinfo);\r\n	return oWareJSON.sid;\r\n}\r\nfunction getStockFlagByName(stockStateName) {\r\n	debug.log('stockStateName2:'+stockStateName);\r\n	var sStock = '0';\r\n	if (-1 != stockStateName.indexOf(\"有货\")\r\n			|| -1 != stockStateName.indexOf(\"现货\")\r\n			|| -1 != stockStateName.indexOf(\"在途\")) {\r\n		sStock = \"0\";\r\n	} else if (-1 != stockStateName.indexOf(\"无货\")\r\n			|| -1 != stockStateName.indexOf(\"售完\")) {\r\n		sStock = \"-2\";\r\n	} else if (-1 != stockStateName.indexOf(\"预订\")) {\r\n		sStock = \"0\";\r\n	}\r\n	debug.log('stockStateName2:'+sStock);\r\n	return sStock;\r\n}\r\nfunction getStockFlagByState(state) {\r\n	var sStock = '0';\r\n	if (state == 33) {\r\n		sStock = '0';\r\n	} else if (state == 34 || state == 0) {\r\n		sStock = '-2';\r\n	} else if (state == 39) {\r\n		sStock = '0';\r\n	} else if (state == 40) {\r\n		sStock = '0';\r\n	} else if (state == 36) {\r\n		sStock = '0';\r\n	}\r\n	return sStock;\r\n}\r\nfunction SetNotifyByNoneStock(stockstatus, body) {\r\n	var mvdMark = 'http://mvd.';\r\n	if (args.url.indexOf(mvdMark) > -1) {\r\n		return false;\r\n	}\r\n	var warestatus = '';\r\n	var oEleRegion_as = body.select('div#product-intro > script[type]');\r\n	if (oEleRegion_as && oEleRegion_as.first()) {\r\n		var sEleRegion = oEleRegion_as.first().html();\r\n		debug.log('sEleRegion:' + sEleRegion);\r\n		var wsReg = new RegExp('(warestatus).*?[0-9]+', 'gm'), owsMatch = sEleRegion\r\n				.match(wsReg)\r\n		if (owsMatch && owsMatch[0]) {\r\n			warestatus = owsMatch[0];\r\n			warestatus = warestatus.replace(/[^0-9]+/gm, '');\r\n		}\r\n	}\r\n	debug.log('warestatus:' + warestatus);\r\n	debug.log('stockstatus:' + stockstatus);\r\n	if (stockstatus && stockstatus != 34 && stockstatus != 0 && warestatus == 1) {\r\n		return false;\r\n	}\r\n	return true;\r\n}\r\nfunction getProvinceStockCallback(result, body) {\r\n	var sStock = '0';\r\n	if (result.stock) {\r\n		var stockstate = (result.stock.StockState) ? result.stock.StockState\r\n				: result.stock.S;\r\n		var stockStateName = result.stock.StockStateName;\r\n		debug.log('stockStateName:' + stockStateName);\r\n		sStock = (stockstate) ? getStockFlagByState(stockstate)\r\n				: getStockFlagByName(stockStateName);\r\n		var isNStock = SetNotifyByNoneStock(stockstate, body);\r\n		debug.log(\"isNStock:\" + isNStock);\r\n		//sStock = (isNStock) ? '-2' : sStock;\r\n	}\r\n	return sStock;\r\n}\r\nfunction getImgPrice2Num(pid) {\r\n	var sPriceUrl = 'http://p.3.cn/prices/get?skuid=J_' + pid + '&type=1';\r\n	debug.log('sPriceUrl:' + sPriceUrl);\r\n	var sHtml = http.get(sPriceUrl, args);\r\n	debug.log('sHtml:' + sHtml);\r\n	var oPriceArr = eval('(' + sHtml + ')');\r\n	var r = oPriceArr;\r\n	var price = '-1';\r\n	if (!!r && r.length > 0 && r[0].p && r[0].p > 0) {\r\n		price = r[0].p;\r\n	}\r\n	return price;\r\n}\r\nfunction isEmptyVar(param) {\r\n	return 'undefined'.equals(param) || '' == param;\r\n}\r\nfunction getStock(src) {\r\n	var body = src;\r\n\r\n	// var skuId = getSkuKey(body);\r\n	var aimURL = \"\";\r\n	var oRegion = getRegionCodeObj();\r\n	var oConfig = {};\r\n	oConfig = getRegionConfig(body, oConfig);\r\n	oConfig = getPageConfig(body, oConfig);debug.log('@oConfig:'+JSON.stringify(oConfig));\r\n	var skuId = '';\r\n	var skuKey = '';\r\n\r\n	if (oConfig.pageConfig) {\r\n		var oSkuArr = chooseSkuToArea(oRegion.provinceid, oRegion.cityid,\r\n				oRegion.areaid, oConfig);\r\n		skuKey = oSkuArr[0];\r\n		skuId = oSkuArr[1];\r\n		debug.log(skuKey + \":\" + skuId);\r\n	} else {\r\n		getWareinfo(body, oConfig);\r\ndebug.log('oConfig:'+JSON.stringify(oConfig));		skuKey = oConfig.wareinfo.sid;\r\n		skuId = oConfig.wareinfo.pid;\r\n	}\r\n	debug.log(\"skuKey:\" + skuKey + \",provinceid:\" + oRegion.provinceid\r\n			+ \",warestatus:\" + oConfig.warestatus);\r\n	if (!isEmptyVar(skuKey) && oRegion.provinceid != 84\r\n			&& oConfig.warestatus == 1) {\r\n	} else if (!isEmptyVar(oConfig.warestatus)) {\r\n		return '-1';\r\n	}\r\n	var stockServiceDomain = 'http://st.3.cn';\r\n	var pageConfig = oConfig.pageConfig;\r\n	var sLocation = '&provinceid=' + oRegion.provinceid + '&cityid='\r\n			+ oRegion.cityid + '&areaid=' + oRegion.areaid + \"&townid=\"\r\n			+ oRegion.townid;\r\n	var aimURL = \"\";\r\n	if (pageConfig && pageConfig.product && pageConfig.product.cat.length >= 3) {\r\n		aimURL = stockServiceDomain + \"/gds.html?skuid=\" + skuKey + sLocation\r\n				+ \"&sortid1=\" + pageConfig.product.cat[0] + \"&sortid2=\"\r\n				+ pageConfig.product.cat[1] + \"&sortid3=\"\r\n				+ pageConfig.product.cat[2] + \"&cd=1_1_1\"\r\n	} else {\r\n		aimURL = \"http://st.3.cn/gds.html?skuid=\" + skuKey + sLocation + \"&t=\"\r\n				+ (new Date()).getTime();\r\n	}\r\n	debug.log('aimURL:' + aimURL);\r\n	var responseStock;\r\n	try {\r\n		responseStock = http.get(aimURL);\r\n	} catch (er) {\r\n		throw \"getstock:\" + aimURL + er;\r\n	}\r\n\r\n	debug.log(\"Multi:\" + responseStock);\r\n	var provinceStockJson = eval(\"(\" + responseStock + \")\");\r\n	var sStock = getProvinceStockCallback(provinceStockJson, body);\r\n	var sPrice = getImgPrice2Num(skuId);\r\n	debug.log('Vef:sStock:' + sStock + \",sPrice:\" + sPrice);\r\n	sStock = (sPrice < 0) ? -1 : sStock;\r\n	return sStock;\r\n}\r\n\r\ntry {\r\n	var body = src;\r\n	var stockStatus = getStock(body);\r\n} catch (ex) {\r\n	throw 'From stock_status,Exception:' + ex;\r\n}";
 		try {
 			String argsString = "args=" + JSONUtils.getJSONObject(task.getArgs());
 			Context cx = Context.enter();
-
-			ScriptableObject scope = cx.initStandardObjects();
+			ScriptableObject scope = (ScriptableObject) ScriptableUtils.getJSONScriptable();
 			cx.evaluateString(scope, argsString, "<args>", 0, null);
 			ScriptableObject.putProperty(scope, "src", dom.select("body").first());
 			ScriptableObject.putProperty(scope, "http", httpDirector);
@@ -300,7 +292,7 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 	}
 
-	private void addComment(ProductBean tBean, Document dom, ScriptWindow window) throws Exception {
+	private void addComment(ProductBean tBean, Document dom) throws Exception {
 		// http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=1095329&callback=getCommentCount
 		String mUrl = String
 				.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount",
@@ -314,14 +306,18 @@ public class ConfigJdProduct implements ConfigParser {
 		html += "var iCmm = oCmm.CommentCount;";
 		html += "var gCmm = oCmm.GoodCount;";
 		html += "var pCmm = oCmm.PoorCount;";
-		window.eval(html);
-		Scriptable scope = window.getScope();
-		Object cmmObject = ScriptableObject.getProperty(scope, "iCmm");
-		tBean.setCommentNum(cmmObject == null ? null : Integer.valueOf(Context.toString(cmmObject)));
-		Object goodCmmObject = ScriptableObject.getProperty(scope, "gCmm");
-		tBean.setGoodComment(goodCmmObject == null ? null : Integer.valueOf(Context.toString(goodCmmObject)));
-		Object poorCmmObject = ScriptableObject.getProperty(scope, "pCmm");
-		tBean.setPoorComment(poorCmmObject == null ? null : Integer.valueOf(Context.toString(poorCmmObject)));
+		evaluateString(html, new ScopeCallBack() {
+			@Override
+			public void doCallBack(Scriptable scope, Object targetObject) {
+				ProductBean tBean = (ProductBean) targetObject;
+				Object cmmObject = ScriptableObject.getProperty(scope, "iCmm");
+				tBean.setCommentNum(cmmObject == null ? null : Integer.valueOf(Context.toString(cmmObject)));
+				Object goodCmmObject = ScriptableObject.getProperty(scope, "gCmm");
+				tBean.setGoodComment(goodCmmObject == null ? null : Integer.valueOf(Context.toString(goodCmmObject)));
+				Object poorCmmObject = ScriptableObject.getProperty(scope, "pCmm");
+				tBean.setPoorComment(poorCmmObject == null ? null : Integer.valueOf(Context.toString(poorCmmObject)));
+			}
+		}, tBean);
 	}
 
 	private void addAttributes(ProductBean tBean, Document dom) {
@@ -388,7 +384,7 @@ public class ConfigJdProduct implements ConfigParser {
 		dom = null;
 	}
 
-	private void addPrice(ProductBean tBean, Document dom, ScriptWindow window) throws Exception {
+	private void addPrice(ProductBean tBean, Document dom) throws Exception {
 		// http://p.3.cn/prices/get?skuid=J_1095329&type=1&area=1_72_2799&callback=cnp
 		// http://p.3.cn/prices/mgets?type=1&skuIds=J_1095329&callback=jsonp1413082152934&_=1413082153605
 		if (StringUtils.isEmpty(tBean.getProductCode())) {
@@ -402,14 +398,30 @@ public class ConfigJdProduct implements ConfigParser {
 		html = "function callback(dataArray){return dataArray[0];};" + html;
 		html += " var price=oData.p;";
 		html += " var mkprice=oData.m;";
-		window.eval(html);
 
-		Scriptable scope = window.getScope();
-		Object pObject = ScriptableObject.getProperty(scope, "price");
-		Object mObject = ScriptableObject.getProperty(scope, "mkprice").toString();
+		evaluateString(html, new ScopeCallBack() {
+			@Override
+			public void doCallBack(Scriptable scope, Object targetObject) {
+				ProductBean tBean = (ProductBean) targetObject;
+				Object pObject = ScriptableObject.getProperty(scope, "price");
+				Object mObject = ScriptableObject.getProperty(scope, "mkprice").toString();
 
-		tBean.setProductPrice(pObject == null ? null : Float.valueOf(Context.toString(pObject)));
-		tBean.setMarketPrice(mObject == null ? null : Float.valueOf(Context.toString(mObject)));
+				tBean.setProductPrice(pObject == null ? null : Float.valueOf(Context.toString(pObject)));
+				tBean.setMarketPrice(mObject == null ? null : Float.valueOf(Context.toString(mObject)));
+			}
+		}, tBean);
+	}
+
+	private void evaluateString(String source, ScopeCallBack callBack, Object targetObject) {
+		try {
+			Context cx = Context.enter();
+			Scriptable scope = cx.initStandardObjects();
+			cx.evaluateString(scope, source, "<cmd>", 0, null);
+			callBack.doCallBack(scope, targetObject);
+			scope = null;
+		} finally {
+			Context.exit();
+		}
 	}
 
 	public class HttpDirector {
@@ -434,7 +446,7 @@ public class ConfigJdProduct implements ConfigParser {
 	interface ScopeCallBack {
 		void doCallBack(Scriptable scope, Object targetObject);
 	}
-	
+
 	private class ProductBean {
 		// productStat
 		private String productCode;
@@ -454,10 +466,10 @@ public class ConfigJdProduct implements ConfigParser {
 		private String imgUrl;
 		private Date onsailTime;
 
-		private Integer siteId = SITE_ID;
+		private Integer siteId = 1001;
 		private Integer goodComment;
 		private Integer poorComment;
-
+		
 		private String spuCodes;
 		private String spuVary;
 

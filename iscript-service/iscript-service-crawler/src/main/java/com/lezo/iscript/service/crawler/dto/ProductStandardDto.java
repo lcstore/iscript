@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class ProductStandardDto {
 	private Long id;
+	private Long wareCode;
 	private Long similarCode;
 	private Integer siteId;
 	private Integer shopId;

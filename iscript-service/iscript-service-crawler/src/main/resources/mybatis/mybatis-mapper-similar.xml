@@ -4,30 +4,34 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.SimilarDao">
 	<resultMap type="SimilarDto" id="RM_SimilarDto">
-		<result column="ID" property="id" />
-		<result column="SIMILAR_CODE" property="similarCode" />
-		<result column="SITE_ID" property="siteId" />
-		<result column="SHOP_ID" property="shopId" />
-		<result column="PRODUCT_CODE" property="productCode" />
-		<result column="PRODUCT_NAME" property="productName" />
-		<result column="PRODUCT_URL" property="productUrl" />
-		<result column="PRODUCT_PRICE" property="productPrice" />
-		<result column="BAR_CODE" property="barCode" />
-		<result column="IMG_URL" property="imgUrl" />
-		<result column="TOKEN_BRAND" property="tokenBrand" />
-		<result column="TOKEN_GATEGORY" property="tokenGategory" />
-		<result column="TOKEN_VARY" property="tokenVary" />
-		<result column="DECIDER_KVS" property="deciderKvs" />
-		<result column="ARBITER_ID" property="arbiterId" />
-		<result column="SIMILAR_SCORE" property="similarScore" />
-		<result column="CAPTION" property="caption" />
-		<result column="CONFIRM_MODEL" property="confirmModel" />
-		<result column="IS_STANDARD" property="isStandard" />
-		<result column="CREATE_TIME" property="createTime" />
-		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="ID" property="id"/>
+		<result column="WARE_TYPE" property="wareType"/>
+		<result column="WARE_CODE" property="wareCode"/>
+		<result column="SIMILAR_CODE" property="similarCode"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="SHOP_ID" property="shopId"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="PRODUCT_PRICE" property="productPrice"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="IMG_URL" property="imgUrl"/>
+		<result column="TOKEN_BRAND" property="tokenBrand"/>
+		<result column="TOKEN_GATEGORY" property="tokenGategory"/>
+		<result column="TOKEN_VARY" property="tokenVary"/>
+		<result column="DECIDER_KVS" property="deciderKvs"/>
+		<result column="ARBITER_ID" property="arbiterId"/>
+		<result column="SIMILAR_SCORE" property="similarScore"/>
+		<result column="CAPTION" property="caption"/>
+		<result column="CONFIRM_MODEL" property="confirmModel"/>
+		<result column="IS_STANDARD" property="isStandard"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
 	<sql id="SimilarDto-coloumn-list">
-		SIMILAR_CODE
+		WARE_TYPE
+		,WARE_CODE
+		,SIMILAR_CODE
 		,SITE_ID
 		,SHOP_ID
 		,PRODUCT_CODE
@@ -55,12 +59,14 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.createTime},#{item.updateTime})
+			(#{item.wareType},#{item.wareCode},#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="SimilarDto">
 		UPDATE T_SIMILAR SET
-		SIMILAR_CODE=#{similarCode}
+		WARE_TYPE=#{wareType}
+		,WARE_CODE=#{wareCode}
+		,SIMILAR_CODE=#{similarCode}
 		,SITE_ID=#{siteId}
 		,SHOP_ID=#{shopId}
 		,PRODUCT_CODE=#{productCode}
@@ -78,6 +84,7 @@
 		,CAPTION=#{caption}
 		,CONFIRM_MODEL=#{confirmModel}
 		,IS_STANDARD=#{isStandard}
+		,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 	<select id="getSimilarDtoByProductCodes" parameterType="map" resultMap="RM_SimilarDto">

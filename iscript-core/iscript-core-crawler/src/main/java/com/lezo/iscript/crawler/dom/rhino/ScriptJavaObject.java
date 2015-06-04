@@ -62,7 +62,9 @@ public class ScriptJavaObject extends NativeJavaObject {
 				isDone = true;
 			}
 		}
-		if (!isDone && prototype != null) {
+		if (!isDone && start == this) {
+			super.put(name, start, value);
+		} else if (!isDone && prototype != null) {
 			prototype.put(name, start, value);
 		}
 	}
