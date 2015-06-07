@@ -27,6 +27,7 @@ import com.lezo.iscript.service.crawler.utils.ShopCacher;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.MethodUtils;
 import com.lezo.iscript.utils.ObjectUtils;
+import com.lezo.iscript.utils.PriceUtils;
 import com.lezo.iscript.yeam.resultmgr.ConfigClassUtils;
 import com.lezo.iscript.yeam.resultmgr.writer.BufferWriterManager;
 
@@ -112,9 +113,18 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		int len = dataArray.length();
 		List<Object> dataList = new ArrayList<Object>(len);
 		// BufferedWriter bw = FileBuffer.getInstance().getBufferedWriter();
+		String[] keyArr = new String[] { "productPrice", "marketPrice" };
 		for (int i = 0; i < len; i++) {
 			Object destObject = ObjectUtils.newObject(dtoClass);
 			JSONObject rObject = dataArray.getJSONObject(i);
+			for (String keyName : keyArr) {
+				Object srcObject = JSONUtils.get(rObject, keyName);
+				if (srcObject != null && srcObject instanceof Number && !(srcObject instanceof Long)) {
+					rObject.remove(keyName);
+					Float originPrice = Float.valueOf(srcObject.toString());
+					JSONUtils.put(rObject, keyName, PriceUtils.toCentPrice(originPrice));
+				}
+			}
 			ObjectUtils.copyObject(rObject, destObject);
 			try {
 				addProperties(destObject, rObject, argsObject);

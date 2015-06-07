@@ -50,6 +50,7 @@ import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
 import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
+import com.lezo.iscript.yeam.config.ConfigJdList;
 import com.lezo.iscript.yeam.config.ConfigJdProduct;
 import com.lezo.iscript.yeam.config.ConfigJdPromotList;
 import com.lezo.iscript.yeam.config.ConfigProxyChecker;
@@ -94,7 +95,8 @@ public class ConfigParserTest {
 		parser = new ConfigProxySeedHandler();
 		parser = new ConfigTmallBrandShop();
 		// parser = new ConfigGoogleChecker();
-		 parser = new ConfigJdProduct();
+		parser = new ConfigJdProduct();
+//		parser = new ConfigJdList();
 		String url = null;
 		// url = "http://item.jd.com/1061139232.html";// barCode
 		// url = "http://item.jd.com/104616.html";// sell out
@@ -115,6 +117,9 @@ public class ConfigParserTest {
 		url = "http://www.yhd.com/";
 		url = "http://www.youdaili.net/Daili/Socks/3166.html";
 		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
+		url = "http://list.jd.com/list.html?cat=9987,653,655";
+		url = "http://list.jd.com/list.html?cat=9987%2C653%2C655&page=4&JL=6_0_0";
+		url = "http://item.jd.com/919669.html";
 		url = "http://item.jd.com/1514796.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
@@ -130,8 +135,8 @@ public class ConfigParserTest {
 		task.put("proxyHost", "122.225.106.35");
 		task.put("proxyPort", 80);
 		task.put("proxyType", 1);
-//		task.put("proxyHost", "183.207.224.51");
-//		task.put("proxyPort", 80);
+		// task.put("proxyHost", "183.207.224.51");
+		// task.put("proxyPort", 80);
 		// task.put("proxyPort", 3128);
 		// task.put("proxyPort", 3189);
 		// socket

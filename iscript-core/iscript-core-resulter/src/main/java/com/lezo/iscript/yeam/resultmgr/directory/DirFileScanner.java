@@ -62,8 +62,8 @@ public class DirFileScanner implements Runnable {
 			throw new IllegalArgumentException("can not get ClientRest:" + dirBean.getBucket() + "."
 					+ dirBean.getDomain());
 		}
-		File destFile = new File("logs", dirStream.hashCode() + ".txt");
-		BufferedWriter bw = new BufferedWriter(new FileWriter(destFile, true));
+//		File destFile = new File("logs", dirStream.hashCode() + ".txt");
+//		BufferedWriter bw = new BufferedWriter(new FileWriter(destFile, true));
 		DataRestable rester = clientRest.getRester();
 		int limit = 100;
 		int count = 0;
@@ -86,8 +86,8 @@ public class DirFileScanner implements Runnable {
 				paramMap.put(limitKey, fromCount + "-" + (fromCount + limit));
 			}
 
-			bw.append(limitKey + ":" + paramMap.get(limitKey));
-			bw.append("\n");
+//			bw.append(limitKey + ":" + paramMap.get(limitKey));
+//			bw.append("\n");
 			RestList restList = rester.listFiles(dirBean.toDirPath(), paramMap);
 			long costMills = System.currentTimeMillis() - startMills;
 			List<RestFile> acceptList = null;
@@ -96,10 +96,10 @@ public class DirFileScanner implements Runnable {
 				acceptList = getAccepts(restList.getDataList());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
-					for (RestFile file : acceptList) {
-						bw.append(file.getPath());
-						bw.append("\n");
-					}
+//					for (RestFile file : acceptList) {
+//						bw.append(file.getPath());
+//						bw.append("\n");
+//					}
 					createDataFileConsumer(acceptList);
 					dirStream.setCount(dirStream.getCount() + acceptList.size());
 					logger.info("directoryKey:" + dirBean.toDirKey() + ",stamp:" + dirStream.getToStamp()
@@ -125,10 +125,10 @@ public class DirFileScanner implements Runnable {
 			} else {
 				paramMap.put("marker", restList.getMarker());
 			}
-			bw.flush();
+//			bw.flush();
 			TimeUnit.SECONDS.sleep(1);
 		}
-		IOUtils.closeQuietly(bw);
+//		IOUtils.closeQuietly(bw);
 		logger.info("directoryKey:" + dirBean.toDirKey() + ", fromStamp:" + dirStream.getFromStamp() + ",toStamp:"
 				+ dirStream.getToStamp() + ",totalCount:" + dirStream.getCount() + ",newCount:" + count);
 	}

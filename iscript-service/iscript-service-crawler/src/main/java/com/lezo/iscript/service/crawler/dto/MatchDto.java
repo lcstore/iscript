@@ -2,6 +2,8 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
+import com.lezo.iscript.utils.PriceUtils;
+
 import lombok.Data;
 
 @Data

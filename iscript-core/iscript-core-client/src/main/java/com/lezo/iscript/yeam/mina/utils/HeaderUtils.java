@@ -21,7 +21,29 @@ public class HeaderUtils {
 	public static final String MAC_ADDR = MacAddress.getMacAddress();
 	public static String CLIENT_NAME;
 	private static JSONObject headObject = new JSONObject();
-	static {
+
+	public static JSONObject getHeader() {
+		if (CLIENT_NAME == null) {
+			synchronized (HeaderUtils.class) {
+				if (CLIENT_NAME == null) {
+					createClientName();
+				}
+			}
+		}
+		JSONUtils.put(headObject, "cstamp", ConfigParserBuffer.getInstance().getStamp());
+		ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
+		JSONUtils.put(headObject, "tactive", caller.getActiveCount());
+		JSONUtils.put(headObject, "tmax", caller.getLargestPoolSize());
+		JSONUtils.put(headObject, "tsize", caller.getQueue().size());
+
+		// ProxyBuffer proxyBuffer = ProxyBuffer.getInstance();
+		// JSONUtils.put(headObject, "proxyactive",
+		// proxyBuffer.getProxys().size());
+		// JSONUtils.put(headObject, "proxyerrors", proxyBuffer.getErrors());
+		return headObject;
+	}
+
+	private static void createClientName() {
 		String userName = PropertiesUtils.getProperty("client_name");
 		userName = StringUtils.isBlank(userName) ? System.getenv("client_name") : userName;
 		userName = StringUtils.isBlank(userName) ? System.getProperty("user.name", "unknown") : userName;
@@ -38,19 +60,5 @@ public class HeaderUtils {
 		CLIENT_NAME = userName;
 		JSONUtils.put(headObject, "name", CLIENT_NAME);
 		logger.info("this client name=" + CLIENT_NAME);
-	}
-
-	public static JSONObject getHeader() {
-		JSONUtils.put(headObject, "cstamp", ConfigParserBuffer.getInstance().getStamp());
-		ThreadPoolExecutor caller = TasksCaller.getInstance().getCaller();
-		JSONUtils.put(headObject, "tactive", caller.getActiveCount());
-		JSONUtils.put(headObject, "tmax", caller.getLargestPoolSize());
-		JSONUtils.put(headObject, "tsize", caller.getQueue().size());
-
-		// ProxyBuffer proxyBuffer = ProxyBuffer.getInstance();
-		// JSONUtils.put(headObject, "proxyactive",
-		// proxyBuffer.getProxys().size());
-		// JSONUtils.put(headObject, "proxyerrors", proxyBuffer.getErrors());
-		return headObject;
 	}
 }

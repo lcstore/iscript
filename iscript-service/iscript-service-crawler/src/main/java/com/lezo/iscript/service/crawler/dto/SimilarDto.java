@@ -2,6 +2,8 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
+import com.lezo.iscript.utils.PriceUtils;
+
 import lombok.Data;
 
 @Data
@@ -29,4 +31,12 @@ public class SimilarDto {
 	private Integer isStandard;
 	private Date createTime;
 	private Date updateTime;
+
+	public void setProductPrice(Float price) {
+		this.productPrice = PriceUtils.toCentPrice(price);
+	}
+
+	public void setProductPrice(Long centPrice) {
+		this.productPrice = centPrice;
+	}
 }

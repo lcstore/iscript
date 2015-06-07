@@ -1,44 +1,17 @@
 package com.lezo.iscript.resulter.token;
 
 import java.util.List;
+import java.util.Map;
 
+import lombok.Data;
+
+@Data
 public class CharPart {
 	private List<CharPart> childList;
 	private ClustTokenizer tokenizer;
+	private Map<String, String> extendMap;
 	private String token;
 	private int fromIndex;
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	public int getFromIndex() {
-		return fromIndex;
-	}
-
-	public void setFromIndex(int fromIndex) {
-		this.fromIndex = fromIndex;
-	}
-
-	public ClustTokenizer getTokenizer() {
-		return tokenizer;
-	}
-
-	public void setTokenizer(ClustTokenizer tokenizer) {
-		this.tokenizer = tokenizer;
-	}
-
-	public List<CharPart> getChildList() {
-		return childList;
-	}
-
-	public void setChildList(List<CharPart> childList) {
-		this.childList = childList;
-	}
 
 	@Override
 	public String toString() {

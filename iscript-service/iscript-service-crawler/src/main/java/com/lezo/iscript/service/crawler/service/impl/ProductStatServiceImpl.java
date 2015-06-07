@@ -156,10 +156,10 @@ public class ProductStatServiceImpl implements ProductStatService {
 			return;
 		}
 		if (oldDto.getMinPrice() == null) {
-			oldDto.setMinPrice(oldDto.getProductPrice());
+			oldDto.setMinPrice(newDto.getProductPrice());
 		}
 		if (oldDto.getMaxPrice() == null) {
-			oldDto.setMaxPrice(oldDto.getProductPrice());
+			oldDto.setMaxPrice(newDto.getProductPrice());
 		}
 		if (newDto.getProductPrice() < oldDto.getMinPrice()) {
 			newDto.setMinPrice(newDto.getProductPrice());

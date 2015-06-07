@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.lezo.iscript.common.ObjectWriter;
+import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
 import com.lezo.iscript.service.crawler.service.ProductStatService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;

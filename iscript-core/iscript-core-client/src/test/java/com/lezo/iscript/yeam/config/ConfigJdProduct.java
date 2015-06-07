@@ -170,22 +170,25 @@ public class ConfigJdProduct implements ConfigParser {
 					tBean.setProductName(name);
 					tBean.setProductUrl(url);
 
-					JSONArray oColorSizeArray = JSONUtils.get(oProduct, "colorSize");
-					StringBuilder sb = new StringBuilder();
-					for (int i = 0; i < oColorSizeArray.length(); i++) {
-						JSONObject oColor = oColorSizeArray.getJSONObject(i);
-						String curSkuid = JSONUtils.getString(oColor, "SkuId");
-						if (skuid.equals(curSkuid)) {
-							oColor.remove("SkuId");
-							tBean.setSpuVary(oColor.toString());
-						} else {
-							if (sb.length() > 0) {
-								sb.append(",");
+					Object srcObject = JSONUtils.get(oProduct, "colorSize");
+					if (srcObject instanceof JSONArray) {
+						JSONArray oColorSizeArray = (JSONArray) srcObject;
+						StringBuilder sb = new StringBuilder();
+						for (int i = 0; i < oColorSizeArray.length(); i++) {
+							JSONObject oColor = oColorSizeArray.getJSONObject(i);
+							String curSkuid = JSONUtils.getString(oColor, "SkuId");
+							if (skuid.equals(curSkuid)) {
+								oColor.remove("SkuId");
+								tBean.setSpuVary(oColor.toString());
+							} else {
+								if (sb.length() > 0) {
+									sb.append(",");
+								}
+								sb.append(curSkuid);
 							}
-							sb.append(curSkuid);
 						}
+						tBean.setSpuCodes(sb.toString());
 					}
-					tBean.setSpuCodes(sb.toString());
 					addPrice(tBean, dom, window);
 					addAttributes(tBean, dom);
 					addComment(tBean, dom, window);
@@ -434,14 +437,14 @@ public class ConfigJdProduct implements ConfigParser {
 	interface ScopeCallBack {
 		void doCallBack(Scriptable scope, Object targetObject);
 	}
-	
+
 	private class ProductBean {
 		// productStat
 		private String productCode;
 		private String productName;
 		private String productUrl;
-		private Float productPrice;
-		private Float marketPrice;
+		private Long productPrice;
+		private Long marketPrice;
 		private Integer soldNum;
 		private Integer commentNum;
 		private Integer stockNum;
@@ -491,20 +494,22 @@ public class ConfigJdProduct implements ConfigParser {
 			this.productUrl = productUrl;
 		}
 
-		public Float getProductPrice() {
+		public Long getProductPrice() {
 			return productPrice;
 		}
 
 		public void setProductPrice(Float productPrice) {
-			this.productPrice = productPrice;
+			Long destValue = productPrice == null ? null : (long) (100 * productPrice);
+			this.productPrice = destValue;
 		}
 
-		public Float getMarketPrice() {
+		public Long getMarketPrice() {
 			return marketPrice;
 		}
 
 		public void setMarketPrice(Float marketPrice) {
-			this.marketPrice = marketPrice;
+			Long destValue = marketPrice == null ? null : (long) (100 * marketPrice);
+			this.marketPrice = destValue;
 		}
 
 		public Integer getSoldNum() {

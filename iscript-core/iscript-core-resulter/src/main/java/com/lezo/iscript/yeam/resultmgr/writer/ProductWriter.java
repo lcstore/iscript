@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.lezo.iscript.common.ObjectWriter;
+import com.lezo.iscript.common.UnifyValueUtils;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
@@ -22,6 +23,7 @@ public class ProductWriter implements ObjectWriter<ProductDto> {
 		if (CollectionUtils.isEmpty(dataList)) {
 			return;
 		}
+		UnifyValueUtils.unifyQuietly(dataList);
 		synchronized (this) {
 			productService.batchSaveProductDtos(dataList);
 		}
