@@ -34,7 +34,7 @@
 			(#{item.siteId},#{item.brandCode},#{item.brandName},#{item.brandUrl},#{item.synonymCode},#{item.region},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<insert id="insertBrandDtoAndSetId" parameterType="BrandDto" useGeneratedKeys="true" keyProperty="id">
+	<insert id="insertMarketInfoAndGetId" parameterType="BrandDto" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO T_BRAND(
 		<include refid="BrandDto-coloumn-list" />
 		)
