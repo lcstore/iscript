@@ -2,7 +2,6 @@ package com.lezo.iscript.resulter.cluster;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import lombok.Data;
 

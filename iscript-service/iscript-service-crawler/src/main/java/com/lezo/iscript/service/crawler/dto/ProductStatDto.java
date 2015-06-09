@@ -2,10 +2,9 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-import com.lezo.iscript.common.UnifyValueAnnotation;
-import com.lezo.iscript.utils.PriceUtils;
-
 import lombok.Data;
+
+import com.lezo.iscript.utils.PriceUtils;
 
 @Data
 public class ProductStatDto {

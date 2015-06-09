@@ -2,6 +2,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,6 +83,11 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 	@Override
 	public Set<String> getSynonyms(String brandName) {
 		return BrandInitor.brandSetMap.get(brandName);
+	}
+
+	@Override
+	public Iterator<String> iteratorKeys() {
+		return BrandInitor.brandSetMap.keySet().iterator();
 	}
 
 	@Override
