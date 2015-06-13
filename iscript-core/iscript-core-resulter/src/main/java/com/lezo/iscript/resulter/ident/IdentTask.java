@@ -11,9 +11,10 @@ public class IdentTask implements Callable<IdentTarget> {
 
 	@Override
 	public IdentTarget call() throws Exception {
+		IdentSource param = new IdentSource();
 		IdentTarget target = new IdentTarget();
 		for (Identifier identifier : identifiers) {
-			identifier.identify(target);
+			identifier.identify(param, target);
 		}
 		return target;
 	}

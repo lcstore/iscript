@@ -1,5 +1,5 @@
 package com.lezo.iscript.resulter.ident;
 
 public interface Identifier {
-	void identify(IdentTarget target);
+	void identify(IdentSource source, IdentTarget target);
 }
