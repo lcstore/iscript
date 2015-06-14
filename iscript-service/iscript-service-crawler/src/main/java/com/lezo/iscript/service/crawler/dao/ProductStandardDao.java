@@ -9,8 +9,12 @@ import com.lezo.iscript.service.crawler.dto.ProductStandardDto;
 
 public interface ProductStandardDao extends BaseDao<ProductStandardDto> {
 
-	List<ProductStandardDto> getProductStandardDtoBySimilarCodes(@Param("similarCodeList") List<String> similarCodeList);
+	List<ProductStandardDto> getDtoBySimilarCodes(@Param("similarCodeList") List<String> similarCodeList);
 
-	List<ProductStandardDto> getProductStandardDtoByProductCodes(@Param("siteId") Integer siteId, @Param("codeList") List<String> codeList);
+	List<ProductStandardDto> getDtoByProductCodes(@Param("siteId") Integer siteId,
+			@Param("codeList") List<String> codeList);
+
+	List<ProductStandardDto> geDtoByCategorysAndBrands(@Param("categorys") List<String> categorys,
+			@Param("brands") List<String> brands);
 
 }

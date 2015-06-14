@@ -119,9 +119,9 @@ public class ConfigParserTest {
 		url = "http://list.tmall.com/search_product.htm?brand=31840&sort=s&style=w#J_Filter";
 		url = "http://list.jd.com/list.html?cat=9987,653,655";
 		url = "http://list.jd.com/list.html?cat=9987%2C653%2C655&page=4&JL=6_0_0";
-		url = "http://item.jd.com/919669.html";
-		url = "http://item.jd.com/1514796.html";
-		url = "http://item.jd.com/1181980.html";
+		 url = "http://item.jd.com/919669.html";
+		 url = "http://item.jd.com/1514796.html";
+		 url = "http://item.jd.com/1181980.html";
 		// urlList.add(url);
 		TaskWritable task = new TaskWritable();
 		// task.put("barCode", "6900068005020");
