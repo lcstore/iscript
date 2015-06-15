@@ -1,6 +1,8 @@
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增id',
-  `market_info_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '促销活动ID',
-  `market_template_item_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '模板项ID',
-  `market_item_value` varchar(2048) NOT NULL DEFAULT '' COMMENT '模板项值',
-  `deleted` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否删除：0.否,1.是',
-  `update_time` timestamp
+  `item_name` varchar(64) NOT NULL DEFAULT '' COMMENT '模板项名称',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '模板类型：1.信息属性,2.过滤属性,3.计算属性',
+  `value_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '模板值类型：1.整数类型,2.日期类型,3.字符串类型',
+  `is_collection_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否集合类型：0.否,1.是',
+  `item_class` varchar(128) NOT NULL DEFAULT '' COMMENT '模板项解析器',
+  `add_time` timestamp NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '新增时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

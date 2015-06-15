@@ -2,40 +2,46 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.baidu.mall.market.dao.client.MarketItemMapper">
-	<resultMap type="MarketItemMapper" id="RM_MarketItemMapper">
+<mapper namespace="com.baidu.mall.market.dao.client.MarketTemplateItemMapper">
+	<resultMap type="MarketTemplateItemMapper" id="RM_MarketTemplateItemMapper">
 		<result column="id" property="id"/>
-		<result column="market_info_id" property="marketInfoId"/>
-		<result column="market_template_item_id" property="marketTemplateItemId"/>
-		<result column="market_item_value" property="marketItemValue"/>
-		<result column="deleted" property="deleted"/>
+		<result column="item_name" property="itemName"/>
+		<result column="type" property="type"/>
+		<result column="value_type" property="valueType"/>
+		<result column="is_collection_type" property="isCollectionType"/>
+		<result column="item_class" property="itemClass"/>
+		<result column="add_time" property="addTime"/>
 		<result column="update_time" property="updateTime"/>
 	</resultMap>
-	<sql id="MarketItemMapper-coloumn-list">
+	<sql id="MarketTemplateItemMapper-coloumn-list">
 		id
-		,market_info_id
-		,market_template_item_id
-		,market_item_value
-		,deleted
+		,item_name
+		,type
+		,value_type
+		,is_collection_type
+		,item_class
+		,add_time
 		,update_time
 	</sql>
-	<insert id="batchInsert" parameterType="MarketItemMapper">
-		INSERT INTO market_item(
-		<include refid="MarketItemMapper-coloumn-list" />
+	<insert id="batchInsert" parameterType="MarketTemplateItemMapper">
+		INSERT INTO market_template_item(
+		<include refid="MarketTemplateItemMapper-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.marketInfoId},#{item.marketTemplateItemId},#{item.marketItemValue},#{item.deleted},#{item.updateTime})
+			(#{item.itemName},#{item.type},#{item.valueType},#{item.isCollectionType},#{item.itemClass},#{item.addTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="MarketItemMapper">
-		UPDATE market_item SET
+	<update id="batchUpdate" parameterType="MarketTemplateItemMapper">
+		UPDATE market_template_item SET
 		id=#{id}
-		,market_info_id=#{marketInfoId}
-		,market_template_item_id=#{marketTemplateItemId}
-		,market_item_value=#{marketItemValue}
-		,deleted=#{deleted}
+		,item_name=#{itemName}
+		,type=#{type}
+		,value_type=#{valueType}
+		,is_collection_type=#{isCollectionType}
+		,item_class=#{itemClass}
+		,add_time=#{addTime}
 		,update_time=#{updateTime}
 		WHERE ID=#{id}
 	</update>
