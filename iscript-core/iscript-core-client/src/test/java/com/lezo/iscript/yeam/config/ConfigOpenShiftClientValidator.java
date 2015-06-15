@@ -51,6 +51,8 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
             name2UrlMap.put("openshift.vcloudy", "http://vcloudy-vcloudy.rhcloud.com/");
             name2UrlMap.put("openshift.verifyer", "http://verifyer-verifyer.rhcloud.com/");
             name2UrlMap.put("openshift.lezomao", "http://lezomao-lezomao.rhcloud.com");
+            name2UrlMap.put("openshift.ajanestore", "http://ajanestore-ajanestore.rhcloud.com");
+            name2UrlMap.put("openshift.ajanecloud", "http://ajanecloud-ajanecloud.rhcloud.com");
 
             name2UrlMap.put("heroku.lezostore", "https://pacific-taiga-7679.herokuapp.com/");
             name2UrlMap.put("heroku.lezocloud", "https://pure-cove-1980.herokuapp.com/");

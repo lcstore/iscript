@@ -62,7 +62,7 @@
 		WHERE ID=#{id}
 	</update>
 	
-	<select id="getProductStandardDtoBySimilarCodes" parameterType="map" resultMap="RM_ProductStandardDto">
+	<select id="getDtoBySimilarCodes" parameterType="map" resultMap="RM_ProductStandardDto">
 	   SELECT * FROM T_PRODUCT_STANDARD
 	   <where>
 	      <foreach collection="similarCodeList" item="sCode" open="SIMILAR_CODE IN(" separator="," close=")">
@@ -70,13 +70,28 @@
 	      </foreach>
 	    </where>
 	</select>
-	<select id="getProductStandardDtoByProductCodes" parameterType="map" resultMap="RM_MatchDto">
+	<select id="getDtoByProductCodes" parameterType="map" resultMap="RM_ProductStandardDto">
 	    SELECT * FROM T_PRODUCT_STANDARD
 	    <where>
 	      SITE_ID=#{siteId}
 	      <foreach collection="codeList" item="pCode" open="AND PRODUCT_CODE IN(" separator="," close=")">
 	         #{pCode}
 	      </foreach>
+	    </where>
+	</select>
+	<select id="geDtoByCategorysAndBrands" parameterType="map" resultMap="RM_ProductStandardDto">
+	    SELECT * FROM T_PRODUCT_STANDARD
+	    <where>
+	      <if test="categorys!=null and !categorys.isEmpty()">
+		      <foreach collection="categorys" item="cate" open="AND TOKEN_GATEGORY IN(" separator="," close=")">
+		         #{cate}
+		      </foreach>
+	      </if>
+	      <if test="brands!=null and !brands.isEmpty()">
+		      <foreach collection="brands" item="brand" open="AND TOKEN_BRAND IN(" separator="," close=")">
+		         #{brand}
+		      </foreach>
+	      </if>
 	    </where>
 	</select>
 </mapper>

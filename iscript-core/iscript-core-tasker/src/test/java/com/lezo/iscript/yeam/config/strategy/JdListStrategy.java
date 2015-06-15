@@ -117,6 +117,17 @@ public class JdListStrategy implements ResultStrategy, Closeable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else if (rWritable.getType().endsWith("JdProduct")) {
+			JSONObject gObject = JSONUtils.getJSONObject(rWritable.getResult());
+			JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
+			JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
+			try {
+				argsObject.remove("name@client");
+				argsObject.remove("target");
+				addNexts(rWritable, rsObject, argsObject);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -137,7 +148,7 @@ public class JdListStrategy implements ResultStrategy, Closeable {
 			}
 		}
 		taskPriorityService.batchInsert(dtoList);
-		logger.info("insert task:" + rWritable.getType() + ",count:" + dtoList.size());
+		logger.info("insert nexts task:" + rWritable.getType() + ",count:" + dtoList.size());
 	}
 
 	private void addOthers(ResultWritable rWritable, JSONObject rsObject, JSONObject argsObject) throws JSONException {

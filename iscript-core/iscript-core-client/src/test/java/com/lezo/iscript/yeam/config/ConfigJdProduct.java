@@ -1,7 +1,6 @@
 package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
-import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +32,7 @@ import org.mozilla.javascript.ScriptableObject;
 import com.lezo.iscript.crawler.dom.ScriptDocument;
 import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
 import com.lezo.iscript.crawler.dom.browser.ScriptWindow;
+import com.lezo.iscript.proxy.ProxyClientUtils;
 import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
@@ -48,20 +48,6 @@ public class ConfigJdProduct implements ConfigParser {
 	public static final Integer SITE_ID = 1001;
 	private static int[] stockArr = { 0, -1, 1 };
 	private static Pattern oBarCodeReg = Pattern.compile("条形码[\\s]*([0-9]{13,})");
-	private static Map<String, String> hostIpMap = new HashMap<String, String>();
-
-	private HttpGet createHttpGetWithIp(String url) throws Exception {
-		URI oUri = new URI(url);
-		String host = oUri.getHost();
-		String oldUrl = oUri.toString();
-		String ip = hostIpMap.get(host);
-		if (ip != null) {
-			url = oldUrl.replace(host, ip);
-		}
-		HttpGet get = new HttpGet(url);
-		get.addHeader("Host", oUri.getHost());
-		return get;
-	}
 
 	@Override
 	public String getName() {
@@ -120,6 +106,21 @@ public class ConfigJdProduct implements ConfigParser {
 			String dataString = writer.toString();
 
 			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+			ProductBean tBean = (ProductBean) dataBean.getDataList().get(0);
+			if (StringUtils.isNotBlank(tBean.getSpuCodes())) {
+				String[] codeArrays = tBean.getSpuCodes().split(",");
+				for (String code : codeArrays) {
+					String sUrl = "http://item.jd.com/" + code + ".html";
+					dataBean.getNextList().add(sUrl);
+				}
+			}
+			dataBean.setDataList(null);
+			dataBean.setTargetList(null);
+			mapper = new ObjectMapper();
+			writer = new StringWriter();
+			mapper.writeValue(writer, dataBean);
+			dataString = writer.toString();
+			JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
 		}
 		return returnObject.toString();
 	}
@@ -133,7 +134,7 @@ public class ConfigJdProduct implements ConfigParser {
 	 */
 	private DataBean getDataObject(TaskWritable task) throws Exception {
 		String url = task.get("url").toString();
-		HttpGet get = createHttpGetWithIp(url);
+		HttpGet get = ProxyClientUtils.createHttpGet(url, task);
 		String html = HttpClientUtils.getContent(client, get);
 		Document dom = null;
 		try {
@@ -189,9 +190,9 @@ public class ConfigJdProduct implements ConfigParser {
 						}
 						tBean.setSpuCodes(sb.toString());
 					}
-					addPrice(tBean, dom, window);
+					addPrice(tBean, dom, window, task);
 					addAttributes(tBean, dom);
-					addComment(tBean, dom, window);
+					addComment(tBean, dom, window, task);
 					addBarCode(tBean, dom, task);
 					addStock(tBean, dom, task, window);
 					addShopInfo(tBean, dom, task, window);
@@ -237,7 +238,7 @@ public class ConfigJdProduct implements ConfigParser {
 		// http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=1015367811
 		String sUrl = String.format("http://st.3.cn/gvi.html?callback=setPopInfo&type=popdeliver&skuid=%s",
 				tBean.getProductCode());
-		HttpGet get = createHttpGetWithIp(sUrl);
+		HttpGet get = ProxyClientUtils.createHttpGet(sUrl, task);
 		String html = HttpClientUtils.getContent(client, get);
 		String source = "function setPopInfo(data){return data;}; ";
 		html = html.replace("setPopInfo", "var oData=setPopInfo");
@@ -303,12 +304,12 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 	}
 
-	private void addComment(ProductBean tBean, Document dom, ScriptWindow window) throws Exception {
+	private void addComment(ProductBean tBean, Document dom, ScriptWindow window, TaskWritable task) throws Exception {
 		// http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=1095329&callback=getCommentCount
 		String mUrl = String
 				.format("http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=%s&callback=getCommentCount",
 						tBean.getProductCode());
-		HttpGet get = createHttpGetWithIp(mUrl);
+		HttpGet get = ProxyClientUtils.createHttpGet(mUrl, task);
 		get.addHeader("Referer", dom.baseUri());
 		String html = HttpClientUtils.getContent(client, get);
 		System.err.println("cmm:" + html);
@@ -391,7 +392,7 @@ public class ConfigJdProduct implements ConfigParser {
 		dom = null;
 	}
 
-	private void addPrice(ProductBean tBean, Document dom, ScriptWindow window) throws Exception {
+	private void addPrice(ProductBean tBean, Document dom, ScriptWindow window, TaskWritable task) throws Exception {
 		// http://p.3.cn/prices/get?skuid=J_1095329&type=1&area=1_72_2799&callback=cnp
 		// http://p.3.cn/prices/mgets?type=1&skuIds=J_1095329&callback=jsonp1413082152934&_=1413082153605
 		if (StringUtils.isEmpty(tBean.getProductCode())) {
@@ -399,7 +400,7 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 		String sUrl = String.format("http://p.3.cn/prices/mgets?type=1&skuIds=J_%s&callback=jsonp%s&_=%s",
 				tBean.getProductCode(), System.currentTimeMillis(), System.currentTimeMillis());
-		HttpGet get = createHttpGetWithIp(sUrl);
+		HttpGet get = ProxyClientUtils.createHttpGet(sUrl, task);
 		String html = HttpClientUtils.getContent(client, get);
 		html = html.replaceAll("jsonp[0-9]+", "var oData =callback");
 		html = "function callback(dataArray){return dataArray[0];};" + html;
@@ -424,12 +425,12 @@ public class ConfigJdProduct implements ConfigParser {
 		}
 
 		public String get(String url) throws Exception {
-			HttpGet get = createHttpGetWithIp(url);
+			HttpGet get = new HttpGet(url);
 			return HttpClientUtils.getContent(client, get);
 		}
 
 		public String get(String url, Object args) throws Exception {
-			HttpGet get = createHttpGetWithIp(url);
+			HttpGet get = new HttpGet(url);
 			return HttpClientUtils.getContent(client, get);
 		}
 	}
