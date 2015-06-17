@@ -2,10 +2,8 @@ package com.lezo.iscript.yeam.config;
 
 import java.io.StringWriter;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -22,485 +20,523 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJSON;
+import org.mozilla.javascript.ScriptableObject;
 
+import com.lezo.iscript.crawler.dom.ScriptDocument;
+import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
+import com.lezo.iscript.crawler.dom.browser.ScriptWindow;
+import com.lezo.iscript.rest.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.rest.http.HttpClientManager;
-import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigYhdProduct implements ConfigParser {
-	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	private static Map<String, String> hostIpMap = new HashMap<String, String>();
-	private static final String EMTPY_RESULT = new JSONObject().toString();
+    private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
+    private static Map<String, String> hostIpMap = new HashMap<String, String>();
+    private static final Integer SITE_ID = 1002;
 
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
 
-	@Override
-	public String doParse(TaskWritable task) throws Exception {
-		addCookie();
-		DataBean dataBean = getDataObject(task);
-		return convert2TaskCallBack(dataBean, task);
-	}
+    @Override
+    public String doParse(TaskWritable task) throws Exception {
+        addCookie();
+        DataBean dataBean = getDataObject(task);
+        return convert2TaskCallBack(dataBean, task);
+    }
 
-	private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
-		dataBean.getTargetList().add("ProductDto");
-		dataBean.getTargetList().add("ProductStatDto");
+    private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+        dataBean.getTargetList().add("ProductDto");
+        dataBean.getTargetList().add("ProductStatDto");
 
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter();
-		mapper.writeValue(writer, dataBean);
-		String dataString = writer.toString();
+        ObjectMapper mapper = new ObjectMapper();
+        StringWriter writer = new StringWriter();
+        mapper.writeValue(writer, dataBean);
+        String dataString = writer.toString();
 
-		JSONObject returnObject = new JSONObject();
-		JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
-		JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
-		return returnObject.toString();
-	}
+        JSONObject returnObject = new JSONObject();
+        JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+        JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+        return returnObject.toString();
+    }
 
-	private DataBean getDataObject(TaskWritable task) throws Exception {
-		String url = (String) task.get("url");
-		String refer = url;
-		int index = url.indexOf("?");
-		url = index > 0 ? url.substring(0, index) : url;
-		HttpGet get = createHttpGetWithIp(url);
-		get.addHeader("Refer", refer);
-		String html = HttpClientUtils.getContent(client, get, "UTF-8");
-		Document dom = Jsoup.parse(html, url);
-		Elements oHomeAs = dom.select("div.layout_wrap.crumbbox div.crumb");
-		DataBean dataBean = new DataBean();
-		ProductBean productBean = new ProductBean();
-		dataBean.getDataList().add(productBean);
-		String barCode = (String) task.get("barCode");
-		if (BarCodeUtils.isBarCode(barCode)) {
-			productBean.setBarCode(barCode);
-		}
-		productBean.setProductUrl(url);
-		Elements oElements = dom.select("div.main_info_con div[class^=pd] h2,#productMainName");
-		if (!oElements.isEmpty()) {
-			productBean.setProductName(oElements.first().text());
-		}
-		oElements = dom.select("#productMercantId[value]");
-		if (!oElements.isEmpty()) {
-			productBean.setProductCode(oElements.first().attr("value").trim());
-		}
-		if (oHomeAs.isEmpty()) {
-			if (StringUtils.isEmpty(productBean.getProductCode())) {
-				Pattern oReg = Pattern.compile("item/([0-9]{5,})");
-				Matcher matcher = oReg.matcher(url);
-				if (matcher.find()) {
-					productBean.setProductCode(matcher.group(1));
-				}
-			}
-			productBean.setStockNum(-1);
-			return dataBean;
-		}
-		String detailUrl = String.format("http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s", productBean.getProductCode(), System.currentTimeMillis());
-		HttpGet dGet = createHttpGetWithIp(detailUrl);
-		dGet.addHeader("Refer", url);
-		html = HttpClientUtils.getContent(client, dGet, "UTF-8");
-		int fromIndex = html.indexOf("(");
-		int toIndex = html.indexOf(")");
-		fromIndex = fromIndex < 0 ? 0 : fromIndex;
-		toIndex = toIndex < 0 ? 0 : html.length();
-		html = html.substring(fromIndex + 1, toIndex);
-		JSONObject dObject = new JSONObject(html);
-		productBean.setProductPrice(JSONUtils.getFloat(dObject, "currentPrice"));
-		productBean.setMarketPrice(JSONUtils.getFloat(dObject, "marketPrice"));
-		productBean.setStockNum(JSONUtils.getInteger(dObject, "currentStockNum"));
-		oElements = dom.select("#companyName[value]");
-		if (!oElements.isEmpty()) {
-			productBean.setShopName(oElements.first().attr("value"));
-		}
-		oElements = dom.select("#mod_salesvolume p strong");
-		if (!oElements.isEmpty()) {
-			Integer soldNum = JSONUtils.get(dObject, "soldNum");
-			try {
-				soldNum = Integer.valueOf(oElements.first().ownText().trim());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			productBean.setSoldNum(soldNum);
-		} else {
-			oElements = dom.select("#mod_salesvolume[saleNumber]");
-			if (!oElements.isEmpty()) {
-				productBean.setSoldNum(Integer.valueOf(oElements.first().attr("saleNumber")));
-			}
-		}
-		oElements = dom.select("div.crumb a[href^=http://www.yhd.com/ctg/],div.crumb a[href^=http://list.yhd.com/]");
-		if (!oElements.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			for (Element oEle : oElements) {
-				if (sb.length() < 1) {
-					sb.append(oEle.ownText());
-				} else {
-					sb.append(";");
-					sb.append(oEle.ownText());
-				}
-			}
-			String sCat = sb.toString();
-			productBean.setCategoryNav(sCat);
-		}
-		oElements = dom.select("#prodDetailCotentDiv.desitem dl.des_info dd[title]");
-		if (!oElements.isEmpty()) {
-			JSONArray descArray = new JSONArray();
-			for (Element oEle : oElements) {
-				descArray.put(oEle.attr("title"));
-			}
-			JSONObject attrObject = new JSONObject();
-			JSONUtils.put(attrObject, "desc", descArray);
-			productBean.setProductAttr(attrObject.toString());
-		}
-		oElements = dom.select("#merchantId[value]");
-		if (!oElements.isEmpty()) {
-			String merchantId = oElements.first().attr("value");
-			String shopUrl = "1".equals(merchantId) ? "http://www.yhd.com/" : String.format("http://shop.yhd.com/m-%s.html", merchantId);
-			productBean.setShopUrl(shopUrl);
-			productBean.setShopCode(merchantId);
-		}
-		oElements = dom.select("#brandName[value]");
-		if (!oElements.isEmpty()) {
-			productBean.setProductBrand(oElements.first().attr("value"));
-		} else {
-			oElements = dom.select("#brand_relevance");
-			if (!oElements.isEmpty()) {
-				productBean.setProductBrand(oElements.first().ownText());
-			}
-		}
-		oElements = dom.select("#J_tabSlider ul.imgtab_con li a img[id][src]");
-		if (!oElements.isEmpty()) {
-			String imgUrl = oElements.first().attr("src");
-			imgUrl = imgUrl.replace("_60x60.jpg", "_200x200.jpg");
-			productBean.setImgUrl(imgUrl);
-		}
-		// String mUrl =
-		// String.format("http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
-		// productBean.getProductCode());
-		Integer siteType = 2;
-		if ("1".equals(productBean.getShopCode())) {
-			siteType = 1;
-		}
-		Elements pidAs = dom.select("#productId[value]");
-		String productId = pidAs.first().attr("value");
-		String mUrl = String
-				.format("http://e.yhd.com/front-pe/productExperience/proExperienceAction!ajaxView_pe.do?product.id=%s&merchantId=%s&pagenationVO.currentPage=1&pagenationVO.rownumperpage=5&currSiteId=1&f=1&currSiteType=%s&callback=flightHtmlHandler",
-						productId, productBean.getShopCode(), siteType);
-		HttpGet mGet = createHttpGetWithIp(mUrl);
-		dGet.addHeader("Refer", url);
-		html = HttpClientUtils.getContent(client, mGet, "UTF-8");
-		try {
-			fromIndex = html.indexOf("(");
-			toIndex = html.indexOf(")");
-			fromIndex = fromIndex < 0 ? 0 : fromIndex;
-			toIndex = toIndex < 0 ? 0 : html.length();
-			html = html.substring(fromIndex + 1, toIndex);
-			JSONObject mObject = new JSONObject(html);
-			String source = mObject.getString("value");
-			source = source == null ? "" : source;
-			Document cmmDom = Jsoup.parse(source);
-			Elements cmmAs = cmmDom.select("#all-comment_num");
-			if (!cmmAs.isEmpty()) {
-				Pattern oReg = Pattern.compile("[0-9]+");
-				Matcher matcher = oReg.matcher(cmmAs.first().ownText());
-				if (matcher.find()) {
-					productBean.setCommentNum(Integer.valueOf(matcher.group()));
-				}
-				Elements gCmmAs = cmmDom.select("div.comment_type ul li[tag=good-comment] span");
-				if (!gCmmAs.isEmpty()) {
-					matcher = oReg.matcher(gCmmAs.first().ownText());
-					if (matcher.find()) {
-						productBean.setGoodComment(Integer.valueOf(matcher.group()));
-					}
-				}
-				Elements pCmmAs = cmmDom.select("div.comment_type ul li[tag=bad-comment] span");
-				if (!pCmmAs.isEmpty()) {
-					matcher = oReg.matcher(pCmmAs.first().ownText());
-					if (matcher.find()) {
-						productBean.setPoorComment(Integer.valueOf(matcher.group()));
-					}
-				}
-				cmmAs = null;
-				gCmmAs = null;
-				pCmmAs = null;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		pidAs = null;
-		oHomeAs = null;
-		dom = null;
-		return dataBean;
-	}
+    private DataBean getDataObject(TaskWritable task) throws Exception {
+        String url = (String) task.get("url");
+        String refer = url;
+        int index = url.indexOf("?");
+        url = index > 0 ? url.substring(0, index) : url;
+        HttpGet get = createHttpGetWithIp(url);
+        get.addHeader("Refer", refer);
+        String html = HttpClientUtils.getContent(client, get, "UTF-8");
+        Document dom = Jsoup.parse(html, url);
+        DataBean dataBean = new DataBean();
+        ProductBean productBean = new ProductBean();
+        dataBean.getDataList().add(productBean);
+        String barCode = (String) task.get("barCode");
+        if (BarCodeUtils.isBarCode(barCode)) {
+            productBean.setBarCode(barCode);
+        }
+        productBean.setProductUrl(url);
+        Elements oElements = dom.select("div.main_info_con div[class^=pd] h2,#productMainName");
+        if (!oElements.isEmpty()) {
+            productBean.setProductName(oElements.first().text());
+        }
+        oElements = dom.select("#productMercantId[value]");
+        if (!oElements.isEmpty()) {
+            productBean.setProductCode(oElements.first().attr("value").trim());
+        }
 
-	private HttpGet createHttpGetWithIp(String url) throws Exception {
-		URI oUri = new URI(url);
-		String host = oUri.getHost();
-		String oldUrl = oUri.toString();
-		String ip = hostIpMap.get(host);
-		if (ip != null) {
-			url = oldUrl.replace(host, ip);
-		}
-		HttpGet get = new HttpGet(url);
-		get.addHeader("Host", oUri.getHost());
-		return get;
-	}
+        //
+        Elements oHomeAs = dom.select("div.layout_wrap.crumbbox div.crumb,div.mod_detail_crumb div.crumb");
+        if (oHomeAs.isEmpty()) {
+            if (StringUtils.isEmpty(productBean.getProductCode())) {
+                Pattern oReg = Pattern.compile("item/([0-9]{5,})");
+                Matcher matcher = oReg.matcher(url);
+                if (matcher.find()) {
+                    productBean.setProductCode(matcher.group(1));
+                }
+            }
+            productBean.setStockNum(-1);
+            return dataBean;
+        }
+        String detailUrl =
+                String.format("http://gps.yihaodian.com/restful/detail?mcsite=1&provinceId=1&pmId=%s&callback=jsonp%s",
+                        productBean.getProductCode(), System.currentTimeMillis());
+        HttpGet dGet = createHttpGetWithIp(detailUrl);
+        dGet.addHeader("Refer", url);
+        html = HttpClientUtils.getContent(client, dGet, "UTF-8");
+        int fromIndex = html.indexOf("(");
+        int toIndex = html.indexOf(")");
+        fromIndex = fromIndex < 0 ? 0 : fromIndex;
+        toIndex = toIndex < 0 ? 0 : html.length();
+        html = html.substring(fromIndex + 1, toIndex);
+        JSONObject dObject = new JSONObject(html);
+        productBean.setProductPrice(JSONUtils.getFloat(dObject, "currentPrice"));
+        productBean.setMarketPrice(JSONUtils.getFloat(dObject, "marketPrice"));
+        productBean.setStockNum(JSONUtils.getInteger(dObject, "currentStockNum"));
+        oElements = dom.select("#companyName[value]");
+        if (!oElements.isEmpty()) {
+            productBean.setShopName(oElements.first().attr("value"));
+        }
+        oElements = dom.select("#mod_salesvolume p strong");
+        if (!oElements.isEmpty()) {
+            Integer soldNum = JSONUtils.get(dObject, "soldNum");
+            try {
+                soldNum = Integer.valueOf(oElements.first().ownText().trim());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            productBean.setSoldNum(soldNum);
+        } else {
+            oElements = dom.select("#mod_salesvolume[saleNumber]");
+            if (!oElements.isEmpty()) {
+                productBean.setSoldNum(Integer.valueOf(oElements.first().attr("saleNumber")));
+            }
+        }
+        oElements = dom.select("div.crumb a[href^=http://www.yhd.com/ctg/],div.crumb a[href^=http://list.yhd.com/]");
+        if (!oElements.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Element oEle : oElements) {
+                if (sb.length() < 1) {
+                    sb.append(oEle.ownText());
+                } else {
+                    sb.append(";");
+                    sb.append(oEle.ownText());
+                }
+            }
+            String sCat = sb.toString();
+            productBean.setCategoryNav(sCat);
+        }
+        oElements = dom.select("#prodDetailCotentDiv.desitem dl.des_info dd[title]");
+        if (!oElements.isEmpty()) {
+            JSONArray descArray = new JSONArray();
+            for (Element oEle : oElements) {
+                descArray.put(oEle.attr("title"));
+            }
+            JSONObject attrObject = new JSONObject();
+            JSONUtils.put(attrObject, "desc", descArray);
+            productBean.setProductAttr(attrObject.toString());
+        }
+        oElements = dom.select("#merchantId[value]");
+        if (!oElements.isEmpty()) {
+            String merchantId = oElements.first().attr("value");
+            String shopUrl =
+                    "1".equals(merchantId) ? "http://www.yhd.com/" : String.format("http://shop.yhd.com/m-%s.html",
+                            merchantId);
+            productBean.setShopUrl(shopUrl);
+            productBean.setShopCode(merchantId);
+        }
+        oElements = dom.select("#brandName[value]");
+        if (!oElements.isEmpty()) {
+            productBean.setProductBrand(oElements.first().attr("value"));
+        } else {
+            oElements = dom.select("#brand_relevance");
+            if (!oElements.isEmpty()) {
+                productBean.setProductBrand(oElements.first().ownText());
+            }
+        }
+        oElements = dom.select("#J_tabSlider ul.imgtab_con li a img[id][src]");
+        if (!oElements.isEmpty()) {
+            String imgUrl = oElements.first().attr("src");
+            imgUrl = imgUrl.replace("_60x60.jpg", "_200x200.jpg");
+            productBean.setImgUrl(imgUrl);
+        }
+        addSpuData(dom, productBean);
+        // String mUrl =
+        // String.format("http://e.yhd.com/front-pe/queryNumsByPm.do?pmInfoId=%s&callback=detailSkuPeComment.countCallback",
+        // productBean.getProductCode());
+        Integer siteType = 2;
+        if ("1".equals(productBean.getShopCode())) {
+            siteType = 1;
+        }
+        Elements pidAs = dom.select("#productId[value]");
+        String productId = pidAs.first().attr("value");
+        String mUrl =
+                String.format(
+                        "http://e.yhd.com/front-pe/productExperience/proExperienceAction!ajaxView_pe.do?product.id=%s&merchantId=%s&pagenationVO.currentPage=1&pagenationVO.rownumperpage=5&currSiteId=1&f=1&currSiteType=%s&callback=flightHtmlHandler",
+                        productId, productBean.getShopCode(), siteType);
+        HttpGet mGet = createHttpGetWithIp(mUrl);
+        dGet.addHeader("Refer", url);
+        html = HttpClientUtils.getContent(client, mGet, "UTF-8");
+        try {
+            fromIndex = html.indexOf("(");
+            toIndex = html.indexOf(")");
+            fromIndex = fromIndex < 0 ? 0 : fromIndex;
+            toIndex = toIndex < 0 ? 0 : html.length();
+            html = html.substring(fromIndex + 1, toIndex);
+            JSONObject mObject = new JSONObject(html);
+            String source = mObject.getString("value");
+            source = source == null ? "" : source;
+            Document cmmDom = Jsoup.parse(source);
+            Elements cmmAs = cmmDom.select("#all-comment_num");
+            if (!cmmAs.isEmpty()) {
+                Pattern oReg = Pattern.compile("[0-9]+");
+                Matcher matcher = oReg.matcher(cmmAs.first().ownText());
+                if (matcher.find()) {
+                    productBean.setCommentNum(Integer.valueOf(matcher.group()));
+                }
+                Elements gCmmAs = cmmDom.select("div.comment_type ul li[tag=good-comment] span");
+                if (!gCmmAs.isEmpty()) {
+                    matcher = oReg.matcher(gCmmAs.first().ownText());
+                    if (matcher.find()) {
+                        productBean.setGoodComment(Integer.valueOf(matcher.group()));
+                    }
+                }
+                Elements pCmmAs = cmmDom.select("div.comment_type ul li[tag=bad-comment] span");
+                if (!pCmmAs.isEmpty()) {
+                    matcher = oReg.matcher(pCmmAs.first().ownText());
+                    if (matcher.find()) {
+                        productBean.setPoorComment(Integer.valueOf(matcher.group()));
+                    }
+                }
+                cmmAs = null;
+                gCmmAs = null;
+                pCmmAs = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dataBean;
+    }
 
-	private void addCookie() {
-		BasicClientCookie cookie = new BasicClientCookie("__utma", "40580330.1541470702.1396602044.1406527175.1406603327.18");
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("__utmc", "193324902");
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("__utmz", "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("provinceId", "1");
-		client.getCookieStore().addCookie(cookie);
-		String[] uArr = UUID.randomUUID().toString().split("-");
-		cookie = new BasicClientCookie("uname", uArr[0]);
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("i2042", "_");
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("newUserFlag", "1");
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("test_cookie", "1");
-		client.getCookieStore().addCookie(cookie);
-		cookie = new BasicClientCookie("msessionid", "1PJ241E6A15H8896SR8M7ANCZBRWJX14");
-		client.getCookieStore().addCookie(cookie);
-	}
+    private void addSpuData(Document dom, ProductBean productBean) throws Exception {
+        Elements scriptEls = dom.select("input[id][value] ~ script");
+        if (scriptEls.isEmpty()) {
+            return;
+        }
+        ScriptDocument scriptDocument = ScriptHtmlParser.parser(dom);
+        ScriptWindow window = new ScriptWindow();
+        window.setDocument(scriptDocument);
+        String script = scriptEls.first().html();
+        window.eval(script);
+        Object jsObject = ScriptableObject.getProperty(window.getScope(), "subPmIdList");
+        Object subPmIdList = NativeJSON.stringify(Context.getCurrentContext(), window.getScope(), jsObject, null, null);
+        String sPmids = subPmIdList.toString();
+        sPmids = sPmids.length() > 2 ? sPmids.substring(1, sPmids.length() - 1) : "";
+        productBean.setSpuCodes(sPmids);
+        Elements attrEls = dom.select("[id^=attribute]");
+        JSONObject attrObject = new JSONObject();
+        for (Element attrEle : attrEls) {
+            String key = attrEle.select("dt").first().ownText();
+            String value = attrEle.select("li[attrId][attrValueName].selected").first().attr("attrValueName");
+            JSONUtils.put(attrObject, key, value);
+        }
+        productBean.setSpuVary(attrObject.toString());
+    }
 
-	private class ProductBean {
-		// productStat
-		private String productCode;
-		private String productName;
-		private String productUrl;
-		private Float productPrice;
-		private Float marketPrice;
-		private Integer soldNum;
-		private Integer commentNum;
-		private Integer stockNum;
-		private String categoryNav;
-		// product
-		private String productBrand;
-		private String productModel;
-		private String productAttr;
-		private String barCode;
-		private String imgUrl;
-		private Date onsailTime;
+    private HttpGet createHttpGetWithIp(String url) throws Exception {
+        URI oUri = new URI(url);
+        String host = oUri.getHost();
+        String oldUrl = oUri.toString();
+        String ip = hostIpMap.get(host);
+        if (ip != null) {
+            url = oldUrl.replace(host, ip);
+        }
+        HttpGet get = new HttpGet(url);
+        get.addHeader("Host", oUri.getHost());
+        return get;
+    }
 
-		private Integer siteId = 1002;
-		private Integer goodComment;
-		private Integer poorComment;
+    private void addCookie() {
+        BasicClientCookie cookie =
+                new BasicClientCookie("__utma", "40580330.1541470702.1396602044.1406527175.1406603327.18");
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("__utmc", "193324902");
+        client.getCookieStore().addCookie(cookie);
+        cookie =
+                new BasicClientCookie("__utmz",
+                        "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("provinceId", "1");
+        client.getCookieStore().addCookie(cookie);
+        String[] uArr = UUID.randomUUID().toString().split("-");
+        cookie = new BasicClientCookie("uname", uArr[0]);
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("i2042", "_");
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("newUserFlag", "1");
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("test_cookie", "1");
+        client.getCookieStore().addCookie(cookie);
+        cookie = new BasicClientCookie("msessionid", "1PJ241E6A15H8896SR8M7ANCZBRWJX14");
+        client.getCookieStore().addCookie(cookie);
+    }
 
-		// shopDto
-		private Integer shopId;
-		private String shopName;
-		private String shopCode;
-		private String shopUrl;
+    private class ProductBean {
+        // productStat
+        private String productCode;
+        private String productName;
+        private String productUrl;
+        private Long productPrice;
+        private Long marketPrice;
+        private Integer soldNum;
+        private Integer commentNum;
+        private Integer stockNum;
+        private String categoryNav;
+        // product
+        private String productBrand;
+        private String productModel;
+        private String productAttr;
+        private String barCode;
+        private String imgUrl;
+        private Date onsailTime;
 
-		public String getProductCode() {
-			return productCode;
-		}
+        private Integer siteId = SITE_ID;
+        private Integer goodComment;
+        private Integer poorComment;
 
-		public void setProductCode(String productCode) {
-			this.productCode = productCode;
-		}
+        private String spuCodes;
+        private String spuVary;
 
-		public String getProductName() {
-			return productName;
-		}
+        // shopDto
+        private Integer shopId;
+        private String shopName;
+        private String shopCode;
+        private String shopUrl;
 
-		public void setProductName(String productName) {
-			this.productName = productName;
-		}
+        public String getProductCode() {
+            return productCode;
+        }
 
-		public String getProductUrl() {
-			return productUrl;
-		}
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
 
-		public void setProductUrl(String productUrl) {
-			this.productUrl = productUrl;
-		}
+        public String getProductName() {
+            return productName;
+        }
 
-		public Float getProductPrice() {
-			return productPrice;
-		}
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
 
-		public void setProductPrice(Float productPrice) {
-			this.productPrice = productPrice;
-		}
+        public String getProductUrl() {
+            return productUrl;
+        }
 
-		public Float getMarketPrice() {
-			return marketPrice;
-		}
+        public void setProductUrl(String productUrl) {
+            this.productUrl = productUrl;
+        }
 
-		public void setMarketPrice(Float marketPrice) {
-			this.marketPrice = marketPrice;
-		}
+        public Long getProductPrice() {
+            return productPrice;
+        }
 
-		public Integer getSoldNum() {
-			return soldNum;
-		}
+        public void setProductPrice(Float productPrice) {
+            Long destValue = productPrice == null ? null : (long) (100 * productPrice);
+            this.productPrice = destValue;
+        }
 
-		public void setSoldNum(Integer soldNum) {
-			this.soldNum = soldNum;
-		}
+        public Long getMarketPrice() {
+            return marketPrice;
+        }
 
-		public Integer getCommentNum() {
-			return commentNum;
-		}
+        public void setMarketPrice(Float marketPrice) {
+            Long destValue = marketPrice == null ? null : (long) (100 * marketPrice);
+            this.marketPrice = destValue;
+        }
 
-		public void setCommentNum(Integer commentNum) {
-			this.commentNum = commentNum;
-		}
+        public Integer getSoldNum() {
+            return soldNum;
+        }
 
-		public Integer getStockNum() {
-			return stockNum;
-		}
+        public void setSoldNum(Integer soldNum) {
+            this.soldNum = soldNum;
+        }
 
-		public void setStockNum(Integer stockNum) {
-			this.stockNum = stockNum;
-		}
+        public Integer getCommentNum() {
+            return commentNum;
+        }
 
-		public String getCategoryNav() {
-			return categoryNav;
-		}
+        public void setCommentNum(Integer commentNum) {
+            this.commentNum = commentNum;
+        }
 
-		public void setCategoryNav(String categoryNav) {
-			this.categoryNav = categoryNav;
-		}
+        public Integer getStockNum() {
+            return stockNum;
+        }
 
-		public String getProductBrand() {
-			return productBrand;
-		}
+        public void setStockNum(Integer stockNum) {
+            this.stockNum = stockNum;
+        }
 
-		public void setProductBrand(String productBrand) {
-			this.productBrand = productBrand;
-		}
+        public String getCategoryNav() {
+            return categoryNav;
+        }
 
-		public String getProductModel() {
-			return productModel;
-		}
+        public void setCategoryNav(String categoryNav) {
+            this.categoryNav = categoryNav;
+        }
 
-		public void setProductModel(String productModel) {
-			this.productModel = productModel;
-		}
+        public String getProductBrand() {
+            return productBrand;
+        }
 
-		public String getProductAttr() {
-			return productAttr;
-		}
+        public void setProductBrand(String productBrand) {
+            this.productBrand = productBrand;
+        }
 
-		public void setProductAttr(String productAttr) {
-			this.productAttr = productAttr;
-		}
+        public String getProductModel() {
+            return productModel;
+        }
 
-		public String getBarCode() {
-			return barCode;
-		}
+        public void setProductModel(String productModel) {
+            this.productModel = productModel;
+        }
 
-		public void setBarCode(String barCode) {
-			this.barCode = barCode;
-		}
+        public String getProductAttr() {
+            return productAttr;
+        }
 
-		public String getImgUrl() {
-			return imgUrl;
-		}
+        public void setProductAttr(String productAttr) {
+            this.productAttr = productAttr;
+        }
 
-		public void setImgUrl(String imgUrl) {
-			this.imgUrl = imgUrl;
-		}
+        public String getBarCode() {
+            return barCode;
+        }
 
-		public Date getOnsailTime() {
-			return onsailTime;
-		}
+        public void setBarCode(String barCode) {
+            this.barCode = barCode;
+        }
 
-		public void setOnsailTime(Date onsailTime) {
-			this.onsailTime = onsailTime;
-		}
+        public String getImgUrl() {
+            return imgUrl;
+        }
 
-		public Integer getSiteId() {
-			return siteId;
-		}
+        public void setImgUrl(String imgUrl) {
+            this.imgUrl = imgUrl;
+        }
 
-		public void setSiteId(Integer siteId) {
-			this.siteId = siteId;
-		}
+        public Date getOnsailTime() {
+            return onsailTime;
+        }
 
-		public Integer getGoodComment() {
-			return goodComment;
-		}
+        public void setOnsailTime(Date onsailTime) {
+            this.onsailTime = onsailTime;
+        }
 
-		public void setGoodComment(Integer goodComment) {
-			this.goodComment = goodComment;
-		}
+        public Integer getSiteId() {
+            return siteId;
+        }
 
-		public Integer getPoorComment() {
-			return poorComment;
-		}
+        public void setSiteId(Integer siteId) {
+            this.siteId = siteId;
+        }
 
-		public void setPoorComment(Integer poorComment) {
-			this.poorComment = poorComment;
-		}
+        public Integer getGoodComment() {
+            return goodComment;
+        }
 
-		public String getShopName() {
-			return shopName;
-		}
+        public void setGoodComment(Integer goodComment) {
+            this.goodComment = goodComment;
+        }
 
-		public void setShopName(String shopName) {
-			this.shopName = shopName;
-		}
+        public Integer getPoorComment() {
+            return poorComment;
+        }
 
-		public String getShopCode() {
-			return shopCode;
-		}
+        public void setPoorComment(Integer poorComment) {
+            this.poorComment = poorComment;
+        }
 
-		public void setShopCode(String shopCode) {
-			this.shopCode = shopCode;
-		}
+        public String getShopName() {
+            return shopName;
+        }
 
-		public String getShopUrl() {
-			return shopUrl;
-		}
+        public void setShopName(String shopName) {
+            this.shopName = shopName;
+        }
 
-		public void setShopUrl(String shopUrl) {
-			this.shopUrl = shopUrl;
-		}
+        public String getShopCode() {
+            return shopCode;
+        }
 
-		public Integer getShopId() {
-			return shopId;
-		}
+        public void setShopCode(String shopCode) {
+            this.shopCode = shopCode;
+        }
 
-		public void setShopId(Integer shopId) {
-			this.shopId = shopId;
-		}
+        public String getShopUrl() {
+            return shopUrl;
+        }
 
-	}
+        public void setShopUrl(String shopUrl) {
+            this.shopUrl = shopUrl;
+        }
 
-	private final class ResultBean {
-		private List<Object> dataList = new ArrayList<Object>();
-		private List<Object> nextList = new ArrayList<Object>();
+        public Integer getShopId() {
+            return shopId;
+        }
 
-		public List<Object> getDataList() {
-			return dataList;
-		}
+        public void setShopId(Integer shopId) {
+            this.shopId = shopId;
+        }
 
-		public void setDataList(List<Object> dataList) {
-			this.dataList = dataList;
-		}
+        public String getSpuCodes() {
+            return spuCodes;
+        }
 
-		public List<Object> getNextList() {
-			return nextList;
-		}
+        public void setSpuCodes(String spuCodes) {
+            this.spuCodes = spuCodes;
+        }
 
-		public void setNextList(List<Object> nextList) {
-			this.nextList = nextList;
-		}
+        public String getSpuVary() {
+            return spuVary;
+        }
 
-	}
+        public void setSpuVary(String spuVary) {
+            this.spuVary = spuVary;
+        }
+
+    }
 }

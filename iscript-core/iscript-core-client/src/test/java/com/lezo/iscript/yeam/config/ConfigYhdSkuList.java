@@ -1,31 +1,25 @@
 package com.lezo.iscript.yeam.config;
 
-import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.lezo.iscript.proxy.ProxyClientUtils;
+import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.rest.http.HttpClientUtils;
-import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.service.ConfigParser;
-import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ConfigYhdList implements ConfigParser {
+public class ConfigYhdSkuList implements ConfigParser {
     private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
 
     @Override
@@ -35,72 +29,22 @@ public class ConfigYhdList implements ConfigParser {
 
     @Override
     public String doParse(TaskWritable task) throws Exception {
-        DataBean dataBean = getDataObject(task);
-        return convert2TaskCallBack(dataBean, task);
-    }
-
-    private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
-        JSONObject returnObject = new JSONObject();
-        if (dataBean != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            StringWriter writer = new StringWriter();
-            mapper.writeValue(writer, dataBean);
-            String dataString = writer.toString();
-
-            JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
-            JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
-        }
-        return returnObject.toString();
-    }
-
-    /**
-     * {"dataList":[],"nextList":[]}
-     * 
-     * @param task
-     * @return
-     * @throws Exception
-     */
-    private DataBean getDataObject(TaskWritable task) throws Exception {
         String url = task.get("url").toString();
         url = turnUrl(url);
-        HttpGet get = ProxyClientUtils.createHttpGet(url, task);
-        String html = HttpClientUtils.getContent(client, get);
+        System.err.println(url);
+        HttpGet get = new HttpGet(url);
+        String html = HttpClientUtils.getContent(client, get, "UTF-8");
         html = turnHtml(html);
         Document dom = Jsoup.parse(html, url);
-        Elements urlEls = dom.select("#plist a[href~=item.jd.com/[0-9]{5,}.html$]");
-        DataBean dataBean = new DataBean();
-        addListArray(dom, dataBean);
-        addNextUrls(dom, dataBean);
-        List<Object> dataList = dataBean.getDataList();
-        Set<String> hasSet = new HashSet<String>();
-        for (Element urlEle : urlEls) {
-            String sUrl = urlEle.absUrl("href");
-            if (!hasSet.contains(sUrl)) {
-                dataList.add(sUrl);
-                hasSet.add(sUrl);
-            }
-        }
-        return dataBean;
-    }
 
-    // @Override
-    // public String doParse(TaskWritable task) throws Exception {
-    // String url = task.get("url").toString();
-    // url = turnUrl(url);
-    // System.err.println(url);
-    // HttpGet get = new HttpGet(url);
-    // String html = HttpClientUtils.getContent(client, get, "UTF-8");
-    // html = turnHtml(html);
-    // Document dom = Jsoup.parse(html, url);
-    //
-    // JSONObject listObject = new JSONObject();
-    // JSONArray listArray = new JSONArray();
-    // JSONUtils.put(listObject, "list", listArray);
-    //
-    // addListArray(dom, listArray);
-    // addNextUrls(dom, listObject);
-    // return listObject.toString();
-    // }
+        JSONObject listObject = new JSONObject();
+        JSONArray listArray = new JSONArray();
+        JSONUtils.put(listObject, "list", listArray);
+
+        addListArray(dom, listArray);
+        addNextUrls(dom, listObject);
+        return listObject.toString();
+    }
 
     private String turnHtml(String html) {
         if (html.startsWith("jsonp")) {
@@ -166,10 +110,13 @@ public class ConfigYhdList implements ConfigParser {
         return url;
     }
 
-    private void addNextUrls(Document dom, DataBean dataBean) {
+    private void addNextUrls(Document dom, JSONObject listObject) {
         String url = dom.baseUri();
         Elements curPageAs = dom.select("#turnPageBottom.turn_page span.page_cur");
         if (curPageAs.isEmpty()) {
+            JSONArray logArray = new JSONArray();
+            JSONUtils.put(listObject, "logs", logArray);
+            logArray.put("Get 0 next page url...");
             return;
         }
         String sCurPage = curPageAs.first().ownText();
@@ -177,6 +124,8 @@ public class ConfigYhdList implements ConfigParser {
         if (iCurPage != 1) {
             return;
         }
+        JSONArray nextArray = new JSONArray();
+        JSONUtils.put(listObject, "nexts", nextArray);
         Elements pageCoutAs = dom.select("#pageCountPage[value]");
         if (!pageCoutAs.isEmpty()) {
             int count = Integer.valueOf(pageCoutAs.first().attr("value"));
@@ -186,11 +135,11 @@ public class ConfigYhdList implements ConfigParser {
             Elements nextEls = dom.select("a[rel=nofollow].page_next[href]");
             if (!nextEls.isEmpty()) {
                 String sUrl = nextEls.first().absUrl("href");
-                dataBean.getNextList().add(sUrl);
+                nextArray.put(sUrl);
                 for (int i = 2; i <= count; i++) {
                     String sNext = sUrl.replace("-p2-", "-p" + i + "-");
                     sNext = sNext.replaceAll("callback=jsonp[0-9]+", "callback=jsonp" + System.currentTimeMillis());
-                    dataBean.getNextList().add(sNext);
+                    nextArray.put(sNext);
                 }
             } else if (url.indexOf("-p1-") > 0) {
                 int index = url.indexOf("?");
@@ -199,7 +148,7 @@ public class ConfigYhdList implements ConfigParser {
                 for (int i = 2; i <= count; i++) {
                     String sNext = listHeader.replace("-p1-", "-p" + i + "-");
                     sNext += "?callback=jsonp" + System.currentTimeMillis();
-                    dataBean.getNextList().add(sNext);
+                    nextArray.put(sNext);
                 }
             } else {
                 System.err.println("Offer next page,but url:" + url);
@@ -207,16 +156,85 @@ public class ConfigYhdList implements ConfigParser {
         }
     }
 
-    private void addListArray(Document dom, DataBean dataBean) throws Exception {
+    private void addListArray(Document dom, JSONArray listArray) throws Exception {
         Elements ctElements = dom.select("li[id^=producteg_]");
         if (ctElements.isEmpty()) {
             return;
         }
         int size = ctElements.size();
+        StringBuilder sb = new StringBuilder();
+        Elements jValueEls = dom.select("#jsonValue[value]");
+        int pageRanking = 0;
+        if (!jValueEls.isEmpty()) {
+            int pageSize = 36;
+            String jValue = jValueEls.first().attr("value");
+            JSONObject jObject = JSONUtils.getJSONObject(jValue);
+            Integer currentPage = JSONUtils.getInteger(jObject, "currentPage");
+            pageRanking = (currentPage - 1) * pageSize;
+        }
         for (int i = 0; i < size; i++) {
-            Elements oNameUrlAs = ctElements.get(i).select("a[id^=pdlink][title][href][pmid]");
+            JSONObject itemObject = new JSONObject();
+            listArray.put(itemObject);
+            JSONUtils.put(itemObject, "ranking", pageRanking + listArray.length());
+            JSONUtils.put(itemObject, "sortType", 0);
+            Elements oNameUrlAs = ctElements.get(i).select("a[id^=pdlink].title[href][pmid]");
             if (!oNameUrlAs.isEmpty()) {
-                dataBean.getDataList().add(oNameUrlAs.first().absUrl("href"));
+                JSONUtils.put(itemObject, "productName", oNameUrlAs.first().text());
+                JSONUtils.put(itemObject, "productUrl", oNameUrlAs.first().absUrl("href"));
+                JSONUtils.put(itemObject, "productCode", oNameUrlAs.first().attr("pmid"));
+            }
+            Elements oPriceAs = ctElements.get(i).select("span[id^=price0].price[yhdprice][productid]");
+            if (!oPriceAs.isEmpty()) {
+                String pid = oPriceAs.first().attr("productid");
+                JSONUtils.put(itemObject, "productId", pid);
+                sb.append(String.format("&productIds=%s", pid));
+            }
+            Elements oCmmAs = ctElements.get(i).select("p.comment a[id^=pdlinkcomment_]");
+            if (!oCmmAs.isEmpty()) {
+                String content = oCmmAs.first().ownText();
+                Pattern oReg = Pattern.compile("[0-9]+");
+                Matcher matcher = oReg.matcher(content);
+                if (matcher.find()) {
+                    JSONUtils.put(itemObject, "commentNum", matcher.group());
+                }
+            }
+            Elements oImgAs = ctElements.get(i).select("a[id^=pdlink1_].search_prod_img img[src]");
+            if (!oImgAs.isEmpty()) {
+                String sImgUrl = oImgAs.first().absUrl("src");
+                JSONUtils.put(itemObject, "imgUrl", sImgUrl);
+            }
+        }
+        String bStockUrl =
+                String.format(
+                        "http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=1%s&callback=jsonp%s",
+                        sb.toString(), System.currentTimeMillis());
+        HttpGet sGet = new HttpGet(bStockUrl);
+        sGet.addHeader("Referer", dom.baseUri());
+        String html = HttpClientUtils.getContent(client, sGet, "UTF-8");
+        int fromIndex = html.indexOf("(");
+        int toIndex = html.indexOf(")");
+        fromIndex = fromIndex < 0 ? 0 : fromIndex;
+        toIndex = toIndex < 0 ? html.length() : toIndex;
+        html = html.substring(fromIndex + 1, toIndex);
+        JSONArray sArray = new JSONArray(html);
+        Map<String, JSONObject> idMap = new HashMap<String, JSONObject>();
+        for (int i = 0; i < sArray.length(); i++) {
+            JSONObject itemObject = sArray.getJSONObject(i);
+            idMap.put(JSONUtils.getString(itemObject, "productId"), itemObject);
+        }
+        for (int i = 0; i < listArray.length(); i++) {
+            JSONObject itemObject = listArray.getJSONObject(i);
+            String pid = JSONUtils.getString(itemObject, "productId");
+            JSONObject sObject = idMap.get(pid);
+            if (sObject == null) {
+                System.err.println(itemObject);
+            } else {
+                JSONUtils.put(itemObject, "productCode", JSONUtils.getObject(sObject, "pmId"));
+                JSONUtils.put(itemObject, "stockNum", JSONUtils.getObject(sObject, "productStock"));
+                JSONUtils.put(itemObject, "marketPrice", JSONUtils.getObject(sObject, "marketPrice"));
+                JSONUtils.put(itemObject, "productPrice", JSONUtils.getObject(sObject, "productPrice"));
+                JSONUtils.put(itemObject, "promotPrice", JSONUtils.getObject(sObject, "promPrice"));
+                JSONUtils.put(itemObject, "yhdPrice", JSONUtils.getObject(sObject, "yhdPrice"));
             }
         }
     }
