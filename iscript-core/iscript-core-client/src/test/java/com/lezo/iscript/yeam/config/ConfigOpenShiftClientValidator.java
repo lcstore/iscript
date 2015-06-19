@@ -45,7 +45,7 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
             // name2UrlMap.put("jda1003", "http://jda1003.jd-app.com");
             // name2UrlMap.put("jda1001", "http://jda1001.jd-app.com");
             // name2UrlMap.put("jda1002", "http://jda1002.jd-app.com");
-        } else if (clientName.indexOf("openshift") >= 0 || clientName.indexOf("heroku") >= 0) {
+        } else if (clientName.indexOf("heroku") >= 0) {
             name2UrlMap.put("openshift.lcstore", "http://lcstore-iscript.rhcloud.com/");
             name2UrlMap.put("openshift.d1001", "http://d1001-dlink.rhcloud.com/");
             name2UrlMap.put("openshift.vcloudy", "http://vcloudy-vcloudy.rhcloud.com/");
@@ -53,9 +53,11 @@ public class ConfigOpenShiftClientValidator implements ConfigParser {
             name2UrlMap.put("openshift.lezomao", "http://lezomao-lezomao.rhcloud.com");
             name2UrlMap.put("openshift.ajanestore", "http://ajanestore-ajanestore.rhcloud.com");
             name2UrlMap.put("openshift.ajanecloud", "http://ajanecloud-ajanecloud.rhcloud.com");
-
+        } else if (clientName.indexOf("openshift") >= 0) {
             name2UrlMap.put("heroku.lezostore", "https://pacific-taiga-7679.herokuapp.com/");
             name2UrlMap.put("heroku.lezocloud", "https://pure-cove-1980.herokuapp.com/");
+            name2UrlMap.put("heroku.ajanestore", "https://still-reef-4990.herokuapp.com/");
+            name2UrlMap.put("heroku.ajanecloud", "https://glacial-savannah-3851.herokuapp.com/");
 
         } else if (clientName.indexOf("jd") >= 0) {
             name2UrlMap.put("mp.e1001", "http://e1001.sturgeon.mopaas.com/");
