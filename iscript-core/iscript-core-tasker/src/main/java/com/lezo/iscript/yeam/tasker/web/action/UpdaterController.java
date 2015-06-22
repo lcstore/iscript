@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +17,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.lezo.iscript.yeam.property.GlobalProperties;
+
 @Controller
 @RequestMapping("updater")
 public class UpdaterController {
 	private static Logger logger = LoggerFactory.getLogger(UpdaterController.class);
-	@Value("#{settings['agent_path']}")
-	private String agentPath;
+	private String agentPath = GlobalProperties.getInstance().getAgentPath();
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
 
 	@ResponseBody
 	@RequestMapping(method = { RequestMethod.POST, RequestMethod.GET }, value = "version")
@@ -50,11 +57,6 @@ public class UpdaterController {
 			response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), "can not read agent.jar");
 		}
 		return fileBytes;
-	}
-
-	// @Value("${agent_path}")
-	public void setAgentPath(String agentPath) {
-		this.agentPath = agentPath;
 	}
 
 	public String getAgentPath() {

@@ -25,12 +25,14 @@ public class BrandShopServiceImpl implements BrandShopService {
 	private BrandShopDao brandShopDao;
 
 	@Override
-	public void batchInsertDtos(List<BrandShopDto> dtoList) {
+	public int batchInsertDtos(List<BrandShopDto> dtoList) {
+		int affect = 0;
 		convertNullToDefault(dtoList);
 		BatchIterator<BrandShopDto> it = new BatchIterator<BrandShopDto>(dtoList);
 		while (it.hasNext()) {
-			brandShopDao.batchInsert(it.next());
+			affect += brandShopDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	private void convertNullToDefault(List<BrandShopDto> dtoList) {
@@ -57,25 +59,28 @@ public class BrandShopServiceImpl implements BrandShopService {
 	}
 
 	@Override
-	public void batchUpdateDtos(List<BrandShopDto> dtoList) {
+	public int batchUpdateDtos(List<BrandShopDto> dtoList) {
+		int affect = 0;
 		convertNullToDefault(dtoList);
 		BatchIterator<BrandShopDto> it = new BatchIterator<BrandShopDto>(dtoList);
 		while (it.hasNext()) {
-			brandShopDao.batchUpdate(it.next());
+			affect += brandShopDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<BrandShopDto> dtoList) {
+	public int batchSaveDtos(List<BrandShopDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
-			return;
+			return 0;
 		}
+		int affect = 0;
 		List<BrandShopDto> updateList = new ArrayList<BrandShopDto>();
 		List<BrandShopDto> insertList = new ArrayList<BrandShopDto>();
 		doAssort(dtoList, updateList, insertList);
-		batchInsertDtos(insertList);
-		batchUpdateDtos(updateList);
-
+		affect += batchInsertDtos(insertList);
+		affect += batchUpdateDtos(updateList);
+		return affect;
 	}
 
 	private void doAssort(List<BrandShopDto> dtoList, List<BrandShopDto> updateList, List<BrandShopDto> insertList) {
@@ -99,7 +104,8 @@ public class BrandShopServiceImpl implements BrandShopService {
 				String key = dto.getBrandCode() + "-" + dto.getShopName();
 				codeNameMap.put(key, dto);
 			}
-			List<BrandShopDto> hasList = getBrandShopDtoByShopNameList(new ArrayList<String>(nameSet), new ArrayList<String>(codeSet), entry.getKey());
+			List<BrandShopDto> hasList = getBrandShopDtoByShopNameList(new ArrayList<String>(nameSet),
+					new ArrayList<String>(codeSet), entry.getKey());
 			Set<String> hasSet = new HashSet<String>();
 			for (BrandShopDto oldDto : hasList) {
 				String key = oldDto.getBrandCode() + "-" + oldDto.getShopName();
@@ -138,7 +144,8 @@ public class BrandShopServiceImpl implements BrandShopService {
 	}
 
 	@Override
-	public List<BrandShopDto> getBrandShopDtoByShopNameList(List<String> shopNameList, List<String> brandCodeList, Integer siteId) {
+	public List<BrandShopDto> getBrandShopDtoByShopNameList(List<String> shopNameList, List<String> brandCodeList,
+			Integer siteId) {
 		if (CollectionUtils.isEmpty(shopNameList)) {
 			return Collections.emptyList();
 		}

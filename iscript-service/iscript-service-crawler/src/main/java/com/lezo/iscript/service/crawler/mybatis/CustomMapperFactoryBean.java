@@ -1,4 +1,4 @@
-package com.lezo.iscript.service.crawler.intercept;
+package com.lezo.iscript.service.crawler.mybatis;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -17,6 +17,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperFactoryBean;
+
+import com.lezo.iscript.common.Batch;
 
 public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements InvocationHandler {
     private ConcurrentHashMap<Method, String> batchMethodParamMap = new ConcurrentHashMap<Method, String>();

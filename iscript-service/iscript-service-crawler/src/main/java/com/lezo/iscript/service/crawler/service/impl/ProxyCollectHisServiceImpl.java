@@ -23,25 +23,29 @@ public class ProxyCollectHisServiceImpl implements ProxyCollectHisService {
 	private ProxyCollectHisDao proxyCollectHisDao;
 
 	@Override
-	public void batchInsertDtos(List<ProxyCollectHisDto> dtoList) {
+	public int batchInsertDtos(List<ProxyCollectHisDto> dtoList) {
+		int affect = 0;
 		UnifyValueUtils.unifyQuietly(dtoList);
 		BatchIterator<ProxyCollectHisDto> it = new BatchIterator<ProxyCollectHisDto>(dtoList);
 		while (it.hasNext()) {
-			proxyCollectHisDao.batchInsert(it.next());
+			affect += proxyCollectHisDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<ProxyCollectHisDto> dtoList) {
+	public int batchUpdateDtos(List<ProxyCollectHisDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ProxyCollectHisDto> it = new BatchIterator<ProxyCollectHisDto>(dtoList);
 		while (it.hasNext()) {
-			proxyCollectHisDao.batchUpdate(it.next());
+			affect += proxyCollectHisDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<ProxyCollectHisDto> dtoList) {
-		batchInsertDtos(dtoList);
+	public int batchSaveDtos(List<ProxyCollectHisDto> dtoList) {
+		return batchInsertDtos(dtoList);
 	}
 
 	@Override

@@ -24,26 +24,31 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 	private PromotionMapDao promotionMapDao;
 
 	@Override
-	public void batchInsertDtos(List<PromotionMapDto> dtoList) {
+	public int batchInsertDtos(List<PromotionMapDto> dtoList) {
+		int affect = 0;
 		BatchIterator<PromotionMapDto> it = new BatchIterator<PromotionMapDto>(dtoList);
 		while (it.hasNext()) {
-			promotionMapDao.batchInsert(it.next());
+			affect += promotionMapDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<PromotionMapDto> dtoList) {
+	public int batchUpdateDtos(List<PromotionMapDto> dtoList) {
+		int affect = 0;
 		BatchIterator<PromotionMapDto> it = new BatchIterator<PromotionMapDto>(dtoList);
 		while (it.hasNext()) {
-			promotionMapDao.batchUpdate(it.next());
+			affect += promotionMapDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<PromotionMapDto> dtoList) {
+	public int batchSaveDtos(List<PromotionMapDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
-			return;
+			return 0;
 		}
+		int affect = 0;
 		Map<String, PromotionMapDto> keyMap = convert2KeyMap(dtoList);
 		Map<Integer, Map<String, List<PromotionMapDto>>> siteCodeDtosMap = new HashMap<Integer, Map<String, List<PromotionMapDto>>>();
 		for (PromotionMapDto dto : keyMap.values()) {
@@ -61,17 +66,18 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 		}
 		for (Entry<Integer, Map<String, List<PromotionMapDto>>> entry : siteCodeDtosMap.entrySet()) {
 			List<String> productCodes = new ArrayList<String>(entry.getValue().keySet());
-			List<PromotionMapDto> hasDtos = getPromotionMapDtosByProductCodes(entry.getKey(), productCodes, null, null, PromotionMapDto.DELETE_FALSE);
+			List<PromotionMapDto> hasDtos = getPromotionMapDtosByProductCodes(entry.getKey(), productCodes, null, null,
+					PromotionMapDto.DELETE_FALSE);
 			List<PromotionMapDto> updateList = new ArrayList<PromotionMapDto>(hasDtos.size());
 			List<PromotionMapDto> insertList = new ArrayList<PromotionMapDto>(productCodes.size());
 			doAssort(hasDtos, entry.getValue(), keyMap, updateList, insertList);
 			// make old promotion delete
 			Set<Long> hasIdSet = convert2Set(hasDtos);
 			batchUpdateIsDelete(new ArrayList<Long>(hasIdSet), PromotionMapDto.DELETE_TRUE);
-			batchUpdateDtos(updateList);
-			batchInsertDtos(insertList);
+			affect += batchUpdateDtos(updateList);
+			affect += batchInsertDtos(insertList);
 		}
-
+		return affect;
 	}
 
 	private Set<Long> convert2Set(List<PromotionMapDto> hasDtos) {
@@ -82,7 +88,8 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 		return hasIdSet;
 	}
 
-	private void doAssort(List<PromotionMapDto> hasDtos, Map<String, List<PromotionMapDto>> codeDtosMap, Map<String, PromotionMapDto> keyMap, List<PromotionMapDto> updateList, List<PromotionMapDto> insertList) {
+	private void doAssort(List<PromotionMapDto> hasDtos, Map<String, List<PromotionMapDto>> codeDtosMap,
+			Map<String, PromotionMapDto> keyMap, List<PromotionMapDto> updateList, List<PromotionMapDto> insertList) {
 		Set<String> hasKeySet = new HashSet<String>(hasDtos.size());
 		for (PromotionMapDto oldDto : hasDtos) {
 			String key = getKey(oldDto);
@@ -131,11 +138,13 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 	}
 
 	@Override
-	public List<PromotionMapDto> getPromotionMapDtosByProductCodes(Integer siteId, List<String> productCodes, Integer promoteType, Integer promoteStatus, Integer isDelete) {
+	public List<PromotionMapDto> getPromotionMapDtosByProductCodes(Integer siteId, List<String> productCodes,
+			Integer promoteType, Integer promoteStatus, Integer isDelete) {
 		List<PromotionMapDto> resultList = new ArrayList<PromotionMapDto>();
 		BatchIterator<String> it = new BatchIterator<String>(productCodes);
 		while (it.hasNext()) {
-			List<PromotionMapDto> blockList = promotionMapDao.getPromotionMapDtosByProductCodes(siteId, it.next(), promoteType, promoteStatus, isDelete);
+			List<PromotionMapDto> blockList = promotionMapDao.getPromotionMapDtosByProductCodes(siteId, it.next(),
+					promoteType, promoteStatus, isDelete);
 			if (!blockList.isEmpty()) {
 				resultList.addAll(blockList);
 			}
@@ -144,11 +153,13 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 	}
 
 	@Override
-	public List<PromotionMapDto> getPromotionMapDtosByPromotCodes(Integer siteId, List<String> promotCodes, Integer promoteType, Integer promoteStatus, Integer isDelete) {
+	public List<PromotionMapDto> getPromotionMapDtosByPromotCodes(Integer siteId, List<String> promotCodes,
+			Integer promoteType, Integer promoteStatus, Integer isDelete) {
 		List<PromotionMapDto> resultList = new ArrayList<PromotionMapDto>();
 		BatchIterator<String> it = new BatchIterator<String>(promotCodes);
 		while (it.hasNext()) {
-			List<PromotionMapDto> blockList = promotionMapDao.getPromotionMapDtosByPromotCodes(siteId, it.next(), promoteType, promoteStatus, isDelete);
+			List<PromotionMapDto> blockList = promotionMapDao.getPromotionMapDtosByPromotCodes(siteId, it.next(),
+					promoteType, promoteStatus, isDelete);
 			if (!blockList.isEmpty()) {
 				resultList.addAll(blockList);
 			}
@@ -169,7 +180,8 @@ public class PromotionMapServiceImpl implements PromotionMapService {
 	}
 
 	@Override
-	public List<String> getProductCodeSetBySiteIdAndType(Integer siteId, Integer promoteType, Integer promoteStatus, Integer isDelete) {
+	public List<String> getProductCodeSetBySiteIdAndType(Integer siteId, Integer promoteType, Integer promoteStatus,
+			Integer isDelete) {
 		if (siteId == null) {
 			throw new IllegalArgumentException("siteId must not be null.");
 		}

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,30 +27,39 @@ public class ListRankServiceImpl implements ListRankService {
 	private ListRankDao listRankDao;
 
 	@Override
-	public void batchInsertDtos(List<ListRankDto> dtoList) {
+	public int batchInsertDtos(List<ListRankDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ListRankDto> it = new BatchIterator<ListRankDto>(dtoList);
 		while (it.hasNext()) {
-			listRankDao.batchInsert(it.next());
+			affect += listRankDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<ListRankDto> dtoList) {
+	public int batchUpdateDtos(List<ListRankDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ListRankDto> it = new BatchIterator<ListRankDto>(dtoList);
 		while (it.hasNext()) {
-			listRankDao.batchUpdate(it.next());
+			affect += listRankDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<ListRankDto> dtoList) {
+	public int batchSaveDtos(List<ListRankDto> dtoList) {
+		if (CollectionUtils.isEmpty(dtoList)) {
+			return 0;
+		}
+		int affect = 0;
 		List<ListRankDto> insertDtos = new ArrayList<ListRankDto>();
 		List<ListRankDto> updateDtos = new ArrayList<ListRankDto>();
 		doAssort(dtoList, insertDtos, updateDtos);
-		batchInsertDtos(insertDtos);
-		batchUpdateDtos(updateDtos);
+		affect += batchInsertDtos(insertDtos);
+		affect += batchUpdateDtos(updateDtos);
 		logger.info(String.format("save [%s],insert:%d,update:%d,cost:", "ListRankDto", insertDtos.size(),
 				updateDtos.size()));
+		return affect;
 	}
 
 	private void doAssort(List<ListRankDto> dtoList, List<ListRankDto> insertDtos, List<ListRankDto> updateDtos) {

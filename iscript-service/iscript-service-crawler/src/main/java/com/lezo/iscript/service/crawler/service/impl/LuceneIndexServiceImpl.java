@@ -19,23 +19,28 @@ public class LuceneIndexServiceImpl implements LuceneIndexService {
 	private LuceneIndexDao luceneIndexDao;
 
 	@Override
-	public void batchInsertDtos(List<LuceneIndexDto> dtoList) {
+	public int batchInsertDtos(List<LuceneIndexDto> dtoList) {
+		int affect = 0;
 		BatchIterator<LuceneIndexDto> it = new BatchIterator<LuceneIndexDto>(dtoList);
 		while (it.hasNext()) {
-			luceneIndexDao.batchInsert(it.next());
+			affect += luceneIndexDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<LuceneIndexDto> dtoList) {
+	public int batchUpdateDtos(List<LuceneIndexDto> dtoList) {
+		int affect = 0;
 		BatchIterator<LuceneIndexDto> it = new BatchIterator<LuceneIndexDto>(dtoList);
 		while (it.hasNext()) {
-			luceneIndexDao.batchUpdate(it.next());
+			affect += luceneIndexDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<LuceneIndexDto> dtoList) {
+	public int batchSaveDtos(List<LuceneIndexDto> dtoList) {
+		int affect = 0;
 		List<LuceneIndexDto> insertList = new ArrayList<LuceneIndexDto>();
 		List<LuceneIndexDto> updateList = new ArrayList<LuceneIndexDto>();
 		for (LuceneIndexDto dto : dtoList) {
@@ -47,8 +52,9 @@ public class LuceneIndexServiceImpl implements LuceneIndexService {
 				insertList.add(dto);
 			}
 		}
-		batchInsertDtos(insertList);
-		batchUpdateDtos(dtoList);
+		affect += batchInsertDtos(insertList);
+		affect += batchUpdateDtos(dtoList);
+		return affect;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.service.crawler.dto.SessionHisDto;
 import com.lezo.iscript.yeam.io.IoOrder;
+import com.lezo.iscript.yeam.property.GlobalProperties;
 import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 import com.lezo.iscript.yeam.server.session.ProxySessionCacher;
 
@@ -32,7 +33,8 @@ public class ClientToServerProxyIoHandler extends IoHandlerAdapter {
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 	private IoAcceptor acceptor;
 
-	public ClientToServerProxyIoHandler(int port) throws IOException {
+	public ClientToServerProxyIoHandler() throws IOException {
+		int port = GlobalProperties.getInstance().getProxyPort();
 		acceptor = new NioSocketAcceptor(Runtime.getRuntime().availableProcessors() + 1);
 		if (logger.isDebugEnabled()) {
 			acceptor.getFilterChain().addLast("logger", new LoggingFilter());
@@ -93,48 +95,49 @@ public class ClientToServerProxyIoHandler extends IoHandlerAdapter {
 		return null;
 	}
 
-//	@Override
-//	public void messageSent(IoSession session, Object message) throws Exception {
-//		if (!(message instanceof IoBuffer)) {
-//			return;
-//		}
-//		IoBuffer ioBuffer = (IoBuffer) message;
-//		CharsetDecoder decoder = DEFAULT_CHARSET.newDecoder();
-//		String ioString = ioBuffer.getString(decoder);
-//		JSONObject orderObject = JSONUtils.getJSONObject(ioString);
-//		String idString = JSONUtils.getString(orderObject, "id");
-//		String dataString = JSONUtils.getString(orderObject, "data");
-//		JSONObject rsObject = JSONUtils.getJSONObject(dataString);
-//		StringBuffer sb = new StringBuffer();
-//		sb.append(JSONUtils.getString(rsObject, "status"));
-//		sb.append(HTTP_NEW_LINE);
-//		JSONArray headers = JSONUtils.get(rsObject, "headers");
-//		if (headers != null) {
-//			for (int i = 0; i < headers.length(); i++) {
-//				String hString = headers.getString(i);
-//				if (hString.contains("Transfer-Encoding")) {
-//					continue;
-//				}
-//				sb.append(hString);
-//				sb.append(HTTP_NEW_LINE);
-//			}
-//		}
-//		String html = JSONUtils.getString(rsObject, "html");
-//		// sb.append(html);
-//		logger.info(idString);
-//		logger.info(sb.toString());
-//		IoBuffer returnBuffer = IoBuffer.allocate(sb.length());
-//		returnBuffer.setAutoExpand(true);
-//
-//		CharsetEncoder encoder = DEFAULT_CHARSET.newEncoder();
-//		returnBuffer.putString(sb.toString(), encoder);
-//		if (StringUtils.isNotBlank(html)) {
-//			sb.append(HTTP_NEW_LINE);
-//			returnBuffer.put(toGzipByteArray(html.getBytes(DEFAULT_CHARSET)));
-//		}
-//		returnBuffer.flip();
-//		session.write(returnBuffer);
-//	}
+	// @Override
+	// public void messageSent(IoSession session, Object message) throws
+	// Exception {
+	// if (!(message instanceof IoBuffer)) {
+	// return;
+	// }
+	// IoBuffer ioBuffer = (IoBuffer) message;
+	// CharsetDecoder decoder = DEFAULT_CHARSET.newDecoder();
+	// String ioString = ioBuffer.getString(decoder);
+	// JSONObject orderObject = JSONUtils.getJSONObject(ioString);
+	// String idString = JSONUtils.getString(orderObject, "id");
+	// String dataString = JSONUtils.getString(orderObject, "data");
+	// JSONObject rsObject = JSONUtils.getJSONObject(dataString);
+	// StringBuffer sb = new StringBuffer();
+	// sb.append(JSONUtils.getString(rsObject, "status"));
+	// sb.append(HTTP_NEW_LINE);
+	// JSONArray headers = JSONUtils.get(rsObject, "headers");
+	// if (headers != null) {
+	// for (int i = 0; i < headers.length(); i++) {
+	// String hString = headers.getString(i);
+	// if (hString.contains("Transfer-Encoding")) {
+	// continue;
+	// }
+	// sb.append(hString);
+	// sb.append(HTTP_NEW_LINE);
+	// }
+	// }
+	// String html = JSONUtils.getString(rsObject, "html");
+	// // sb.append(html);
+	// logger.info(idString);
+	// logger.info(sb.toString());
+	// IoBuffer returnBuffer = IoBuffer.allocate(sb.length());
+	// returnBuffer.setAutoExpand(true);
+	//
+	// CharsetEncoder encoder = DEFAULT_CHARSET.newEncoder();
+	// returnBuffer.putString(sb.toString(), encoder);
+	// if (StringUtils.isNotBlank(html)) {
+	// sb.append(HTTP_NEW_LINE);
+	// returnBuffer.put(toGzipByteArray(html.getBytes(DEFAULT_CHARSET)));
+	// }
+	// returnBuffer.flip();
+	// session.write(returnBuffer);
+	// }
 
 	private byte[] toGzipByteArray(byte[] bytes) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();

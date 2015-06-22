@@ -21,7 +21,7 @@
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 
-	<bean id="proxyAddrDao" class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+	<bean id="proxyAddrDao" class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxyAddrDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
@@ -40,7 +40,7 @@
 
 	<!-- batch update dao -->
 	<bean id="productDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProductDao" />
@@ -52,110 +52,110 @@
 		</property>
 	</bean>
 	<bean id="productStatDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProductStatDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="similarDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.SimilarDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="barCodeItemDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.BarCodeItemDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="proxyDetectDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxyDetectDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="sessionHisDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.SessionHisDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="listRankDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ListRankDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="messageDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.MessageDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="promotionMapDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.PromotionMapDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="luceneIndexDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.LuceneIndexDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="searchHisDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.SearchHisDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="proxyHomeDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxyHomeDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="crawlerWarnHisDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.CrawlerWarnHisDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="promotionTrackDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.PromotionTrackDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="brandDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.BrandDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="brandShopDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.BrandShopDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="proxySeedDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxySeedDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	
 	<bean id="ProxyCollectHisDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ProxyCollectHisDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</bean>
 	<bean id="ClientTokenDao"
-		class="com.lezo.iscript.service.crawler.intercept.ProxyMapperFactoryBean">
+		class="com.lezo.iscript.service.crawler.mybatis.ProxyMapperFactoryBean">
 		<property name="mapperInterface"
 			value="com.lezo.iscript.service.crawler.dao.ClientTokenDao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />

@@ -18,24 +18,28 @@ public class PromotionTrackServiceImpl implements PromotionTrackService {
 	private PromotionTrackDao promotionTrackDao;
 
 	@Override
-	public void batchInsertDtos(List<PromotionTrackDto> dtoList) {
+	public int batchInsertDtos(List<PromotionTrackDto> dtoList) {
+		int affect = 0;
 		BatchIterator<PromotionTrackDto> it = new BatchIterator<PromotionTrackDto>(dtoList);
 		while (it.hasNext()) {
-			promotionTrackDao.batchInsert(it.next());
+			affect += promotionTrackDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<PromotionTrackDto> dtoList) {
+	public int batchUpdateDtos(List<PromotionTrackDto> dtoList) {
+		int affect = 0;
 		BatchIterator<PromotionTrackDto> it = new BatchIterator<PromotionTrackDto>(dtoList);
 		while (it.hasNext()) {
-			promotionTrackDao.batchInsert(it.next());
+			affect += promotionTrackDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<PromotionTrackDto> dtoList) {
-
+	public int batchSaveDtos(List<PromotionTrackDto> dtoList) {
+		return 0;
 	}
 
 	@Override

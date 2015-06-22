@@ -35,7 +35,6 @@ public class DataFileConsumer implements Runnable {
 		}
 		if (CollectionUtils.isNotEmpty(dataLineList)) {
 			ThreadPoolExecutor dataConsumeExecutor = ExecutorUtils.getDataConsumeExecutor();
-			logger.info("ready to consume dataline.count:" + dataLineList.size());
 			for (String dataLine : dataLineList) {
 				dataConsumeExecutor.execute(new DataLineConsumer(type, dataLine));
 			}

@@ -33,9 +33,9 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public ProxyDetectStrategy() {
-		// ProxyDetectTimer task = new ProxyDetectTimer();
-		// this.timer = new Timer("ProxyDetectProducer");
-		// this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
+		ProxyDetectTimer task = new ProxyDetectTimer();
+		this.timer = new Timer("ProxyDetectProducer");
+		this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
 	}
 
 	@Override
@@ -48,7 +48,6 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 
 	}
 
-
 	private class ProxyDetectTimer extends TimerTask {
 		private ProxyDetectService proxyDetectService = SpringBeanUtils.getBean(ProxyDetectService.class);
 		private ProxyAddrService proxyAddrService = SpringBeanUtils.getBean(ProxyAddrService.class);
@@ -60,7 +59,7 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 			// checkStatusList.add(ProxyDetectDto.STATUS_WORK);
 			checkStatusList.add(ProxyDetectDto.STATUS_USABLE);
 			checkStatusList.add(ProxyDetectDto.STATUS_RETRY);
-//			checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
+			// checkStatusList.add(ProxyDetectDto.STATUS_NONUSE);
 		}
 
 		public void run() {

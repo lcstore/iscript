@@ -1,4 +1,4 @@
-package com.lezo.iscript.service.crawler.intercept;
+package com.lezo.iscript.common;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

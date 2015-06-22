@@ -124,6 +124,7 @@ public class JdListStrategy implements ResultStrategy, Closeable {
 			try {
 				argsObject.remove("name@client");
 				argsObject.remove("target");
+				argsObject.remove("fromUrl");
 				addNexts(rWritable, rsObject, argsObject);
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.lezo.iscript.service.crawler.intercept;
+package com.lezo.iscript.service.crawler.mybatis;
 
 import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;

@@ -19,19 +19,23 @@ public class SearchHisServiceImpl implements SearchHisService {
 	private SearchHisDao searchHisDao;
 
 	@Override
-	public void batchInsertDtos(List<SearchHisDto> dtoList) {
+	public int batchInsertDtos(List<SearchHisDto> dtoList) {
+		int affect = 0;
 		BatchIterator<SearchHisDto> it = new BatchIterator<SearchHisDto>(dtoList);
 		while (it.hasNext()) {
-			searchHisDao.batchInsert(it.next());
+			affect += searchHisDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<SearchHisDto> dtoList) {
+	public int batchUpdateDtos(List<SearchHisDto> dtoList) {
+		int affect = 0;
 		BatchIterator<SearchHisDto> it = new BatchIterator<SearchHisDto>(dtoList);
 		while (it.hasNext()) {
-			searchHisDao.batchUpdate(it.next());
+			affect += searchHisDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
@@ -83,8 +87,8 @@ public class SearchHisServiceImpl implements SearchHisService {
 
 	@Override
 	@Deprecated
-	public void batchSaveDtos(List<SearchHisDto> dtoList) {
-
+	public int batchSaveDtos(List<SearchHisDto> dtoList) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -105,7 +105,7 @@ public class YhdListStrategy implements ResultStrategy, Closeable {
 		if (ResultWritable.RESULT_SUCCESS != rWritable.getStatus()) {
 			return;
 		}
-		if (rWritable.getType().endsWith("JdList")) {
+		if (rWritable.getType().endsWith("YhdList")) {
 			JSONObject gObject = JSONUtils.getJSONObject(rWritable.getResult());
 			JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
 			JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
@@ -117,13 +117,14 @@ public class YhdListStrategy implements ResultStrategy, Closeable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else if (rWritable.getType().endsWith("JdProduct")) {
+		} else if (rWritable.getType().endsWith("YhdProduct")) {
 			JSONObject gObject = JSONUtils.getJSONObject(rWritable.getResult());
 			JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
 			JSONObject argsObject = JSONUtils.getJSONObject(gObject, "args");
 			try {
 				argsObject.remove("name@client");
 				argsObject.remove("target");
+				argsObject.remove("fromUrl");
 				addNexts(rWritable, rsObject, argsObject);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -161,7 +162,7 @@ public class YhdListStrategy implements ResultStrategy, Closeable {
 		JSONObject oParamObject = JSONUtils.getJSONObject(argsObject.toString());
 		String url = JSONUtils.getString(argsObject, "url");
 		JSONUtils.put(oParamObject, "fromUrl", url);
-		String productType = rWritable.getType().replace("JdList", "JdProduct");
+		String productType = rWritable.getType().replace("List", "Product");
 		String argsString = oParamObject.toString();
 		for (int i = 0; i < len; i++) {
 			String nextUrl = dataArray.getString(i);

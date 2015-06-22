@@ -106,21 +106,24 @@ public class ConfigJdProduct implements ConfigParser {
 			String dataString = writer.toString();
 
 			JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
-			ProductBean tBean = (ProductBean) dataBean.getDataList().get(0);
-			if (StringUtils.isNotBlank(tBean.getSpuCodes())) {
-				String[] codeArrays = tBean.getSpuCodes().split(",");
-				for (String code : codeArrays) {
-					String sUrl = "http://item.jd.com/" + code + ".html";
-					dataBean.getNextList().add(sUrl);
+			Object fromUrlObject = task.get("fromUrl");
+			if (fromUrlObject != null && fromUrlObject.toString().indexOf("list.jd.com") > 0) {
+				ProductBean tBean = (ProductBean) dataBean.getDataList().get(0);
+				if (StringUtils.isNotBlank(tBean.getSpuCodes())) {
+					String[] codeArrays = tBean.getSpuCodes().split(",");
+					for (String code : codeArrays) {
+						String sUrl = "http://item.jd.com/" + code + ".html";
+						dataBean.getNextList().add(sUrl);
+					}
 				}
+				dataBean.setDataList(null);
+				dataBean.setTargetList(null);
+				mapper = new ObjectMapper();
+				writer = new StringWriter();
+				mapper.writeValue(writer, dataBean);
+				dataString = writer.toString();
+				JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
 			}
-			dataBean.setDataList(null);
-			dataBean.setTargetList(null);
-			mapper = new ObjectMapper();
-			writer = new StringWriter();
-			mapper.writeValue(writer, dataBean);
-			dataString = writer.toString();
-			JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
 		}
 		return returnObject.toString();
 	}

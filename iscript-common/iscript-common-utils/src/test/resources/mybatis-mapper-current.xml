@@ -2,47 +2,65 @@
  <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.baidu.mall.market.dao.client.MarketTemplateItemMapper">
-	<resultMap type="MarketTemplateItemMapper" id="RM_MarketTemplateItemMapper">
-		<result column="id" property="id"/>
-		<result column="item_name" property="itemName"/>
-		<result column="type" property="type"/>
-		<result column="value_type" property="valueType"/>
-		<result column="is_collection_type" property="isCollectionType"/>
-		<result column="item_class" property="itemClass"/>
-		<result column="add_time" property="addTime"/>
-		<result column="update_time" property="updateTime"/>
+<mapper namespace="com.lezo.iscript.service.crawler.dao.DataTransferDao">
+	<resultMap type="DataTransferDto" id="RM_DataTransferDto">
+		<result column="ID" property="id"/>
+		<result column="DATA_CODE" property="dataCode"/>
+		<result column="DATA_PATH" property="dataPath"/>
+		<result column="DATA_BUCKET" property="dataBucket"/>
+		<result column="DATA_DOMAIN" property="dataDomain"/>
+		<result column="DATA_COUNT" property="dataCount"/>
+		<result column="PARAMS" property="params"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
-	<sql id="MarketTemplateItemMapper-coloumn-list">
-		id
-		,item_name
-		,type
-		,value_type
-		,is_collection_type
-		,item_class
-		,add_time
-		,update_time
+	<sql id="DataTransferDto-coloumn-list">
+		ID
+		,DATA_CODE
+		,DATA_PATH
+		,DATA_BUCKET
+		,DATA_DOMAIN
+		,DATA_COUNT
+		,PARAMS
+		,CREATE_TIME
+		,UPDATE_TIME
 	</sql>
-	<insert id="batchInsert" parameterType="MarketTemplateItemMapper">
-		INSERT INTO market_template_item(
-		<include refid="MarketTemplateItemMapper-coloumn-list" />
+	<insert id="batchInsert" parameterType="DataTransferDto">
+		INSERT INTO T_DATA_TRANSFER(
+		<include refid="DataTransferDto-coloumn-list" />
 		)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.itemName},#{item.type},#{item.valueType},#{item.isCollectionType},#{item.itemClass},#{item.addTime},#{item.updateTime})
+			(#{item.id},#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.params},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
-	<update id="batchUpdate" parameterType="MarketTemplateItemMapper">
-		UPDATE market_template_item SET
-		id=#{id}
-		,item_name=#{itemName}
-		,type=#{type}
-		,value_type=#{valueType}
-		,is_collection_type=#{isCollectionType}
-		,item_class=#{itemClass}
-		,add_time=#{addTime}
-		,update_time=#{updateTime}
+	<update id="batchUpdate" parameterType="DataTransferDto">
+		UPDATE T_DATA_TRANSFER SET
+		DATA_CODE=#{dataCode}
+		,DATA_PATH=#{dataPath}
+		,DATA_BUCKET=#{dataBucket}
+		,DATA_DOMAIN=#{dataDomain}
+		,DATA_COUNT=#{dataCount}
+		,PARAMS=#{params}
+		,CREATE_TIME=#{createTime}
+		,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_DATA_TRANSFER
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_DataTransferDto">
+	    SELECT * FROM T_DATA_TRANSFER
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
 </mapper>

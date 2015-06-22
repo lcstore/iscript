@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
+import com.lezo.iscript.utils.CharsUtils;
 
 public class BrandTokenizer extends AbstractTokenizer {
 	private static final Set<String> brandAssistKeySet = new HashSet<String>();
@@ -30,6 +31,7 @@ public class BrandTokenizer extends AbstractTokenizer {
 		for (EntityToken entity : entityTokens) {
 			List<SectionToken> tokenList = doToken(entity);
 			for (SectionToken token : tokenList) {
+				token.setStable(true);
 				token.getParent().addChild(token);
 			}
 		}
@@ -44,16 +46,16 @@ public class BrandTokenizer extends AbstractTokenizer {
 
 	private void tokenChildren(Set<SectionToken> tokenSet, EntityToken entity) {
 		List<SectionToken> leaveList = new ArrayList<SectionToken>();
-		entity.getLeveChildren(leaveList, entity.getMaster());
+		EntityToken.getLeveChildren(leaveList, entity.getMaster());
 		Iterator<String> it = synonymBrandService.iteratorKeys();
 		while (it.hasNext()) {
 			String token = it.next();
 			for (SectionToken sectionToken : leaveList) {
-				if (contains(sectionToken.getValue(), token)) {
+				if (CharsUtils.contains(sectionToken.getValue(), token)) {
 					SectionToken newToken = new SectionToken(sectionToken.getKey(), token);
 					newToken.setParent(sectionToken);
 					newToken.setTokenizer(this.getClass().getName());
-					newToken.setTrust(50);
+					newToken.setTrust(80);
 					tokenSet.add(newToken);
 				}
 			}
@@ -75,7 +77,7 @@ public class BrandTokenizer extends AbstractTokenizer {
 		while (it.hasNext()) {
 			String token = it.next();
 			for (SectionToken sectionToken : brandTokens) {
-				if (contains(sectionToken.getValue(), token)) {
+				if (CharsUtils.contains(sectionToken.getValue(), token)) {
 					SectionToken newToken = new SectionToken(sectionToken.getKey(), token);
 					newToken.setParent(entity.getMaster());
 					newToken.setTokenizer(this.getClass().getName());

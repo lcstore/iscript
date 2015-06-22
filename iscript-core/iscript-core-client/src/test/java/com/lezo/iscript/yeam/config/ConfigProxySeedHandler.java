@@ -28,14 +28,15 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
 
+import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.scope.ScriptableUtils;
 import com.lezo.iscript.utils.InetAddressUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.encrypt.Base64Decryptor;
 import com.lezo.iscript.yeam.ClientConstant;
-import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
@@ -171,7 +172,8 @@ public class ConfigProxySeedHandler implements ConfigParser {
 			Context cx = Context.enter();
 			Scriptable scope = newScriptable(ScriptableUtils.getJSONScriptable());
 			Object rsObject = cx.evaluateString(scope, source, "FetchUrls", 0, null);
-			String sResult = Context.toString(rsObject);
+			rsObject = NativeJSON.stringify(cx, scope, rsObject, null, null);
+			String sResult = rsObject.toString();
 			if (sResult.trim().startsWith("{")) {
 				return JSONUtils.getJSONObject(sResult);
 			} else {

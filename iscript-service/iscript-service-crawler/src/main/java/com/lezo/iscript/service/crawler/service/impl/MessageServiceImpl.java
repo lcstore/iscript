@@ -22,24 +22,28 @@ public class MessageServiceImpl implements MessageService {
 	private MessageDao messageDao;
 
 	@Override
-	public void batchInsertDtos(List<MessageDto> dtoList) {
+	public int batchInsertDtos(List<MessageDto> dtoList) {
+		int affect = 0;
 		BatchIterator<MessageDto> it = new BatchIterator<MessageDto>(dtoList);
 		while (it.hasNext()) {
-			messageDao.batchInsert(it.next());
+			affect += messageDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<MessageDto> dtoList) {
+	public int batchUpdateDtos(List<MessageDto> dtoList) {
+		int affect = 0;
 		BatchIterator<MessageDto> it = new BatchIterator<MessageDto>(dtoList);
 		while (it.hasNext()) {
-			messageDao.batchUpdate(it.next());
+			affect += messageDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<MessageDto> dtoList) {
-		batchInsertDtos(dtoList);
+	public int batchSaveDtos(List<MessageDto> dtoList) {
+		return batchInsertDtos(dtoList);
 	}
 
 	@Override

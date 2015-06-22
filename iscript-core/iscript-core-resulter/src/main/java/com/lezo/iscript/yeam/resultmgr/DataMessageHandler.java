@@ -8,12 +8,16 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lezo.iscript.service.crawler.dto.DataTransferDto;
 import com.lezo.iscript.service.crawler.dto.MessageDto;
+import com.lezo.iscript.service.crawler.service.DataTransferService;
 import com.lezo.iscript.service.crawler.service.MessageService;
+import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirMeta;
 import com.lezo.iscript.yeam.resultmgr.directory.DirSummary;
 import com.lezo.iscript.yeam.resultmgr.directory.DirSummaryCacher;
@@ -23,6 +27,8 @@ public class DataMessageHandler {
 	private static AtomicBoolean running = new AtomicBoolean(false);
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private DataTransferService dataTransferService;
 
 	public void run() {
 		if (running.get()) {
@@ -36,6 +42,7 @@ public class DataMessageHandler {
 			logger.info("FileProduceExecutor:" + ExecutorUtils.getFileProduceExecutor());
 			logger.info("FileConsumeExecutor:" + ExecutorUtils.getFileConsumeExecutor());
 			logger.info("DataConsumeExecutor:" + ExecutorUtils.getDataConsumeExecutor());
+			saveTransferAndResetCount();
 			Iterator<Entry<String, DirSummary>> it = DirSummaryCacher.getInstance().iterator();
 			int total = 0;
 			int doneCount = 0;
@@ -72,6 +79,7 @@ public class DataMessageHandler {
 					notChangeList.add(dirSummary);
 				}
 			}
+
 			long cost = System.currentTimeMillis() - start;
 			logger.info("handle DirMeta,total:" + total + ",handleCount:" + count + ",doneCount:" + doneCount
 					+ ",waitCount:" + waitCount + ",noChange:" + notChangeList.size() + ",cost:" + cost);
@@ -85,5 +93,33 @@ public class DataMessageHandler {
 		} finally {
 			running.set(false);
 		}
+	}
+
+	private void saveTransferAndResetCount() {
+		Iterator<Entry<String, DirSummary>> it = DirSummaryCacher.getInstance().iterator();
+		List<DataTransferDto> dtoList = new ArrayList<DataTransferDto>();
+		Date currentDate = new Date();
+		while (it.hasNext()) {
+			Entry<String, DirSummary> entry = it.next();
+			DirSummary dirSummary = entry.getValue();
+
+			JSONObject pObject = JSONUtils.getJSONObject(dirSummary.getParamMap());
+			DataTransferDto dto = new DataTransferDto();
+			dto.setParams(pObject == null ? null : pObject.toString());
+			DirMeta dirMeta = dirSummary.getDirBean();
+			dto.setDataBucket(dirMeta.getBucket());
+			dto.setDataDomain(dirMeta.getDomain());
+			dto.setDataPath(dirMeta.toDirPath());
+			dto.setDataCount(dirSummary.getCount());
+			dto.setDataCode(dto.toDataCode());
+			dto.setCreateTime(currentDate);
+			dto.setUpdateTime(dto.getUpdateTime());
+			dtoList.add(dto);
+
+			dirSummary.setCount(0);
+		}
+		// save data for transfer
+		dataTransferService.batchInsertOrUpdateByKey(dtoList);
+
 	}
 }

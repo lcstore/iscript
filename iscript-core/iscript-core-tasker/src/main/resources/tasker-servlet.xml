@@ -3,35 +3,4 @@
 
 <beans>
 
-<!-- 	<bean id="taskerExporter"
-		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service">
-			<ref bean="tasker" />
-		</property>
-		<property name="serviceInterface"
-			value="com.lezo.iscript.yeam.service.TaskerService" />
-	</bean>	
-	<bean id="taskRemoteServiceExporter"
-		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service">
-			<ref bean="taskRemoteService" />
-		</property>
-		<property name="serviceInterface"
-			value="com.lezo.iscript.yeam.service.TaskRemoteService" />
-	</bean>	
-	
-	
-
-	Most controllers will use the ControllerClassNameHandlerMapping above, 
-		but for the index controller we are using ParameterizableViewController, 
-		so we must define an explicit mapping for it.
-	<bean id="urlMapping"
-		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="mappings">
-			<props>
-				<prop key="/service">taskerExporter</prop>
-				<prop key="/taskRemoteService">taskRemoteServiceExporter</prop>
-			</props>
-		</property>
-	</bean> -->
 </beans>

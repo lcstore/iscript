@@ -1,8 +1,5 @@
 package com.lezo.iscript.yeam.resultmgr.directory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lezo.iscript.yeam.io.IOUtils;
+import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.resultmgr.DataFileConsumer;
 import com.lezo.iscript.yeam.resultmgr.DataFileWrapper;
 import com.lezo.iscript.yeam.resultmgr.ExecutorUtils;
@@ -62,8 +59,9 @@ public class DirFileScanner implements Runnable {
 			throw new IllegalArgumentException("can not get ClientRest:" + dirBean.getBucket() + "."
 					+ dirBean.getDomain());
 		}
-//		File destFile = new File("logs", dirStream.hashCode() + ".txt");
-//		BufferedWriter bw = new BufferedWriter(new FileWriter(destFile, true));
+		// File destFile = new File("logs", dirStream.hashCode() + ".txt");
+		// BufferedWriter bw = new BufferedWriter(new FileWriter(destFile,
+		// true));
 		DataRestable rester = clientRest.getRester();
 		int limit = 100;
 		int count = 0;
@@ -85,21 +83,18 @@ public class DirFileScanner implements Runnable {
 			if (rester instanceof BaiduPcsRester) {
 				paramMap.put(limitKey, fromCount + "-" + (fromCount + limit));
 			}
-
-//			bw.append(limitKey + ":" + paramMap.get(limitKey));
-//			bw.append("\n");
 			RestList restList = rester.listFiles(dirBean.toDirPath(), paramMap);
 			long costMills = System.currentTimeMillis() - startMills;
-			List<RestFile> acceptList = null;
+			List<RestFile> acceptList = Collections.emptyList();
 			if (CollectionUtils.isNotEmpty(restList.getDataList())) {
 				fromCount += restList.getDataList().size();
 				acceptList = getAccepts(restList.getDataList());
 				if (!CollectionUtils.isEmpty(acceptList)) {
 					count += acceptList.size();
-//					for (RestFile file : acceptList) {
-//						bw.append(file.getPath());
-//						bw.append("\n");
-//					}
+					// for (RestFile file : acceptList) {
+					// bw.append(file.getPath());
+					// bw.append("\n");
+					// }
 					createDataFileConsumer(acceptList);
 					dirStream.setCount(dirStream.getCount() + acceptList.size());
 					logger.info("directoryKey:" + dirBean.toDirKey() + ",stamp:" + dirStream.getToStamp()
@@ -112,10 +107,9 @@ public class DirFileScanner implements Runnable {
 							+ ",but accept 0,Summary stamp:" + dirStream.getToStamp() + ",listMaxStamp:" + maxStamp
 							+ ",limit:" + paramMap.get("limit"));
 				}
-			} else {
-				logger.warn("list empty.directoryKey:" + dirBean.toDirKey() + ",listTimes:" + listTimes + ",listCost:"
-						+ costMills);
 			}
+			logger.info("list data.directoryKey:" + dirBean.toDirKey() + ",result:" + restList.getDataList().size()
+					+ ",accept:" + acceptList.size() + ",params:" + JSONUtils.getJSONObject(paramMap));
 			if (restList.isEOF()) {
 				dirStream.setDone(true);
 				logger.info("list to EOF.directoryKey:" + dirBean.toDirKey() + ",listTimes:" + listTimes + ",maxCount:"
@@ -125,12 +119,11 @@ public class DirFileScanner implements Runnable {
 			} else {
 				paramMap.put("marker", restList.getMarker());
 			}
-//			bw.flush();
+			if (!restList.isEOF() && CollectionUtils.isEmpty(restList.getDataList())) {
+				logger.warn("list data.directoryKey:" + dirBean.toDirKey() + ",empty data but not eof");
+			}
 			TimeUnit.SECONDS.sleep(1);
 		}
-//		IOUtils.closeQuietly(bw);
-		logger.info("directoryKey:" + dirBean.toDirKey() + ", fromStamp:" + dirStream.getFromStamp() + ",toStamp:"
-				+ dirStream.getToStamp() + ",totalCount:" + dirStream.getCount() + ",newCount:" + count);
 	}
 
 	private void createDataFileConsumer(List<RestFile> acceptList) {
@@ -172,17 +165,17 @@ public class DirFileScanner implements Runnable {
 		long maxStamp = stamp;
 		List<RestFile> itemList = new ArrayList<RestFile>(restList.size());
 		for (RestFile rs : restList) {
-			long curStamp = rs.getCreateTime();
+			// long curStamp = rs.getCreateTime();
+			// if (curStamp >= stamp) {
+			// maxStamp = maxStamp < curStamp ? curStamp : maxStamp;
+			// itemList.add(rs);
+			// continue;
+			// }
+			long curStamp = getStampByName(rs.getPath());
 			if (curStamp >= stamp) {
-				maxStamp = maxStamp < curStamp ? curStamp : maxStamp;
-				itemList.add(rs);
-				continue;
-			}
-			curStamp = getStampByName(rs.getPath());
-			if (curStamp >= stamp) {
 				itemList.add(rs);
 				maxStamp = maxStamp < curStamp ? curStamp : maxStamp;
-				logger.warn("illegal stamp.path:" + rs.getPath());
+				// logger.warn("illegal stamp.path:" + rs.getPath());
 			}
 		}
 		if (!itemList.isEmpty()) {

@@ -31,13 +31,13 @@ public class BrandTokenizerTest {
 		addAssists(JSONUtils.getJSONObject(attrs), entityToken);
 		entityList.add(entityToken);
 
-		// attrTokenizer.identify(entityList);
+		new AttrTokenizer().identify(entityList);
 		tokenizer.identify(entityList);
 		for (EntityToken entity : entityList) {
 			System.out.println("master:" + entity.getMaster().getValue());
 			for (SectionToken child : entity.getMaster().getChildren()) {
 				System.out.println("child:" + child.getKey() + "=" + child.getValue() + ",trust:" + child.getTrust());
-//				System.out.println("child:" + child);
+				// System.out.println("child:" + child);
 			}
 		}
 	}

@@ -26,12 +26,14 @@ public class BrandServiceImpl implements BrandService {
 	private BrandDao brandDao;
 
 	@Override
-	public void batchInsertDtos(List<BrandDto> dtoList) {
+	public int batchInsertDtos(List<BrandDto> dtoList) {
+		int affect = 0;
 		convertNullToDefault(dtoList);
 		BatchIterator<BrandDto> it = new BatchIterator<BrandDto>(dtoList);
 		while (it.hasNext()) {
-			brandDao.batchInsert(it.next());
+			affect += brandDao.batchInsert(it.next());
 		}
+		return affect;
 
 	}
 
@@ -59,24 +61,28 @@ public class BrandServiceImpl implements BrandService {
 	}
 
 	@Override
-	public void batchUpdateDtos(List<BrandDto> dtoList) {
+	public int batchUpdateDtos(List<BrandDto> dtoList) {
+		int affect = 0;
 		convertNullToDefault(dtoList);
 		BatchIterator<BrandDto> it = new BatchIterator<BrandDto>(dtoList);
 		while (it.hasNext()) {
-			brandDao.batchUpdate(it.next());
+			affect += brandDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<BrandDto> dtoList) {
+	public int batchSaveDtos(List<BrandDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
-			return;
+			return 0;
 		}
+		int affect = 0;
 		List<BrandDto> updateList = new ArrayList<BrandDto>();
 		List<BrandDto> insertList = new ArrayList<BrandDto>();
 		doAssort(dtoList, updateList, insertList);
-		batchInsertDtos(insertList);
-		batchUpdateDtos(updateList);
+		affect += batchInsertDtos(insertList);
+		affect += batchUpdateDtos(updateList);
+		return affect;
 	}
 
 	private void doAssort(List<BrandDto> dtoList, List<BrandDto> updateList, List<BrandDto> insertList) {

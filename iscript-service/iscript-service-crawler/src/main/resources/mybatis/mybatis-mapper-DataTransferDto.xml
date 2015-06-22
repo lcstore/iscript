@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.DataTransferDao">
+	<resultMap type="DataTransferDto" id="RM_DataTransferDto">
+		<result column="ID" property="id"/>
+		<result column="DATA_CODE" property="dataCode"/>
+		<result column="DATA_PATH" property="dataPath"/>
+		<result column="DATA_BUCKET" property="dataBucket"/>
+		<result column="DATA_DOMAIN" property="dataDomain"/>
+		<result column="DATA_COUNT" property="dataCount"/>
+		<result column="PARAMS" property="params"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="DataTransferDto-coloumn-list">
+		ID
+		,DATA_CODE
+		,DATA_PATH
+		,DATA_BUCKET
+		,DATA_DOMAIN
+		,DATA_COUNT
+		,PARAMS
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="DataTransferDto">
+		INSERT INTO T_DATA_TRANSFER(
+		<include refid="DataTransferDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.params},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="DataTransferDto">
+		UPDATE T_DATA_TRANSFER SET
+		DATA_PATH=#{dataPath}
+		,DATA_BUCKET=#{dataBucket}
+		,DATA_DOMAIN=#{dataDomain}
+		,DATA_COUNT=#{dataCount}
+		,PARAMS=#{params}
+		,UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	<update id="batchUpdateByCode" parameterType="DataTransferDto">
+		UPDATE T_DATA_TRANSFER SET
+		DATA_PATH=#{dataPath}
+		,DATA_BUCKET=#{dataBucket}
+		,DATA_DOMAIN=#{dataDomain}
+		,DATA_COUNT=#{dataCount}
+		,PARAMS=#{params}
+		,UPDATE_TIME=#{updateTime}
+		WHERE DATA_CODE=#{dataCode}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_DATA_TRANSFER
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<insert id="batchInsertOrUpdateByKey" parameterType="DataTransferDto">
+	    INSERT INTO T_DATA_TRANSFER(
+		DATA_CODE
+		,DATA_PATH
+		,DATA_BUCKET
+		,DATA_DOMAIN
+		,DATA_COUNT
+		,PARAMS
+		,CREATE_TIME
+		,UPDATE_TIME
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.params},#{item.createTime},#{item.updateTime})
+		</foreach>
+		ON DUPLICATE KEY UPDATE DATA_COUNT=VALUES(DATA_COUNT)+DATA_COUNT,PARAMS=VALUES(PARAMS);
+	</insert>
+	<select id="getDtoByIds" resultMap="RM_DataTransferDto">
+	    SELECT * FROM T_DATA_TRANSFER
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getDtoByCodeList" parameterType="map" resultMap="RM_DataTransferDto">
+	   SELECT * FROM T_DATA_TRANSFER
+	    <where>
+	       <foreach collection="codeList" item="code" open="AND DATA_CODE IN(" separator="," close=")">
+	           #{code}
+	       </foreach>
+	    </where>
+	</select>
+</mapper>

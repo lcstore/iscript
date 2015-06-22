@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import com.lezo.iscript.service.crawler.dao.BrandDao;
 import com.lezo.iscript.service.crawler.dto.BrandDto;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.utils.CharsUtils;
 
 @Service
 public class SynonymBrandServiceImpl implements SynonymBrandService {
@@ -45,7 +47,7 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 						brandSet = new HashSet<String>();
 						synCodeToBrandSetMap.put(dto.getSynonymCode(), brandSet);
 					}
-					brandSet.add(dto.getBrandName());
+					brandSet.add(CharsUtils.unifyChars(dto.getBrandName()));
 				}
 				if (dtoList.size() < limit) {
 					break;
@@ -82,6 +84,7 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 
 	@Override
 	public Set<String> getSynonyms(String brandName) {
+		brandName = CharsUtils.unifyChars(brandName);
 		return BrandInitor.brandSetMap.get(brandName);
 	}
 
@@ -92,9 +95,11 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 
 	@Override
 	public boolean isSynonym(String left, String right) {
-		if (left == null || right == null) {
+		if (StringUtils.isBlank(left) || StringUtils.isBlank(right)) {
 			return false;
 		}
+		left = CharsUtils.unifyChars(left);
+		right = CharsUtils.unifyChars(right);
 		Set<String> brandSet = BrandInitor.brandSetMap.get(left);
 		return brandSet == null ? false : brandSet.contains(right);
 	}

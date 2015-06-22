@@ -21,6 +21,7 @@ import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoConstant;
 import com.lezo.iscript.yeam.io.IoRequest;
 import com.lezo.iscript.yeam.io.IoRespone;
+import com.lezo.iscript.yeam.property.GlobalProperties;
 import com.lezo.iscript.yeam.server.IoAcceptorHolder;
 import com.lezo.iscript.yeam.server.SendUtils;
 import com.lezo.iscript.yeam.tasker.buffer.StampBufferHolder;
@@ -31,8 +32,8 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class IoTaskHandler implements MessageHandler {
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(IoTaskHandler.class);
-	public static final int PER_OFFER_SIZE = 50;
-	public static final int MIN_TASK_SIZE = 10;
+	public static final int PER_OFFER_SIZE = GlobalProperties.getInstance().getPerOfferSize();
+	public static final int MIN_TASK_SIZE = GlobalProperties.getInstance().getMinTaskSize();
 	private static final Object LOCKER = new Object();
 
 	@Override

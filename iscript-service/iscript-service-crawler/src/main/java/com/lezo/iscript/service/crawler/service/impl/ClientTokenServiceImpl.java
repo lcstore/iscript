@@ -22,29 +22,33 @@ public class ClientTokenServiceImpl implements ClientTokenService {
 	private ClientTokenDao clientTokenDao;
 
 	@Override
-	public void batchInsertDtos(List<ClientTokenDto> dtoList) {
+	public int batchInsertDtos(List<ClientTokenDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ClientTokenDto> it = new BatchIterator<ClientTokenDto>(dtoList);
 		while (it.hasNext()) {
-			clientTokenDao.batchInsert(it.next());
+			affect += clientTokenDao.batchInsert(it.next());
 		}
-
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<ClientTokenDto> dtoList) {
+	public int batchUpdateDtos(List<ClientTokenDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ClientTokenDto> it = new BatchIterator<ClientTokenDto>(dtoList);
 		while (it.hasNext()) {
-			clientTokenDao.batchUpdate(it.next());
+			affect += clientTokenDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<ClientTokenDto> dtoList) {
-		batchInsertDtos(dtoList);
+	public int batchSaveDtos(List<ClientTokenDto> dtoList) {
+		return batchInsertDtos(dtoList);
 	}
 
 	@Override
-	public List<ClientTokenDto> getClientTokenDtoByRefreshDate(Date fromRefreshDate, Date toRefreshDate, String clientType) {
+	public List<ClientTokenDto> getClientTokenDtoByRefreshDate(Date fromRefreshDate, Date toRefreshDate,
+			String clientType) {
 		return clientTokenDao.getClientTokenDtoByRefreshDate(fromRefreshDate, toRefreshDate, clientType);
 	}
 

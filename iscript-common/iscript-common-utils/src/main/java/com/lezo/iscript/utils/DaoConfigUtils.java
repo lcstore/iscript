@@ -66,9 +66,9 @@ public class DaoConfigUtils {
 		int size = columnList.size();
 		for (int i = 0; i < size; i++) {
 			String colName = columnList.get(i);
-			if ("ID".equals(colName)) {
-				continue;
-			}
+			// if ("ID".equals(colName)) {
+			// continue;
+			// }
 			if (sb.length() > 0) {
 				sb.append(LINE_FORMAT);
 				sb.append(",");
@@ -86,7 +86,7 @@ public class DaoConfigUtils {
 		int size = paramList.size();
 		for (int i = 0; i < size; i++) {
 			String colName = columnList.get(i);
-			if ("ID".equals(colName)) {
+			if ("ID".equals(colName.toUpperCase())) {
 				continue;
 			}
 			String updateString = colName + "=#{" + paramList.get(i) + "}";
@@ -109,9 +109,9 @@ public class DaoConfigUtils {
 		int size = paramList.size();
 		for (int i = 0; i < size; i++) {
 			String param = paramList.get(i);
-			if ("id".equals(param)) {
-				continue;
-			}
+			// if ("id".equals(param)) {
+			// continue;
+			// }
 			String insertString = "#{item." + param + "}";
 			sb.append(insertString);
 			if (i + 1 < size) {

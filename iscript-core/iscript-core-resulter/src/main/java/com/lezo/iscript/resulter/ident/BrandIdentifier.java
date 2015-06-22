@@ -9,7 +9,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
-import com.lezo.iscript.utils.UnifyCharsUtils;
+import com.lezo.iscript.utils.CharsUtils;
 
 @Data
 public class BrandIdentifier implements Identifier {
@@ -64,7 +64,7 @@ public class BrandIdentifier implements Identifier {
 
 	private boolean contains(String source, String token) {
 		return StringUtils.isNotBlank(token) && StringUtils.isNotBlank(source)
-				&& UnifyCharsUtils.unifyChars(source).contains(token);
+				&& CharsUtils.unifyChars(source).contains(token);
 	}
 
 	private boolean isTokenTrusty(IdentSource param) {

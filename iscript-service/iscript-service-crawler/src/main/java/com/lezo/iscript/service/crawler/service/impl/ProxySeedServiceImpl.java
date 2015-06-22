@@ -26,31 +26,37 @@ public class ProxySeedServiceImpl implements ProxySeedService {
 	private ProxySeedDao proxySeedDao;
 
 	@Override
-	public void batchInsertDtos(List<ProxySeedDto> dtoList) {
+	public int batchInsertDtos(List<ProxySeedDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ProxySeedDto> it = new BatchIterator<ProxySeedDto>(dtoList);
 		while (it.hasNext()) {
-			proxySeedDao.batchInsert(it.next());
+			affect += proxySeedDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<ProxySeedDto> dtoList) {
+	public int batchUpdateDtos(List<ProxySeedDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ProxySeedDto> it = new BatchIterator<ProxySeedDto>(dtoList);
 		while (it.hasNext()) {
-			proxySeedDao.batchUpdate(it.next());
+			affect += proxySeedDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<ProxySeedDto> dtoList) {
+	public int batchSaveDtos(List<ProxySeedDto> dtoList) {
 		if (CollectionUtils.isEmpty(dtoList)) {
-			return;
+			return 0;
 		}
+		int affect = 0;
 		List<ProxySeedDto> insertList = new ArrayList<ProxySeedDto>();
 		List<ProxySeedDto> updateList = new ArrayList<ProxySeedDto>();
 		doAssort(dtoList, insertList, updateList);
-		batchUpdateDtos(dtoList);
-		batchInsertDtos(dtoList);
+		affect += batchUpdateDtos(dtoList);
+		affect += batchInsertDtos(dtoList);
+		return affect;
 	}
 
 	private void doAssort(List<ProxySeedDto> dtoList, List<ProxySeedDto> insertList, List<ProxySeedDto> updateList) {

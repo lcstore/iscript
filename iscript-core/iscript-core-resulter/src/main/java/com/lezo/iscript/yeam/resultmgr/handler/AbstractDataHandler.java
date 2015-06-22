@@ -54,7 +54,8 @@ public abstract class AbstractDataHandler implements DataHandler {
 			logger.warn("cost too long time.type:{},args:{},cost:{},executor:{}", type, argsString, cost,
 					ExecutorUtils.getDataConsumeExecutor());
 		} else {
-			logger.info("handle type:" + type + ",cost:" + cost + ",executor:" + ExecutorUtils.getDataConsumeExecutor());
+			// logger.info("handle type:" + type + ",cost:" + cost +
+			// ",executor:" + ExecutorUtils.getDataConsumeExecutor());
 		}
 	}
 }

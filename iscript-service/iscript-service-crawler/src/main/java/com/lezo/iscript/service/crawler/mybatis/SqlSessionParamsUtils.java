@@ -1,4 +1,4 @@
-package com.lezo.iscript.service.crawler.intercept;
+package com.lezo.iscript.service.crawler.mybatis;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

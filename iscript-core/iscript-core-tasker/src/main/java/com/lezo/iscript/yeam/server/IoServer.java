@@ -33,6 +33,7 @@ import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.io.IoOrder;
 import com.lezo.iscript.yeam.io.IoRequest;
+import com.lezo.iscript.yeam.property.GlobalProperties;
 import com.lezo.iscript.yeam.server.session.ProxySessionCacher;
 
 public class IoServer extends IoHandlerAdapter {
@@ -42,6 +43,10 @@ public class IoServer extends IoHandlerAdapter {
 	private static Logger logger = LoggerFactory.getLogger(IoServer.class);
 	private IoAcceptor acceptor;
 	private ClientEventDispatcher clientEventDispatcher = new ClientEventDispatcher();
+
+	public IoServer() throws IOException {
+		this(GlobalProperties.getInstance().getPort());
+	}
 
 	public IoServer(int port) throws IOException {
 		acceptor = new NioSocketAcceptor();

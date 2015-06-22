@@ -18,24 +18,28 @@ public class ProxyHomeServiceImpl implements ProxyHomeService {
 	private ProxyHomeDao proxyHomeDao;
 
 	@Override
-	public void batchInsertDtos(List<ProxyHomeDto> dtoList) {
+	public int batchInsertDtos(List<ProxyHomeDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ProxyHomeDto> it = new BatchIterator<ProxyHomeDto>(dtoList);
 		while (it.hasNext()) {
-			proxyHomeDao.batchInsert(it.next());
+			affect += proxyHomeDao.batchInsert(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchUpdateDtos(List<ProxyHomeDto> dtoList) {
+	public int batchUpdateDtos(List<ProxyHomeDto> dtoList) {
+		int affect = 0;
 		BatchIterator<ProxyHomeDto> it = new BatchIterator<ProxyHomeDto>(dtoList);
 		while (it.hasNext()) {
-			proxyHomeDao.batchUpdate(it.next());
+			affect += proxyHomeDao.batchUpdate(it.next());
 		}
+		return affect;
 	}
 
 	@Override
-	public void batchSaveDtos(List<ProxyHomeDto> dtoList) {
-		batchInsertDtos(dtoList);
+	public int batchSaveDtos(List<ProxyHomeDto> dtoList) {
+		return batchInsertDtos(dtoList);
 	}
 
 	@Override
