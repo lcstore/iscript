@@ -1,14 +1,20 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +50,7 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 				for (BrandDto dto : dtoList) {
 					Set<String> brandSet = synCodeToBrandSetMap.get(dto.getSynonymCode());
 					if (brandSet == null) {
-						brandSet = new HashSet<String>();
+						brandSet = new LinkedHashSet<String>();
 						synCodeToBrandSetMap.put(dto.getSynonymCode(), brandSet);
 					}
 					brandSet.add(CharsUtils.unifyChars(dto.getBrandName()));
@@ -75,10 +81,50 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 					synBrandSet.addAll(oSet);
 				}
 			}
+			doSort(synCodeToBrandSetMap);
 			long cost = System.currentTimeMillis() - start;
 			logger.info("init brand.synCode count:" + synCodeToBrandSetMap.size() + ",brandCount:" + count + ",cost:"
 					+ cost);
 			return brandSetMap;
+		}
+
+		private static void doSort(Map<String, Set<String>> synCodeToBrandSetMap) {
+			Comparator<String> comparator = new Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					int len1 = getCharLength(o1);
+					int len2 = getCharLength(o2);
+					if (len1 == len2) {
+						return o2.compareToIgnoreCase(o1);
+					}
+					return len2 - len1;
+				}
+
+				private int getCharLength(String o1) {
+					if (o1 == null) {
+						return -1;
+					}
+					try {
+						return o1.getBytes("GBK").length;
+					} catch (UnsupportedEncodingException e) {
+						logger.warn("Chars:" + o1 + ",cause:", e);
+					}
+					return -1;
+				}
+			};
+			for (Entry<String, Set<String>> entry : synCodeToBrandSetMap.entrySet()) {
+				if (CollectionUtils.isEmpty(entry.getValue())) {
+					continue;
+				}
+				Set<String> linkedSet = entry.getValue();
+				List<String> sortList = new ArrayList<String>(linkedSet);
+				Collections.sort(sortList, comparator);
+				linkedSet.clear();
+				for (String sValue : sortList) {
+					linkedSet.add(sValue);
+				}
+			}
+
 		}
 	}
 

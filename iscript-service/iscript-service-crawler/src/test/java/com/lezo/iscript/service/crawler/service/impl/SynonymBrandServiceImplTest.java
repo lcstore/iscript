@@ -24,4 +24,11 @@ public class SynonymBrandServiceImplTest {
 		System.err.println(brandName + ":" + ArrayUtils.toString(brandSet.toArray()));
 	}
 
+	@Test
+	public void testLength() throws Exception {
+		String src = "abc德运";
+		System.err.println(src.length());
+		System.err.println(src.getBytes("UTF-8").length);
+		System.err.println(src.getBytes("GBK").length);
+	}
 }

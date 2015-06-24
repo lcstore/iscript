@@ -1,6 +1,7 @@
 package com.lezo.iscript.resulter.ident;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,13 +39,13 @@ public class BrandTokenizer extends AbstractTokenizer {
 	}
 
 	private List<SectionToken> doToken(EntityToken entity) {
-		Set<SectionToken> tokenSet = new HashSet<SectionToken>();
-		tokenAssist(tokenSet, entity);
-		tokenChildren(tokenSet, entity);
-		return new ArrayList<SectionToken>(tokenSet);
+		List<SectionToken> tokenList = new ArrayList<SectionToken>();
+		tokenAssist(tokenList, entity);
+		tokenChildren(tokenList, entity);
+		return new ArrayList<SectionToken>(tokenList);
 	}
 
-	private void tokenChildren(Set<SectionToken> tokenSet, EntityToken entity) {
+	private void tokenChildren(Collection<SectionToken> tokenCollection, EntityToken entity) {
 		List<SectionToken> leaveList = new ArrayList<SectionToken>();
 		EntityToken.getLeveChildren(leaveList, entity.getMaster());
 		Iterator<String> it = synonymBrandService.iteratorKeys();
@@ -56,13 +57,13 @@ public class BrandTokenizer extends AbstractTokenizer {
 					newToken.setParent(sectionToken);
 					newToken.setTokenizer(this.getClass().getName());
 					newToken.setTrust(80);
-					tokenSet.add(newToken);
+					tokenCollection.add(newToken);
 				}
 			}
 		}
 	}
 
-	private void tokenAssist(Set<SectionToken> tokenSet, EntityToken entity) {
+	private void tokenAssist(Collection<SectionToken> tokenCollection, EntityToken entity) {
 		List<SectionToken> assists = entity.getAssists();
 		if (CollectionUtils.isEmpty(assists)) {
 			return;
@@ -82,7 +83,7 @@ public class BrandTokenizer extends AbstractTokenizer {
 					newToken.setParent(entity.getMaster());
 					newToken.setTokenizer(this.getClass().getName());
 					newToken.setTrust(100);
-					tokenSet.add(newToken);
+					tokenCollection.add(newToken);
 				}
 			}
 		}

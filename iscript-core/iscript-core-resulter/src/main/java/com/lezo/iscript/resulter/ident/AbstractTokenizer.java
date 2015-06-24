@@ -57,7 +57,7 @@ public abstract class AbstractTokenizer implements Tokenizer {
 			int index = master.getChildren() == null ? 0 : master.getChildren().size();
 			index += 1;
 			String key = master.getKey() + "_" + index;
-			SectionToken child = new SectionToken(key, value.trim(), this.getClass().getName());
+			SectionToken child = new SectionToken(key, value.trim(), master.getTokenizer());
 			master.addChild(child);
 		}
 	}
