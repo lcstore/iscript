@@ -134,8 +134,8 @@ public class SimilarDtoStorageCaller {
 		if (StringUtils.isEmpty(newDto.getProductName())) {
 			newDto.setProductName(oldDto.getProductName());
 		}
-		if (newDto.getProductPrice() == null) {
-			newDto.setProductPrice(oldDto.getProductPrice());
+		if (newDto.getMarketPrice() == null) {
+			newDto.setMarketPrice(oldDto.getMarketPrice());
 		}
 	}
 

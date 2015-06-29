@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -19,5 +20,9 @@ public interface ProductDao {
 			@Param(value = "siteId") Integer siteId);
 
 	void batchUpdateUnionUrls(List<ProductDto> dtoList);
+
+	List<ProductDto> getProductDtosByDateCateSiteId(@Param("fromDate") Date fromCreateDate,
+			@Param("toDate") Date toCreateDate, @Param("tokenCategory") String tokenCategory,
+			@Param("siteId") Integer siteId, @Param("fromId") Long fromId, @Param("limit") int limit);
 
 }

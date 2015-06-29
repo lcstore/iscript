@@ -4,27 +4,27 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.ProductDao">
 	<resultMap type="ProductDto" id="RM_ProductDto">
-		<result column="ID" property="id"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="SHOP_ID" property="shopId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="MARKET_PRICE" property="marketPrice"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="PRODUCT_BRAND" property="productBrand"/>
-		<result column="PRODUCT_MODEL" property="productModel"/>
-		<result column="PRODUCT_ATTR" property="productAttr"/>
-		<result column="BAR_CODE" property="barCode"/>
-		<result column="IMG_URL" property="imgUrl"/>
-		<result column="UNION_URL" property="unionUrl"/>
-		<result column="ONSAIL_TIME" property="onsailTime"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
-		<result column="CATEGORY_NAV" property="categoryNav"/>
-		<result column="TOKEN_BRAND" property="tokenBrand"/>
-		<result column="TOKEN_CATEGORY" property="tokenCategory"/>
-		<result column="SPU_CODES" property="spuCodes"/>
-		<result column="SPU_VARY" property="spuVary"/>
+		<result column="ID" property="id" />
+		<result column="SITE_ID" property="siteId" />
+		<result column="SHOP_ID" property="shopId" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="MARKET_PRICE" property="marketPrice" />
+		<result column="PRODUCT_URL" property="productUrl" />
+		<result column="PRODUCT_BRAND" property="productBrand" />
+		<result column="PRODUCT_MODEL" property="productModel" />
+		<result column="PRODUCT_ATTR" property="productAttr" />
+		<result column="BAR_CODE" property="barCode" />
+		<result column="IMG_URL" property="imgUrl" />
+		<result column="UNION_URL" property="unionUrl" />
+		<result column="ONSAIL_TIME" property="onsailTime" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+		<result column="CATEGORY_NAV" property="categoryNav" />
+		<result column="TOKEN_BRAND" property="tokenBrand" />
+		<result column="TOKEN_CATEGORY" property="tokenCategory" />
+		<result column="SPU_CODES" property="spuCodes" />
+		<result column="SPU_VARY" property="spuVary" />
 	</resultMap>
 	<sql id="ProductDto-coloumn-list">
 		SITE_ID
@@ -109,9 +109,32 @@
 		</if>
 		LIMIT #{limit}
 	</select>
+	<select id="getProductDtosByDateCateSiteId" parameterType="map"
+		resultMap="RM_ProductDto">
+		SELECT * FROM T_PRODUCT
+		<where>
+		   <if test="fromId != null">
+		     <![CDATA[
+		     AND ID > #{fromId}
+		     ]]>
+		    </if>
+			<if test="siteId !=null">
+				AND SITE_ID=#{siteId}
+			</if>
+			<if test="tokenCategory !=null">
+				AND TOKEN_CATEGORY=#{tokenCategory}
+			</if>
+		     <![CDATA[
+		     AND CREATE_TIME > #{fromDate}
+		     AND CREATE_TIME <= #{toDate}
+		     ]]>
+			LIMIT #{limit}
+		</where>
+	</select>
 
 	<update id="batchUpdateUnionUrls" parameterType="ProductDto">
-		UPDATE T_PRODUCT SET
+		UPDATE T_PRODUCT
+		SET
 		UNION_URL=#{unionUrl}
 		WHERE ID=#{id}
 	</update>

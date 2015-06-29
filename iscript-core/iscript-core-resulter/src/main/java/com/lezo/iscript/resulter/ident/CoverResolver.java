@@ -12,11 +12,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
+import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.CharsUtils;
 
 public class CoverResolver implements SimilarResolver {
 	private static final String VALUE_SPLIT = " ";
 	private SynonymBrandService synonymBrandService;
+
+	public CoverResolver() {
+		super();
+		this.synonymBrandService = SpringBeanUtils.getBean(SynonymBrandService.class);
+	}
 
 	public CoverResolver(SynonymBrandService synonymBrandService) {
 		super();
@@ -24,7 +30,7 @@ public class CoverResolver implements SimilarResolver {
 	}
 
 	@Override
-	public TokenSimilar doResolve(EntityToken lToken, EntityToken rToken) {
+	public EntitySimilar doResolve(EntityToken lToken, EntityToken rToken) {
 		// 用本身Token分割EntityToken
 		List<SectionToken> leftList = new ArrayList<SectionToken>();
 		EntityToken.getLeveChildren(leftList, lToken.getMaster());
@@ -39,6 +45,8 @@ public class CoverResolver implements SimilarResolver {
 		TokenCover lCoverToken = doCoverTokens(lString, rightList);
 		TokenCover rCoverToken = doCoverTokens(rString, leftList);
 		doCover(lCoverToken, rCoverToken);
+		lCoverToken.setEntity(lToken);
+		rCoverToken.setEntity(rToken);
 
 		int lUnCoverDist = getTokenDistance(lCoverToken.getUnCovers());
 		int rUnCoverDist = getTokenDistance(rCoverToken.getUnCovers());
@@ -59,7 +67,7 @@ public class CoverResolver implements SimilarResolver {
 		// System.err.println("lUnCoverDist:" + lUnCoverDist);
 		// System.err.println("rUnCoverDist:" + rUnCoverDist);
 		// System.err.println("unCoverScore:" + unCoverScore);
-		TokenSimilar similar = new TokenSimilar();
+		EntitySimilar similar = new EntitySimilar();
 		similar.setSimilar(100 - unCoverScore);
 		similar.setLeftCover(lCoverToken);
 		similar.setRightCover(rCoverToken);

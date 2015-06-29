@@ -9,6 +9,10 @@ public interface SimilarService {
 
 	void batchUpdateSimilarDtos(List<SimilarDto> dtoList);
 
+	void batchSaveSimilarDtos(List<SimilarDto> dtoList);
+
 	List<SimilarDto> getSimilarDtoByProductCodes(Integer siteId, List<String> codeList);
+
+	List<SimilarDto> getSimilarDtoBySimilarCodes(List<Long> codeList);
 
 }

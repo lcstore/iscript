@@ -106,7 +106,7 @@ public class HuihuiSimilarSearcher {
 		dto.setProductCode(JSONUtils.getString(argsObject, "code"));
 		dto.setProductName(JSONUtils.getString(argsObject, "name"));
 		dto.setProductUrl(JSONUtils.getString(argsObject, "url"));
-		dto.setProductPrice(JSONUtils.getFloat(argsObject, "price"));
+		dto.setMarketPrice(JSONUtils.getFloat(argsObject, "price"));
 		dto.setImgUrl(JSONUtils.getString(argsObject, "imgUrl"));
 		dto.setBarCode(JSONUtils.getString(argsObject, "barCode"));
 		similarDtos.add(dto);
@@ -154,7 +154,7 @@ public class HuihuiSimilarSearcher {
 				log.warn("can not get code from:" + dto.getProductUrl());
 			}
 			dto.setProductCode(code);
-			dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
+			dto.setMarketPrice(JSONUtils.getFloat(mObject, "price"));
 			dto.setCreateTime(new Date());
 			dto.setUpdateTime(dto.getCreateTime());
 			similarDtos.add(dto);

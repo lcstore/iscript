@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.lezo.iscript.utils.CharsUtils;
+
 public class ModelTokenizer extends AbstractTokenizer {
 	private static final Set<String> modelAssistKeySet = new HashSet<String>();
 	private static final Pattern MODEL_REG = Pattern.compile("[^\u4e00-\u9fa5\\s\\(\\)（）]{2,}");
@@ -24,7 +26,11 @@ public class ModelTokenizer extends AbstractTokenizer {
 
 		for (EntityToken entity : entityTokens) {
 			List<SectionToken> tokenList = doToken(entity);
+			Set<String> stableSet = getStableSet(entity);
 			for (SectionToken token : tokenList) {
+				if (stableSet.contains(CharsUtils.unifyChars(token.getValue()))) {
+					continue;
+				}
 				token.getParent().addChild(token);
 			}
 		}
@@ -39,7 +45,7 @@ public class ModelTokenizer extends AbstractTokenizer {
 
 	private void tokenChildren(Set<SectionToken> tokenSet, EntityToken entity) {
 		List<SectionToken> leaveList = new ArrayList<SectionToken>();
-		entity.getLeveChildren(leaveList, entity.getMaster());
+		EntityToken.getLeveChildren(leaveList, entity.getMaster());
 		for (SectionToken at : leaveList) {
 			Matcher matcher = MODEL_REG.matcher(at.getValue());
 			while (matcher.find()) {
@@ -63,6 +69,7 @@ public class ModelTokenizer extends AbstractTokenizer {
 				assistTokens.add(token);
 			}
 		}
+
 		for (SectionToken at : assistTokens) {
 			Matcher matcher = MODEL_REG.matcher(at.getValue());
 			while (matcher.find()) {

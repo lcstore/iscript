@@ -106,7 +106,7 @@ public class WccSimilarSearchTimer {
 		dto.setProductCode(JSONUtils.getString(argsObject, "wCode"));
 		dto.setProductName(JSONUtils.getString(argsObject, "wName"));
 		dto.setProductUrl(JSONUtils.getString(argsObject, "wUrl"));
-		dto.setProductPrice(JSONUtils.getFloat(argsObject, "wPrice"));
+		dto.setMarketPrice(JSONUtils.getFloat(argsObject, "wPrice"));
 		dto.setImgUrl(JSONUtils.getString(argsObject, "wImgUrl"));
 		dto.setBarCode(JSONUtils.getString(argsObject, "wBCode"));
 		similarDtos.add(dto);
@@ -153,7 +153,7 @@ public class WccSimilarSearchTimer {
 				log.warn("can not get code from:" + dto.getProductUrl());
 			}
 			dto.setProductCode(code);
-			dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
+			dto.setMarketPrice(JSONUtils.getFloat(mObject, "price"));
 			dto.setImgUrl(JSONUtils.getString(mObject, "image"));
 			dto.setCreateTime(new Date());
 			dto.setUpdateTime(dto.getCreateTime());

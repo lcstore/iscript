@@ -2,9 +2,11 @@ package com.lezo.iscript.resulter.ident;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,4 +91,15 @@ public abstract class AbstractTokenizer implements Tokenizer {
 		}
 	}
 
+	public Set<String> getStableSet(EntityToken entity) {
+		List<SectionToken> leaveList = new ArrayList<SectionToken>();
+		EntityToken.getLeveChildren(leaveList, entity.getMaster());
+		Set<String> stableSet = new HashSet<String>();
+		for (SectionToken token : leaveList) {
+			if (token.isStable()) {
+				stableSet.add(CharsUtils.unifyChars(token.getValue()));
+			}
+		}
+		return stableSet;
+	}
 }

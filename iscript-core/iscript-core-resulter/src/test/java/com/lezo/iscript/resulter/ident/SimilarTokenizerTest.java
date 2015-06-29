@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.lezo.iscript.resulter.cluster.CenterToken;
+import com.lezo.iscript.resulter.cluster.SmartCluster;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
 import com.lezo.iscript.utils.JSONUtils;
 
@@ -32,7 +34,7 @@ public class SimilarTokenizerTest {
 		new ModelTokenizer().identify(entityList);
 
 		CoverResolver sliceResolver = new CoverResolver(makeSynonymBrandService(brandList));
-		TokenSimilar tokenSimilar = sliceResolver.doResolve(entityList.get(0), entityList.get(1));
+		EntitySimilar tokenSimilar = sliceResolver.doResolve(entityList.get(0), entityList.get(1));
 		System.err.println("tokenSimilar:" + tokenSimilar.getSimilar());
 		System.err.println("tokenSimilar:" + tokenSimilar);
 
@@ -64,12 +66,12 @@ public class SimilarTokenizerTest {
 		CoverResolver sliceResolver = new CoverResolver(makeSynonymBrandService(brandList));
 		for (EntityToken token : entityList) {
 			EntityToken maxToken = null;
-			TokenSimilar maxSimilar = null;
+			EntitySimilar maxSimilar = null;
 			for (EntityToken sec : entityList) {
 				if (token == sec) {
 					continue;
 				}
-				TokenSimilar tokenSimilar = sliceResolver.doResolve(token, sec);
+				EntitySimilar tokenSimilar = sliceResolver.doResolve(token, sec);
 				if (maxSimilar == null || maxSimilar.getSimilar() < tokenSimilar.getSimilar()) {
 					maxSimilar = tokenSimilar;
 					maxToken = sec;
@@ -79,6 +81,32 @@ public class SimilarTokenizerTest {
 			System.err.println("maxToken:" + maxToken);
 			System.err.println("maxSimilar:" + maxSimilar);
 			System.err.println("---------");
+		}
+	}
+
+	@Test
+	public void testSimilarByFile2Cluster() throws Exception {
+		List<String> lines = FileUtils.readLines(new File("src/test/resources/data/similar1.txt"), "UTF-8");
+		List<EntityToken> entityList = new ArrayList<EntityToken>();
+		for (String line : lines) {
+			EntityToken entity = new EntityToken(line);
+			entityList.add(entity);
+		}
+		List<String> brandList = new ArrayList<String>();
+		brandList.add("三星");
+		brandList.add("samsung");
+		new AttrTokenizer().identify(entityList);
+		new BrandTokenizer(makeSynonymBrandService(brandList)).identify(entityList);
+		new ModelTokenizer().identify(entityList);
+
+		CoverResolver resolver = new CoverResolver(makeSynonymBrandService(brandList));
+		SmartCluster cluster = new SmartCluster(resolver);
+		List<CenterToken> centerList = cluster.cluster(entityList);
+		for (CenterToken center : centerList) {
+			System.err.println("center.members:" + center.getMembers().size() + ",center:" + center.getCenter());
+			for (EntityToken mb : center.getMembers()) {
+				System.err.println(".members:" + mb);
+			}
 		}
 	}
 

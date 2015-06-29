@@ -8,6 +8,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class TokenCover {
+	private EntityToken entity;
 	private String cover;
 	private List<SectionToken> unCovers;
 }

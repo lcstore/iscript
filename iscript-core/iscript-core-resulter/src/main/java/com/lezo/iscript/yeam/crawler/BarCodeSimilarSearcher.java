@@ -141,7 +141,7 @@ public class BarCodeSimilarSearcher {
 		dto.setProductName(JSONUtils.getString(mObject, "wname"));
 		dto.setProductCode(JSONUtils.getString(mObject, "wareId"));
 		dto.setProductUrl(getUrlFromCode(dto.getProductCode()));
-		dto.setProductPrice(JSONUtils.getFloat(mObject, "price"));
+		dto.setMarketPrice(JSONUtils.getFloat(mObject, "price"));
 		String imgUrl = String.format("http://img10.360buyimg.com/n5/%s", JSONUtils.getString(mObject, "imageurl"));
 		dto.setImgUrl(imgUrl);
 		dto.setCreateTime(new Date());

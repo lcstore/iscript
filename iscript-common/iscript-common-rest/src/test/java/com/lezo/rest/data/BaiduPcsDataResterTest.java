@@ -12,18 +12,12 @@ import org.junit.Test;
 import com.lezo.iscript.rest.http.HttpClientUtils;
 
 public class BaiduPcsDataResterTest {
+	// String bucket = "istore_doc";
 	// String accessToken =
-	// "21.2c338df374df1340034fb1ac1ecb9d66.2592000.1428417297.4026763474-2920106";
-	// private String bucket = "idocs";
-	// String accessToken =
-	// "21.36060ec14d4d658968991d26953c922f.2592000.1428571671.4026763474-1856205";
-	// private String bucket = "istore_doc";
-	// String accessToken =
-	// "21.bbab445326661b526361f507d1a7305d.2592000.1433652624.4026763474-1856205";
-	// String accessToken =
-	// "21.ad2f5fb25bfaea4bea82efc054ba9b45.2592000.1433653314.4026763474-2920106";
-	String accessToken = "21.6dbc1ea9008593ed90e15cae7927f9cf.2592000.1436245124.4026763474-1856205";// istore_doc
-	private String bucket = "istore_doc";
+	// "21.f7e82a4f1fa60c34698cbb82397c6dac.2592000.1437829910.4026763474-1856205";//
+	// istore_doc
+	String bucket = "idocs";
+	String accessToken = "21.ac31d6d3c22be8157036651f6fdbe207.2592000.1436245124.4026763474-2920106";
 	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
@@ -71,7 +65,8 @@ public class BaiduPcsDataResterTest {
 		targetPath = "/apps/idocs/iscript/20150518/ConfigProxySeedHandler/68d5807a-4ad1-485e-90f5-bc99d7645274";
 		targetPath = "/apps/idocs/iscript/20150518/ConfigProxyDetector/5";
 		targetPath = "/apps/idocs/iscript/20150526/ConfigTmallBrandShop/4c17ebd2-ae53-4418-b6a4-f4963b569c8a";
-		targetPath = "/apps/istore_doc/iscript/20150618/ConfigProxyDetector/642fd595-3499-4797-aed3-3edc9352b83f";
+		// targetPath =
+		// "/apps/istore_doc/iscript/20150618/ConfigProxyDetector/642fd595-3499-4797-aed3-3edc9352b83f";
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("limit", "200-300");
 		RestList fileList = rester.listFiles(targetPath, paramMap);

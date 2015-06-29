@@ -1,6 +1,8 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +46,8 @@ public class ProductServiceImpl implements ProductService {
 			} catch (Exception e) {
 				e.printStackTrace();
 				for (ProductDto dto : subList) {
-					logger.warn("code:{},url:{},onsail:{}", dto.getProductCode(), dto.getProductUrl(), dto.getOnsailTime());
+					logger.warn("code:{},url:{},onsail:{}", dto.getProductCode(), dto.getProductUrl(),
+							dto.getOnsailTime());
 				}
 			}
 		}
@@ -79,7 +82,8 @@ public class ProductServiceImpl implements ProductService {
 		doAssort(dtoList, insertDtos, updateDtos);
 		batchInsertProductDtos(insertDtos);
 		batchUpdateProductDtos(updateDtos);
-		logger.info(String.format("save [%s],insert:%d,update:%d,cost:", "ProductDto", insertDtos.size(), updateDtos.size()));
+		logger.info(String.format("save [%s],insert:%d,update:%d,cost:", "ProductDto", insertDtos.size(),
+				updateDtos.size()));
 	}
 
 	private void doAssort(List<ProductDto> productDtos, List<ProductDto> insertDtos, List<ProductDto> updateDtos) {
@@ -135,5 +139,15 @@ public class ProductServiceImpl implements ProductService {
 		if (newDto.getShopId() == null) {
 			newDto.setShopId(oldDto.getShopId());
 		}
+	}
+
+	@Override
+	public List<ProductDto> getProductDtosByDateCateSiteId(Date fromCreateDate, Date toCreateDate, String sCategory,
+			Integer siteId, Long fromId, int limit) {
+		if (limit < 1 || fromCreateDate == null || toCreateDate == null) {
+			return Collections.emptyList();
+		}
+		return productDao.getProductDtosByDateCateSiteId(fromCreateDate, toCreateDate, sCategory,
+				siteId, fromId, limit);
 	}
 }
