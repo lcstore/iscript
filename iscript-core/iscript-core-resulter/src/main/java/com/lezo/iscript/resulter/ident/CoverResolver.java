@@ -85,7 +85,7 @@ public class CoverResolver implements SimilarResolver {
 				}
 				if (BrandTokenizer.class.getName() == lToken.getTokenizer()) {
 					Set<String> brandSet = synonymBrandService.getSynonyms(value);
-					if (brandSet == null) {
+					if (brandSet != null) {
 						hasSet.addAll(brandSet);
 					}
 				}
@@ -123,6 +123,10 @@ public class CoverResolver implements SimilarResolver {
 				if (BrandTokenizer.class.getName() == token.getTokenizer()
 						|| BrandTokenizer.class.getName() == rToken.getTokenizer()) {
 					Set<String> synValueSet = synonymBrandService.getSynonyms(token.getValue());
+					if (synValueSet == null) {
+						synValueSet = new HashSet<String>();
+						synValueSet.add(token.getValue());
+					}
 					for (String brand : synValueSet) {
 						brand = CharsUtils.unifyChars(brand);
 						lValueMap.remove(brand);

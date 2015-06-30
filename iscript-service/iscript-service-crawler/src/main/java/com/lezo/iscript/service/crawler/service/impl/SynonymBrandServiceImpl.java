@@ -1,6 +1,5 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,6 +47,10 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 				logger.info("load brand dto,fromId:" + fromId + ",limit:" + limit + ",get size:" + dtoList.size()
 						+ ",cost:" + costMills);
 				for (BrandDto dto : dtoList) {
+					if (CharsUtils.getCharLength(dto.getBrandName()) < 2) {
+						logger.warn("illegal brand:" + dto.getBrandName() + ",url:" + dto.getBrandUrl());
+						continue;
+					}
 					Set<String> brandSet = synCodeToBrandSetMap.get(dto.getSynonymCode());
 					if (brandSet == null) {
 						brandSet = new LinkedHashSet<String>();
@@ -92,25 +95,14 @@ public class SynonymBrandServiceImpl implements SynonymBrandService {
 			Comparator<String> comparator = new Comparator<String>() {
 				@Override
 				public int compare(String o1, String o2) {
-					int len1 = getCharLength(o1);
-					int len2 = getCharLength(o2);
+					int len1 = CharsUtils.getCharLength(o1);
+					int len2 = CharsUtils.getCharLength(o2);
 					if (len1 == len2) {
 						return o2.compareToIgnoreCase(o1);
 					}
 					return len2 - len1;
 				}
 
-				private int getCharLength(String o1) {
-					if (o1 == null) {
-						return -1;
-					}
-					try {
-						return o1.getBytes("GBK").length;
-					} catch (UnsupportedEncodingException e) {
-						logger.warn("Chars:" + o1 + ",cause:", e);
-					}
-					return -1;
-				}
 			};
 			for (Entry<String, Set<String>> entry : synCodeToBrandSetMap.entrySet()) {
 				if (CollectionUtils.isEmpty(entry.getValue())) {

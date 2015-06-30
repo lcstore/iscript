@@ -8,6 +8,7 @@ import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
 
 public class ClusterSimilarJobTest {
+
 	public static void main(String[] args) {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);

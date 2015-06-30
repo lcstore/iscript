@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -74,11 +76,49 @@ public class BrandTokenizer extends AbstractTokenizer {
 				brandTokens.add(token);
 			}
 		}
+		for (SectionToken token : brandTokens) {
+			String sBrand = token.getValue();
+			sBrand = sBrand.replaceAll("[\\s]*（[\\s]*", "(");
+			sBrand = sBrand.replaceAll("[\\s]*）[\\s]*", ")");
+			sBrand = sBrand.trim();
+			Pattern oReg = Pattern.compile("^(.+?)\\((.+)\\)$");
+			String sMain = entity.getMaster().getValue();
+			Matcher matcher = oReg.matcher(sBrand);
+			while (matcher.find()) {
+				int index = 0;
+				String destBrand = matcher.group(++index);
+				if (sMain.contains(destBrand)) {
+					String key = token.getKey();
+					SectionToken newToken = new SectionToken(key, destBrand);
+					newToken.setParent(entity.getMaster());
+					newToken.setTokenizer(this.getClass().getName());
+					newToken.setTrust(100);
+					tokenCollection.add(newToken);
+				}
+				destBrand = matcher.group(++index);
+				if (sMain.contains(destBrand)) {
+					String key = token.getKey();
+					SectionToken newToken = new SectionToken(key, destBrand);
+					newToken.setParent(entity.getMaster());
+					newToken.setTokenizer(this.getClass().getName());
+					newToken.setTrust(100);
+					tokenCollection.add(newToken);
+				}
+			}
+		}
 		Iterator<String> it = synonymBrandService.iteratorKeys();
 		while (it.hasNext()) {
 			String token = it.next();
 			for (SectionToken sectionToken : brandTokens) {
-				if (CharsUtils.contains(sectionToken.getValue(), token)) {
+				String unifyValue = CharsUtils.unifyChars(sectionToken.getValue());
+				if (CharsUtils.contains(unifyValue, token)) {
+					String headChars = "([0-9a-zA-Z]+" + token + ")";
+					String tailChars = "(" + token + "[0-9a-zA-Z]+)";
+					Pattern oReg = Pattern.compile(headChars + "|" + tailChars);
+					Matcher matcher = oReg.matcher(unifyValue);
+					if (matcher.find()) {
+						continue;
+					}
 					SectionToken newToken = new SectionToken(sectionToken.getKey(), token);
 					newToken.setParent(entity.getMaster());
 					newToken.setTokenizer(this.getClass().getName());
@@ -89,5 +129,4 @@ public class BrandTokenizer extends AbstractTokenizer {
 		}
 
 	}
-
 }

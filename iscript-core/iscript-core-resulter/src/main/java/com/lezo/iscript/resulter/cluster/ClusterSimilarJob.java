@@ -36,6 +36,7 @@ import com.lezo.iscript.service.crawler.dto.SimilarDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
 import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
+import com.lezo.iscript.utils.CharsUtils;
 import com.lezo.iscript.utils.ConvertUtils;
 import com.lezo.iscript.utils.JSONUtils;
 
@@ -60,7 +61,7 @@ public class ClusterSimilarJob {
 		try {
 			running.set(true);
 			Date fromDate = new Date();
-			fromDate = DateUtils.addDays(fromDate, -2);
+			fromDate = DateUtils.addDays(fromDate, -10);
 			fromDate = DateUtils.setHours(fromDate, 0);
 			fromDate = DateUtils.setMinutes(fromDate, 0);
 			fromDate = DateUtils.setSeconds(fromDate, 0);
@@ -74,14 +75,8 @@ public class ClusterSimilarJob {
 			Map<String, List<ProductDto>> brand2DtosMap = new HashMap<String, List<ProductDto>>();
 			List<ProductDto> updateBrandList = new ArrayList<ProductDto>();
 			for (ProductDto dto : dtoList) {
-				if (StringUtils.isBlank(dto.getTokenBrand())) {
-					String tokenBrand = doBrandTokenizer(dto);
-					if (StringUtils.isBlank(tokenBrand)) {
-						continue;
-					} else {
-						dto.setTokenBrand(tokenBrand);
-						updateBrandList.add(dto);
-					}
+				if (changeTokenBrand(dto)) {
+					updateBrandList.add(dto);
 				}
 				List<ProductDto> sameBrandList = brand2DtosMap.get(dto.getTokenBrand());
 				if (sameBrandList == null) {
@@ -99,14 +94,8 @@ public class ClusterSimilarJob {
 				List<ProductDto> incrDtos = getIncrDtos(siteCodesMap);
 				updateBrandList.clear();
 				for (ProductDto dto : incrDtos) {
-					if (StringUtils.isBlank(dto.getTokenBrand())) {
-						String tokenBrand = doBrandTokenizer(dto);
-						if (StringUtils.isBlank(tokenBrand)) {
-							continue;
-						} else {
-							dto.setTokenBrand(tokenBrand);
-							updateBrandList.add(dto);
-						}
+					if (changeTokenBrand(dto)) {
+						updateBrandList.add(dto);
 					}
 					dto.setTokenCategory(sCategory);
 				}
@@ -183,6 +172,21 @@ public class ClusterSimilarJob {
 		}
 	}
 
+	private boolean changeTokenBrand(ProductDto dto) {
+		int len = CharsUtils.getCharLength(dto.getTokenBrand());
+		len = 0;
+		boolean bChange = false;
+		if (len < 2) {
+			String tokenBrand = doBrandTokenizer(dto);
+			if (StringUtils.isNotBlank(tokenBrand)) {
+				tokenBrand = CharsUtils.unifyChars(tokenBrand);
+				dto.setTokenBrand(tokenBrand);
+				bChange = true;
+			}
+		}
+		return bChange;
+	}
+
 	private String doBrandTokenizer(ProductDto dto) {
 		EntityToken entity = new EntityToken(dto.getProductName());
 		entity.addAssistToken(new SectionToken("productBrand", dto.getProductBrand()));
@@ -190,7 +194,13 @@ public class ClusterSimilarJob {
 		if (CollectionUtils.isEmpty(brandList)) {
 			log.warn("can not token brand,url:" + dto.getProductUrl());
 		} else {
-			return brandList.get(0).getValue();
+			String brandName = CharsUtils.unifyChars(brandList.get(0).getValue());
+			Set<String> synSet = synonymBrandService.getSynonyms(brandName);
+			if (CollectionUtils.isNotEmpty(synSet)) {
+				return new ArrayList<String>(synSet).get(0);
+			} else {
+				return brandName;
+			}
 		}
 		return null;
 	}

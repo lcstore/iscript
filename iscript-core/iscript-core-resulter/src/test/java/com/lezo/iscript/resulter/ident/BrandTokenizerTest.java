@@ -91,6 +91,31 @@ public class BrandTokenizerTest {
 		}
 	}
 
+	@Test
+	public void testBrandTokenizer4() {
+		List<String> brandList = new ArrayList<String>();
+		brandList.add("华为");
+		// brandList.add("huawei");
+		// brandList.add("ua");
+		BrandTokenizer tokenizer = new BrandTokenizer(makeSynonymBrandService(brandList));
+		List<EntityToken> entityList = new ArrayList<EntityToken>();
+		String value = "华为（HUAWEI）荣耀 6 Plus (PE-TL20) 3GB内存标准版 白色 移动4G手机 双卡双待双通";
+		EntityToken entityToken = new EntityToken(value);
+		entityToken.getAssists().add(new SectionToken("productBrand", "华为（HUAWEI）"));
+		entityList.add(entityToken);
+
+		new AttrTokenizer().identify(entityList);
+		tokenizer.identify(entityList);
+		for (EntityToken entity : entityList) {
+			System.out.println("master:" + entity.getMaster().getValue());
+			for (SectionToken child : entity.getMaster().getChildren()) {
+				System.out.println("child:" + child.getKey() + "=" + child.getValue() + ",trust:" + child.getTrust()
+						+ ",tokenizer:" + child.getTokenizer());
+				// System.out.println("child:" + child);
+			}
+		}
+	}
+
 	private void addAssists(JSONObject attrObject, EntityToken entiryToken) {
 		Iterator<?> it = attrObject.keys();
 		while (it.hasNext()) {
