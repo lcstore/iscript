@@ -18,7 +18,7 @@ import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.URLUtils;
 
 public class ProxyServiceImplTest {
-//	private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
+	// private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
 	private static final String DEFAULT_DETECT_URL = "http://www.yhd.com/";
 
 	@Test
@@ -52,7 +52,7 @@ public class ProxyServiceImplTest {
 			}
 		}
 		long cost = System.currentTimeMillis() - startMills;
-		System.out.println("done,cost:" + cost);
+		System.out.println("done,cost:" + cost + ",maxId:" + fromId);
 	}
 
 	private List<ProxyDetectDto> convertTo(List<ProxyAddrDto> batchAddrList) throws Exception {

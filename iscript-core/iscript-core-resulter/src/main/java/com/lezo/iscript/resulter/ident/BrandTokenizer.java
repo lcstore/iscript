@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
 import com.lezo.iscript.utils.CharsUtils;
@@ -54,7 +55,15 @@ public class BrandTokenizer extends AbstractTokenizer {
 		while (it.hasNext()) {
 			String token = it.next();
 			for (SectionToken sectionToken : leaveList) {
-				if (CharsUtils.contains(sectionToken.getValue(), token)) {
+				String unifyValue = CharsUtils.unifyChars(sectionToken.getValue());
+				if (CharsUtils.contains(unifyValue, token)) {
+					String headChars = "([0-9a-zA-Z]+" + token + ")";
+					String tailChars = "(" + token + "[0-9a-zA-Z]+)";
+					Pattern oReg = Pattern.compile(headChars + "|" + tailChars);
+					Matcher matcher = oReg.matcher(unifyValue);
+					if (matcher.find()) {
+						continue;
+					}
 					SectionToken newToken = new SectionToken(sectionToken.getKey(), token);
 					newToken.setParent(sectionToken);
 					newToken.setTokenizer(this.getClass().getName());
@@ -78,6 +87,9 @@ public class BrandTokenizer extends AbstractTokenizer {
 		}
 		for (SectionToken token : brandTokens) {
 			String sBrand = token.getValue();
+			if (StringUtils.isEmpty(sBrand)) {
+				continue;
+			}
 			sBrand = sBrand.replaceAll("[\\s]*（[\\s]*", "(");
 			sBrand = sBrand.replaceAll("[\\s]*）[\\s]*", ")");
 			sBrand = sBrand.trim();

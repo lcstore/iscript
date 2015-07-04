@@ -61,7 +61,7 @@ public class ClusterSimilarJob {
 		try {
 			running.set(true);
 			Date fromDate = new Date();
-			fromDate = DateUtils.addDays(fromDate, -10);
+			fromDate = DateUtils.addDays(fromDate, -15);
 			fromDate = DateUtils.setHours(fromDate, 0);
 			fromDate = DateUtils.setMinutes(fromDate, 0);
 			fromDate = DateUtils.setSeconds(fromDate, 0);
@@ -78,7 +78,10 @@ public class ClusterSimilarJob {
 				if (changeTokenBrand(dto)) {
 					updateBrandList.add(dto);
 				}
-				List<ProductDto> sameBrandList = brand2DtosMap.get(dto.getTokenBrand());
+				Set<String> synSet = synonymBrandService.getSynonyms(dto.getTokenBrand());
+				String sKey = synSet != null && !synSet.isEmpty() ? new ArrayList<String>(synSet).get(0) : CharsUtils
+						.unifyChars(dto.getTokenBrand());
+				List<ProductDto> sameBrandList = brand2DtosMap.get(sKey);
 				if (sameBrandList == null) {
 					sameBrandList = new ArrayList<ProductDto>();
 					brand2DtosMap.put(dto.getTokenBrand(), sameBrandList);
@@ -194,13 +197,14 @@ public class ClusterSimilarJob {
 		if (CollectionUtils.isEmpty(brandList)) {
 			log.warn("can not token brand,url:" + dto.getProductUrl());
 		} else {
-			String brandName = CharsUtils.unifyChars(brandList.get(0).getValue());
-			Set<String> synSet = synonymBrandService.getSynonyms(brandName);
-			if (CollectionUtils.isNotEmpty(synSet)) {
-				return new ArrayList<String>(synSet).get(0);
-			} else {
-				return brandName;
-			}
+			String brandName =
+					CharsUtils.unifyChars(brandList.get(0).getValue());
+			// Set<String> synSet = synonymBrandService.getSynonyms(brandName);
+			// if (CollectionUtils.isNotEmpty(synSet)) {
+			// return new ArrayList<String>(synSet).get(0);
+			// } else {
+			// }
+			return brandName;
 		}
 		return null;
 	}
@@ -215,7 +219,18 @@ public class ClusterSimilarJob {
 			name2FieldMap.put(field.getName(), field);
 		}
 		long sCode = System.currentTimeMillis();
-		List<SimilarDto> dtoList = new ArrayList<SimilarDto>(cluster.getMembers().size());
+		List<SimilarDto> dtoList = new ArrayList<SimilarDto>(cluster.getMembers().size() + 1);
+		// add center entity
+		SimilarDto centerDto = new SimilarDto();
+		centerDto.setSimilarCode(sCode);
+		centerDto.setSimilarScore(MAX_SIMILAR_VALUE);
+		EntityToken centerEntity = cluster.getCenter();
+		centerDto.setProductName(centerEntity.getMaster().getValue());
+		copyProperties(centerEntity, centerDto, name2FieldMap);
+		centerDto.setCreateTime(new Date(sCode));
+		centerDto.setUpdateTime(centerDto.getCreateTime());
+		centerDto.setIsStandard(1);
+		dtoList.add(centerDto);
 		for (EntitySimilar m : cluster.getSimilars()) {
 			SimilarDto sDto = new SimilarDto();
 			sDto.setSimilarCode(sCode);
@@ -225,19 +240,9 @@ public class ClusterSimilarJob {
 			copyProperties(entity, sDto, name2FieldMap);
 			sDto.setCreateTime(new Date(sCode));
 			sDto.setUpdateTime(sDto.getCreateTime());
+			sDto.setIsStandard(0);
 			dtoList.add(sDto);
 		}
-		// add center entity
-		SimilarDto sDto = new SimilarDto();
-		sDto.setSimilarCode(sCode);
-		sDto.setSimilarScore(MAX_SIMILAR_VALUE);
-		EntityToken entity = cluster.getCenter();
-		sDto.setProductName(entity.getMaster().getValue());
-		copyProperties(entity, sDto, name2FieldMap);
-		sDto.setCreateTime(new Date(sCode));
-		sDto.setUpdateTime(sDto.getCreateTime());
-		sDto.setIsStandard(1);
-		dtoList.add(sDto);
 		return dtoList;
 	}
 
@@ -291,7 +296,9 @@ public class ClusterSimilarJob {
 					log.warn("", e);
 				}
 				if (value != null) {
-					entity.addAssistToken(new SectionToken(field.getName(), value.toString()));
+					String keyName = field.getName();
+					keyName = keyName.equals("spuVary") ? "tokenVary" : keyName;
+					entity.addAssistToken(new SectionToken(keyName, value.toString()));
 				}
 			}
 			entityList.add(entity);

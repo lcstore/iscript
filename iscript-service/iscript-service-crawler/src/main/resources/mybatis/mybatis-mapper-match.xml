@@ -8,6 +8,7 @@
 		<result column="WARE_TYPE" property="wareType"/>
 		<result column="WARE_CODE" property="wareCode"/>
 		<result column="SIMILAR_CODE" property="similarCode"/>
+		<result column="MATCH_CODE" property="matchCode"/>
 		<result column="SITE_ID" property="siteId"/>
 		<result column="SHOP_ID" property="shopId"/>
 		<result column="PRODUCT_CODE" property="productCode"/>
@@ -33,6 +34,7 @@
 		WARE_TYPE
 		,WARE_CODE
 		,SIMILAR_CODE
+		,MATCH_CODE
 		,SITE_ID
 		,SHOP_ID
 		,PRODUCT_CODE
@@ -61,7 +63,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.wareType},#{item.wareCode},#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.isDelete},#{item.createTime},#{item.updateTime})
+			(#{item.wareType},#{item.wareCode},#{item.similarCode},#{item.matchCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.productPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.isDelete},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="MatchDto">
@@ -69,6 +71,7 @@
 		WARE_TYPE=#{wareType}
 		,WARE_CODE=#{wareCode}
 		,SIMILAR_CODE=#{similarCode}
+		,MATCH_CODE=#{matchCode}
 		,SITE_ID=#{siteId}
 		,SHOP_ID=#{shopId}
 		,PRODUCT_CODE=#{productCode}

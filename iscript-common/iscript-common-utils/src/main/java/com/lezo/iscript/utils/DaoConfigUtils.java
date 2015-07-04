@@ -1,20 +1,18 @@
 package com.lezo.iscript.utils;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class DaoConfigUtils {
 
 	private static final Object NEW_LINE = "\n";
 	private static final String encoding = "utf-8";
-	private static final String TEMPLATE_FILE_PATH = "src/main/resources/mybatis-mapper-template.xml";
+	private static final String TEMPLATE_FILE_PATH = "mybatis-mapper-template.xml";
 	private static final String LINE_FORMAT = "\t\t";
 
 	public static String getDtoParams(List<String> fileds) throws IOException {
@@ -32,7 +30,8 @@ public class DaoConfigUtils {
 			List<String> fileds) throws IOException {
 		List<String> paramList = DBFieldUtils.field2Param(fileds);
 		BufferedWriter bw = null;
-		String templatConfig = FileUtils.readFileToString(new File(TEMPLATE_FILE_PATH), encoding);
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		String templatConfig = IOUtils.toString(loader.getResourceAsStream(TEMPLATE_FILE_PATH), encoding);
 		String daoClassName = dtoClassName.replace("Dto", "Dao");
 		try {
 			Writer out = new FileWriter(path);

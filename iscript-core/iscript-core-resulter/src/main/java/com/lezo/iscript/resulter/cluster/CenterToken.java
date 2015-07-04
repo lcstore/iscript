@@ -42,6 +42,9 @@ public class CenterToken {
 
 	public void clear() {
 		this.members.clear();
+		if (this.similars != null) {
+			this.similars.clear();
+		}
 	}
 
 }

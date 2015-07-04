@@ -12,8 +12,8 @@
 
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="searchSystemEnvironment" value="true"/>
-		<property name="systemPropertiesMode" value="2"/>
+		<property name="searchSystemEnvironment" value="true" />
+		<property name="systemPropertiesMode" value="2" />
 		<property name="locations">
 			<list>
 				<value>classpath:jdbc.properties</value>
@@ -27,4 +27,10 @@
 
 	<!-- <import resource="classpath:spring/spring-config-mvc.xml" /> -->
 	<!-- <import resource="classpath:spring/spring-bean-crawler.xml" /> -->
+	
+	<bean id="tableSchemaDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface"
+			value="com.lezo.iscript.mybatis.TableSchemaDao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>  

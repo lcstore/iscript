@@ -77,6 +77,8 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
 				for (int status : checkStatusList) {
 					int totalCount = 0;
 					Long fromId = 0L;
+					Long minRetryId = 2863037L;
+					fromId = status == 0 ? minRetryId : fromId;
 					while (true) {
 						List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromId(fromId, limit,
 								status);

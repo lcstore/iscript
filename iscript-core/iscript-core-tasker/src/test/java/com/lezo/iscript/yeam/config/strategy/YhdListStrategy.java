@@ -38,7 +38,7 @@ public class YhdListStrategy implements ResultStrategy, Closeable {
 	public YhdListStrategy() {
 		CreateTaskTimer task = new CreateTaskTimer();
 		this.timer = new Timer(getName());
-		this.timer.schedule(task, 60 * 1000, 10 * 24 * 60 * 60 * 1000);
+		this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {

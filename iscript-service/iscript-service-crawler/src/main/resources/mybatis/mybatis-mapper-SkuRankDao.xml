@@ -64,7 +64,6 @@
 		,COMMENT_RANK=#{commentRank}
 		,BAIDU_RANK=#{baiduRank}
 		,TAOBAO_RANK=#{taobaoRank}
-		,CREATE_TIME=#{createTime}
 		,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
@@ -81,6 +80,14 @@
 	    <where>
 	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
 	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getDtoByMatchCodes" resultMap="RM_SkuRankDto">
+	    SELECT * FROM T_SKU_RANK
+	    <where>
+	       <foreach collection="matchCodeList" item="code" open="AND MATCH_CODE IN(" separator="," close=")">
+	           #{code}
 	       </foreach>
 	    </where>
 	</select>

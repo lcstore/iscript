@@ -9,14 +9,13 @@ import org.junit.Test;
 
 public class DaoConfigUtilsTest {
 
-
 	@Test
 	public void test() throws IOException {
 		File file = new File("src/test/resources/sqlLine.sql");
 		List<String> sqlLines = FileUtils.readLines(file, "utf-8");
 		String path = "src/test/resources/mybatis-mapper-current.xml";
-		String tableName = "T_DATA_TRANSFER";
-		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.DataTransferDao";
+		String tableName = "T_SKU_RANK";
+		String daoQualifyName = "com.lezo.iscript.service.crawler.dao.SkuRankDao";
 		int index = daoQualifyName.lastIndexOf('.');
 		String daoClassPackage = daoQualifyName.substring(0, index);
 		String daoClassName = daoQualifyName.substring(index + 1);
@@ -29,7 +28,7 @@ public class DaoConfigUtilsTest {
 		DaoConfigUtils.createDBConfig(path, tableName, daoClassPackage, dtoClassName, columnList);
 		testField2Param();
 	}
-	
+
 	@Test
 	public void testParams() throws IOException {
 		File file = new File("src/test/resources/sqlLine.sql");
@@ -51,8 +50,8 @@ public class DaoConfigUtilsTest {
 			String derbyInsert = "#{item." + col + ",typeHandler=DerbyTypeHandler},";
 			// System.out.print("#" + col + "#,");
 			String insertString = "#{item." + col + "},";
-//			 insertString = "#" + col + "#,";
-//			System.out.print(insertString);
+			// insertString = "#" + col + "#,";
+			// System.out.print(insertString);
 			System.out.println(dtoFiled);
 		}
 	}
