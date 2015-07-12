@@ -104,4 +104,13 @@
 	      </foreach>
 	    </where>
   	</select>
+  	<select id="getDtoByIds" resultMap="RM_SimilarDto">
+		SELECT * FROM T_SIMILAR
+		<where>
+			<foreach collection="list" item="id" open="AND ID IN("
+				separator="," close=")">
+				#{id}
+			</foreach>
+		</where>
+	</select>
 </mapper>

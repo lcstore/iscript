@@ -9,7 +9,8 @@ import com.lezo.iscript.service.crawler.dto.SkuRankDto;
 
 public interface SkuRankDao extends BaseDao<SkuRankDto> {
 
-	List<SkuRankDto> getDtoByCategoryOrBarnd(@Param("categroy") String categroy, @Param("brand") String brand);
+    List<SkuRankDto> getDtoByCategoryOrBarnd(@Param("category") String categroy, @Param("brand") String brand,
+            @Param("offset") int offset, @Param("limit") int limit);
 
-	List<SkuRankDto> getDtoByMatchCodes(@Param("matchCodeList") List<Long> matchCodeList);
+    List<SkuRankDto> getDtoByMatchCodes(@Param("matchCodeList") List<Long> matchCodeList);
 }

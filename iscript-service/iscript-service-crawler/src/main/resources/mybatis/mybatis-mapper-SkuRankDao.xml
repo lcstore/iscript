@@ -4,39 +4,27 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lezo.iscript.service.crawler.dao.SkuRankDao">
 	<resultMap type="SkuRankDto" id="RM_SkuRankDto">
-		<result column="ID" property="id"/>
-		<result column="MATCH_CODE" property="matchCode"/>
-		<result column="SITE_ID" property="siteId"/>
-		<result column="PRODUCT_CODE" property="productCode"/>
-		<result column="PRODUCT_NAME" property="productName"/>
-		<result column="PRODUCT_URL" property="productUrl"/>
-		<result column="IMG_URL" property="imgUrl"/>
-		<result column="TOKEN_BRAND" property="tokenBrand"/>
-		<result column="TOKEN_GATEGORY" property="tokenGategory"/>
-		<result column="PRICE_RANK" property="priceRank"/>
-		<result column="SALE_RANK" property="saleRank"/>
-		<result column="COMMENT_RANK" property="commentRank"/>
-		<result column="BAIDU_RANK" property="baiduRank"/>
-		<result column="TAOBAO_RANK" property="taobaoRank"/>
-		<result column="CREATE_TIME" property="createTime"/>
-		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="ID" property="id" />
+		<result column="MATCH_CODE" property="matchCode" />
+		<result column="SITE_ID" property="siteId" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="PRODUCT_URL" property="productUrl" />
+		<result column="IMG_URL" property="imgUrl" />
+		<result column="TOKEN_BRAND" property="tokenBrand" />
+		<result column="TOKEN_CATEGORY" property="tokenCategory" />
+		<result column="PRICE_RANK" property="priceRank" />
+		<result column="SALE_RANK" property="saleRank" />
+		<result column="COMMENT_RANK" property="commentRank" />
+		<result column="BAIDU_RANK" property="baiduRank" />
+		<result column="TAOBAO_RANK" property="taobaoRank" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
 	</resultMap>
 	<sql id="SkuRankDto-coloumn-list">
-		ID
-		,MATCH_CODE
-		,SITE_ID
-		,PRODUCT_CODE
-		,PRODUCT_NAME
-		,PRODUCT_URL
-		,IMG_URL
-		,TOKEN_BRAND
-		,TOKEN_GATEGORY
-		,PRICE_RANK
-		,SALE_RANK
-		,COMMENT_RANK
-		,BAIDU_RANK
-		,TAOBAO_RANK
-		,CREATE_TIME
+		ID ,MATCH_CODE ,SITE_ID ,PRODUCT_CODE ,PRODUCT_NAME
+		,PRODUCT_URL ,IMG_URL ,TOKEN_BRAND ,TOKEN_CATEGORY ,PRICE_RANK
+		,SALE_RANK ,COMMENT_RANK ,BAIDU_RANK ,TAOBAO_RANK ,CREATE_TIME
 		,UPDATE_TIME
 	</sql>
 	<insert id="batchInsert" parameterType="SkuRankDto">
@@ -46,49 +34,60 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.id},#{item.matchCode},#{item.siteId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.imgUrl},#{item.tokenBrand},#{item.tokenGategory},#{item.priceRank},#{item.saleRank},#{item.commentRank},#{item.baiduRank},#{item.taobaoRank},#{item.createTime},#{item.updateTime})
+			(#{item.id},#{item.matchCode},#{item.siteId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.imgUrl},#{item.tokenBrand},#{item.tokenCategory},#{item.priceRank},#{item.saleRank},#{item.commentRank},#{item.baiduRank},#{item.taobaoRank},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="SkuRankDto">
 		UPDATE T_SKU_RANK SET
-		MATCH_CODE=#{matchCode}
-		,SITE_ID=#{siteId}
-		,PRODUCT_CODE=#{productCode}
-		,PRODUCT_NAME=#{productName}
-		,PRODUCT_URL=#{productUrl}
-		,IMG_URL=#{imgUrl}
-		,TOKEN_BRAND=#{tokenBrand}
-		,TOKEN_GATEGORY=#{tokenGategory}
-		,PRICE_RANK=#{priceRank}
-		,SALE_RANK=#{saleRank}
-		,COMMENT_RANK=#{commentRank}
-		,BAIDU_RANK=#{baiduRank}
-		,TAOBAO_RANK=#{taobaoRank}
-		,UPDATE_TIME=#{updateTime}
+		MATCH_CODE=#{matchCode} ,SITE_ID=#{siteId}
+		,PRODUCT_CODE=#{productCode} ,PRODUCT_NAME=#{productName}
+		,PRODUCT_URL=#{productUrl} ,IMG_URL=#{imgUrl}
+		,TOKEN_BRAND=#{tokenBrand} ,TOKEN_CATEGORY=#{tokenCategory}
+		,PRICE_RANK=#{priceRank} ,SALE_RANK=#{saleRank}
+		,COMMENT_RANK=#{commentRank} ,BAIDU_RANK=#{baiduRank}
+		,TAOBAO_RANK=#{taobaoRank} ,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
 	</update>
 	<delete id="batchDeleteByIds">
-	    DELETE FROM T_SKU_RANK
-	    <where>
-	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
-	           #{id}
-	       </foreach>
-	    </where>
+		DELETE FROM T_SKU_RANK
+		<where>
+			<foreach collection="list" item="id" open="AND ID IN("
+				separator="," close=")">
+				#{id}
+			</foreach>
+		</where>
 	</delete>
 	<select id="getDtoByIds" resultMap="RM_SkuRankDto">
-	    SELECT * FROM T_SKU_RANK
-	    <where>
-	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
-	           #{id}
-	       </foreach>
-	    </where>
+		SELECT * FROM T_SKU_RANK
+		<where>
+			<foreach collection="list" item="id" open="AND ID IN("
+				separator="," close=")">
+				#{id}
+			</foreach>
+		</where>
 	</select>
 	<select id="getDtoByMatchCodes" resultMap="RM_SkuRankDto">
-	    SELECT * FROM T_SKU_RANK
-	    <where>
-	       <foreach collection="matchCodeList" item="code" open="AND MATCH_CODE IN(" separator="," close=")">
-	           #{code}
-	       </foreach>
-	    </where>
+		SELECT * FROM T_SKU_RANK
+		<where>
+			<foreach collection="matchCodeList" item="code" open="AND MATCH_CODE IN("
+				separator="," close=")">
+				#{code}
+			</foreach>
+		</where>
+	</select>
+	<select id="getDtoByCategoryOrBarnd" parameterType="map" resultMap="RM_SkuRankDto">
+		SELECT * FROM T_SKU_RANK
+		<where>
+			<if test="category !=null">
+				AND TOKEN_CATEGORY=#{category}
+			</if>
+			<if test="brand !=null">
+				AND TOKEN_BRAND=#{brand}
+			</if>
+			<if test="category ==null and brand ==null">
+				AND 1=0
+			</if>
+			LIMIT #{offset},#{limit}
+		</where>
 	</select>
 </mapper>

@@ -7,9 +7,9 @@ import com.lezo.iscript.service.crawler.dto.SkuRankDto;
 
 public interface SkuRankService extends BaseService<SkuRankDto> {
 
-	List<SkuRankDto> getDtoByIds(List<Long> idList);
+    List<SkuRankDto> getDtoByIds(List<Long> idList);
 
-	List<SkuRankDto> getDtoByCategoryOrBarnd(String categroy, String brand);
+    List<SkuRankDto> getDtoByCategoryOrBarnd(String categroy, String brand, int offset, int limit);
 
-	List<SkuRankDto> getDtoByMatchCodes(List<Long> matchCodeList);
+    List<SkuRankDto> getDtoByMatchCodes(List<Long> matchCodeList);
 }
