@@ -80,17 +80,25 @@ public class ProxyDetectStrategy implements ResultStrategy, Closeable {
                     Long fromId = 0L;
                     Long minRetryId = 2863037L;
                     lastMaxId = lastMaxId < minRetryId ? minRetryId : lastMaxId;
-                    fromId = status == 0 ? lastMaxId : fromId;
                     while (true) {
                         List<ProxyDetectDto> dtoList = proxyDetectService.getProxyDetectDtosFromId(fromId, limit,
                                 status);
-                        taskId = UUID.randomUUID().toString();
-                        offerDetectTasks(dtoList, taskId);
+                        if (ProxyDetectDto.STATUS_RETRY == status) {
+                            List<ProxyDetectDto> newList = new ArrayList<ProxyDetectDto>(dtoList.size());
+                            for (ProxyDetectDto dto : dtoList) {
+                                if (dto.getId() >= lastMaxId || dto.getSuccessCount() > 5) {
+                                    newList.add(dto);
+                                }
+                            }
+                            dtoList = newList;
+                        }
                         for (ProxyDetectDto dto : dtoList) {
                             if (dto.getId() > fromId) {
                                 fromId = dto.getId();
                             }
                         }
+                        taskId = UUID.randomUUID().toString();
+                        offerDetectTasks(dtoList, taskId);
                         totalCount += dtoList.size();
                         if (dtoList.size() < limit) {
                             break;
