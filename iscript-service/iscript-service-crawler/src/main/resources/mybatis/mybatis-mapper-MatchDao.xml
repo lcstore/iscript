@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.MatchDao">
+	<resultMap type="MatchDto" id="RM_MatchDto">
+		<result column="ID" property="id"/>
+		<result column="MATCH_CODE" property="matchCode"/>
+		<result column="WARE_TYPE" property="wareType"/>
+		<result column="WARE_CODE" property="wareCode"/>
+		<result column="SIMILAR_CODE" property="similarCode"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="SHOP_ID" property="shopId"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="MARKET_PRICE" property="marketPrice"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="IMG_URL" property="imgUrl"/>
+		<result column="TOKEN_BRAND" property="tokenBrand"/>
+		<result column="TOKEN_CATEGORY" property="tokenCategory"/>
+		<result column="TOKEN_VARY" property="tokenVary"/>
+		<result column="DECIDER_KVS" property="deciderKvs"/>
+		<result column="ARBITER_ID" property="arbiterId"/>
+		<result column="SIMILAR_SCORE" property="similarScore"/>
+		<result column="CAPTION" property="caption"/>
+		<result column="CONFIRM_MODEL" property="confirmModel"/>
+		<result column="IS_STANDARD" property="isStandard"/>
+		<result column="IS_DELETE" property="isDelete"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="MatchDto-coloumn-list">
+		ID
+		,MATCH_CODE
+		,WARE_TYPE
+		,WARE_CODE
+		,SIMILAR_CODE
+		,SITE_ID
+		,SHOP_ID
+		,PRODUCT_CODE
+		,PRODUCT_NAME
+		,PRODUCT_URL
+		,MARKET_PRICE
+		,BAR_CODE
+		,IMG_URL
+		,TOKEN_BRAND
+		,TOKEN_CATEGORY
+		,TOKEN_VARY
+		,DECIDER_KVS
+		,ARBITER_ID
+		,SIMILAR_SCORE
+		,CAPTION
+		,CONFIRM_MODEL
+		,IS_STANDARD
+		,IS_DELETE
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="MatchDto">
+		INSERT INTO T_MATCH(
+		<include refid="MatchDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.matchCode},#{item.wareType},#{item.wareCode},#{item.similarCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.marketPrice},#{item.barCode},#{item.imgUrl},#{item.tokenBrand},#{item.tokenCategory},#{item.tokenVary},#{item.deciderKvs},#{item.arbiterId},#{item.similarScore},#{item.caption},#{item.confirmModel},#{item.isStandard},#{item.isDelete},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="MatchDto">
+		UPDATE T_MATCH SET
+		MATCH_CODE=#{matchCode}
+		,WARE_TYPE=#{wareType}
+		,WARE_CODE=#{wareCode}
+		,SIMILAR_CODE=#{similarCode}
+		,SITE_ID=#{siteId}
+		,SHOP_ID=#{shopId}
+		,PRODUCT_CODE=#{productCode}
+		,PRODUCT_NAME=#{productName}
+		,PRODUCT_URL=#{productUrl}
+		,MARKET_PRICE=#{marketPrice}
+		,BAR_CODE=#{barCode}
+		,IMG_URL=#{imgUrl}
+		,TOKEN_BRAND=#{tokenBrand}
+		,TOKEN_CATEGORY=#{tokenCategory}
+		,TOKEN_VARY=#{tokenVary}
+		,DECIDER_KVS=#{deciderKvs}
+		,ARBITER_ID=#{arbiterId}
+		,SIMILAR_SCORE=#{similarScore}
+		,CAPTION=#{caption}
+		,CONFIRM_MODEL=#{confirmModel}
+		,IS_STANDARD=#{isStandard}
+		,IS_DELETE=#{isDelete}
+		,CREATE_TIME=#{createTime}
+		,UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_MATCH
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_MatchDto">
+	    SELECT * FROM T_MATCH
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getMatchDtoByMatchCodes" parameterType="map" resultMap="RM_MatchDto">
+	    SELECT * FROM T_MATCH
+	    <where>
+	      <foreach collection="matchCodeList" item="sCode" open="MATCH_CODE IN(" separator="," close=")">
+	         #{sCode}
+	      </foreach>
+	    </where>
+	</select>
+	<select id="getMatchDtoByProductCodes" parameterType="map" resultMap="RM_MatchDto">
+	    SELECT * FROM T_MATCH
+	    <where>
+	      AND SITE_ID=#{siteId}
+	      <foreach collection="codeList" item="pCode" open="AND PRODUCT_CODE IN(" separator="," close=")">
+	         #{pCode}
+	      </foreach>
+	    </where>
+	</select>
+</mapper>

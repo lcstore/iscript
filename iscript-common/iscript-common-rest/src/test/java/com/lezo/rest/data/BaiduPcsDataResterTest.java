@@ -12,12 +12,12 @@ import org.junit.Test;
 import com.lezo.iscript.rest.http.HttpClientUtils;
 
 public class BaiduPcsDataResterTest {
-	// String bucket = "istore_doc";
+	String bucket = "istore_doc";
+	String accessToken =
+			"21.ce27b3198b39d4c0b3664d75050d7a40.2592000.1439881772.4026763474-1856205";
+	// String bucket = "idocs";
 	// String accessToken =
-	// "21.f7e82a4f1fa60c34698cbb82397c6dac.2592000.1437829910.4026763474-1856205";//
-	// istore_doc
-	String bucket = "idocs";
-	String accessToken = "21.ac31d6d3c22be8157036651f6fdbe207.2592000.1436245124.4026763474-2920106";
+	// "21.ac31d6d3c22be8157036651f6fdbe207.2592000.1436245124.4026763474-2920106";
 	String rootPath = "/apps/" + bucket;
 	BaiduPcsRester rester = new BaiduPcsRester();
 
@@ -49,7 +49,7 @@ public class BaiduPcsDataResterTest {
 		path = "";
 		String soucePath = path + "/rest/rest1001.txt";
 		soucePath = "iscript/20150309/ConfigProxyChecker/5df50e4e-ad2a-4980-b72d-6eaf32231e2e/ConfigProxyChecker.20150309.1425890407643.gz";
-		soucePath = "file.temp.01";
+		soucePath = "/apps/istore_doc/iscript/20150618/ConfigProxyDetector/642fd595-3499-4797-aed3-3edc9352b83f/ConfigProxyDetector.20150618.1434558506185.gz";
 		System.err.println("data:" + rester.download(soucePath));
 	}
 
@@ -65,10 +65,10 @@ public class BaiduPcsDataResterTest {
 		targetPath = "/apps/idocs/iscript/20150518/ConfigProxySeedHandler/68d5807a-4ad1-485e-90f5-bc99d7645274";
 		targetPath = "/apps/idocs/iscript/20150518/ConfigProxyDetector/5";
 		targetPath = "/apps/idocs/iscript/20150526/ConfigTmallBrandShop/4c17ebd2-ae53-4418-b6a4-f4963b569c8a";
-		// targetPath =
-		// "/apps/istore_doc/iscript/20150618/ConfigProxyDetector/642fd595-3499-4797-aed3-3edc9352b83f";
+		targetPath =
+				"/apps/istore_doc/iscript/20150618/ConfigProxyDetector/642fd595-3499-4797-aed3-3edc9352b83f";
 		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("limit", "10000-10100");
+		paramMap.put("limit", "0-100");
 		RestList fileList = rester.listFiles(targetPath, paramMap);
 		for (RestFile dFile : fileList.getDataList()) {
 			System.err.println(dFile.getPath() + ":" + dFile.getUpdateTime() + ":" + dFile.getCreateTime());

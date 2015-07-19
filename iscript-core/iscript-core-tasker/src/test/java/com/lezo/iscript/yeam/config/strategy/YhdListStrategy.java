@@ -162,6 +162,7 @@ public class YhdListStrategy implements ResultStrategy, Closeable {
 		JSONObject oParamObject = JSONUtils.getJSONObject(argsObject.toString());
 		String url = JSONUtils.getString(argsObject, "url");
 		JSONUtils.put(oParamObject, "fromUrl", url);
+		JSONUtils.put(oParamObject, "bid", UUID.randomUUID().toString());
 		String productType = rWritable.getType().replace("List", "Product");
 		String argsString = oParamObject.toString();
 		for (int i = 0; i < len; i++) {
