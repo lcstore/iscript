@@ -17,8 +17,8 @@ public class ScriptJavaObject extends NativeJavaObject {
 		Object result = null;
 		if (has(name, start)) {
 			result = super.get(name, start);
-		} else if (prototype != null) {
-			result = prototype.get(name, start);
+		} else if (getPrototype() != null) {
+			result = getPrototype().get(name, start);
 		}
 		if (result == null || result == Scriptable.NOT_FOUND) {
 			Object originObject = unwrap();
@@ -49,23 +49,19 @@ public class ScriptJavaObject extends NativeJavaObject {
 
 	@Override
 	public void put(String name, Scriptable start, Object value) {
-		boolean isDone = false;
 		if (has(name, start)) {
-			super.put(name, start, value);
-			isDone = true;
-		}
-		if (!isDone) {
-			Object originObject = unwrap();
-			if (Element.class.isInstance(originObject)) {
-				Element element = (Element) originObject;
-				element.setAttribute(name, value.toString());
-				isDone = true;
+			try {
+				super.put(name, start, value);
+				return;
+			} catch (Exception e) {
 			}
 		}
-		if (!isDone && start == this) {
-			super.put(name, start, value);
-		} else if (!isDone && prototype != null) {
-			prototype.put(name, start, value);
+		Object originObject = unwrap();
+		if (Element.class.isInstance(originObject)) {
+			Element element = (Element) originObject;
+			element.setAttribute(name, value.toString());
+		} else if (getPrototype() != null) {
+			getPrototype().put(name, getPrototype(), value);
 		}
 	}
 

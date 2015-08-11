@@ -12,8 +12,6 @@ import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,7 +19,6 @@ import org.w3c.dom.NodeList;
 import com.lezo.iscript.crawler.dom.ScriptDocument;
 import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
 import com.lezo.iscript.crawler.dom.browser.ScriptWindow;
-import com.lezo.iscript.crawler.dom.rhino.ContextUtils;
 
 public class ScriptElementTest {
 

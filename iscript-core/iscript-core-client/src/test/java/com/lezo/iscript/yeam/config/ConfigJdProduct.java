@@ -222,7 +222,7 @@ public class ConfigJdProduct implements ConfigParser {
 				}
 			} else {
 				tBean.setProductUrl(url);
-				tBean.setSoldNum(-1);
+				tBean.setStockNum(-1);
 				Pattern oReg = Pattern.compile("([0-9]+)\\.html");
 				Matcher matcher = oReg.matcher(url);
 				if (matcher.find()) {

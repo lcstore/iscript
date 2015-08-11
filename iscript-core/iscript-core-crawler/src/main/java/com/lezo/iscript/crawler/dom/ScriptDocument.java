@@ -552,6 +552,10 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 		this.location = location;
 	}
 
+	public void setLocation(String location) {
+		this.location.setHref(location);
+	}
+
 	protected void addEventListener(ScriptElement node, String type, EventListener listener, boolean useCapture) {
 		// We can't dispatch to blank type-name, and of course we need
 		// a listener to dispatch to
@@ -851,4 +855,5 @@ public class ScriptDocument extends ScriptElement implements HTMLDocument {
 			return lc;
 		}
 	} // class LCount
+
 }

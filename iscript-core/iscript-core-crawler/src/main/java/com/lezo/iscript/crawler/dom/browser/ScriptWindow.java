@@ -613,6 +613,11 @@ public class ScriptWindow implements EventTarget {
 		scriptDocument.setLocation(location);
 	}
 
+	public void setLocation(String location) {
+		ScriptDocument scriptDocument = (ScriptDocument) getDocument();
+		scriptDocument.setLocation(location);
+	}
+
 	public Document getDocument() {
 		return document;
 	}
