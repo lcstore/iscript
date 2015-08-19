@@ -20,9 +20,19 @@ import org.mybatis.spring.mapper.MapperFactoryBean;
 
 import com.lezo.iscript.common.Batch;
 
+/**
+ * 拦截Mapper的方法，对含有注解{@code @Batch} 的方法进行批量操作。
+ * 
+ * 批量操作，内部自己管理事务
+ * 
+ * @author lilinchong
+ *
+ * @param <T>
+ */
 public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements InvocationHandler {
     private ConcurrentHashMap<Method, String> batchMethodParamMap = new ConcurrentHashMap<Method, String>();
     private T targetObject;
+    private SqlSession batchSession;
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -90,8 +100,7 @@ public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements 
     @SuppressWarnings("unchecked")
     public Object doIntercepter(Object proxy, Method method, Object[] args, String batchKey) throws Exception {
         SqlSessionTemplate session = (SqlSessionTemplate) getSqlSession();
-        SqlSessionFactory sqlSessionFactory = session.getSqlSessionFactory();
-        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
+        SqlSession sqlSession = getOrOpenBatchSession(session);
         Integer result = 0;
         try {
             String sqlMapper = getObjectType().getName() + "." + method.getName();
@@ -113,6 +122,8 @@ public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements 
             } else {
                 throw new RuntimeException("It is not an auto batch mapper:[" + sqlMapper + "]");
             }
+            // 有批量更新操作，清空Simple Session的localCache
+            session.clearCache();
         } catch (Exception ex) {
             sqlSession.rollback();
             throw ex;
@@ -120,6 +131,26 @@ public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements 
             sqlSession.close();
         }
         return result;
+    }
+
+    /**
+     * 在一个事务中，SqlSessionUtils.getSqlSession不允许ExecutorType发生变化
+     * 
+     * 
+     * @param session
+     * @return
+     */
+    private SqlSession getOrOpenBatchSession(SqlSessionTemplate session) {
+        if (this.batchSession != null) {
+            return this.batchSession;
+        }
+        synchronized (this) {
+            if (this.batchSession == null) {
+                SqlSessionFactory sqlSessionFactory = session.getSqlSessionFactory();
+                this.batchSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
+            }
+        }
+        return this.batchSession;
     }
 
     @SuppressWarnings("unchecked")
