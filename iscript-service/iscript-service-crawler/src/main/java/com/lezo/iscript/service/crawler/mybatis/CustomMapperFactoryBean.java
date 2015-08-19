@@ -32,7 +32,6 @@ import com.lezo.iscript.common.Batch;
 public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements InvocationHandler {
     private ConcurrentHashMap<Method, String> batchMethodParamMap = new ConcurrentHashMap<Method, String>();
     private T targetObject;
-    private SqlSession batchSession;
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -100,7 +99,7 @@ public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements 
     @SuppressWarnings("unchecked")
     public Object doIntercepter(Object proxy, Method method, Object[] args, String batchKey) throws Exception {
         SqlSessionTemplate session = (SqlSessionTemplate) getSqlSession();
-        SqlSession sqlSession = getOrOpenBatchSession(session);
+        SqlSession batchSession = newBatchSession(session);
         Integer result = 0;
         try {
             String sqlMapper = getObjectType().getName() + "." + method.getName();
@@ -110,25 +109,25 @@ public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements 
                 Collection<Object> batchCollection = (Collection<Object>) paramMap.get(batchKey);
                 for (Object bObject : batchCollection) {
                     paramMap.put(batchKey, bObject);
-                    result += sqlSession.update(sqlMapper, paramMap);
+                    result += batchSession.update(sqlMapper, paramMap);
                 }
-                sqlSession.commit(true);
+                batchSession.commit(true);
             } else if (paramObject instanceof List) {
                 Collection<Object> batchCollection = (Collection<Object>) paramObject;
                 for (Object bObject : batchCollection) {
-                    result += sqlSession.update(sqlMapper, bObject);
+                    result += batchSession.update(sqlMapper, bObject);
                 }
-                sqlSession.commit(true);
+                batchSession.commit(true);
             } else {
                 throw new RuntimeException("It is not an auto batch mapper:[" + sqlMapper + "]");
             }
-            // 有批量更新操作，清空Simple Session的localCache
-            session.clearCache();
         } catch (Exception ex) {
-            sqlSession.rollback();
+            batchSession.rollback();
             throw ex;
         } finally {
-            sqlSession.close();
+            // 有批量更新操作，清空Simple Session的localCache
+            session.clearCache();
+            batchSession.close();
         }
         return result;
     }
@@ -140,17 +139,9 @@ public class CustomMapperFactoryBean<T> extends MapperFactoryBean<T> implements 
      * @param session
      * @return
      */
-    private SqlSession getOrOpenBatchSession(SqlSessionTemplate session) {
-        if (this.batchSession != null) {
-            return this.batchSession;
-        }
-        synchronized (this) {
-            if (this.batchSession == null) {
-                SqlSessionFactory sqlSessionFactory = session.getSqlSessionFactory();
-                this.batchSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
-            }
-        }
-        return this.batchSession;
+    private SqlSession newBatchSession(SqlSessionTemplate session) {
+        SqlSessionFactory sqlSessionFactory = session.getSqlSessionFactory();
+        return sqlSessionFactory.openSession(ExecutorType.BATCH, false);
     }
 
     @SuppressWarnings("unchecked")
