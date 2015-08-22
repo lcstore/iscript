@@ -1,8 +1,10 @@
 package com.lezo.iscript.yeam.resultmgr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,6 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.lezo.iscript.IoSeed;
+import com.lezo.iscript.cache.SeedCacher;
+import com.lezo.iscript.io.IFetcher;
+import com.lezo.iscript.io.IoConstants;
+import com.lezo.iscript.io.PathFetcher;
 import com.lezo.iscript.service.crawler.dto.MessageDto;
 import com.lezo.iscript.service.crawler.service.MessageService;
 import com.lezo.iscript.utils.JSONUtils;
@@ -62,9 +69,22 @@ public class EarliestMessageHandler {
 				}
 			}
 			DirSummaryCacher cacher = DirSummaryCacher.getInstance();
+			List<IoSeed> ioSeeds = new ArrayList<IoSeed>(dirBeans.size());
+			IFetcher fetcher = new PathFetcher();
 			for (DirMeta dirBean : dirBeans) {
-				cacher.fireEvent(dirBean);
+				// cacher.fireEvent(dirBean);
+				IoSeed element = new IoSeed();
+				element.setBucket(dirBean.getBucket());
+				element.setDomain(dirBean.getDomain());
+				element.setDataPath(dirBean.toDirPath());
+				element.setFetcher(fetcher);
+				element.setLevel(IoConstants.LEVEL_PATH);
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("limit", "0-100");
+				element.setParams(params);
+				ioSeeds.add(element);
 			}
+			SeedCacher.getInstance().getQueue().offer(IoConstants.LEVEL_PATH, ioSeeds);
 			long cost = System.currentTimeMillis() - start;
 			logger.info("add earliest message:" + dirBeans.size() + ",nameCount:" + nameList.size() + ",cost:" + cost);
 		} catch (Exception e) {

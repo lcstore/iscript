@@ -40,6 +40,9 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+	<listener>
+		<listener-class>com.lezo.iscript.resulter.StartedListener</listener-class>
+	</listener>
 	<!-- Any path (name) registered in solrconfig.xml will be sent to that filter -->
 	<filter>
 		<filter-name>SolrRequestFilter</filter-name>

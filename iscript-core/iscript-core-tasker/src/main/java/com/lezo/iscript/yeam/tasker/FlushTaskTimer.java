@@ -9,13 +9,19 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lezo.iscript.common.queue.QueueContianer;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.TaskPriorityService;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
+/**
+ * 已停用
+ * 
+ * @author lezo
+ *
+ */
+@Deprecated
 public class FlushTaskTimer {
 	private static final int ONE_BATCH_SIZE = 200;
 	private static Logger log = Logger.getLogger(FlushTaskTimer.class);
@@ -30,7 +36,7 @@ public class FlushTaskTimer {
 		}
 		try {
 			running = true;
-			Queue<TaskWritable> taskQueue = QueueContianer.getInstance().getQueue(TaskWritable.class);
+			Queue<TaskWritable> taskQueue = null;
 			if (taskQueue == null) {
 				log.warn("Do not have queue[TaskWritable]..");
 				return;
