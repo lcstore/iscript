@@ -5,6 +5,19 @@ import org.junit.Test;
 
 public class JosRestClientTest {
 
+    @Test
+    public void testGetWares() throws Exception {
+        String accessToken = "655b0fd2-1609-4a59-8056-6ea14da6a9ff";
+        String appKey = "290239D3680EDAAD9F6EB42F32FD1F1D";
+        String appSecret = "9bf3075487c84dcbae664aa6b533b6d2";
+        JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
+        String method = "360buy.wares.list.get";
+        JSONObject argsObject = new JSONObject();
+        argsObject.put("ware_ids", "341833");
+        argsObject.put("fields", "ware_id,spu_id,cid");
+        String result = client.execute(method, argsObject.toString());
+        System.out.println(result);
+    }
 	@Test
 	public void testCateRequest() throws Exception {
 		String accessToken = "";
