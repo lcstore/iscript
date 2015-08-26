@@ -1,15 +1,14 @@
 package com.lezo.iscript.yeam;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.io.FileUtils;
 
-import com.lezo.iscript.yeam.config.ConfigAnccBarCode;
+import com.lezo.iscript.yeam.config.AnccBarCodeFetcher;
 import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
@@ -17,18 +16,20 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
 public class BarCodeFetcher {
 
     public static void main(String[] args) throws Exception {
-        List<String> brandList = FileUtils.readLines(new File("src/test/resources/data/brand.txt"));
-        ConfigParser configParser = new ConfigAnccBarCode();
-        Set<String> hasSet = new HashSet<String>(brandList);
-        File leaveFile = new File("src/test/resources/data/brand.leave.txt");
+        String srcPath = System.getProperty("src", "src/test/resources/data/brand.txt");
+        String remainPath = System.getProperty("remain", "src/test/resources/data/brand.leave.txt");
+        List<String> brandList = FileUtils.readLines(new File(srcPath));
+        ConfigParser configParser = new AnccBarCodeFetcher();
+        List<String> remianList = new ArrayList<String>(brandList);
+        File leaveFile = new File(remainPath);
         long start = System.currentTimeMillis();
         for (String brand : brandList) {
             TaskWritable task = new TaskWritable();
             task.put("searchKey", brand);
             String rs = configParser.doParse(task);
             log.info(rs);
-            hasSet.remove(brand);
-            FileUtils.writeLines(leaveFile, hasSet);
+            remianList.remove(brand);
+            FileUtils.writeLines(leaveFile, remianList);
         }
         long cost = System.currentTimeMillis() - start;
         long minute = cost / 1000 / 60;

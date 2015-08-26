@@ -42,7 +42,7 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ConfigAnccBarCode implements ConfigParser {
+public class AnccBarCodeFetcher implements ConfigParser {
     private static DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
     private static Logger log = LoggerFactory.getLogger(AnccScriptCrawler.class);
     private static final List<String> paramList = new ArrayList<String>();
