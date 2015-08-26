@@ -220,11 +220,11 @@ public class ConfigAnccBarCode implements ConfigParser {
     }
 
     private static String getContent(HttpUriRequest request, String msg) throws Exception {
-        // Random random = new Random();
-        // long timeout = random.nextInt(2000);
-        // timeout += 100;
-        // log.info(msg + ",sleep:" + timeout);
-        // TimeUnit.MILLISECONDS.sleep(timeout);
+        Random random = new Random();
+        long timeout = random.nextInt(500);
+        timeout += 10;
+        log.info(msg + ",sleep:" + timeout);
+        TimeUnit.MILLISECONDS.sleep(timeout);
         // content = client.execute(post, new SimpleResponseHandler());
         HttpResponse response = null;
         try {
