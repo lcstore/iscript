@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.crawler.main.AnccScriptCrawler;
 import com.lezo.iscript.ocr.ANCCOCRParser;
+import com.lezo.iscript.proxy.ProxyClientUtils;
 import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.rest.http.ImageResponseHandler;
 import com.lezo.iscript.rest.http.SimpleHttpBrowser;
@@ -95,10 +96,13 @@ public class AnccBarCodeFetcher implements ConfigParser {
 
     private static DataBean searchKey(String key) throws Exception {
         String qUrl = "http://www.ancc.org.cn/Service/queryTools/Internal.aspx?id=";
+        Integer proxyType = 1;
+        String proxyHost = System.getProperty("host", null);
+        String sPort = System.getProperty("port", null);
+        Integer proxyPort = sPort == null ? null : Integer.valueOf(sPort);
         // HttpGet get = new HttpGet(qUrl);
         // String qContent = HttpClientUtils.getContent(client, get);
         // Document qDom = Jsoup.parse(qContent, qUrl);
-
         List<NameValuePair> nvList = new ArrayList<NameValuePair>();
         nvList.add(new BasicNameValuePair(
                 "__VIEWSTATE",
@@ -117,7 +121,7 @@ public class AnccBarCodeFetcher implements ConfigParser {
         // nvList.add(new BasicNameValuePair("txtcode", "6937033400061"));
         nvList.add(new BasicNameValuePair("txtcode", txtCode));
         nvList.add(new BasicNameValuePair("btn_query", "查询"));
-        HttpPost post = new HttpPost(qUrl);
+        HttpPost post = ProxyClientUtils.createHttpPost(qUrl, proxyHost, proxyPort, proxyType);
         post.addHeader("Referer", qUrl);
         post.addHeader("Host", "search.anccnet.com");
         post.addHeader("Accept-Language", "zh-cn");
@@ -130,14 +134,15 @@ public class AnccBarCodeFetcher implements ConfigParser {
                 dom.select("h2:contains(Object moved to) a[href^=http://search.anccnet.com/searchResult2.aspx]");
         if (!directEle.isEmpty()) {
             searchUrl = directEle.first().absUrl("href");
-            post = new HttpPost(searchUrl);
-            post.addHeader("Referer", dom.baseUri());
-            post.addHeader("Host", "search.anccnet.com");
-            content = getContent(post, "start key:" + key);
-            dom = Jsoup.parse(content, post.getURI().toURL().toString());
+            HttpGet get = ProxyClientUtils.createHttpGet(searchUrl, proxyHost, proxyPort, proxyType);
+            get.addHeader("Referer", dom.baseUri());
+            get.addHeader("Host", "search.anccnet.com");
+            content = getContent(get, "start key:" + key);
+            dom = Jsoup.parse(content, get.getURI().toURL().toString());
         }
         log.info("searchUrl:" + searchUrl);
-        post = new HttpPost(dom.baseUri());
+        post = ProxyClientUtils.createHttpPost(dom.baseUri(), proxyHost, proxyPort, proxyType);
+        // post = new HttpPost(dom.baseUri());
         post.addHeader("Referer", dom.baseUri());
         post.setEntity(new UrlEncodedFormEntity(getContentNVList(key, dom), "gb2312"));
         content = getContent(post, "start key:" + key);
@@ -155,7 +160,8 @@ public class AnccBarCodeFetcher implements ConfigParser {
             Integer totalPage = Integer.valueOf(numObj.getString("total_page"));
             Integer curPage = Integer.valueOf(numObj.getString("cur_page"));
             if (curPage < totalPage) {
-                post = new HttpPost(searchUrl);
+                // post = new HttpPost(searchUrl);
+                post = ProxyClientUtils.createHttpPost(searchUrl, proxyHost, proxyPort, proxyType);
                 post.setEntity(new UrlEncodedFormEntity(getPageNVList(key, curPage, dom), "gb2312"));
                 String html = getContent(post, "nextpage.key:" + key + ",curPage:" + (curPage + 1) + "/"
                         + totalPage);
@@ -164,7 +170,8 @@ public class AnccBarCodeFetcher implements ConfigParser {
                     break;
                 }
                 dom = Jsoup.parse(html, searchUrl);
-                post = new HttpPost(searchUrl);
+                post = ProxyClientUtils.createHttpPost(searchUrl, proxyHost, proxyPort, proxyType);
+                // post = new HttpPost(searchUrl);
                 post.setEntity(new UrlEncodedFormEntity(getContentNVList(key, dom), "gb2312"));
                 content = getContent(post, "content.key:" + key + ",curPage:" + (curPage + 1) + "/"
                         + totalPage);
@@ -222,7 +229,7 @@ public class AnccBarCodeFetcher implements ConfigParser {
     private static String getContent(HttpUriRequest request, String msg) {
         Random random = new Random();
         long timeout = random.nextInt(500);
-        timeout += 10;
+        timeout += 100;
         log.info(msg + ",sleep:" + timeout);
         // content = client.execute(post, new SimpleResponseHandler());
         HttpResponse response = null;
