@@ -2,6 +2,7 @@ package com.lezo.iscript.yeam.config;
 
 import java.awt.image.BufferedImage;
 import java.io.StringWriter;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -141,14 +142,21 @@ public class AnccBarCodeFetcher implements ConfigParser {
             dom = Jsoup.parse(content, get.getURI().toURL().toString());
         }
         log.info("searchUrl:" + searchUrl);
-        post = ProxyClientUtils.createHttpPost(dom.baseUri(), proxyHost, proxyPort, proxyType);
-        // post = new HttpPost(dom.baseUri());
-        post.addHeader("Referer", dom.baseUri());
-        post.setEntity(new UrlEncodedFormEntity(getContentNVList(key, dom), "gb2312"));
-        content = getContent(post, "start key:" + key);
-        dom = Jsoup.parse(content, post.getURI().toURL().toString());
+        searchUrl = "http://search.anccnet.com/searchResult2.aspx?keyword=" + URLEncoder.encode(key, "gb2312");
+        // post = ProxyClientUtils.createHttpPost(dom.baseUri(), proxyHost, proxyPort, proxyType);
+        // post.setEntity(new UrlEncodedFormEntity(getContentNVList(key, dom), "gb2312"));
         DataBean dataBean = new DataBean();
+        Integer totalPage = 0;
+        Integer lastPage = 0;
+        String pageUrl = searchUrl;
         while (true) {
+            if (lastPage > 0) {
+                pageUrl = searchUrl + "&rPage=" + (lastPage + 1);
+            }
+            HttpGet queryGet = ProxyClientUtils.createHttpGet(pageUrl, proxyHost, proxyPort, proxyType);
+            queryGet.addHeader("Referer", dom.baseUri());
+            content = getContent(queryGet, "start key:" + key);
+            dom = Jsoup.parse(content, post.getURI().toURL().toString());
             JSONObject pageObj = new JSONObject();
             JSONObject numObj = getNumObj(dom);
             pageObj.put("numObj", numObj);
@@ -157,29 +165,10 @@ public class AnccBarCodeFetcher implements ConfigParser {
             String pageString = pageObj.toString();
             log.info(pageString);
             dataBean.getDataList().add(pageString);
-            Integer totalPage = Integer.valueOf(numObj.getString("total_page"));
+            totalPage = totalPage < 1 ? Integer.valueOf(numObj.getString("total_page")) : totalPage;
             Integer curPage = Integer.valueOf(numObj.getString("cur_page"));
             if (curPage < totalPage) {
-                // post = new HttpPost(searchUrl);
-                post = ProxyClientUtils.createHttpPost(searchUrl, proxyHost, proxyPort, proxyType);
-                post.setEntity(new UrlEncodedFormEntity(getPageNVList(key, curPage, dom), "gb2312"));
-                String html = getContent(post, "nextpage.key:" + key + ",curPage:" + (curPage + 1) + "/"
-                        + totalPage);
-                if (html == null) {
-                    log.warn("page.stop at " + curPage + "/" + totalPage);
-                    break;
-                }
-                dom = Jsoup.parse(html, searchUrl);
-                post = ProxyClientUtils.createHttpPost(searchUrl, proxyHost, proxyPort, proxyType);
-                // post = new HttpPost(searchUrl);
-                post.setEntity(new UrlEncodedFormEntity(getContentNVList(key, dom), "gb2312"));
-                content = getContent(post, "content.key:" + key + ",curPage:" + (curPage + 1) + "/"
-                        + totalPage);
-                if (content == null) {
-                    log.warn("content.stop at " + curPage + "/" + totalPage);
-                    break;
-                }
-                dom = Jsoup.parse(content, searchUrl);
+                lastPage = curPage;
             } else {
                 break;
             }
