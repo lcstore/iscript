@@ -1,0 +1,166 @@
+{
+"RECORDS":[
+{
+"ID":"1",
+"URL":"http://www.proxy.com.ru/list_%s.html",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"2",
+"URL":"http://www.cybersyndrome.net/%s.html",
+"CREATE_URLS_FUN":"var typeArr =['pla','pld','plr']; var oUrlObject = {};var maxCount=1;for(var j=0;j<typeArr.length;j++){ var oUrlArr = []; oUrlObject[typeArr[j]]= oUrlArr; for(var i=1;i<=maxCount;i++){ oUrlArr.push(java.lang.String.format(args.url,''+typeArr[j],''+i));} } return oUrlObject;\r\n",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"3",
+"URL":"http://www.proxylist.ro/free-proxy-list-widget.js?size=20",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"4",
+"URL":"http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum=%s",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5; for(var i=1;i<=maxCount;i++){ var index=i-1; oUrlArr.push('http://www.xroxy.com/proxylist.php?port=&type=&ssl=&country=&latency=&reliability=&sort=reliability&desc=true&pnum='+index);} return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"5",
+"URL":"http://proxy-list.org/english/index.php?p=%s",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"6",
+"URL":"http://www.blackhatworld.com/blackhat-seo/proxy-lists/354949-200-scrapebox-passed-http-proxies-freshly-verified-w-screenshot-daily-updates-%s.html",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"7",
+"URL":"http://free-proxy.cz/en/proxylist/main/%s",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"8",
+"URL":"http://socks5proxies.com/index.php?page=1&action=freeproxy",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;1",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"9",
+"URL":"http://www.samair.ru/proxy/proxy-%s.htm",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+(i < 10 ? \"0\" + i : i)));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"10",
+"URL":"http://www.proxylists.net/%s_%s_ext.html",
+"CREATE_URLS_FUN":"var portArr =[80,81,82,83,84,86,88,90,443,629,808,843,1080,1209,1234,2222,2235,3000,3123,3127,3128,3129,3333,3988,5580,6666,7777,7808,8000,8001,8008,8020,8080,8081,8085,8088,8089,8090,8103,8118,8123,8181,8741,8888,9000,905,9090,9091,9100,9797,9999,10000,10800,14826,15238,17183,17904,18000,18080,18186,1835,18919,19127,19305,24083,33333,33948,38328,47037,5001,53092,53193,58080]; var oUrlObject = {};var maxCount=5;for(var j=0;j<portArr.length;j++){ var oUrlArr = []; oUrlObject[portArr[j]]= oUrlArr; for(var i=1;i<=maxCount;i++){ oUrlArr.push('http://www.proxylists.net/'+portArr[j]+'_'+i+'_ext.html');} } return oUrlObject;",
+"DECODE_PAGE_FUN":"var oReg = new RegExp('unescape.*?\\\\)','gm');\r\nvar oMatch = args.source.match(oReg);\r\nif(!oMatch || oMatch.length<1){\r\n  return args.source;\r\n}\r\n\r\nvar newString = new String(args.source);\r\nfor(var i=0;i<oMatch.length;i++){\r\n  newString = newString.replace(oMatch[i],eval(oMatch[i]));\r\n}\r\nreturn newString;"
+},
+{
+"ID":"11",
+"URL":"http://www.cool-proxy.net/proxies/http_proxy_list/page:%s/sort:working_average/direction:desc",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"12",
+"URL":"http://www.mrhinkydink.com/proxies%s.htm",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+(i==1?'':i)));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"13",
+"URL":"http://mianfeidaili.ttju.cn/getAgent.php?uCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%BA%C5%2C%BF%C9%B2%BB%CC%EE%D0%B4&pCard=%C7%EB%CC%EE%D0%B4%D4%DE%D6%FA%BF%A8%C3%DC%2C%BF%C9%B2%BB%CC%EE%D0%B4&Number=",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(args.url);}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"14",
+"URL":"http://www.xici.net.co/%s/%s",
+"CREATE_URLS_FUN":"var typeArr =['nn','nt','wn','wt']; var oUrlObject = [];var maxCount=5;for(var j=0;j<typeArr.length;j++){  var oUrlArr = []; oUrlObject[typeArr[j]]= oUrlArr; for(var i=1;i<=maxCount;i++){ oUrlArr.push(java.lang.String.format(args.url,''+typeArr[j],''+i));} } return oUrlObject;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"15",
+"URL":"http://tools.rosinstrument.com/cgi-bin/sps.pl?bp=&pattern=115-01-&max=100&nskip=%s&file=proxlog.csv",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+((i-1)*5)));}return oUrlArr;",
+"DECODE_PAGE_FUN":"var str = args.source;\r\nvar t=''; var s=unescape(str); var x=Math.round(Math.sqrt(4));\r\n for(var i=0;i<s.length;i++) t+=String.fromCharCode(s.charCodeAt(i)^(i%2?x:0));\r\n return (t.replace(/\\*/g,'<\\/td><td>').replace(/\\^/g,'<a href=\"').\r\n  replace(/~/g,'<\\/TD><TD>').replace(/!/g,'<TR class=vltgrey align=center><TD><center><a href=\"fp\\.pl\\?hosts=').replace(/\\|/g,'<TR class=ltgrey align=center><TD><center><a href=\"fp\\.pl\\?hosts=')\r\n );"
+},
+{
+"ID":"16",
+"URL":"http://free-proxy-list.net/anonymous-proxy.html",
+"CREATE_URLS_FUN":"",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"17",
+"URL":"http://www.socks-proxy.net/",
+"CREATE_URLS_FUN":"",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"18",
+"URL":"http://www.google-proxy.net/",
+"CREATE_URLS_FUN":"",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"19",
+"URL":"http://free-proxy-list.net/anonymous-proxy.html",
+"CREATE_URLS_FUN":"",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"20",
+"URL":"http://spys.ru/en/%s/%s/",
+"CREATE_URLS_FUN":"var typeArr =['free-proxy-list','anonymous-proxy-list','https-ssl-proxy','socks-proxy-list','http-proxy-list','non-anonymous-proxy-list']; var oUrlObject = {}; var maxCount=10;for(var j=0;j<typeArr.length;j++){ var oUrlArr = []; oUrlObject[typeArr[j]]= oUrlArr; for(var i=1;i<=maxCount;i++){ oUrlArr.push(java.lang.String.format(args.url,''+typeArr[j],''+(i-1)));} } return oUrlObject;\r\n",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"21",
+"URL":"http://www.proxynova.com/proxy-server-list/country-%s/",
+"CREATE_URLS_FUN":"var typeArr =[\"cn\",\"ve\",\"tw\",\"in\",\"br\",\"id\",\"us\",\"th\",\"ru\",\"ar\",\"hk\",\"de\",\"eg\",\"jp\",\"cl\",\"ma\",\"co\",\"vn\",\"bd\",\"ua\",\"gb\",\"pl\",\"my\",\"fr\"]; var oUrlObject = {};var maxCount=1;for(var j=0;j<typeArr.length;j++){ var oUrlArr = []; oUrlObject[typeArr[j]]= oUrlArr; for(var i=1;i<=maxCount;i++){ var sNew = java.lang.String.format(args.url,typeArr[j],''+i); oUrlArr.push();} } return oUrlObject;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"22",
+"URL":"http://checkerproxy.net/all_proxy",
+"CREATE_URLS_FUN":"",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"23",
+"URL":"http://www.youdaili.net/Daili/http/3167.html",
+"CREATE_URLS_FUN":"var dateCount = parseInt((new Date() - new Date('2015-03-31'))/(24*60*60*1000));\r\nvar oReg = new RegExp('([0-9]+).html','gm');\r\nvar fromIndex = 3167;\r\nif(oReg.test(args.url)){\r\n  fromIndex = RegExp.$1 -0;\r\n}\r\nvar toIndex = fromIndex +5*dateCount;var oUrlArr = []; for(var i=toIndex-10;i<=toIndex;i++){oUrlArr.push(args.url.replace(''+fromIndex,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"24",
+"URL":"http://www.youdaili.net/Daili/guowai/3169.html",
+"CREATE_URLS_FUN":"var dateCount = parseInt((new Date() - new Date('2015-03-31'))/(24*60*60*1000));\r\nvar oReg = new RegExp('([0-9]+).html','gm');\r\nvar fromIndex = 3167;\r\nif(oReg.test(args.url)){\r\n  fromIndex = RegExp.$1 -0;\r\n}\r\nvar toIndex = fromIndex +5*dateCount;var oUrlArr = []; for(var i=toIndex-10;i<=toIndex;i++){oUrlArr.push(args.url.replace(''+fromIndex,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"25",
+"URL":"http://www.youdaili.net/Daili/Socks/3166.html",
+"CREATE_URLS_FUN":"var dateCount = parseInt((new Date() - new Date('2015-03-31'))/(24*60*60*1000));\r\nvar oReg = new RegExp('([0-9]+).html','gm');\r\nvar fromIndex = 3167;\r\nif(oReg.test(args.url)){\r\n  fromIndex = RegExp.$1 -0;\r\n}\r\nvar toIndex = fromIndex +5*dateCount;var oUrlArr = []; for(var i=toIndex-10;i<=toIndex;i++){oUrlArr.push(args.url.replace(''+fromIndex,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"26",
+"URL":"http://www.youdaili.net/Daili/QQ/3170.html",
+"CREATE_URLS_FUN":"var dateCount = parseInt((new Date() - new Date('2015-03-31'))/(24*60*60*1000));\r\nvar oReg = new RegExp('([0-9]+).html','gm');\r\nvar fromIndex = 3167;\r\nif(oReg.test(args.url)){\r\n  fromIndex = RegExp.$1 -0;\r\n}\r\nvar toIndex = fromIndex +5*dateCount;var oUrlArr = []; for(var i=toIndex-10;i<=toIndex;i++){oUrlArr.push(args.url.replace(''+fromIndex,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":""
+},
+{
+"ID":"27",
+"URL":"http://proxylist.hidemyass.com/%s",
+"CREATE_URLS_FUN":"var oUrlArr = [];var maxCount=20;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}return oUrlArr;",
+"DECODE_PAGE_FUN":"var src =args.source;  var oData = eval('(' + src + ')');\nif(oData.log){\n\t//test.chrome har data\n\tsrc = oData.log.entries[0].response.content.text; oData = eval('(' + src + ')');\n}\nsrc = oData.table;\nsrc = \"<table>\" + src + \"</table>\";\nvar doc = org.jsoup.Jsoup.parse(src);\n\nvar sDestSrc = '';\nvar trEls = doc.select(\"tr[rel~=[0-9]+]\");\ntrEls.select(\"[style=display:none]\").remove();\nfor (var i=0;i<trEls.size();i++) {\n\tvar trEl  = trEls.get(i);\n\tvar styleEle = trEl.select(\"style\");\n\tvar lineArr = styleEle.html().split(\"\\n\");\n\tif(lineArr == null){\n\t\tcontinue;\n\t}\n\tfor (var j=0;j<lineArr.length;j++) {\n\t\tvar token = lineArr[j];\n\t\tif (token.indexOf(\"display:none\")>0) {\n\t\t\tvar index = token.indexOf(\"{\");\n\t\t\tif (index > 0) {\n\t\t\t\tvar clsName = token.substring(0, index).trim();\n\t\t\t\ttrEl.select(clsName).remove();\n\t\t\t}\n\t\t}\n\t}\n\tsDestSrc +=trEl.text()+'\\n';\n}\n//java.lang.System.err.println(sDestSrc);\nreturn sDestSrc;"
+}
+]
+}
