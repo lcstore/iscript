@@ -37,6 +37,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -65,6 +66,7 @@ import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler.ProxyAddrDto;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
+import com.lezo.iscript.yeam.config.ConfigVipBarCode;
 import com.lezo.iscript.yeam.config.ConfigYhdBrandList;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
@@ -103,6 +105,7 @@ public class ConfigParserTest {
         parser = new ConfigJdProduct();
         parser = new ConfigProxySeedHandler();
         parser = new ConfigAnccBarCode();
+        parser = new ConfigVipBarCode();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
         // url = "http://item.jd.com/104616.html";// sell out
@@ -128,6 +131,7 @@ public class ConfigParserTest {
         url = "http://list.jd.com/list.html?cat=9987%2C653%2C655&page=4&JL=6_0_0";
         url = "http://www.yhd.com";
         url = "http://item.jd.com/919669.html";
+        url = "http://list.vip.com/508518.html";
         // urlList.add(url);
         TaskWritable task = new TaskWritable();
         // task.put("barCode", "6900068005020");
@@ -155,19 +159,48 @@ public class ConfigParserTest {
         // task.put("port", 83);
         // task.put("proxyType", 1);
         //
-        task.put("url", "http://www.proxy.com.ru/list_%s.html");
+        // task.put("url", "http://www.proxy.com.ru/list_%s.html");
         task.put("seedId", "1");
         task.put(
                 "CreateUrlsFun",
                 "var oUrlArr = [];var maxCount=5;for(var i=1;i<=maxCount;i++){oUrlArr.push(java.lang.String.format(args.url,''+i));}  return oUrlArr;");
         task.put("searchKey", "鲁花");
-        // task.getArgs().remove("proxyHost");
+        task.getArgs().remove("proxyHost");
         String returnObject = parser.doParse(task);
         System.out.println("result:" + returnObject);
     }
 
     @Test
     public void parserUrls() throws Exception {
+        DefaultHttpClient client = HttpClientUtils.createHttpClient();
+        HttpGet get = new HttpGet("http://www.vip.com/902");
+        HttpResponse resp = client.execute(get);
+        String html = EntityUtils.toString(resp.getEntity());
+        Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
+        ScriptDocument sDom = ScriptHtmlParser.parser(dom);
+        ScriptWindow window = new ScriptWindow();
+        window.setDocument(sDom);
+        Elements scriptEls = dom.select("#J-sp-foverseas-wrap + script[type=text/javascript]");
+        String sScript = scriptEls.first().html();
+        window.eval(sScript);
+        Object jsObject = ScriptableObject.getProperty(window.getScope(), "floorBrandData");
+        Object floorBrandData = NativeJSON.stringify(Context.getCurrentContext(), window.getScope(), jsObject,
+                null, null);
+        JSONObject brandObject = JSONUtils.getJSONObject(floorBrandData.toString());
+        JSONArray bArray = JSONUtils.get(brandObject, "foverseas");
+        JSONObject bObj = bArray.getJSONObject(0);
+        String link = JSONUtils.getString(bObj, "link");
+        String name = JSONUtils.getString(bObj, "name");
+        String mark = "http:";
+        int index = link.indexOf(mark);
+        String url = link.substring(index, link.length() - 1);
+        System.err.println(name);
+        System.err.println(link);
+        System.err.println(url);
+    }
+
+    @Test
+    public void parserSmzdmUrls() throws Exception {
         DefaultHttpClient client = HttpClientUtils.createHttpClient();
         HttpGet get = new HttpGet("http://www.smzdm.com/URL/AA/YH/04700F6FD0FE5214");
         HttpResponse resp = client.execute(get);

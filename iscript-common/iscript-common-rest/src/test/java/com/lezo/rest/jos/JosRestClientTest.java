@@ -4,16 +4,15 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 public class JosRestClientTest {
-
+    String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
+    String appSecret = "7b7d95759e594b2f89a553b350f3d131";
+    String accessToken = "83de1487-026f-4a60-8dac-a9dd27abfeae";
     @Test
     public void testGetWares() throws Exception {
-        String accessToken = "655b0fd2-1609-4a59-8056-6ea14da6a9ff";
-        String appKey = "290239D3680EDAAD9F6EB42F32FD1F1D";
-        String appSecret = "9bf3075487c84dcbae664aa6b533b6d2";
         JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
-        String method = "360buy.wares.list.get";
+        String method = "360buy.ware.get";
         JSONObject argsObject = new JSONObject();
-        argsObject.put("ware_ids", "341833");
+        argsObject.put("ware_id", "341833");
         argsObject.put("fields", "ware_id,spu_id,cid");
         String result = client.execute(method, argsObject.toString());
         System.out.println(result);
@@ -21,8 +20,6 @@ public class JosRestClientTest {
 	@Test
 	public void testCateRequest() throws Exception {
 		String accessToken = "";
-		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
-		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.ware.product.catelogy.list.get";
 		JSONObject argsObject = new JSONObject();
@@ -38,8 +35,6 @@ public class JosRestClientTest {
 	@Test
 	public void testCateProductList() throws Exception {
 		String accessToken = "";
-		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
-		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.ware.promotion.search.catelogy.list";
 		int page = 1;
@@ -57,13 +52,11 @@ public class JosRestClientTest {
 	@Test
 	public void testProduct() throws Exception {
 		String accessToken = "";
-		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
-		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.ware.baseproduct.get";
 		JSONObject argsObject = new JSONObject();
 		argsObject.put("ids", "317652,735029");
-		argsObject.put("base", "sku_id,name,state,ebrand,cbrand");
+        argsObject.put("base", "sku_id,name,state,ebrand,cbrand,upc_code");
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);
 	}
@@ -164,20 +157,17 @@ public class JosRestClientTest {
 	@Test
 	public void testWebPromotion() throws Exception {
 		// 网盟推广
-		String accessToken = "7a2d3547-1816-4df3-a1c2-e5a919fa3b63";
-		String appKey = "E87EB8CEFEB1E72D8BC760C47029BB15";
-		String appSecret = "f558814ec9874217a10d5efc6166e6f9";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.service.promotion.getcode";
 		method = "jingdong.service.promotion.batch.getcode";
 		JSONObject argsObject = new JSONObject();
-		String pCode = "1304092293";
+        String pCode = "1530766875";
 		argsObject.put("id", pCode);
 		argsObject.put("url", "http://item.jd.com/" + pCode + ".html");
 		argsObject.put("unionId", "51698052");
 		argsObject.put("channel", "PC");
 		argsObject.put("subUnionId", "");
-		argsObject.put("webId", "");
+        argsObject.put("webId", "220524281");
 		argsObject.put("ext1", "");
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);
@@ -186,9 +176,6 @@ public class JosRestClientTest {
 
 	@Test
 	public void testPromotionGetCodes() throws Exception {
-		String accessToken = "482f64db-bf61-42a7-a250-f9b1e786d00b";
-		String appKey = "6BB6B1912DAB91E14B6ADF6C31A2C023";
-		String appSecret = "7b7d95759e594b2f89a553b350f3d131";
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.service.promotion.getcode";
 		method = "jingdong.service.promotion.batch.getcode";

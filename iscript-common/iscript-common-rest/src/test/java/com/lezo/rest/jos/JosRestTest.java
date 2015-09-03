@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.lezo.rest.SignBuildable;
-import com.lezo.rest.jos.JosSignBuilder;
 
 public class JosRestTest {
 
@@ -36,6 +35,7 @@ public class JosRestTest {
 		method = "jingdong.ware.product.catelogy.list.get";
 		method = "jingdong.ware.promotion.search.catelogy.list";
 		method = "jingdong.ware.baseproduct.get";
+        method = "360buy.ware.listing.get";
 		Map<String, Object> inMap = getRestParam(method);
 		SignBuildable builder = new JosSignBuilder();
 		String sign = builder.getSign(inMap);
