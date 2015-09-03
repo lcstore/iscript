@@ -1,0 +1,2 @@
+mvn install:install-file -Dfile=./Baidu-PCS-SDK-Android-L2-2.1.0.jar -DgroupId=com.baidu -DartifactId=pcs -Dversion=android-L2-2.1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=./jss-sdk-java-1.1.1-SNAPSHOT.jar -DgroupId=com.jcloud -DartifactId=jss-sdk-java -Dversion=1.1.1-SNAPSHOT -Dpackaging=jar
