@@ -64,6 +64,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler.ProxyAddrDto;
+import com.lezo.iscript.yeam.config.ConfigBarCodeCollector;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigVipBarCode;
@@ -106,6 +107,8 @@ public class ConfigParserTest {
         parser = new ConfigProxySeedHandler();
         parser = new ConfigAnccBarCode();
         parser = new ConfigVipBarCode();
+        parser = new ConfigBarCodeCollector();
+        // parser = new ConfigVipList();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
         // url = "http://item.jd.com/104616.html";// sell out
@@ -131,7 +134,12 @@ public class ConfigParserTest {
         url = "http://list.jd.com/list.html?cat=9987%2C653%2C655&page=4&JL=6_0_0";
         url = "http://www.yhd.com";
         url = "http://item.jd.com/919669.html";
-        url = "http://list.vip.com/508518.html";
+        url = "http://list.vip.com/509320.html";
+        url = "http://category.vip.com/search-5-0-1.html?q=1|8399&wz=5";
+        url = "http://category.vip.com/search-1-0-1.html?q=1|8399|&rp=8399|0#catPerPos";
+        url = "http://www.meili51.com/huo.asp";
+        // url = "http://category.vip.com/search-1-0-3.html?q=1|8399|&rp=8399|0";
+        // url = "http://category.vip.com/search-2-0-1.html?q=1%7C8399";
         // urlList.add(url);
         TaskWritable task = new TaskWritable();
         // task.put("barCode", "6900068005020");
@@ -173,7 +181,7 @@ public class ConfigParserTest {
     @Test
     public void parserUrls() throws Exception {
         DefaultHttpClient client = HttpClientUtils.createHttpClient();
-        HttpGet get = new HttpGet("http://www.vip.com/902");
+        HttpGet get = new HttpGet("http://category.vip.com/search-2-0-1.html");
         HttpResponse resp = client.execute(get);
         String html = EntityUtils.toString(resp.getEntity());
         Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
@@ -181,6 +189,9 @@ public class ConfigParserTest {
         ScriptWindow window = new ScriptWindow();
         window.setDocument(sDom);
         Elements scriptEls = dom.select("#J-sp-foverseas-wrap + script[type=text/javascript]");
+        if (scriptEls.isEmpty()) {
+            return;
+        }
         String sScript = scriptEls.first().html();
         window.eval(sScript);
         Object jsObject = ScriptableObject.getProperty(window.getScope(), "floorBrandData");

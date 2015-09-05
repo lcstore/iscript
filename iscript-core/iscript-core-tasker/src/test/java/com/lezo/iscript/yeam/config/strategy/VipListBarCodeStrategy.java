@@ -37,13 +37,13 @@ import com.lezo.iscript.yeam.strategy.ResultStrategy;
 import com.lezo.iscript.yeam.task.TaskConstant;
 import com.lezo.iscript.yeam.writable.ResultWritable;
 
-public class VipListStrategy implements ResultStrategy, Closeable {
-    private static Logger logger = LoggerFactory.getLogger(VipListStrategy.class);
+public class VipListBarCodeStrategy implements ResultStrategy, Closeable {
+    private static Logger logger = LoggerFactory.getLogger(VipListBarCodeStrategy.class);
     // private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
     private static volatile boolean running = false;
     private Timer timer;
 
-    public VipListStrategy() {
+    public VipListBarCodeStrategy() {
         ProxyDetectTimer task = new ProxyDetectTimer();
         this.timer = new Timer(getName());
         this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
@@ -83,6 +83,20 @@ public class VipListStrategy implements ResultStrategy, Closeable {
                     total += taskList.size();
                     logger.info("add task count:" + taskList.size() + ",url:" + listUrl);
                 }
+                int maxPage = 53;
+                String taskId = UUID.randomUUID().toString();
+                List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(maxPage);
+                for (int i = 1; i < maxPage; i++) {
+                    String url = "http://category.vip.com/search-5-0-" + i + ".html?q=1|8399|&rp=8399|0#catPerPos";
+                    TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
+                    JSONObject argsObject = new JSONObject();
+                    newDto.setParams(argsObject.toString());
+                    taskList.add(newDto);
+                }
+                taskPriorityService.batchInsert(taskList);
+                total += taskList.size();
+                logger.info("add task count:" + taskList.size()
+                        + ",url:http://category.vip.com/search-5-0-1.html?q=1|8399|&rp=8399|0#catPerPos");
                 running = true;
             } catch (Exception ex) {
                 logger.warn(ExceptionUtils.getStackTrace(ex));

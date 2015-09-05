@@ -45,7 +45,7 @@ import com.lezo.iscript.yeam.writable.TaskWritable;
  */
 public class ConfigVipBarCode implements ConfigParser {
     private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-    private static Pattern oBarCodeReg = Pattern.compile("(/[0-9]/)([0-9]{13,})(-[0-9]\\.jpg)");
+    private static Pattern oBarCodeReg = Pattern.compile("([^0-9]+)([0-9]{12,})(-[0-9]\\.jpg)");
     private static Pattern oPriceReg = Pattern.compile("[.0-9]+");
     private static final int SITE_ID = 1003;
 
@@ -92,9 +92,14 @@ public class ConfigVipBarCode implements ConfigParser {
      */
     private DataBean getDataObject(TaskWritable task) throws Exception {
         String url = task.get("url").toString();
+        url = url.replace("|", "%7C");
         DataBean dataBean = new DataBean();
         HttpGet get = ProxyClientUtils.createHttpGet(url, task);
+        // Cookie cookie = new BasicClientCookie("VipUINFO", "3Aa");
+        // client.getCookieStore().addCookie(cookie);
+        // get.addHeader("Cookie", "vip_province=104103;");
         String html = HttpClientUtils.getContent(client, get);
+        System.err.println(html.indexOf("67344173"));
         Document dom = Jsoup.parse(html, url);
         Map<String, ProductBean> code2BeanMap = new HashMap<String, ProductBean>();
         addDomSkus(dom, code2BeanMap);
@@ -111,6 +116,8 @@ public class ConfigVipBarCode implements ConfigParser {
                 Matcher matcher = oBarCodeReg.matcher(tBean.getImgUrl());
                 if (matcher.find()) {
                     String sBarCode = matcher.group(2);
+                    tBean.setProductModel(sBarCode);
+                    sBarCode = sBarCode.length() == 12 ? "0" + sBarCode : sBarCode;
                     if (BarCodeUtils.isBarCode(sBarCode)) {
                         tBean.setBarCode(sBarCode);
                     }
@@ -124,9 +131,60 @@ public class ConfigVipBarCode implements ConfigParser {
         ScriptDocument scriptDocument = ScriptHtmlParser.parser(dom);
         ScriptWindow window = new ScriptWindow();
         window.setDocument(scriptDocument);
+        window.eval(" var $ =function(){return $;}; $.Loader={}; $.Loader.advScript = function(){}; ");
+        addMerchandise(window, code2BeanMap);
+        addCategorySkus(window, code2BeanMap);
+
+    }
+
+    private void addCategorySkus(ScriptWindow window, Map<String, ProductBean> code2BeanMap) throws Exception {
+        ScriptDocument scriptDoc = (ScriptDocument) window.getDocument();
+        Document dom = scriptDoc.getTargetDocument();
+        Elements scriptEls = dom.select("body > script");
+        String source = null;
+        for (Element ele : scriptEls) {
+            String html = ele.html();
+            if (html.indexOf("var VIPCATEGORY") > 0) {
+                source = html;
+                break;
+            }
+        }
+        if (StringUtils.isBlank(source)) {
+            return;
+        }
+        window.eval("var dataList; $.lazyDom=function(data){ if(data.allData && data.allData.length>0){ dataList=data.allData[0].data;} }; $.Listeners={};$.Listeners.sub=function(args){return $.Listeners.sub;}; $.Listeners.sub.onsuccess=function(){};");
+        window.eval(source);
+
+        Object jsObject = ScriptableObject.getProperty(window.getScope(), "dataList");
+        if (jsObject == ScriptableObject.NOT_FOUND) {
+            return;
+        }
+        Object dataList = NativeJSON.stringify(Context.getCurrentContext(), window.getScope(), jsObject,
+                null, null);
+        JSONArray mArray = new JSONArray(dataList.toString());
+        for (int i = 0; i < mArray.length(); i++) {
+            JSONObject itemObj = mArray.getJSONObject(i);
+            ProductBean tBean = new ProductBean();
+            tBean.setProductCode(JSONUtils.getString(itemObj, "id"));
+            tBean.setProductName(JSONUtils.getString(itemObj, "name"));
+            tBean.setImgUrl(JSONUtils.getString(itemObj, "list_img"));
+            tBean.setProductPrice(JSONUtils.getFloat(itemObj, "sell_price"));
+            tBean.setMarketPrice(JSONUtils.getFloat(itemObj, "market_price"));
+            tBean.setStockNum(1);
+            String brandId = JSONUtils.getString(itemObj, "brand_id");
+            tBean.setProductUrl("http://www.vip.com/detail-" + brandId + "-" + tBean.getProductCode() + ".html");
+            code2BeanMap.put(tBean.getProductCode(), tBean);
+        }
+    }
+
+    private void addMerchandise(ScriptWindow window, Map<String, ProductBean> code2BeanMap) throws Exception {
+        ScriptDocument scriptDoc = (ScriptDocument) window.getDocument();
+        Document dom = scriptDoc.getTargetDocument();
         Elements scriptEls = dom.select("#J_sizeItem_tmp + script[type=text/javascript]");
+        if (scriptEls.isEmpty()) {
+            return;
+        }
         String source = scriptEls.first().html();
-        window.eval("var $ ={}; $.Loader={}; $.Loader.advScript = function(){};");
         window.eval(source);
 
         Object jsObject = ScriptableObject.getProperty(window.getScope(), "merchandise");
@@ -148,9 +206,9 @@ public class ConfigVipBarCode implements ConfigParser {
     }
 
     private void addDomSkus(Document dom, Map<String, ProductBean> code2BeanMap) {
-        Elements elements = dom.select("[id^=J_pro_].J_pro_items");
+        Elements elements = dom.select("[id^=J_pro_]");
         for (Element ele : elements) {
-            Elements picEls = ele.select("dt.pro_list_pic a[href][title]");
+            Elements picEls = ele.select("a[href][title]");
             if (picEls.isEmpty()) {
                 continue;
             }
@@ -159,9 +217,9 @@ public class ConfigVipBarCode implements ConfigParser {
             tBean.setProductName(picEls.first().attr("title"));
             tBean.setProductCode(ele.id().replace("J_pro_", ""));
             code2BeanMap.put(tBean.getProductCode(), tBean);
-            Elements imgEls = picEls.select("img.J_first_pic[src]");
+            Elements imgEls = picEls.select("img.J_first_pic[data-original]");
             if (!imgEls.isEmpty()) {
-                tBean.setImgUrl(imgEls.first().absUrl("src"));
+                tBean.setImgUrl(imgEls.first().absUrl("data-original"));
             }
             Elements priceEls = ele.select("dd.pro_list_data span.deep_red em");
             if (!priceEls.isEmpty()) {

@@ -22,6 +22,8 @@ public class BarCodeUtilsTest {
         // http://a.vpimg4.com/upload/merchandise/pdc/251/104/3100165393496104251/1/3605532996837-5.jpg
         Assert.assertEquals(true, BarCodeUtils.isBarCode("3605532996837"));
         Assert.assertEquals(true, BarCodeUtils.isBarCode("4988888888841"));
+        Assert.assertEquals(true, BarCodeUtils.isBarCode("085805521028"));
+        Assert.assertEquals(true, BarCodeUtils.isBarCode("027131953241"));
     }
 
     @Test

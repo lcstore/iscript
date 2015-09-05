@@ -36,9 +36,9 @@ public class JdListStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public JdListStrategy() {
-		CreateTaskTimer task = new CreateTaskTimer();
-		this.timer = new Timer(getName());
-		this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
+        // CreateTaskTimer task = new CreateTaskTimer();
+        // this.timer = new Timer(getName());
+        // this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
 	}
 
 	private class CreateTaskTimer extends TimerTask {

@@ -18,8 +18,29 @@ import org.apache.http.util.EntityUtils;
 public class HttpClientUtils {
     public static final String DEFAULT_CHARSET = "UTF-8";
 
-    public static String getContent(DefaultHttpClient client, HttpUriRequest get) throws Exception {
-        return getContent(client, get, DEFAULT_CHARSET);
+    public static DefaultHttpClient createHttpClient() {
+        return HttpClientFactory.createHttpClient();
+    }
+
+    public static String getContent(DefaultHttpClient client, HttpUriRequest request) throws Exception {
+        HttpResponse response = null;
+        try {
+            response = client.execute(request);
+            StatusLine statusLine = response.getStatusLine();
+            if (statusLine.getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
+                throw new HttpResponseException(statusLine.getStatusCode(), statusLine.toString());
+            }
+            HttpEntity entity = response.getEntity();
+            byte[] dataBytes = EntityUtils.toByteArray(entity);
+            String charset = getCharsetOrDefault(entity.getContentType(), dataBytes, DEFAULT_CHARSET);
+            return new String(dataBytes, charset);
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            if (response != null) {
+                EntityUtils.consumeQuietly(response.getEntity());
+            }
+        }
     }
 
     public static String getContent(DefaultHttpClient client, HttpUriRequest request, String charsetName)
@@ -41,10 +62,6 @@ public class HttpClientUtils {
             }
         }
 
-    }
-
-    public static DefaultHttpClient createHttpClient() {
-        return HttpClientFactory.createHttpClient();
     }
 
     public static String getCharsetOrDefault(Header contentType, byte[] dataBytes, String defaultCharset)

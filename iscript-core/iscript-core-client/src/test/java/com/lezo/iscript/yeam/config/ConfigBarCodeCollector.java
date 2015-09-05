@@ -1,84 +1,79 @@
 package com.lezo.iscript.yeam.config;
 
-import java.util.ArrayList;
+import java.io.StringWriter;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 
-import com.lezo.iscript.utils.BarCodeUtils;
-import com.lezo.iscript.utils.JSONUtils;
-import com.lezo.iscript.yeam.file.PersistentCollector;
+import com.lezo.iscript.proxy.ProxyClientUtils;
 import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.rest.http.HttpClientUtils;
-import com.lezo.iscript.yeam.mina.utils.HeaderUtils;
+import com.lezo.iscript.utils.BarCodeUtils;
+import com.lezo.iscript.utils.JSONUtils;
+import com.lezo.iscript.yeam.ClientConstant;
 import com.lezo.iscript.yeam.service.ConfigParser;
+import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
 public class ConfigBarCodeCollector implements ConfigParser {
-	private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-	private static final String EMTPY_RESULT = new JSONObject().toString();
+    private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
+    private static Pattern oBarCodeReg = Pattern.compile("([^0-9]*)([0-9]{12,13})");
 
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
 
-	@Override
-	public String doParse(TaskWritable task) throws Exception {
-		JSONObject itemObject = getDataObject(task);
-		// doCollect(itemObject, task);
-		return itemObject.toString();
-	}
+    @Override
+    public String doParse(TaskWritable task) throws Exception {
+        DataBean dataBean = getDataObject(task);
+        return convert2TaskCallBack(dataBean, task);
+    }
 
-	private void doCollect(JSONObject dataObject, TaskWritable task) {
-		JSONObject gObject = new JSONObject();
-		JSONObject argsObject = new JSONObject(task.getArgs());
-		JSONUtils.put(argsObject, "name@client", HeaderUtils.CLIENT_NAME);
-		JSONUtils.put(argsObject, "target", "PromotionMapDto");
+    private String convert2TaskCallBack(DataBean dataBean, TaskWritable task) throws Exception {
+        JSONObject returnObject = new JSONObject();
+        JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, JSONUtils.EMPTY_JSONOBJECT);
+        if (dataBean != null) {
 
-		JSONUtils.put(gObject, "args", argsObject);
+            ObjectMapper mapper = new ObjectMapper();
+            StringWriter writer = new StringWriter();
+            mapper.writeValue(writer, dataBean);
+            String dataString = writer.toString();
 
-		JSONUtils.put(gObject, "rs", dataObject.toString());
-		System.err.println(dataObject);
-		List<JSONObject> dataList = new ArrayList<JSONObject>();
-		dataList.add(gObject);
-		PersistentCollector.getInstance().getBufferWriter().write(dataList);
-	}
+            JSONUtils.put(returnObject, ClientConstant.KEY_STORAGE_RESULT, dataString);
+        }
+        return returnObject.toString();
+    }
 
-	/**
-	 * {"data":[],"nexts":[]}
-	 * 
-	 * @param task
-	 * @return
-	 * @throws Exception
-	 */
-	private JSONObject getDataObject(TaskWritable task) throws Exception {
-		String url = (String) task.get("url");
-		JSONObject dObject = new JSONObject();
-		HttpGet pageGet = new HttpGet(url);
-		pageGet.addHeader("Referer", url);
-		String pHtml = HttpClientUtils.getContent(client, pageGet, "UTF-8");
-		Pattern oReg = Pattern.compile("[0-9]{13}");
-		Matcher matcher = oReg.matcher(pHtml);
-		JSONArray dArray = new JSONArray();
-		Set<String> hasCodeSet = new HashSet<String>();
-		while (matcher.find()) {
-			String sBarCode = matcher.group();
-			if (BarCodeUtils.isBarCode(sBarCode)) {
-				if (!hasCodeSet.contains(sBarCode)) {
-					dArray.put(sBarCode);
-					hasCodeSet.add(sBarCode);
-				}
-			}
-		}
-		JSONUtils.put(dObject, "data", dArray);
-		return dObject;
-	}
+    /**
+     * {"dataList":[],"nextList":[]}
+     * 
+     * @param task
+     * @return
+     * @throws Exception
+     */
+    private DataBean getDataObject(TaskWritable task) throws Exception {
+        String url = task.get("url").toString();
+        DataBean dataBean = new DataBean();
+        HttpGet get = ProxyClientUtils.createHttpGet(url, task);
+        get.addHeader("Referer", url);
+        String html = HttpClientUtils.getContent(client, get);
+        Matcher matcher = oBarCodeReg.matcher(html);
+        Set<String> codeSet = new HashSet<String>();
+        while (matcher.find()) {
+            String sCode = matcher.group(2);
+            if (BarCodeUtils.isBarCode(sCode)) {
+                codeSet.add(sCode);
+            }
+        }
+        dataBean.getDataList().addAll(codeSet);
+        return dataBean;
+    }
+
 }
