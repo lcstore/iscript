@@ -7,6 +7,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.lezo.iscript.utils.BarCodeUtils;
+
 public class BarCodeUtilsTest {
     @Test
     public void testIsBarCode() {
@@ -24,6 +26,7 @@ public class BarCodeUtilsTest {
         Assert.assertEquals(true, BarCodeUtils.isBarCode("4988888888841"));
         Assert.assertEquals(true, BarCodeUtils.isBarCode("085805521028"));
         Assert.assertEquals(true, BarCodeUtils.isBarCode("027131953241"));
+        Assert.assertEquals(true, BarCodeUtils.isBarCode("6938104054671"));
     }
 
     @Test

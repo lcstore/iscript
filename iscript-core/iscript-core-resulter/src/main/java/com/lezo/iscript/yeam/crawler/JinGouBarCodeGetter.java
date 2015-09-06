@@ -23,6 +23,7 @@ import org.jsoup.select.Elements;
 import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.iscript.service.crawler.dto.BarCodeItemDto;
 import com.lezo.iscript.service.crawler.service.BarCodeItemService;
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.http.HttpDriver;
 import com.lezo.iscript.yeam.service.ConfigParser;
