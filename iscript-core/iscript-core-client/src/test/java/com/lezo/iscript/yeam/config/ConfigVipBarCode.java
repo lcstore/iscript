@@ -21,6 +21,7 @@ import org.jsoup.select.Elements;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 
 import com.lezo.iscript.crawler.dom.ScriptDocument;
 import com.lezo.iscript.crawler.dom.ScriptHtmlParser;
@@ -99,7 +100,7 @@ public class ConfigVipBarCode implements ConfigParser {
         // client.getCookieStore().addCookie(cookie);
         // get.addHeader("Cookie", "vip_province=104103;");
         String html = HttpClientUtils.getContent(client, get);
-        System.err.println(html.indexOf("67344173"));
+        // System.err.println(html);
         Document dom = Jsoup.parse(html, url);
         Map<String, ProductBean> code2BeanMap = new HashMap<String, ProductBean>();
         addDomSkus(dom, code2BeanMap);
@@ -156,7 +157,7 @@ public class ConfigVipBarCode implements ConfigParser {
         window.eval(source);
 
         Object jsObject = ScriptableObject.getProperty(window.getScope(), "dataList");
-        if (jsObject == ScriptableObject.NOT_FOUND) {
+        if (jsObject == Undefined.instance) {
             return;
         }
         Object dataList = NativeJSON.stringify(Context.getCurrentContext(), window.getScope(), jsObject,

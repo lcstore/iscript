@@ -83,13 +83,14 @@ public class VipListBarCodeStrategy implements ResultStrategy, Closeable {
                     total += taskList.size();
                     logger.info("add task count:" + taskList.size() + ",url:" + listUrl);
                 }
-                int maxPage = 53;
+                int maxPage = 34;
                 String taskId = UUID.randomUUID().toString();
                 List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(maxPage);
+                JSONObject argsObject = new JSONObject();
+                JSONUtils.put(argsObject, "strategy", getName());
                 for (int i = 1; i < maxPage; i++) {
                     String url = "http://category.vip.com/search-5-0-" + i + ".html?q=1|8399|&rp=8399|0#catPerPos";
                     TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
-                    JSONObject argsObject = new JSONObject();
                     newDto.setParams(argsObject.toString());
                     taskList.add(newDto);
                 }

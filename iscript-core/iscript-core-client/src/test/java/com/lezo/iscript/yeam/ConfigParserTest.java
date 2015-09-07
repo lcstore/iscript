@@ -54,6 +54,7 @@ import com.lezo.iscript.yeam.config.Config1688List;
 import com.lezo.iscript.yeam.config.Config1688Product;
 import com.lezo.iscript.yeam.config.Config360Uploader;
 import com.lezo.iscript.yeam.config.ConfigAnccBarCode;
+import com.lezo.iscript.yeam.config.ConfigBarCodeCollector;
 import com.lezo.iscript.yeam.config.ConfigEtaoSimilar;
 import com.lezo.iscript.yeam.config.ConfigHuihuiSigner;
 import com.lezo.iscript.yeam.config.ConfigJdBrandShop;
@@ -64,7 +65,6 @@ import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler.ProxyAddrDto;
-import com.lezo.iscript.yeam.config.ConfigBarCodeCollector;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigVipBarCode;
@@ -106,8 +106,8 @@ public class ConfigParserTest {
         parser = new ConfigJdProduct();
         parser = new ConfigProxySeedHandler();
         parser = new ConfigAnccBarCode();
-        parser = new ConfigVipBarCode();
         parser = new ConfigBarCodeCollector();
+        parser = new ConfigVipBarCode();
         // parser = new ConfigVipList();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
@@ -136,8 +136,9 @@ public class ConfigParserTest {
         url = "http://item.jd.com/919669.html";
         url = "http://list.vip.com/509320.html";
         url = "http://category.vip.com/search-5-0-1.html?q=1|8399&wz=5";
-        url = "http://category.vip.com/search-1-0-1.html?q=1|8399|&rp=8399|0#catPerPos";
         url = "http://www.meili51.com/huo.asp";
+        url = "http://www.meili51.com/huo.asp?page=57";
+        url = "http://category.vip.com/search-5-0-34.html?q=1|8399|&rp=8399|0#catPerPos";
         // url = "http://category.vip.com/search-1-0-3.html?q=1|8399|&rp=8399|0";
         // url = "http://category.vip.com/search-2-0-1.html?q=1%7C8399";
         // urlList.add(url);
