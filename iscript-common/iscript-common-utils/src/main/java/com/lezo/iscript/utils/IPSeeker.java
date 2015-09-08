@@ -1,10 +1,11 @@
-package com.lezo.iscript.proxy;
+package com.lezo.iscript.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -19,9 +20,7 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class IPSeeker {
     // 纯真IP数据库名
-    private String IP_FILE = "QQWry.Dat";
-    // 保存的文件夹
-    private String INSTALL_DIR = "f:/qqwry";
+    private String DATA_PATH = "data/qqwry.dat";
 
     // 一些固定常量，比如记录长度等等
     private static final int IP_RECORD_LENGTH = 7;
@@ -42,34 +41,17 @@ public class IPSeeker {
     private byte[] b4;
     private byte[] b3;
 
-    public IPSeeker(String fileName, String dir) {
-        this.INSTALL_DIR = dir;
-        this.IP_FILE = fileName;
+    public IPSeeker() {
         ipCache = new HashMap<String, IPLocation>();
         loc = new IPLocation();
         buf = new byte[100];
         b4 = new byte[4];
         b3 = new byte[3];
         try {
-            ipFile = new RandomAccessFile(IP_FILE, "r");
+            URL path = IPSeeker.class.getClassLoader().getResource(DATA_PATH);
+            ipFile = new RandomAccessFile(new File(path.getPath()), "r");
         } catch (FileNotFoundException e) {
-            // 如果找不到这个文件，再尝试再当前目录下搜索，这次全部改用小写文件名
-            // 因为有些系统可能区分大小写导致找不到ip地址信息文件
-            String filename = new File(IP_FILE).getName().toLowerCase();
-            File[] files = new File(INSTALL_DIR).listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isFile()) {
-                    if (files[i].getName().toLowerCase().equals(filename)) {
-                        try {
-                            ipFile = new RandomAccessFile(files[i], "r");
-                        } catch (FileNotFoundException e1) {
-                            log.error("IP地址信息文件没有找到，IP显示功能将无法使用", e1);
-                            ipFile = null;
-                        }
-                        break;
-                    }
-                }
-            }
+            throw new RuntimeException(DATA_PATH, e);
         }
         // 如果打开文件成功，读取文件头信息
         if (ipFile != null) {
