@@ -10,6 +10,8 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ import com.lezo.iscript.yeam.writable.ResultWritable;
 
 public class BarCodeStrategy implements ResultStrategy, Closeable {
     private static Logger logger = LoggerFactory.getLogger(BarCodeStrategy.class);
+    private TaskPriorityService taskPriorityService = SpringBeanUtils.getBean(TaskPriorityService.class);
     // private static final String DEFAULT_DETECT_URL = "http://www.baidu.com/";
     private static volatile boolean running = false;
     private Timer timer;
@@ -42,11 +45,43 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
 
     @Override
     public void handleResult(ResultWritable rWritable) {
-
+        if (ResultWritable.RESULT_SUCCESS != rWritable.getStatus()) {
+            return;
+        }
+        JSONObject gObject = JSONUtils.getJSONObject(rWritable.getResult());
+        JSONObject argsObject = JSONUtils.get(gObject, "args");
+        JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
+        JSONArray dArray = JSONUtils.get(rsObject, "dataList");
+        if (dArray == null || dArray.length() < 1) {
+            return;
+        }
+        argsObject.remove("name@client");
+        argsObject.remove("target");
+        argsObject.remove("url");
+        String taskType = "ConfigBarCodeCollector";
+        String taskId = UUID.randomUUID().toString();
+        int len = dArray.length();
+        List<TaskPriorityDto> dtoList = new ArrayList<TaskPriorityDto>(len);
+        for (int i = 0; i < len; i++) {
+            try {
+                Object dVal = dArray.get(i);
+                if (dVal instanceof String) {
+                    String sUrl = dVal.toString();
+                    if (sUrl.indexOf("http") >= 0) {
+                        TaskPriorityDto dto = newPriorityDto(dVal.toString(), taskType, taskId);
+                        dto.setParams(argsObject.toString());
+                        dtoList.add(dto);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        taskPriorityService.batchInsert(dtoList);
+        logger.info("add task from dataList,type:" + taskType + ",count:" + dtoList.size());
     }
 
     private class ProxyDetectTimer extends TimerTask {
-        private TaskPriorityService taskPriorityService = SpringBeanUtils.getBean(TaskPriorityService.class);
 
         public ProxyDetectTimer() {
         }
@@ -61,19 +96,10 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
             String taskType = "ConfigBarCodeCollector";
             try {
                 logger.info("add taskType:" + taskType + " is start...");
-                int maxPage = 57;
-                String taskId = UUID.randomUUID().toString();
-                List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(maxPage);
-                JSONObject argsObject = new JSONObject();
-                JSONUtils.put(argsObject, "strategy", getName());
-                for (int i = 1; i <= maxPage; i++) {
-                    String url = "http://www.meili51.com/huo.asp?page=" + 57;
-                    TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
-                    newDto.setParams(argsObject.toString());
-                    taskList.add(newDto);
-                }
-                taskPriorityService.batchInsert(taskList);
-                total += taskList.size();
+                // total += addMeilis(taskType);
+                // total += addLeebaa(taskType);
+                total += addAptamil(taskType);
+                total += addBnm("ConfigBnmList");
                 running = true;
             } catch (Exception ex) {
                 logger.warn(ExceptionUtils.getStackTrace(ex));
@@ -86,12 +112,104 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
 
         }
 
+        private int addBnm(String taskType) {
+            int maxPage = 716;
+            String taskId = UUID.randomUUID().toString();
+            List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(maxPage);
+            JSONObject argsObject = new JSONObject();
+            JSONUtils.put(argsObject, "strategy", getName());
+            for (int i = 1; i <= maxPage; i++) {
+                String url =
+                        "http://bnm.com.hk/index_eng.php?o=item&act=show&pricestart=&priceend=&keywd=&id=&category=&order=&page="
+                                + i;
+                TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
+                newDto.setParams(argsObject.toString());
+                taskList.add(newDto);
+            }
+            taskPriorityService.batchInsert(taskList);
+            logger.info("add task:" + taskType + ",bnm.com.hk,count:" + taskList.size());
+            return taskList.size();
+        }
+
+        private int addAptamil(String taskType) {
+            int maxPage = 716;
+            String taskId = UUID.randomUUID().toString();
+            List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(maxPage);
+            JSONObject argsObject = new JSONObject();
+            JSONUtils.put(argsObject, "strategy", getName());
+            List<String> urlList = new ArrayList<String>();
+            urlList.add("http://www.aptamil.com.hk/aptamil-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/hipp-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/beba-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/bebivita-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/alete-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/penaten-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/china-oel-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/alverde-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/babydream-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/babylove-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/balea-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/bübchen-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/das-gesunde-plus-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/dontodent-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/holle-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/humana-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/humaneo-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/lebenswert-bio-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/milasan-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/milupa-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/s-quito-free-worldwide-delivery?limit=100");
+            urlList.add("http://www.aptamil.com.hk/topfer-lactana-worldwide-delivery?limit=100");
+            for (String url : urlList) {
+                TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
+                newDto.setParams(argsObject.toString());
+                taskList.add(newDto);
+            }
+            taskPriorityService.batchInsert(taskList);
+            logger.info("add task:" + taskType + ",bnm.com.hk,count:" + taskList.size());
+            return taskList.size();
+        }
+
+        private int addMeilis(String taskType) {
+            int maxPage = 57;
+            String taskId = UUID.randomUUID().toString();
+            List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(maxPage);
+            JSONObject argsObject = new JSONObject();
+            JSONUtils.put(argsObject, "strategy", getName());
+            for (int i = 1; i <= maxPage; i++) {
+                String url = "http://www.meili51.com/huo.asp?page=" + 57;
+                TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
+                newDto.setParams(argsObject.toString());
+                taskList.add(newDto);
+            }
+            taskPriorityService.batchInsert(taskList);
+            logger.info("add task:" + taskType + ",www.meili51.com,count:" + taskList.size());
+            return taskList.size();
+        }
+
+        private int addLeebaa(String taskType) {
+            String taskId = UUID.randomUUID().toString();
+            List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
+            JSONObject argsObject = new JSONObject();
+            JSONUtils.put(argsObject, "strategy", getName());
+            for (int i = 3000; i <= 5000; i++) {
+                String url = "http://www.leebaa.com/archivers/p" + i + ".html";
+                TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
+                newDto.setParams(argsObject.toString());
+                taskList.add(newDto);
+            }
+            taskPriorityService.batchInsert(taskList);
+            logger.info("add task:" + taskType + ",www.leebaa.com,count:" + taskList.size());
+            return taskList.size();
+        }
     }
 
     @Override
     public void close() throws IOException {
-        this.timer.cancel();
-        this.timer = null;
+        if (this.timer != null) {
+            this.timer.cancel();
+            this.timer = null;
+        }
         logger.info("close " + getName() + " strategy..");
     }
 

@@ -106,8 +106,9 @@ public class ConfigParserTest {
         parser = new ConfigJdProduct();
         parser = new ConfigProxySeedHandler();
         parser = new ConfigAnccBarCode();
-        parser = new ConfigBarCodeCollector();
         parser = new ConfigVipBarCode();
+        parser = new ConfigBarCodeCollector();
+        // parser = new ConfigBnmList();
         // parser = new ConfigVipList();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
@@ -139,6 +140,10 @@ public class ConfigParserTest {
         url = "http://www.meili51.com/huo.asp";
         url = "http://www.meili51.com/huo.asp?page=57";
         url = "http://category.vip.com/search-5-0-34.html?q=1|8399|&rp=8399|0#catPerPos";
+        url = "http://bnm.com.hk/index_eng.php?o=item&act=view&id=17245";
+        url =
+                "http://bnm.com.hk/index_eng.php?o=item&act=show&pricestart=&priceend=&keywd=&id=&category=&order=&page=5";
+        url = "http://www.aptamil.com.hk/search.html?search=400&limit=100";
         // url = "http://category.vip.com/search-1-0-3.html?q=1|8399|&rp=8399|0";
         // url = "http://category.vip.com/search-2-0-1.html?q=1%7C8399";
         // urlList.add(url);
