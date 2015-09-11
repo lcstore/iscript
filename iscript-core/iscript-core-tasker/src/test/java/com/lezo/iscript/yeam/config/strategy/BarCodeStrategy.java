@@ -49,15 +49,13 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
             return;
         }
         JSONObject gObject = JSONUtils.getJSONObject(rWritable.getResult());
-        JSONObject argsObject = JSONUtils.get(gObject, "args");
         JSONObject rsObject = JSONUtils.getJSONObject(gObject, "rs");
         JSONArray dArray = JSONUtils.get(rsObject, "dataList");
         if (dArray == null || dArray.length() < 1) {
             return;
         }
-        argsObject.remove("name@client");
-        argsObject.remove("target");
-        argsObject.remove("url");
+        JSONObject argsObject = new JSONObject();
+        JSONUtils.put(argsObject, "strategy", getName());
         String taskType = "ConfigBarCodeCollector";
         String taskId = UUID.randomUUID().toString();
         int len = dArray.length();
