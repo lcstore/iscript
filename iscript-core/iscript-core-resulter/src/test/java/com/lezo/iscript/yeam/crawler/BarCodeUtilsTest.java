@@ -27,6 +27,9 @@ public class BarCodeUtilsTest {
         Assert.assertEquals(true, BarCodeUtils.isBarCode("085805521028"));
         Assert.assertEquals(true, BarCodeUtils.isBarCode("027131953241"));
         Assert.assertEquals(true, BarCodeUtils.isBarCode("6938104054671"));
+        // http://tuan.haitao.com/4985.html
+        Assert.assertEquals(true, BarCodeUtils.isBarCode("302993918820"));
+        Assert.assertEquals(true, BarCodeUtils.isBarCode("4514254366806"));
     }
 
     @Test

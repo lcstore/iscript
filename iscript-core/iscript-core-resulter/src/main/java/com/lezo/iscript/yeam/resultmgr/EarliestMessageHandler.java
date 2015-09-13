@@ -16,81 +16,91 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.lezo.iscript.IoSeed;
+import com.lezo.iscript.IoWatch;
 import com.lezo.iscript.cache.SeedCacher;
 import com.lezo.iscript.io.IFetcher;
 import com.lezo.iscript.io.IoConstants;
+import com.lezo.iscript.io.IoWatcher;
 import com.lezo.iscript.io.PathFetcher;
 import com.lezo.iscript.service.crawler.dto.MessageDto;
 import com.lezo.iscript.service.crawler.service.MessageService;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirMeta;
-import com.lezo.iscript.yeam.resultmgr.directory.DirSummaryCacher;
 
 public class EarliestMessageHandler {
-	private static Logger logger = LoggerFactory.getLogger(EarliestMessageHandler.class);
-	private static AtomicBoolean running = new AtomicBoolean(false);
-	@Value("#{settings['msg_handle_names'].split(',')}")
-	private List<String> nameList;
-	@Autowired
-	private MessageService messageService;
+    private static Logger logger = LoggerFactory.getLogger(EarliestMessageHandler.class);
+    private static AtomicBoolean running = new AtomicBoolean(false);
+    @Value("#{settings['msg_handle_names'].split(',')}")
+    private List<String> nameList;
+    @Autowired
+    private MessageService messageService;
 
-	public void run() {
-		if (running.get()) {
-			logger.warn("EarliestMessageHandler is running..");
-			return;
-		}
-		long start = System.currentTimeMillis();
-		try {
-			running.set(true);
-			if (CollectionUtils.isEmpty(nameList)) {
-				logger.warn("nameList is empty.check the config..");
-				return;
-			}
-			logger.info("start to do EarliestMessageHandler,name size:" + nameList.size());
-			List<MessageDto> dtoList = messageService.getEarlyMessageDtoByNameList(nameList, 0);
-			List<DirMeta> dirBeans = new ArrayList<DirMeta>();
-			for (MessageDto dto : dtoList) {
-				if (StringUtils.isEmpty(dto.getDataBucket()) || StringUtils.isEmpty(dto.getDataDomain())) {
-					continue;
-				}
-				JSONObject mObject = JSONUtils.getJSONObject(dto.getMessage());
-				if (mObject == null) {
-					continue;
-				}
-				Iterator<?> it = mObject.keys();
-				while (it.hasNext()) {
-					DirMeta dirBean = new DirMeta();
-					dirBean.setBucket(dto.getDataBucket());
-					dirBean.setCreateTime(dto.getCreateTime());
-					dirBean.setDomain(dto.getDataDomain());
-					dirBean.setType(dto.getName());
-					dirBean.setPid(it.next().toString());
-					dirBeans.add(dirBean);
-				}
-			}
-			DirSummaryCacher cacher = DirSummaryCacher.getInstance();
-			List<IoSeed> ioSeeds = new ArrayList<IoSeed>(dirBeans.size());
-			IFetcher fetcher = new PathFetcher();
-			for (DirMeta dirBean : dirBeans) {
-				// cacher.fireEvent(dirBean);
-				IoSeed element = new IoSeed();
-				element.setBucket(dirBean.getBucket());
-				element.setDomain(dirBean.getDomain());
-				element.setDataPath(dirBean.toDirPath());
-				element.setFetcher(fetcher);
-				element.setLevel(IoConstants.LEVEL_PATH);
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("limit", "0-100");
-				element.setParams(params);
-				ioSeeds.add(element);
-			}
-			SeedCacher.getInstance().getQueue().offer(IoConstants.LEVEL_PATH, ioSeeds);
-			long cost = System.currentTimeMillis() - start;
-			logger.info("add earliest message:" + dirBeans.size() + ",nameCount:" + nameList.size() + ",cost:" + cost);
-		} catch (Exception e) {
-			logger.warn("", e);
-		} finally {
-			running.set(false);
-		}
-	}
+    public void run() {
+        if (running.get()) {
+            logger.warn("EarliestMessageHandler is running..");
+            return;
+        }
+        long start = System.currentTimeMillis();
+        try {
+            running.set(true);
+            if (CollectionUtils.isEmpty(nameList)) {
+                logger.warn("nameList is empty.check the config..");
+                return;
+            }
+            logger.info("start to do EarliestMessageHandler,name size:" + nameList.size());
+            List<MessageDto> dtoList = messageService.getEarlyMessageDtoByNameList(nameList, 0);
+            List<DirMeta> dirBeans = new ArrayList<DirMeta>();
+            for (MessageDto dto : dtoList) {
+                if (StringUtils.isEmpty(dto.getDataBucket()) || StringUtils.isEmpty(dto.getDataDomain())) {
+                    continue;
+                }
+                JSONObject mObject = JSONUtils.getJSONObject(dto.getMessage());
+                if (mObject == null) {
+                    continue;
+                }
+                Iterator<?> it = mObject.keys();
+                while (it.hasNext()) {
+                    DirMeta dirBean = new DirMeta();
+                    dirBean.setBucket(dto.getDataBucket());
+                    dirBean.setCreateTime(dto.getCreateTime());
+                    dirBean.setDomain(dto.getDataDomain());
+                    dirBean.setType(dto.getName());
+                    dirBean.setPid(it.next().toString());
+                    dirBeans.add(dirBean);
+                }
+            }
+            List<IoSeed> ioSeeds = new ArrayList<IoSeed>(dirBeans.size());
+            IFetcher fetcher = new PathFetcher();
+            IoWatcher ioWatcher = IoWatcher.getInstance();
+            for (DirMeta dirBean : dirBeans) {
+                // cacher.fireEvent(dirBean);
+                IoSeed element = new IoSeed();
+                element.setBucket(dirBean.getBucket());
+                element.setDomain(dirBean.getDomain());
+                element.setDataPath(dirBean.toDirPath());
+                element.setFetcher(fetcher);
+                element.setLevel(IoConstants.LEVEL_PATH);
+                IoWatch ioWatch = ioWatcher.getIoWatch(element);
+                if (ioWatch != null) {
+                    logger.info("doWatch:" + ioWatch.getIoSeed().toKey() + ",total:" + ioWatch.getTotalCount()
+                            + ",fetch:"
+                            + ioWatch.getFetchCount()
+                            + ",toMills:" + ioWatch.getToMills());
+                    continue;
+                }
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("limit", "0-100");
+                element.setParams(params);
+                ioSeeds.add(element);
+            }
+            SeedCacher.getInstance().getQueue().offer(IoConstants.LEVEL_PATH, ioSeeds);
+            long cost = System.currentTimeMillis() - start;
+            logger.info("add earliest message:" + dirBeans.size() + ",nameCount:" + nameList.size() + ",seedCount:"
+                    + ioSeeds.size() + ",cost:" + cost);
+        } catch (Exception e) {
+            logger.warn("", e);
+        } finally {
+            running.set(false);
+        }
+    }
 }

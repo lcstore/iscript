@@ -16,52 +16,63 @@ import com.lezo.iscript.yeam.resultmgr.listener.ConsumeListenerManager;
 
 @Log4j
 public class FileParser implements IParser {
-	private static AtomicLong count = new AtomicLong();
+    private static AtomicLong count = new AtomicLong();
+    private IParser target;
 
-	@Override
-	public void doParse(IoGain ioGain) {
-		String type = ioGain.getIoSeed().getType();
-		List<String> lineList = toLines(ioGain);
-		String key = ioGain.getIoSeed().toKey();
-		count.getAndAdd(lineList.size());
-		// String dataString = ioGain.getValue().toString();
-		// log.info("data.key:" + ioGain.getIoSeed().toKey() + ",value:" +
-		// dataString);
-		for (String line : lineList) {
-			long start = System.currentTimeMillis();
-			doConsume(type, line);
-			long cost = System.currentTimeMillis() - start;
-			if (cost > 60000) {
-				log.warn("key:" + key + ",parse too long.cost:" + cost);
-			}
-		}
+    public FileParser() {
+        super();
+        this.target = new LineToFileParser();
+    }
 
-		IoWatcher.getInstance().addFile(ioGain.getIoSeed());
+    @Override
+    public void doParse(IoGain ioGain) {
+        if (target != null) {
+            target.doParse(ioGain);
+            count.getAndAdd(1);
+            return;
+        }
+        String type = ioGain.getIoSeed().getType();
+        List<String> lineList = toLines(ioGain);
+        String key = ioGain.getIoSeed().toKey();
+        count.getAndAdd(lineList.size());
+        // String dataString = ioGain.getValue().toString();
+        // log.info("data.key:" + ioGain.getIoSeed().toKey() + ",value:" +
+        // dataString);
+        for (String line : lineList) {
+            long start = System.currentTimeMillis();
+            doConsume(type, line);
+            long cost = System.currentTimeMillis() - start;
+            if (cost > 60000) {
+                log.warn("key:" + key + ",parse too long.cost:" + cost);
+            }
+        }
 
-	}
+        IoWatcher.getInstance().addFile(ioGain.getIoSeed());
 
-	private void doConsume(String type, String data) {
-		Iterator<Entry<String, ConsumeListener>> it = ConsumeListenerManager.getInstance().iterator();
-		while (it.hasNext()) {
-			Entry<String, ConsumeListener> entry = it.next();
-			entry.getValue().doConsume(type, data);
-		}
-	}
+    }
 
-	private List<String> toLines(IoGain ioGain) {
-		if (ioGain.getValue() == null) {
-			return java.util.Collections.emptyList();
-		}
-		StringTokenizer tokenizer = new StringTokenizer(ioGain.getValue().toString(), "\n");
-		List<String> lineList = new ArrayList<String>();
-		while (tokenizer.hasMoreElements()) {
-			lineList.add(tokenizer.nextElement().toString());
-		}
-		return lineList;
-	}
+    private void doConsume(String type, String data) {
+        Iterator<Entry<String, ConsumeListener>> it = ConsumeListenerManager.getInstance().iterator();
+        while (it.hasNext()) {
+            Entry<String, ConsumeListener> entry = it.next();
+            entry.getValue().doConsume(type, data);
+        }
+    }
 
-	public static AtomicLong getCount() {
-		return count;
-	}
+    private List<String> toLines(IoGain ioGain) {
+        if (ioGain.getValue() == null) {
+            return java.util.Collections.emptyList();
+        }
+        StringTokenizer tokenizer = new StringTokenizer(ioGain.getValue().toString(), "\n");
+        List<String> lineList = new ArrayList<String>();
+        while (tokenizer.hasMoreElements()) {
+            lineList.add(tokenizer.nextElement().toString());
+        }
+        return lineList;
+    }
+
+    public static AtomicLong getCount() {
+        return count;
+    }
 
 }

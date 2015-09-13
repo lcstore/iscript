@@ -37,7 +37,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -108,6 +107,7 @@ public class ConfigParserTest {
         parser = new ConfigAnccBarCode();
         parser = new ConfigVipBarCode();
         parser = new ConfigBarCodeCollector();
+        parser = new Config1688List();
         // parser = new ConfigBnmList();
         // parser = new ConfigVipList();
         String url = null;
@@ -144,6 +144,9 @@ public class ConfigParserTest {
         url =
                 "http://bnm.com.hk/index_eng.php?o=item&act=show&pricestart=&priceend=&keywd=&id=&category=&order=&page=5";
         url = "http://www.aptamil.com.hk/search.html?search=400&limit=100";
+        url = "http://in.1688.com/import/--97.html?spm=a26qs.7705462.1998520131.2.RJEFCQ&categoryID=10311";
+        url =
+                "http://in.1688.com/import/rpc_async_render.jsonp?rpcflag=new&_serviceId_=importOfferResultViewService&startIndex=0&_template_=controls%2Fexternal_template%2Fthird%2Fimport%2Fofferresult%2Fpkg-a%2Fviews%2Fofferresult.vm&enableAsync=true&categoryID=10311&asyncCount=20&async=true&beginPage=%7Bpage%7D&token=2369878264";
         // url = "http://category.vip.com/search-1-0-3.html?q=1|8399|&rp=8399|0";
         // url = "http://category.vip.com/search-2-0-1.html?q=1%7C8399";
         // urlList.add(url);
@@ -185,35 +188,51 @@ public class ConfigParserTest {
     }
 
     @Test
-    public void parserUrls() throws Exception {
+    public void parserHrefs() throws Exception {
         DefaultHttpClient client = HttpClientUtils.createHttpClient();
-        HttpGet get = new HttpGet("http://category.vip.com/search-2-0-1.html");
+        HttpGet get = new HttpGet("http://www.kjt.com/substore/139296?page=12");
         HttpResponse resp = client.execute(get);
         String html = EntityUtils.toString(resp.getEntity());
         Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
-        ScriptDocument sDom = ScriptHtmlParser.parser(dom);
-        ScriptWindow window = new ScriptWindow();
-        window.setDocument(sDom);
-        Elements scriptEls = dom.select("#J-sp-foverseas-wrap + script[type=text/javascript]");
-        if (scriptEls.isEmpty()) {
-            return;
+        Elements elements = dom.select("a[href][target=_blank]");
+        for (Element ele : elements) {
+            String sUrl = ele.absUrl("href");
+            System.err.println(sUrl);
         }
-        String sScript = scriptEls.first().html();
-        window.eval(sScript);
-        Object jsObject = ScriptableObject.getProperty(window.getScope(), "floorBrandData");
-        Object floorBrandData = NativeJSON.stringify(Context.getCurrentContext(), window.getScope(), jsObject,
-                null, null);
-        JSONObject brandObject = JSONUtils.getJSONObject(floorBrandData.toString());
-        JSONArray bArray = JSONUtils.get(brandObject, "foverseas");
-        JSONObject bObj = bArray.getJSONObject(0);
-        String link = JSONUtils.getString(bObj, "link");
-        String name = JSONUtils.getString(bObj, "name");
-        String mark = "http:";
-        int index = link.indexOf(mark);
-        String url = link.substring(index, link.length() - 1);
-        System.err.println(name);
-        System.err.println(link);
-        System.err.println(url);
+    }
+
+    @Test
+    public void parserUrls() throws Exception {
+        DefaultHttpClient client = HttpClientUtils.createHttpClient();
+        HttpGet get = new HttpGet("http://www.soukai.com/G962/p1/li.html");
+        HttpResponse resp = client.execute(get);
+        String html = EntityUtils.toString(resp.getEntity());
+        Document dom = Jsoup.parse(html, get.getURI().toURL().toString());
+        Elements elements = dom.select("ul.subCatList li a[href$=/li.html?ref=mega]");
+        List<String> strings = new ArrayList<String>();
+        for (Element ele : elements) {
+            String sUrl = ele.absUrl("href");
+            get = new HttpGet(sUrl);
+            html = HttpClientUtils.getContent(client, get, "Shift_JIS");
+            dom = Jsoup.parse(html, sUrl);
+            Elements numEls = dom.select("td.valignM span.displayNumTypeA01");
+            if (numEls.isEmpty()) {
+                continue;
+            }
+            String sTxt = numEls.first().ownText();
+            Pattern oReg = Pattern.compile("\\(全([0-9]+)件\\)");
+            Matcher matcher = oReg.matcher(sTxt);
+            if (matcher.find()) {
+                Integer numCount = Integer.valueOf(matcher.group(1));
+                int mod = numCount % 30;
+                numCount = numCount / 30;
+                numCount = mod > 0 ? numCount++ : numCount;
+                String line = "map.put(\"" + sUrl + "\"," + numCount + ");";
+                System.err.println(line);
+                strings.add(line);
+            }
+        }
+        FileUtils.writeLines(new File("src/test/resources/data/urlmap.txt"), strings);
     }
 
     @Test
