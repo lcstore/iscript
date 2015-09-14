@@ -158,7 +158,8 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
                 // total += addSoukai(taskType);
                 // total += addMdmall(taskType);
                 // total += addHaitao(taskType);
-                total += addKjt(taskType);
+                // total += addKjt(taskType);
+                total += addRakuten(taskType);
                 running = true;
             } catch (Exception ex) {
                 logger.warn(ExceptionUtils.getStackTrace(ex));
@@ -169,6 +170,42 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
                 running = false;
             }
 
+        }
+
+        private int addRakuten(String taskType) {
+            JSONObject argsObject = new JSONObject();
+            JSONUtils.put(argsObject, "strategy", getName());
+            JSONUtils.put(argsObject, "retry", 0);
+            Map<String, Integer> urlPageMap = new HashMap<String, Integer>();
+            // urlPageMap.put("http://global.rakuten.com/zh-cn/category/100939/?p=1&h=3&l-id=rgm-top-cn-navi-beauty",
+            // 9120);
+            urlPageMap.put("http://global.rakuten.com/zh-cn/category/100938/?p=1&h=3&l-id=rgm-top-cn-navi-health",
+                    6337);
+            urlPageMap.put("http://global.rakuten.com/zh-cn/category/551169/?p=1&h=3&l-id=rgm-top-cn-navi-medicine",
+                    6110);
+            int total = 0;
+            for (Entry<String, Integer> entry : urlPageMap.entrySet()) {
+                List<String> urlList = new ArrayList<String>(entry.getValue());
+                for (int i = 1; i <= entry.getValue(); i++) {
+                    String sUrl = entry.getKey().replace("p=1", "p=" + i);
+                    urlList.add(sUrl);
+                }
+                BatchIterator<String> it = new BatchIterator<String>(urlList, 1000);
+                while (it.hasNext()) {
+                    List<String> subList = it.next();
+                    String taskId = UUID.randomUUID().toString();
+                    List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>(subList.size());
+                    for (String url : subList) {
+                        TaskPriorityDto newDto = newPriorityDto(url, taskType, taskId);
+                        newDto.setParams(argsObject.toString());
+                        taskList.add(newDto);
+                    }
+                    taskPriorityService.batchInsert(taskList);
+                    total += taskList.size();
+                }
+            }
+            logger.info("add task:" + taskType + ",global.rakuten.com,count:" + total);
+            return total;
         }
 
         private int addKjt(String taskType) {
