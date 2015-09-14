@@ -37,13 +37,13 @@
 	<bean id="EarliestMessageHandler" class="com.lezo.iscript.yeam.resultmgr.EarliestMessageHandler"></bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="EarliestMessageHandler" method="run"
-			fixed-rate="120000"/>
+			fixed-rate="30000"/>
 	</task:scheduled-tasks>
 	
 	<bean id="dataMessageHandler" class="com.lezo.iscript.yeam.resultmgr.DataMessageHandler">
 	</bean>
 	<task:scheduled-tasks scheduler="scheduler">
 		<task:scheduled ref="dataMessageHandler" method="run"
-			fixed-rate="60000"/>
+			fixed-rate="30000"/>
 	</task:scheduled-tasks>
 </beans>

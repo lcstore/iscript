@@ -27,9 +27,9 @@ import com.lezo.iscript.yeam.resultmgr.writer.BufferWriterManager;
 @Log4j
 public class IoDispatcher implements Runnable {
 	private static final IoDispatcher INSTANCE = new IoDispatcher();
-	private static final long timeout = 60000;
-    private static final int FETCH_QUEUE_CAPACITY = 100;
-	private static final int PARSER_QUEUE_CAPACITY = 100;
+    private static final long timeout = 10000;
+    private static final int FETCH_QUEUE_CAPACITY = 500;
+    private static final int PARSER_QUEUE_CAPACITY = 1000;
 	private boolean running = false;
 	private ExecutorService executor;
 	private IoClient fetchClient;
@@ -151,8 +151,8 @@ public class IoDispatcher implements Runnable {
 	}
 
 	private void initIoClient() {
-        fetchClient = new IoClient(1, 3, 1000, FETCH_QUEUE_CAPACITY, "fetcher");
-		parseClient = new IoClient(1, 3, 1000, PARSER_QUEUE_CAPACITY, "parser");
+        fetchClient = new IoClient(5, 5, 1000, FETCH_QUEUE_CAPACITY, "fetcher");
+        parseClient = new IoClient(1, 2, 1000, PARSER_QUEUE_CAPACITY, "parser");
 	}
 
 	private void sleep() {
