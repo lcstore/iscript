@@ -13,6 +13,7 @@ public class DataTransferDto {
 	private String dataBucket;
 	private String dataDomain;
 	private Integer dataCount;
+    private Integer totalCount;
 	private String params;
 	private Date createTime;
 	private Date updateTime;

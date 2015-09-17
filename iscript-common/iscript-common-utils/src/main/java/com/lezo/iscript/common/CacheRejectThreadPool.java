@@ -1,18 +1,17 @@
 package com.lezo.iscript.common;
 
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class CacheRejectThreadPool extends ThreadPoolExecutor {
-    public CacheRejectThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-            ThreadFactory threadFactory,
-            CacheRejectedExecutionHandler handler) {
+    public CacheRejectThreadPool(int corePoolSize, int maximumPoolSize, int capacity, long keepAliveTime,
+            ThreadFactory threadFactory, Queue<Runnable> cacheQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(
-                maximumPoolSize), threadFactory, handler);
+                capacity), threadFactory, new CacheRejectedExecutionHandler(cacheQueue));
     }
 
     @Override
@@ -34,12 +33,11 @@ public class CacheRejectThreadPool extends ThreadPoolExecutor {
         }
         if (handler instanceof CacheRejectedExecutionHandler) {
             CacheRejectedExecutionHandler cacheHandler = (CacheRejectedExecutionHandler) handler;
-            BlockingQueue<Runnable> cacheBlockingQueue = cacheHandler.getCacheBlockingQueue();
-            while (cacheBlockingQueue.peek() != null && getQueue().offer(cacheBlockingQueue.peek())) {
-                cacheBlockingQueue.poll();
+            Queue<Runnable> cacheQueue = cacheHandler.getCacheQueue();
+            while (cacheQueue.peek() != null && getQueue().offer(cacheQueue.peek())) {
+                cacheQueue.poll();
             }
         }
 
     }
-
 }

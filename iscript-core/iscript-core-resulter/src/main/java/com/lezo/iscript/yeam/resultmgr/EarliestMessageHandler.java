@@ -22,7 +22,9 @@ import com.lezo.iscript.io.IFetcher;
 import com.lezo.iscript.io.IoConstants;
 import com.lezo.iscript.io.IoWatcher;
 import com.lezo.iscript.io.PathFetcher;
+import com.lezo.iscript.service.crawler.dto.DataTransferDto;
 import com.lezo.iscript.service.crawler.dto.MessageDto;
+import com.lezo.iscript.service.crawler.service.DataTransferService;
 import com.lezo.iscript.service.crawler.service.MessageService;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.resultmgr.directory.DirMeta;
@@ -34,6 +36,8 @@ public class EarliestMessageHandler {
     private List<String> nameList;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private DataTransferService dataTransferService;
 
     public void run() {
         if (running.get()) {
@@ -93,6 +97,7 @@ public class EarliestMessageHandler {
                 element.setParams(params);
                 ioSeeds.add(element);
             }
+            loadAbort(ioSeeds);
             SeedCacher.getInstance().getQueue().offer(IoConstants.LEVEL_PATH, ioSeeds);
             long cost = System.currentTimeMillis() - start;
             logger.info("add earliest message:" + dirBeans.size() + ",nameCount:" + nameList.size() + ",seedCount:"
@@ -102,5 +107,36 @@ public class EarliestMessageHandler {
         } finally {
             running.set(false);
         }
+    }
+
+    private void loadAbort(List<IoSeed> ioSeeds) {
+        List<String> codeList = new ArrayList<String>();
+        DataTransferDto dto = new DataTransferDto();
+        Map<String, IoSeed> code2SeedMap = new HashMap<String, IoSeed>();
+        for (IoSeed ioSeed : ioSeeds) {
+            dto.setDataBucket(ioSeed.getBucket());
+            dto.setDataDomain(ioSeed.getDomain());
+            dto.setDataPath(ioSeed.getDataPath());
+            String code = dto.toDataCode();
+            codeList.add(code);
+            code2SeedMap.put(code, ioSeed);
+        }
+        List<DataTransferDto> dtoList = dataTransferService.getDtoByCodeList(codeList);
+        for (DataTransferDto hasDto : dtoList) {
+            IoSeed ioSeed = code2SeedMap.get(hasDto.getDataCode());
+            if (ioSeed != null) {
+                logger.info("load abort.path:" + hasDto.getDataPath() + ",param:" + hasDto.getParams());
+                JSONObject pObj = JSONUtils.getJSONObject(hasDto.getParams());
+                if (pObj != null) {
+                    Map<String, String> param = ioSeed.getParams();
+                    Iterator<?> it = pObj.keys();
+                    while (it.hasNext()) {
+                        String key = it.next().toString();
+                        param.put(key, JSONUtils.getString(pObj, key));
+                    }
+                }
+            }
+        }
+
     }
 }

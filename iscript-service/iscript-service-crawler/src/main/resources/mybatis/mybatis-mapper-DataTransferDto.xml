@@ -10,6 +10,7 @@
 		<result column="DATA_BUCKET" property="dataBucket"/>
 		<result column="DATA_DOMAIN" property="dataDomain"/>
 		<result column="DATA_COUNT" property="dataCount"/>
+		<result column="TOTAL_COUNT" property="totalCount"/>
 		<result column="PARAMS" property="params"/>
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
@@ -21,6 +22,7 @@
 		,DATA_BUCKET
 		,DATA_DOMAIN
 		,DATA_COUNT
+		,TOTAL_COUNT
 		,PARAMS
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -32,7 +34,7 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.id},#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.params},#{item.createTime},#{item.updateTime})
+			(#{item.id},#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.totalCount},#{item.params},#{item.createTime},#{item.updateTime})
 		</foreach>
 	</insert>
 	<update id="batchUpdate" parameterType="DataTransferDto">
@@ -41,6 +43,7 @@
 		,DATA_BUCKET=#{dataBucket}
 		,DATA_DOMAIN=#{dataDomain}
 		,DATA_COUNT=#{dataCount}
+		,DATA_COUNT=#{item.totalCount}
 		,PARAMS=#{params}
 		,UPDATE_TIME=#{updateTime}
 		WHERE ID=#{id}
@@ -50,7 +53,7 @@
 		DATA_PATH=#{dataPath}
 		,DATA_BUCKET=#{dataBucket}
 		,DATA_DOMAIN=#{dataDomain}
-		,DATA_COUNT=#{dataCount}
+		,TOTAL_COUNT=#{dataCount}
 		,PARAMS=#{params}
 		,UPDATE_TIME=#{updateTime}
 		WHERE DATA_CODE=#{dataCode}
@@ -70,6 +73,7 @@
 		,DATA_BUCKET
 		,DATA_DOMAIN
 		,DATA_COUNT
+		,TOTAL_COUNT
 		,PARAMS
 		,CREATE_TIME
 		,UPDATE_TIME
@@ -77,9 +81,9 @@
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
-			(#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.params},#{item.createTime},#{item.updateTime})
+			(#{item.dataCode},#{item.dataPath},#{item.dataBucket},#{item.dataDomain},#{item.dataCount},#{item.totalCount},#{item.params},#{item.createTime},#{item.updateTime})
 		</foreach>
-		ON DUPLICATE KEY UPDATE DATA_COUNT=VALUES(DATA_COUNT)+DATA_COUNT,PARAMS=VALUES(PARAMS);
+		ON DUPLICATE KEY UPDATE DATA_COUNT=DATA_COUNT,PARAMS=VALUES(PARAMS);
 	</insert>
 	<select id="getDtoByIds" resultMap="RM_DataTransferDto">
 	    SELECT * FROM T_DATA_TRANSFER

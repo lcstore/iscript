@@ -1,30 +1,30 @@
 package com.lezo.iscript.common;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class CacheRejectedExecutionHandler implements RejectedExecutionHandler {
-    private BlockingQueue<Runnable> cacheBlockingQueue;
+    private Queue<Runnable> cacheQueue;
 
     public CacheRejectedExecutionHandler() {
         this(new LinkedBlockingQueue<Runnable>());
     }
 
-    public CacheRejectedExecutionHandler(BlockingQueue<Runnable> cacheBlockingQueue) {
+    public CacheRejectedExecutionHandler(Queue<Runnable> cacheQueue) {
         super();
-        this.cacheBlockingQueue = cacheBlockingQueue;
+        this.cacheQueue = cacheQueue;
     }
 
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        getCacheBlockingQueue().offer(r);
+        getCacheQueue().offer(r);
 
     }
 
-    public BlockingQueue<Runnable> getCacheBlockingQueue() {
-        return cacheBlockingQueue;
+    public Queue<Runnable> getCacheQueue() {
+        return cacheQueue;
     }
 
 }
