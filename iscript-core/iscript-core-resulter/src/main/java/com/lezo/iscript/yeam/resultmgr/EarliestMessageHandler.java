@@ -2,9 +2,11 @@ package com.lezo.iscript.yeam.resultmgr;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,8 +54,11 @@ public class EarliestMessageHandler {
                 return;
             }
             logger.info("start to do EarliestMessageHandler,name size:" + nameList.size());
-            List<MessageDto> dtoList = messageService.getEarlyMessageDtoByNameList(nameList, 0);
+            // List<MessageDto> dtoList = messageService.getEarlyMessageDtoByNameList(nameList, 0);
+            Integer limit = 50;
+            List<MessageDto> dtoList = messageService.getMessageDtos(nameList, 0, limit);
             List<DirMeta> dirBeans = new ArrayList<DirMeta>();
+            Set<String> hasKeySet = new HashSet<String>();
             for (MessageDto dto : dtoList) {
                 if (StringUtils.isEmpty(dto.getDataBucket()) || StringUtils.isEmpty(dto.getDataDomain())) {
                     continue;
@@ -70,7 +75,11 @@ public class EarliestMessageHandler {
                     dirBean.setDomain(dto.getDataDomain());
                     dirBean.setType(dto.getName());
                     dirBean.setPid(it.next().toString());
-                    dirBeans.add(dirBean);
+                    String key = dirBean.toDirKey();
+                    if (!hasKeySet.contains(key)) {
+                        dirBeans.add(dirBean);
+                        hasKeySet.add(key);
+                    }
                 }
             }
             List<IoSeed> ioSeeds = new ArrayList<IoSeed>(dirBeans.size());
@@ -110,6 +119,10 @@ public class EarliestMessageHandler {
     }
 
     private void loadAbort(List<IoSeed> ioSeeds) {
+        IoWatcher ioWatcher = IoWatcher.getInstance();
+        if (!ioWatcher.getWatchMap().isEmpty()) {
+            return;
+        }
         List<String> codeList = new ArrayList<String>();
         DataTransferDto dto = new DataTransferDto();
         Map<String, IoSeed> code2SeedMap = new HashMap<String, IoSeed>();

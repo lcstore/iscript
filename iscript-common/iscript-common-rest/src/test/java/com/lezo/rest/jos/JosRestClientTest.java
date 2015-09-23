@@ -163,7 +163,7 @@ public class JosRestClientTest {
 		JSONObject argsObject = new JSONObject();
         String pCode = "1530766875";
 		argsObject.put("id", pCode);
-		argsObject.put("url", "http://item.jd.com/" + pCode + ".html");
+        argsObject.put("url", "http://item.jd.com/" + pCode + ".html");
 		argsObject.put("unionId", "51698052");
 		argsObject.put("channel", "PC");
 		argsObject.put("subUnionId", "");
@@ -178,14 +178,14 @@ public class JosRestClientTest {
 	public void testPromotionGetCodes() throws Exception {
 		JosRestClient client = new JosRestClient(appKey, appSecret, accessToken);
 		String method = "jingdong.service.promotion.getcode";
-		method = "jingdong.service.promotion.batch.getcode";
+        method = "jingdong.service.promotion.batch.getcode";
 		JSONObject argsObject = new JSONObject();
 		argsObject.put("id", "1322501291");
 		argsObject.put("url", "http://item.jd.com/1322501291.html");
 		argsObject.put("unionId", "51698052");
 		argsObject.put("channel", "PC");
 		argsObject.put("subUnionId", "");
-		argsObject.put("webId", "");
+        argsObject.put("webId", "220524281");
 		argsObject.put("ext1", "");
 		String result = client.execute(method, argsObject.toString());
 		System.out.println(result);

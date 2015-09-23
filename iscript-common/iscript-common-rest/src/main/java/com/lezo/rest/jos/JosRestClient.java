@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -18,17 +16,22 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.lezo.iscript.rest.http.HttpClientManager;
+import com.lezo.iscript.rest.http.HttpClientUtils;
 import com.lezo.rest.SignBuildable;
 
 public class JosRestClient {
 	private static final String REQUEST_ENCODING = "UTF-8";
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final SignBuildable builder = new JosSignBuilder();
+    private DefaultHttpClient hc = HttpClientManager.getDefaultHttpClient();
 	private JosConfig config;
+
 
 	public JosRestClient(JosConfig config) {
 		super();
 		this.config = config;
+        HttpClientUtils.createHttpClient();
 	}
 
 	public JosRestClient(String appKey, String appSecret, String accessToken) {
@@ -71,18 +74,10 @@ public class JosRestClient {
 	}
 
 	public String execute(String serverUrl, List<NameValuePair> paramList) throws Exception {
-		HttpGet httpget = new HttpGet(serverUrl);
-		DefaultHttpClient hc = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(serverUrl);
 		String params = EntityUtils.toString(new UrlEncodedFormEntity(paramList, REQUEST_ENCODING));
-		httpget.setURI(new URI(httpget.getURI().toString() + "?" + params));
-		HttpResponse response = hc.execute(httpget);
-		String content = null;
-		if (response == null) {
-			return content;
-		}
-		HttpEntity entity = response.getEntity();
-		content = EntityUtils.toString(entity);
-		return content;
+		httpGet.setURI(new URI(httpGet.getURI().toString() + "?" + params));
+        return HttpClientUtils.getContent(hc, httpGet);
 	}
 
 	public JosConfig getConfig() {

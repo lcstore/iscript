@@ -60,7 +60,6 @@
 					<archive>
 						<manifest>
 							<mainClass>com.lezo.iscript.yeam.mina.ClientMain</mainClass>
-							<!-- <mainClass>com.lezo.iscript.yeam.BarCodeFetcher</mainClass> -->
 						</manifest>
 					</archive>
 					<descriptorRefs>
