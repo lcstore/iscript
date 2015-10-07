@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.SimilarJobTrackDao">
+	<resultMap type="SimilarJobTrackDto" id="RM_SimilarJobTrackDto">
+		<result column="ID" property="id"/>
+		<result column="JOB_ID" property="jobId"/>
+		<result column="INPUTS" property="inputs"/>
+		<result column="OUTPUTS" property="outputs"/>
+		<result column="TASKER" property="tasker"/>
+		<result column="CALLER" property="caller"/>
+		<result column="STATUS" property="status"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="SimilarJobTrackDto-coloumn-list">
+		ID
+		,JOB_ID
+		,INPUTS
+		,OUTPUTS
+		,TASKER
+		,CALLER
+		,STATUS
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="SimilarJobTrackDto">
+		INSERT INTO T_SIMILAR_JOB_TRACK(
+		<include refid="SimilarJobTrackDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.jobId},#{item.inputs},#{item.outputs},#{item.tasker},#{item.caller},#{item.status},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="SimilarJobTrackDto">
+		UPDATE T_SIMILAR_JOB_TRACK SET
+		JOB_ID=#{jobId}
+		,INPUTS=#{inputs}
+		,OUTPUTS=#{outputs}
+		,TASKER=#{tasker}
+		,CALLER=#{caller}
+		,STATUS=#{status}
+		,CREATE_TIME=#{createTime}
+		,UPDATE_TIME=#{updateTime}
+		WHERE ID=#{id}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_SIMILAR_JOB_TRACK
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_SimilarJobTrackDto">
+	    SELECT * FROM T_SIMILAR_JOB_TRACK
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+</mapper>

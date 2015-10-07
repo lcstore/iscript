@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.SimilarJobDao">
+	<resultMap type="SimilarJobDto" id="RM_SimilarJobDto">
+		<result column="ID" property="id"/>
+		<result column="NAME" property="name"/>
+		<result column="INPUTS" property="inputs"/>
+		<result column="HANDLER" property="handler"/>
+		<result column="STATUS" property="status"/>
+		<result column="TASK_DONE" property="taskDone"/>
+		<result column="TASK_TOTAL" property="taskTotal"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="SimilarJobDto-coloumn-list">
+		ID
+		,NAME
+		,INPUTS
+		,HANDLER
+		,STATUS
+		,TASK_DONE
+		,TASK_TOTAL
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="SimilarJobDto">
+		INSERT INTO T_SIMILAR_JOB(
+		<include refid="SimilarJobDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.name},#{item.inputs},#{item.handler},#{item.status},#{item.taskDone},#{item.taskTotal},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="SimilarJobDto">
+		UPDATE T_SIMILAR_JOB SET
+		NAME=#{name}
+		,INPUTS=#{inputs}
+		,HANDLER=#{handler}
+		,STATUS=#{status}
+		,TASK_DONE=#{taskDone}
+		,TASK_TOTAL=#{taskTotal}
+		WHERE ID=#{id}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_SIMILAR_JOB
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_SimilarJobDto">
+	    SELECT * FROM T_SIMILAR_JOB
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getDtoByStatus" resultMap="RM_SimilarJobDto">
+	    SELECT * FROM T_SIMILAR_JOB
+	    <where>
+	       <![CDATA[
+	       ID > #{fromId}
+	       ]]>
+	       AND STATUS=#{status}
+	       LIMIT #{limit}
+	    </where>
+	</select>
+</mapper>

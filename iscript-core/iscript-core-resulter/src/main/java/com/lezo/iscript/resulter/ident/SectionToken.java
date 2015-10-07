@@ -35,6 +35,9 @@ public class SectionToken {
 		this.key = key;
 		this.value = value;
 		this.tokenizer = tokenizer;
+        if (this.value == null) {
+            throw new RuntimeException("key=" + key + ",the value must not be null");
+        }
 	}
 
 	public SectionToken addChild(SectionToken child) {

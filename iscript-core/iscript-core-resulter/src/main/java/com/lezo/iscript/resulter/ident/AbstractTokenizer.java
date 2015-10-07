@@ -41,8 +41,10 @@ public abstract class AbstractTokenizer implements Tokenizer {
 			for (SectionToken token : tokenList) {
 				mString = mString.replace(token.getValue(), DIVISION_MARK);
 			}
-			String[] splitArrays = mString.split(DIVISION_MARK);
-			handleDivision(splitArrays, entity.getMaster());
+            if (StringUtils.isNotBlank(mString)) {
+                String[] splitArrays = mString.split(DIVISION_MARK);
+                handleDivision(splitArrays, entity.getMaster());
+            }
 		}
 	}
 

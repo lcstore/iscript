@@ -22,10 +22,10 @@ import com.lezo.iscript.common.storage.StorageBufferFactory;
 import com.lezo.iscript.service.crawler.dto.ListRankDto;
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
-import com.lezo.iscript.service.crawler.dto.ShopDto;
+import com.lezo.iscript.service.crawler.dto.SiteDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
-import com.lezo.iscript.service.crawler.utils.ShopCacher;
+import com.lezo.iscript.service.crawler.utils.SiteCacher;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.strategy.ResultStrategy;
@@ -210,7 +210,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			return;
 		}
 		listRankDto.setProductUrl(JSONUtils.getString(itemObject, "productUrl"));
-		ShopDto dto = ShopCacher.getInstance().getDomainShopDto(listRankDto.getProductUrl());
+        SiteDto dto = SiteCacher.getInstance().getDomainSiteDto(listRankDto.getProductUrl());
 		if (dto != null) {
 			listRankDto.setShopId(dto.getId());
 		}
@@ -341,7 +341,7 @@ public class YhdCollectorStrategy implements ResultStrategy {
 			return;
 		}
 		productDto.setProductUrl(JSONUtils.getString(itemObject, "productUrl"));
-		ShopDto dto = ShopCacher.getInstance().getDomainShopDto(productDto.getProductUrl());
+        SiteDto dto = SiteCacher.getInstance().getDomainSiteDto(productDto.getProductUrl());
 		if (dto != null) {
 			productDto.setShopId(dto.getId());
 		}

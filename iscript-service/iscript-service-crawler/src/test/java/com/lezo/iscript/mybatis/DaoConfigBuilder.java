@@ -16,8 +16,8 @@ public class DaoConfigBuilder extends DaoBaseTest {
 	@Test
 	public void testBuildConfig() throws Exception {
 		TableSchemaDao tableSchemaDao = getBean(TableSchemaDao.class);
-		String tableName = "T_MATCH";
-		String daoName = "MatchDao";
+        String tableName = "T_ITEM";
+        String daoName = "ItemDao";
 		List<TableSchemaDto> dtoList = tableSchemaDao.getTableSchemas(tableName);
 		String daoQualifyName = "com.lezo.iscript.service.crawler.dao." + daoName;
 		int index = daoQualifyName.lastIndexOf('.');
@@ -33,16 +33,17 @@ public class DaoConfigBuilder extends DaoBaseTest {
 
 		File dtoFile = new File("src/main/java", dtoPackage.replace(".", File.separator) + File.separator
 				+ dtoClassName + ".java");
-		FileUtils.writeStringToFile(dtoFile, dtoTxt);
 		File daoFile = new File("src/main/java", daoClassPackage.replace(".", File.separator) + File.separator
 				+ daoClassName + ".java");
-		FileUtils.writeStringToFile(daoFile, buildDao(daoClassPackage, daoClassName, dtoPackage, dtoClassName));
 		String servicePackage = daoClassPackage.replaceAll(".dao$", ".service");
 		String serviceClsName = daoClassName.replace("Dao", "Service");
 		File serviceFile = new File("src/main/java", servicePackage.replace(".", File.separator) + File.separator
 				+ serviceClsName + ".java");
-		FileUtils.writeStringToFile(serviceFile, buildService(servicePackage, serviceClsName, dtoPackage,
-				dtoClassName));
+
+        FileUtils.writeStringToFile(dtoFile, dtoTxt);
+        // FileUtils.writeStringToFile(daoFile, buildDao(daoClassPackage, daoClassName, dtoPackage, dtoClassName));
+        // FileUtils.writeStringToFile(serviceFile, buildService(servicePackage, serviceClsName, dtoPackage,
+        // dtoClassName));
 
 		System.out.println("tableName:" + tableName);
 		System.out.println("daoClsName:" + daoQualifyName);
@@ -116,6 +117,8 @@ public class DaoConfigBuilder extends DaoBaseTest {
 			sb.append("Integer");
 		} else if (type.startsWith("bigint")) {
 			sb.append("Long");
+        } else if (type.startsWith("float")) {
+            sb.append("Float");
 		} else if (type.startsWith("char") || type.startsWith("varchar") || type.startsWith("nvarchar")) {
 			sb.append("String");
 		} else if (type.startsWith("timestamp") || type.startsWith("datetime")) {

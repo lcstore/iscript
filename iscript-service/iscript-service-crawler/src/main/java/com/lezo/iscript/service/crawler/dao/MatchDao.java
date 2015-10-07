@@ -9,8 +9,15 @@ import com.lezo.iscript.service.crawler.dto.MatchDto;
 
 public interface MatchDao extends BaseDao<MatchDto> {
 
-	List<MatchDto> getMatchDtoByMatchCodes(@Param("matchCodeList") List<Long> matchCodeList);
+    List<MatchDto> getDtoBySkuCodes(@Param("skuCodes") List<String> skuCodes, @Param("isDelete") Integer isDelete);
 
-	List<MatchDto> getMatchDtoByProductCodes(@Param("siteId") Integer siteId, @Param("codeList") List<String> codeList);
+    List<String> getMatchCodeWithBlankItemCode();
+
+    List<MatchDto> getDtoByMatchCodes(@Param("mCodes") List<String> mCodes, @Param("isDelete") Integer isDelete);
+
+    int updateItemCodeByMatchCode(@Param("mCode") String mCode, @Param("itemCode") String itemCode);
+
+    List<MatchDto> getDtoByMatchCodesWithLimit(@Param("mCodes") List<String> mCodes, @Param("offset") int offset,
+            @Param("limit") int limit);
 
 }

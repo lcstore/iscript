@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lezo.iscript.service.crawler.dto.ShopDto;
+import com.lezo.iscript.service.crawler.dto.SiteDto;
 import com.lezo.iscript.service.crawler.service.ShopService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.URLUtils;
@@ -47,13 +48,8 @@ public class ShopCacher {
 		return siteCode + "." + shopName;
 	}
 
-	public ShopDto getDomainShopDto(String domainUrl) {
-		String siteCode = URLUtils.getRootHost(domainUrl);
-		ShopDto dto = domainMap.get(siteCode);
-		if (dto == null) {
-			logger.warn("can not found domain from Url:" + domainUrl);
-		}
-		return dto;
+    public SiteDto getDomainShopDto(String domainUrl) {
+        return SiteCacher.getInstance().getDomainSiteDto(domainUrl);
 	}
 
 	public ShopDto getShopDto(Integer shopId) {
@@ -124,7 +120,7 @@ public class ShopCacher {
 		dto.setSiteCode(URLUtils.getRootHost(shopUrl));
 		dto.setCreateTime(new Date());
 		dto.setUpdateTime(dto.getCreateTime());
-		ShopDto siteDto = getDomainShopDto(shopUrl);
+        SiteDto siteDto = getDomainShopDto(shopUrl);
 		if (siteDto != null) {
 			dto.setParentId(siteDto.getId());
 		}

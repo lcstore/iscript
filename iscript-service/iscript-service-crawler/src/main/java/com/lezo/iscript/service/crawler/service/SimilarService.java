@@ -5,14 +5,16 @@ import java.util.List;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
 
 public interface SimilarService {
-	void batchInsertSimilarDtos(List<SimilarDto> dtoList);
+    void batchInsertSimilarDtos(List<SimilarDto> dtoList);
 
-	void batchUpdateSimilarDtos(List<SimilarDto> dtoList);
+    void batchUpdateSimilarDtos(List<SimilarDto> dtoList);
 
-	void batchSaveSimilarDtos(List<SimilarDto> dtoList);
+    List<SimilarDto> getSimilarDtoByJobIds(List<Long> jobIds);
 
-	List<SimilarDto> getSimilarDtoByProductCodes(Integer siteId, List<String> codeList);
+    List<String> getBrands();
 
-	List<SimilarDto> getSimilarDtoBySimilarCodes(List<Long> codeList);
+    List<SimilarDto> getSimilarDtoByBrandAndId(String brand, Long fromId, int limit);
+
+    List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId);
 
 }

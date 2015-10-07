@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.MatchOneDao">
+	<resultMap type="MatchOneDto" id="RM_MatchOneDto">
+		<result column="ID" property="id"/>
+		<result column="MERCHANT_ID" property="merchantId"/>
+		<result column="PRODUCT_ID" property="productId"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="OPPON_PRODUCT_CODE" property="opponProductCode"/>
+		<result column="OPPON_PRODUCT_NAME" property="opponProductName"/>
+		<result column="OPPON_PRODUCT_URL" property="opponProductUrl"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="SCORE" property="score"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="CREATOR_ID" property="creatorId"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+		<result column="IS_MANUAL" property="isManual"/>
+		<result column="IS_AUTO" property="isAuto"/>
+		<result column="IS_CHAMPION" property="isChampion"/>
+		<result column="IS_CANDIDATE" property="isCandidate"/>
+		<result column="IS_CONFIRM" property="isConfirm"/>
+		<result column="IS_DELETE" property="isDelete"/>
+		<result column="FORMULA_YMBOLS" property="formulaYmbols"/>
+		<result column="FORMULA_NUMBER" property="formulaNumber"/>
+		<result column="REMARKS" property="remarks"/>
+		<result column="DATA_STATUS" property="dataStatus"/>
+		<result column="IS_BARCODE" property="isBarcode"/>
+		<result column="IS_DOUBT" property="isDoubt"/>
+		<result column="IS_SEARCH" property="isSearch"/>
+		<result column="INSTANCE_ID" property="instanceId"/>
+		<result column="IS_INSHOP" property="isInshop"/>
+	</resultMap>
+	<sql id="MatchOneDto-coloumn-list">
+		ID
+		,MERCHANT_ID
+		,PRODUCT_ID
+		,PRODUCT_NAME
+		,PRODUCT_CODE
+		,OPPON_PRODUCT_CODE
+		,OPPON_PRODUCT_NAME
+		,OPPON_PRODUCT_URL
+		,SITE_ID
+		,SCORE
+		,CREATE_TIME
+		,CREATOR_ID
+		,UPDATE_TIME
+		,IS_MANUAL
+		,IS_AUTO
+		,IS_CHAMPION
+		,IS_CANDIDATE
+		,IS_CONFIRM
+		,IS_DELETE
+		,FORMULA_YMBOLS
+		,FORMULA_NUMBER
+		,REMARKS
+		,DATA_STATUS
+		,IS_BARCODE
+		,IS_DOUBT
+		,IS_SEARCH
+		,INSTANCE_ID
+		,IS_INSHOP
+	</sql>
+	<insert id="batchInsert" parameterType="MatchOneDto">
+		INSERT INTO T_MATCH_ONE(
+		<include refid="MatchOneDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.merchantId},#{item.productId},#{item.productName},#{item.productCode},#{item.opponProductCode},#{item.opponProductName},#{item.opponProductUrl},#{item.siteId},#{item.score},#{item.createTime},#{item.creatorId},#{item.updateTime},#{item.isManual},#{item.isAuto},#{item.isChampion},#{item.isCandidate},#{item.isConfirm},#{item.isDelete},#{item.formulaYmbols},#{item.formulaNumber},#{item.remarks},#{item.dataStatus},#{item.isBarcode},#{item.isDoubt},#{item.isSearch},#{item.instanceId},#{item.isInshop})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="MatchOneDto">
+		UPDATE T_MATCH_ONE SET
+		MERCHANT_ID=#{merchantId}
+		,PRODUCT_ID=#{productId}
+		,PRODUCT_NAME=#{productName}
+		,PRODUCT_CODE=#{productCode}
+		,OPPON_PRODUCT_CODE=#{opponProductCode}
+		,OPPON_PRODUCT_NAME=#{opponProductName}
+		,OPPON_PRODUCT_URL=#{opponProductUrl}
+		,SITE_ID=#{siteId}
+		,SCORE=#{score}
+		,CREATE_TIME=#{createTime}
+		,CREATOR_ID=#{creatorId}
+		,UPDATE_TIME=#{updateTime}
+		,IS_MANUAL=#{isManual}
+		,IS_AUTO=#{isAuto}
+		,IS_CHAMPION=#{isChampion}
+		,IS_CANDIDATE=#{isCandidate}
+		,IS_CONFIRM=#{isConfirm}
+		,IS_DELETE=#{isDelete}
+		,FORMULA_YMBOLS=#{formulaYmbols}
+		,FORMULA_NUMBER=#{formulaNumber}
+		,REMARKS=#{remarks}
+		,DATA_STATUS=#{dataStatus}
+		,IS_BARCODE=#{isBarcode}
+		,IS_DOUBT=#{isDoubt}
+		,IS_SEARCH=#{isSearch}
+		,INSTANCE_ID=#{instanceId}
+		,IS_INSHOP=#{isInshop}
+		WHERE ID=#{id}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_MATCH_ONE
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_MatchOneDto">
+	    SELECT * FROM T_MATCH_ONE
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getDtoByProductId" resultMap="RM_MatchOneDto">
+	    SELECT * FROM T_MATCH_ONE
+	    <where>
+	      PRODUCT_ID=#{productId}
+	      AND IS_DELETE=0
+	      AND IS_CONFIRM=1
+	    </where>
+	</select>
+</mapper>

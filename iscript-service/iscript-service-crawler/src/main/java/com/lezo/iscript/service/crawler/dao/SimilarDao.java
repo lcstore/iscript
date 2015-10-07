@@ -5,11 +5,20 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.lezo.iscript.common.BaseDao;
+import com.lezo.iscript.common.Batch;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
 
 public interface SimilarDao extends BaseDao<SimilarDto> {
-	List<SimilarDto> getSimilarDtoByProductCodes(@Param("siteId") Integer siteId,
-			@Param("codeList") List<String> codeList);
+    List<SimilarDto> getSimilarDtoByJobIds(@Param("jobIds") List<Long> jobIds);
 
-	List<SimilarDto> getSimilarDtoBySimilarCodes(@Param("similarCodeList") List<Long> similarCodeList);
+    void batchUpdateBarCodeBySkuCode(@Batch List<SimilarDto> dtoList);
+
+    List<SimilarDto> getDtoWithId(@Param("fromId") Long fromId, @Param("limit") int limit);
+
+    List<String> getBrands();
+
+    List<SimilarDto> getSimilarDtoByBrandAndId(@Param("brand") String brand, @Param("fromId") Long fromId,
+            @Param("limit") int limit);
+
+    List<SimilarDto> getSimilarDtoByJobIdSiteId(@Param("jobId") String jobId, @Param("siteId") int siteId);
 }

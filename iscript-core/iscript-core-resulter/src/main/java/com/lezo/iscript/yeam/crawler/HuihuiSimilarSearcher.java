@@ -18,10 +18,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.lezo.iscript.service.crawler.dto.ProductDto;
 import com.lezo.iscript.service.crawler.dto.ProductStatDto;
-import com.lezo.iscript.service.crawler.dto.ShopDto;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
+import com.lezo.iscript.service.crawler.dto.SiteDto;
 import com.lezo.iscript.service.crawler.service.ProductService;
-import com.lezo.iscript.service.crawler.utils.ShopCacher;
+import com.lezo.iscript.service.crawler.utils.SiteCacher;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.service.ConfigParser;
@@ -33,8 +33,6 @@ public class HuihuiSimilarSearcher {
 	private static final ConfigParser parser = new HuihuiSimilar();
 	@Autowired
 	private ProductService productService;
-	@Autowired
-	private SimilarDtoStorageCaller similarDtoStorageCaller;
 
 	public void run() {
 		if (running) {
@@ -119,13 +117,13 @@ public class HuihuiSimilarSearcher {
 			}
 		}
 		addSimilarCode(similarDtos, similarCode);
-		similarDtoStorageCaller.handleDtos(similarDtos);
+        // similarDtoStorageCaller.handleDtos(similarDtos);
 
 	}
 
 	private void addSimilarCode(List<SimilarDto> similarDtos, Long similarCode) {
 		for (SimilarDto dto : similarDtos) {
-			dto.setSimilarCode(similarCode);
+            dto.setSimilarCode("" + similarCode);
 		}
 	}
 
@@ -138,7 +136,7 @@ public class HuihuiSimilarSearcher {
 		domain = domain.replace("360buy", "jd");
 		domain = domain.replace("yihaodian", "yhd");
 		String domainUrl = String.format("http://www.%s", domain);
-		ShopDto shopDto = ShopCacher.getInstance().getDomainShopDto(domainUrl);
+        SiteDto shopDto = SiteCacher.getInstance().getDomainSiteDto(domainUrl);
 		Integer shopId = 0;
 		if (shopDto != null) {
 			shopId = shopDto.getId();
@@ -243,7 +241,4 @@ public class HuihuiSimilarSearcher {
 		// System.out.println(result);
 	}
 
-	public void setSimilarDtoStorageCaller(SimilarDtoStorageCaller similarDtoStorageCaller) {
-		this.similarDtoStorageCaller = similarDtoStorageCaller;
-	}
 }

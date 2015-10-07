@@ -19,7 +19,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lezo.iscript.resulter.ident.AttrTokenizer;
@@ -38,7 +37,6 @@ import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
 import com.lezo.iscript.utils.CharsUtils;
 import com.lezo.iscript.utils.ConvertUtils;
-import com.lezo.iscript.utils.JSONUtils;
 
 @Log4j
 @Setter
@@ -154,15 +152,11 @@ public class ClusterSimilarJob {
 							sDto.setWareCode(sDto.getSimilarCode());
 						} else {
 							Long wareCode = codeSet2WareCodeMap.get(codeSet);
-							sDto.setWareCode(wareCode);
-							sDto.setWareType(SimilarDto.WARE_TYPE_CONFIRM);
+                            sDto.setWareCode("" + wareCode);
 						}
-						JSONObject kvObject = new JSONObject();
-						JSONUtils.put(kvObject, sDto.getArbiterId().toString(), sDto.getSimilarScore());
-						sDto.setDeciderKvs(kvObject.toString());
 					}
 				}
-				similarService.batchSaveSimilarDtos(similarList);
+                similarService.batchInsertSimilarDtos(similarList);
 				log.info("save brand:" + entry.getKey() + ",similar:" + similarList.size());
 
 			}
@@ -222,25 +216,21 @@ public class ClusterSimilarJob {
 		List<SimilarDto> dtoList = new ArrayList<SimilarDto>(cluster.getMembers().size() + 1);
 		// add center entity
 		SimilarDto centerDto = new SimilarDto();
-		centerDto.setSimilarCode(sCode);
-		centerDto.setSimilarScore(MAX_SIMILAR_VALUE);
+        centerDto.setSimilarCode("" + sCode);
 		EntityToken centerEntity = cluster.getCenter();
 		centerDto.setProductName(centerEntity.getMaster().getValue());
 		copyProperties(centerEntity, centerDto, name2FieldMap);
 		centerDto.setCreateTime(new Date(sCode));
 		centerDto.setUpdateTime(centerDto.getCreateTime());
-		centerDto.setIsStandard(1);
 		dtoList.add(centerDto);
 		for (EntitySimilar m : cluster.getSimilars()) {
 			SimilarDto sDto = new SimilarDto();
-			sDto.setSimilarCode(sCode);
-			sDto.setSimilarScore(m.getSimilar());
+            sDto.setSimilarCode("" + sCode);
 			EntityToken entity = m.getRightCover().getEntity();
 			sDto.setProductName(entity.getMaster().getValue());
 			copyProperties(entity, sDto, name2FieldMap);
 			sDto.setCreateTime(new Date(sCode));
 			sDto.setUpdateTime(sDto.getCreateTime());
-			sDto.setIsStandard(0);
 			dtoList.add(sDto);
 		}
 		return dtoList;

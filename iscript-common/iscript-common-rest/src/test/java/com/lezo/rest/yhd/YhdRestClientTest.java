@@ -45,6 +45,17 @@ public class YhdRestClientTest {
     }
 
     // @Test
+    // public void testSerialProductGet() throws Exception {
+    // String method = "yhd.serial.product.get";
+    // YhdRestClient restClient = new YhdRestClient(appKey, appSecret, accessToken);
+    // Map<String, Object> paramMap = restClient.createSystemParaMap();
+    // paramMap.put("method", method);
+    // paramMap.put("productId", "70262");
+    // String result = restClient.execute(serverUrl, paramMap);
+    // System.err.println(result);
+    // }
+
+    // @Test
     // public void testUnionProductGetByClient() throws Exception {
     // String method = "yhd.union.single.product.get";
     // YhdClient yhd = new YhdClient(serverUrl, appKey, appSecret);

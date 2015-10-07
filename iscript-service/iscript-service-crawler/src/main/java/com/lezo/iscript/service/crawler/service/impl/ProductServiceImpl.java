@@ -150,4 +150,12 @@ public class ProductServiceImpl implements ProductService {
 		return productDao.getProductDtosByDateCateSiteId(fromCreateDate, toCreateDate, sCategory,
 				siteId, fromId, limit);
 	}
+
+    @Override
+    public void batchUpdateBarCodeBySkuCode(List<ProductDto> dtoList) {
+        BatchIterator<ProductDto> it = new BatchIterator<ProductDto>(dtoList);
+        while (it.hasNext()) {
+            productDao.batchUpdateBarCodeBySkuCode(it.next());
+        }
+    }
 }

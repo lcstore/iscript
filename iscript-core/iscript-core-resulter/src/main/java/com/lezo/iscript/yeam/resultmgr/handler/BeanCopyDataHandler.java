@@ -23,7 +23,9 @@ import org.springframework.stereotype.Component;
 
 import com.lezo.iscript.common.ObjectWriter;
 import com.lezo.iscript.service.crawler.dto.ShopDto;
+import com.lezo.iscript.service.crawler.dto.SiteDto;
 import com.lezo.iscript.service.crawler.utils.ShopCacher;
+import com.lezo.iscript.service.crawler.utils.SiteCacher;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.MethodUtils;
 import com.lezo.iscript.utils.ObjectUtils;
@@ -289,7 +291,7 @@ public class BeanCopyDataHandler extends AbstractDataHandler {
 		}
 		String productUrl = JSONUtils.getString(dataObject, "productUrl");
 		if (!StringUtils.isEmpty(productUrl)) {
-			ShopDto shopDto = ShopCacher.getInstance().getDomainShopDto(productUrl);
+            SiteDto shopDto = SiteCacher.getInstance().getDomainSiteDto(productUrl);
 			if (shopDto != null) {
 				writeMd.invoke(destObject, shopDto.getId());
 				return;

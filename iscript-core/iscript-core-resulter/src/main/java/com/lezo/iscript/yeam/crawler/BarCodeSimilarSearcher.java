@@ -32,8 +32,6 @@ public class BarCodeSimilarSearcher {
 	private static final ConfigParser parser = new JdBarCodeSimilar();
 	@Autowired
 	private BarCodeItemService barCodeItemService;
-	@Autowired
-	private SimilarDtoStorageCaller similarDtoStorageCaller;
 
 	public void run() {
 		if (running) {
@@ -109,7 +107,7 @@ public class BarCodeSimilarSearcher {
 		}
 		addSimilarCode(similarDtos, similarCode);
 		addBarCodeShopId(similarDtos, argsObject);
-		similarDtoStorageCaller.handleDtos(similarDtos);
+        // similarDtoStorageCaller.handleDtos(similarDtos);
 
 	}
 
@@ -127,7 +125,7 @@ public class BarCodeSimilarSearcher {
 
 	private void addSimilarCode(List<SimilarDto> similarDtos, Long similarCode) {
 		for (SimilarDto dto : similarDtos) {
-			dto.setSimilarCode(similarCode);
+            dto.setSimilarCode("" + similarCode);
 		}
 	}
 
@@ -216,10 +214,6 @@ public class BarCodeSimilarSearcher {
 		// task.put("name", productName);
 		// String result = similarParser.doParse(task);
 		// System.out.println(result);
-	}
-
-	public void setSimilarDtoStorageCaller(SimilarDtoStorageCaller similarDtoStorageCaller) {
-		this.similarDtoStorageCaller = similarDtoStorageCaller;
 	}
 
 	public static String handleUrl(String barCode, Integer siteId) {

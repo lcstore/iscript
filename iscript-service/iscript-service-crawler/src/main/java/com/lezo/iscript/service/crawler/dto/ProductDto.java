@@ -2,47 +2,43 @@ package com.lezo.iscript.service.crawler.dto;
 
 import java.util.Date;
 
-import com.lezo.iscript.common.UnifyValueAnnotation;
+import lombok.Getter;
+import lombok.Setter;
+
 import com.lezo.iscript.utils.PriceUtils;
 
-import lombok.Data;
-
-@Data
+@Getter
+@Setter
 public class ProductDto {
-	private Long id;
-	private Integer shopId;
-	private String productCode;
-	private String productName;
-	private Long marketPrice;
-	private String productUrl;
-	private String productBrand;
-	private String productModel;
-	private String productAttr;
-	private String barCode;
-	private String imgUrl;
-	private String unionUrl;
-	private Date onsailTime;
-	private Date createTime;
-	private Date updateTime;
+    private Long id;
+    private String skuCode;
+    private Integer siteId;
+    private Integer shopId;
+    private String productCode;
+    private String productName;
+    private Long marketPrice;
+    private String productUrl;
+    private String productBrand;
+    private String productModel;
+    private String productAttr;
+    private String barCode;
+    private String imgUrl;
+    private String unionUrl;
+    private Date onsailTime;
+    private Date createTime;
+    private Date updateTime;
+    private String categoryNav;
+    private String tokenBrand;
+    private String tokenCategory;
+    private String spuCodes;
+    private String spuVary;
 
-	private Integer siteId;
-	@UnifyValueAnnotation("")
-	private String categoryNav;
-	@UnifyValueAnnotation("")
-	private String tokenBrand;
-	@UnifyValueAnnotation("")
-	private String tokenCategory;
+    public void setMarketPrice(Float marketPrice) {
+        this.marketPrice = PriceUtils.toCentPrice(marketPrice);
+    }
 
-	@UnifyValueAnnotation("")
-	private String spuCodes;
-	@UnifyValueAnnotation("")
-	private String spuVary;
+    public void setMarketPrice(Long marketPrice) {
+        this.marketPrice = marketPrice;
+    }
 
-	public void setMarketPrice(Float price) {
-		this.marketPrice = PriceUtils.toCentPrice(price);
-	}
-
-	public void setMarketPrice(Long centPrice) {
-		this.marketPrice = centPrice;
-	}
 }

@@ -25,4 +25,6 @@ public interface ProductDao {
 			@Param("toDate") Date toCreateDate, @Param("tokenCategory") String tokenCategory,
 			@Param("siteId") Integer siteId, @Param("fromId") Long fromId, @Param("limit") int limit);
 
+    void batchUpdateBarCodeBySkuCode(@Batch List<ProductDto> dtoList);
+
 }

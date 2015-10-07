@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ItemDao">
+	<resultMap type="ItemDto" id="RM_ItemDto">
+		<result column="ID" property="id"/>
+		<result column="MATCH_CODE" property="matchCode"/>
+		<result column="WARE_CODE" property="wareCode"/>
+		<result column="BAR_CODE" property="barCode"/>
+		<result column="SKU_CODE" property="skuCode"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="IMG_URL" property="imgUrl"/>
+		<result column="TOKEN_CATEGORY" property="tokenCategory"/>
+		<result column="TOKEN_BRAND" property="tokenBrand"/>
+		<result column="TOKEN_MODEL" property="tokenModel"/>
+		<result column="TOKEN_UNIT" property="tokenUnit"/>
+		<result column="TOKEN_VARY" property="tokenVary"/>
+		<result column="MIN_PRICE" property="minPrice"/>
+		<result column="MAX_PRICE" property="maxPrice"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="ItemDto-coloumn-list">
+		ID
+		,MATCH_CODE
+		,WARE_CODE
+		,BAR_CODE
+		,SKU_CODE
+		,PRODUCT_CODE
+		,PRODUCT_NAME
+		,PRODUCT_URL
+		,IMG_URL
+		,TOKEN_CATEGORY
+		,TOKEN_BRAND
+		,TOKEN_UNIT
+		,TOKEN_MODEL
+		,TOKEN_VARY
+		,MIN_PRICE
+		,MAX_PRICE
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="ItemDto">
+		INSERT INTO T_ITEM(
+		<include refid="ItemDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.matchCode},#{item.wareCode},#{item.barCode},#{item.skuCode},#{item.productCode},#{item.productName},#{item.productUrl},#{item.imgUrl},#{item.tokenCategory},#{item.tokenBrand},#{item.tokenUnit},#{item.tokenModel},#{item.tokenVary},#{item.minPrice},#{item.maxPrice},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="ItemDto">
+		UPDATE T_ITEM SET
+		MATCH_CODE=#{matchCode}
+		,WARE_CODE=#{wareCode}
+		,BAR_CODE=#{barCode}
+		,SKU_CODE=#{skuCode}
+		,PRODUCT_CODE=#{productCode}
+		,PRODUCT_NAME=#{productName}
+		,PRODUCT_URL=#{productUrl}
+		,IMG_URL=#{imgUrl}
+		,TOKEN_CATEGORY=#{tokenCategory}
+		,TOKEN_BRAND=#{tokenBrand}
+		,TOKEN_UNIT=#{tokenUnit}
+		,TOKEN_MODEL=#{tokenModel}
+		,TOKEN_VARY=#{tokenVary}
+		,MIN_PRICE=#{minPrice}
+		,MAX_PRICE=#{maxPrice}
+		WHERE ID=#{id}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_ITEM
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_ItemDto">
+	    SELECT * FROM T_ITEM
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getDtoByMatchCodes" resultMap="RM_ItemDto">
+        SELECT * FROM T_ITEM
+        <where>
+           <foreach collection="mCodes" item="code" open="AND MATCH_CODE IN(" separator="," close=")">
+               #{code}
+           </foreach>
+        </where>
+    </select>
+    <select id="getDtoByCategory" resultMap="RM_ItemDto">
+        SELECT * FROM T_ITEM
+        <where>
+            <if test="category !=null">
+               TOKEN_CATEGORY=#{category}
+            </if>
+            LIMIT #{offset},#{limit}
+        </where>
+    </select>
+</mapper>

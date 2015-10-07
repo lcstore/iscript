@@ -9,13 +9,13 @@ import com.lezo.iscript.service.crawler.service.SynonymBrandService;
 
 public class ClusterSimilarJobTest {
 
-	public static void main(String[] args) {
-		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
-		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
-		ClusterSimilarJob job = new ClusterSimilarJob();
-		job.setProductService(cx.getBean(ProductService.class));
-		job.setSynonymBrandService(cx.getBean(SynonymBrandService.class));
-		job.setSimilarService(cx.getBean(SimilarService.class));
-		job.run();
-	}
+    public static void main(String[] args) {
+        String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+        ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+        TokenBrandJob job = new TokenBrandJob();
+        job.setProductService(cx.getBean(ProductService.class));
+        job.setSynonymBrandService(cx.getBean(SynonymBrandService.class));
+        job.setSimilarService(cx.getBean(SimilarService.class));
+        job.run();
+    }
 }
