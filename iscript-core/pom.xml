@@ -22,6 +22,7 @@
     <module>iscript-core-tasker</module>
     <module>iscript-core-resulter</module>
     <module>iscript-core-updater</module>
+    <module>iscript-core-match</module>
 	<!--
     <module>iscript-core-proxy</module>
 	-->
