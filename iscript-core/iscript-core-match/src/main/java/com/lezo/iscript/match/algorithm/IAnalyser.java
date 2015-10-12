@@ -2,11 +2,12 @@ package com.lezo.iscript.match.algorithm;
 
 import java.util.List;
 
-import com.lezo.iscript.match.pojo.CellAnalyse;
 import com.lezo.iscript.match.pojo.CellAssort;
+import com.lezo.iscript.match.pojo.CellToken;
 
 public interface IAnalyser {
+    static final String NAME_BRAND = "brand";
 
-    CellAnalyse analyse(List<CellAssort> assorts);
+    CellAssort analyse(List<CellToken> tokens);
 
 }

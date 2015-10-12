@@ -8,7 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Lists;
 import com.lezo.iscript.match.algorithm.IStrainer;
-import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellToken;
 
 /**
@@ -19,22 +18,19 @@ import com.lezo.iscript.match.pojo.CellToken;
  * @since 2015年10月11日
  */
 public class SuffixStrainer implements IStrainer {
-    private static final Pattern BRACKET_END_REG = Pattern.compile("(?<=【).{1,}?(?=】\\W*$)|(?<=\\[).{1,}?(?=\\]\\W*$)");
+    private static final Pattern BRACKET_END_REG = Pattern
+            .compile("(?<=【)[^】]{1,}?(?=】[\\s]*?$)|(?<=\\[)[^\\]]{1,}?(?=\\][\\s]*?$)");
 
     @Override
-    public CellAssort strain(List<CellToken> tokens) {
-        CellAssort assort = new CellAssort();
-        assort.setName(this.getClass().getSimpleName());
-        assort.setValue(IStrainer.VALUE_IGNORE);
+    public List<CellToken> strain(List<CellToken> tokens) {
         if (CollectionUtils.isEmpty(tokens)) {
-            return assort;
+            return tokens;
         }
         String origin = tokens.get(0).getOrigin();
         Matcher matcher = BRACKET_END_REG.matcher(origin);
         List<CellToken> dataList = Lists.newArrayList();
         while (matcher.find()) {
-            int start = matcher.start();
-            String sValue = matcher.group();
+            int start = matcher.start() - 1;
             for (CellToken token : tokens) {
                 if (token.getIndex() >= start) {
                     continue;
@@ -42,11 +38,7 @@ public class SuffixStrainer implements IStrainer {
                 dataList.add(token);
             }
         }
-        assort.setTokens(dataList);
-        if (dataList.size() != tokens.size()) {
-            assort.setValue(IStrainer.VALUE_CLEAN);
-        }
-        return assort;
+        return dataList.isEmpty() ? tokens : dataList;
     }
 
 }
