@@ -4,16 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IStrainer;
+import com.lezo.iscript.match.algorithm.utils.CellTokenUtils;
 import com.lezo.iscript.match.pojo.CellToken;
 
 /**
@@ -27,10 +26,7 @@ import com.lezo.iscript.match.pojo.CellToken;
  * @since 2015年10月11日
  */
 public class ContainStrainer implements IStrainer {
-    private static final Pattern SIGN_REG = Pattern.compile("^[【】（）\\s]+$");
     private static final Pattern NUM_WORD_WHOLE_REG = Pattern.compile("^[0-9a-zA-Z]+$");
-    private static final Pattern NUM_WORD_END_REG = Pattern.compile("[0-9a-zA-Z]+$");
-    private static final Pattern NUM_WORD_START_REG = Pattern.compile("^[0-9a-zA-Z]+");
     private static final Comparator<CellToken> CMP_LEN_ASC = new Comparator<CellToken>() {
         @Override
         public int compare(CellToken o1, CellToken o2) {
@@ -43,16 +39,15 @@ public class ContainStrainer implements IStrainer {
         if (CollectionUtils.isEmpty(oldCells)) {
             return oldCells;
         }
-        List<CellToken> newCells = Lists.newArrayList();
-        while (splitContains(oldCells, newCells)) {
-            oldCells = newCells;
-            newCells = Lists.newArrayList();
-            System.err.println("---------------------");
+        Set<CellToken> newCellSet = Sets.newHashSet();
+        while (splitContains(oldCells, newCellSet)) {
+            oldCells = Lists.newArrayList(newCellSet);
+            newCellSet.clear();
         }
-        return newCells;
+        return oldCells;
     }
 
-    private boolean splitContains(List<CellToken> oldCells, List<CellToken> newCells) {
+    private boolean splitContains(List<CellToken> oldCells, Set<CellToken> newCellSet) {
         Collections.sort(oldCells, CMP_LEN_ASC);
         Set<Integer> splitSet = Sets.newHashSet();
         int oldSize = oldCells.size();
@@ -73,66 +68,70 @@ public class ContainStrainer implements IStrainer {
                 if (sValue.length() == smallCell.getToken().length()) {
                     continue;
                 }
-                String[] splits = sValue.split(smallCell.getToken());
-                if (splits.length > 1) {
-                    splitSet.add(j);
-                    int offset = 0;
-                    for (int k = 0; k < splits.length; k++) {
-                        String spValue = splits[k];
-                        if (StringUtils.isBlank(spValue)) {
-                            continue;
+                int offset = 0;
+                String sContain = smallCell.getToken();
+                boolean isWord = isWord(sContain);
+                int oldCount = newCellSet.size();
+                while (true) {
+                    int index = sValue.indexOf(sContain, offset);
+                    if (index < 0) {
+                        if (newCellSet.size() > oldCount && offset < sValue.length()) {
+                            String rightChars = sValue.substring(offset);
+                            addNewCell(rightChars, offset, largeCell, newCellSet);
                         }
-                        int traceIndex = offset - smallCell.getToken().length();
-                        traceIndex = traceIndex < 0 ? 0 : traceIndex;
-                        if (canToken(spValue, sValue.substring(traceIndex))) {
-                            if (StringUtils.isBlank(spValue)) {
-                                continue;
-                            }
-                            Matcher matcher = SIGN_REG.matcher(spValue);
-                            if (matcher.find()) {
-                                continue;
-                            }
-                            CellToken containCell = new CellToken();
-                            containCell.setToken(spValue);
-                            containCell.setIndex(largeCell.getIndex() + offset);
-                            containCell.setCreator(this.getClass().getSimpleName());
-                            containCell.setOrigin(largeCell.getOrigin());
-                            newCells.add(containCell);
-                        }
-                        offset += spValue.length();
-                        if (k + 1 < splits.length) {
-                            offset += smallCell.getToken().length();
-                        }
+                        break;
                     }
+                    if (isWord) {
+                        int lIndex = index - 1;
+                        int rIndex = index + sContain.length();
+                        String lChar = lIndex < 0 ? null : String.valueOf(sValue.charAt(lIndex));
+                        String rChar = rIndex >= sValue.length() ? null : String.valueOf(sValue.charAt(rIndex));
+                        if (!isWord(lChar) && !isWord(rChar)) {
+                            String leftChars = sValue.substring(offset, index);
+                            addNewCell(leftChars, offset, largeCell, newCellSet);
+                            addNewCell(smallCell.getToken(), index, largeCell, newCellSet);
+                        }
+                    } else {
+                        String leftChars = sValue.substring(offset, index);
+                        addNewCell(leftChars, offset, largeCell, newCellSet);
+                        addNewCell(smallCell.getToken(), index, largeCell, newCellSet);
+                    }
+                    offset += index + sContain.length();
+
                 }
+                if (oldCount < newCellSet.size()) {
+                    splitSet.add(j);
+                }
+
             }
         }
-        System.err.println("newCells:" + newCells.size() + ",newCells:" + ArrayUtils.toString(newCells));
-        boolean hasNew = !newCells.isEmpty();
+        boolean hasNew = !newCellSet.isEmpty();
         // remove split
         for (int i = 0; i < oldCells.size(); i++) {
             if (splitSet.contains(i)) {
                 continue;
             }
-            newCells.add(oldCells.get(i));
+            newCellSet.add(oldCells.get(i));
         }
         return hasNew;
     }
 
-    private boolean canToken(String token, String origin) {
-        Matcher matcher = NUM_WORD_WHOLE_REG.matcher(token);
-        if (matcher.find()) {
-            String[] splits = origin.split(token);
-            if (splits.length >= 2) {
-                int index = -1;
-                // 分割的词为字母数字，左右两边不能为字母数字
-                Matcher lMatcher = NUM_WORD_END_REG.matcher(splits[++index]);
-                Matcher rMatcher = NUM_WORD_START_REG.matcher(splits[++index]);
-                if (lMatcher.find() || rMatcher.find()) {
-                    return false;
-                }
-            }
+    private void addNewCell(String token, int offset, CellToken largeCell, Set<CellToken> newCellSet) {
+        if (!CellTokenUtils.isCellToken(token)) {
+            return;
         }
-        return true;
+        CellToken containCell = new CellToken();
+        containCell.setToken(token);
+        containCell.setIndex(largeCell.getIndex() + offset);
+        containCell.setCreator(this.getClass().getSimpleName());
+        containCell.setOrigin(largeCell.getOrigin());
+        newCellSet.add(containCell);
+    }
+
+    private boolean isWord(String sContain) {
+        if (StringUtils.isBlank(sContain)) {
+            return false;
+        }
+        return NUM_WORD_WHOLE_REG.matcher(sContain).find();
     }
 }

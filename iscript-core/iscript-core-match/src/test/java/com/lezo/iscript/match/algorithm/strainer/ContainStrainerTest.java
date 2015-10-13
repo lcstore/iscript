@@ -31,7 +31,7 @@ public class ContainStrainerTest {
         List<CellToken> remains = strainer.strain(tokenSumList);
         System.out.println("strainer.size:" + remains.size());
         System.out.println("strainer.result:" + ArrayUtils.toString(remains));
-        String validate = "行情";
+        String validate = "美孚10w40";
         for (CellToken token : remains) {
             Assert.assertEquals(false, validate.equals(token.getToken()));
         }
