@@ -27,8 +27,8 @@ public class BlankTokenizer implements ITokenizer {
             CellToken token = new CellToken();
             token.setCreator(this.getClass().getSimpleName());
             token.setOrigin(origin);
-            token.setToken(value);
-            token.setIndex(token.getOrigin().indexOf(token.getToken()));
+            token.setValue(value);
+            token.setIndex(token.getOrigin().indexOf(token.getValue()));
             tokens.add(token);
         }
         return tokens;

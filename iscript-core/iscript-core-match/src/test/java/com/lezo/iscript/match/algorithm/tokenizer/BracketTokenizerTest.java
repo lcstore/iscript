@@ -21,7 +21,7 @@ public class BracketTokenizerTest {
         String validate = "Mobil";
         boolean hasCell = false;
         for (CellToken token : tokens) {
-            if (validate.equals(token.getToken())) {
+            if (validate.equals(token.getValue())) {
                 hasCell = true;
                 break;
             }
@@ -40,7 +40,7 @@ public class BracketTokenizerTest {
         String validate = "粽子";
         boolean hasCell = false;
         for (CellToken token : tokens) {
-            if (validate.equals(token.getToken())) {
+            if (validate.equals(token.getValue())) {
                 hasCell = true;
                 break;
             }
@@ -61,10 +61,10 @@ public class BracketTokenizerTest {
         boolean hasCn = false;
         boolean hasEn = false;
         for (CellToken token : tokens) {
-            if (cnValidate.equals(token.getToken())) {
+            if (cnValidate.equals(token.getValue())) {
                 hasCn = true;
             }
-            if (enValidate.equals(token.getToken())) {
+            if (enValidate.equals(token.getValue())) {
                 hasEn = true;
             }
         }
@@ -84,10 +84,10 @@ public class BracketTokenizerTest {
         boolean hasCn = false;
         boolean hasEn = false;
         for (CellToken token : tokens) {
-            if (cnValidate.equals(token.getToken())) {
+            if (cnValidate.equals(token.getValue())) {
                 hasCn = true;
             }
-            if (enValidate.equals(token.getToken())) {
+            if (enValidate.equals(token.getValue())) {
                 hasEn = true;
             }
         }

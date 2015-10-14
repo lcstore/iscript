@@ -21,7 +21,7 @@ public class UnitTokenizerTest {
         String validate = "30ml";
         boolean hasCell = false;
         for (CellToken token : tokens) {
-            if (validate.equals(token.getToken())) {
+            if (validate.equals(token.getValue())) {
                 hasCell = true;
                 break;
             }
@@ -42,7 +42,7 @@ public class UnitTokenizerTest {
         String validate = "10片";
         boolean hasCell = false;
         for (CellToken token : tokens) {
-            if (validate.equals(token.getToken())) {
+            if (validate.equals(token.getValue())) {
                 hasCell = true;
                 break;
             }

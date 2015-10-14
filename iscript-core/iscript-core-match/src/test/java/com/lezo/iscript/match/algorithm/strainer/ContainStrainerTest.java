@@ -33,7 +33,7 @@ public class ContainStrainerTest {
         System.out.println("strainer.result:" + ArrayUtils.toString(remains));
         String validate = "美孚10w40";
         for (CellToken token : remains) {
-            Assert.assertEquals(false, validate.equals(token.getToken()));
+            Assert.assertEquals(false, validate.equals(token.getValue()));
         }
     }
 

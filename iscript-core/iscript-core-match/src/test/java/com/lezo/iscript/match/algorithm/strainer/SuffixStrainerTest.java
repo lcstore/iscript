@@ -30,7 +30,7 @@ public class SuffixStrainerTest {
         System.out.println("strainer.result:" + ArrayUtils.toString(remains));
         String validate = "行情";
         for (CellToken token : remains) {
-            Assert.assertEquals(false, validate.equals(token.getToken()));
+            Assert.assertEquals(false, validate.equals(token.getValue()));
         }
     }
 
@@ -47,7 +47,7 @@ public class SuffixStrainerTest {
         System.out.println("strainer.result:" + ArrayUtils.toString(remains));
         String validate = "行情";
         for (CellToken token : remains) {
-            Assert.assertEquals(false, validate.equals(token.getToken()));
+            Assert.assertEquals(false, validate.equals(token.getValue()));
         }
     }
 

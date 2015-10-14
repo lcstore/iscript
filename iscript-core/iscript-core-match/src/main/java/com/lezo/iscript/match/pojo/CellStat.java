@@ -12,6 +12,8 @@ import lombok.Data;
  */
 @Data
 public class CellStat {
+    private int count;
+    private int length;
     private CellToken value;
     private List<CellToken> tokens;
 }

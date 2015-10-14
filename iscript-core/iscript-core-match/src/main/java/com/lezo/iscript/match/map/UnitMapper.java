@@ -3,7 +3,6 @@ package com.lezo.iscript.match.map;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import lombok.extern.log4j.Log4j;
 
@@ -17,11 +16,11 @@ public class UnitMapper {
     private static final UnitMapper INSTANCE = new UnitMapper();
     private static final String PATH_DIC = "dic/unit.dic";
     private DicLoader loader = new LineDicLoader();
-    private Map<String, Set<String>> dataMap;
+    private Map<String, SameChars> dataMap;
     private int minLen = Integer.MAX_VALUE;
     private int maxLen = Integer.MIN_VALUE;
 
-    private Map<String, Set<String>> getMap() {
+    private Map<String, SameChars> getMap() {
         if (dataMap != null) {
             return dataMap;
         }
@@ -30,6 +29,15 @@ public class UnitMapper {
                 InputStream in = UnitMapper.class.getClassLoader().getResourceAsStream(PATH_DIC);
                 try {
                     dataMap = loader.loadDic(in);
+                    for (String key : dataMap.keySet()) {
+                        int len = key.length();
+                        if (minLen > len) {
+                            minLen = len;
+                        }
+                        if (maxLen < len) {
+                            maxLen = len;
+                        }
+                    }
                 } catch (Exception e) {
                     log.error("load unit dic,cause:", e);
                 }
@@ -38,7 +46,7 @@ public class UnitMapper {
         return dataMap;
     }
 
-    public Set<String> getSameSet(String token) {
+    public SameChars getSameSet(String token) {
         if (StringUtils.isBlank(token)) {
             return null;
         }

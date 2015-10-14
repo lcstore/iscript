@@ -30,7 +30,7 @@ public class ContainStrainer implements IStrainer {
     private static final Comparator<CellToken> CMP_LEN_ASC = new Comparator<CellToken>() {
         @Override
         public int compare(CellToken o1, CellToken o2) {
-            return o1.getToken().length() - o2.getToken().length();
+            return o1.getValue().length() - o2.getValue().length();
         }
     };
 
@@ -56,7 +56,7 @@ public class ContainStrainer implements IStrainer {
                 continue;
             }
             CellToken smallCell = oldCells.get(i);
-            if (StringUtils.isBlank(smallCell.getToken())) {
+            if (StringUtils.isBlank(smallCell.getValue())) {
                 continue;
             }
             for (int j = oldSize - 1; j > i; j--) {
@@ -64,12 +64,12 @@ public class ContainStrainer implements IStrainer {
                     continue;
                 }
                 CellToken largeCell = oldCells.get(j);
-                String sValue = largeCell.getToken();
-                if (sValue.length() == smallCell.getToken().length()) {
+                String sValue = largeCell.getValue();
+                if (sValue.length() == smallCell.getValue().length()) {
                     continue;
                 }
                 int offset = 0;
-                String sContain = smallCell.getToken();
+                String sContain = smallCell.getValue();
                 boolean isWord = isWord(sContain);
                 int oldCount = newCellSet.size();
                 while (true) {
@@ -89,12 +89,12 @@ public class ContainStrainer implements IStrainer {
                         if (!isWord(lChar) && !isWord(rChar)) {
                             String leftChars = sValue.substring(offset, index);
                             addNewCell(leftChars, offset, largeCell, newCellSet);
-                            addNewCell(smallCell.getToken(), index, largeCell, newCellSet);
+                            addNewCell(smallCell.getValue(), index, largeCell, newCellSet);
                         }
                     } else {
                         String leftChars = sValue.substring(offset, index);
                         addNewCell(leftChars, offset, largeCell, newCellSet);
-                        addNewCell(smallCell.getToken(), index, largeCell, newCellSet);
+                        addNewCell(smallCell.getValue(), index, largeCell, newCellSet);
                     }
                     offset += index + sContain.length();
 
@@ -121,7 +121,7 @@ public class ContainStrainer implements IStrainer {
             return;
         }
         CellToken containCell = new CellToken();
-        containCell.setToken(token);
+        containCell.setValue(token);
         containCell.setIndex(largeCell.getIndex() + offset);
         containCell.setCreator(this.getClass().getSimpleName());
         containCell.setOrigin(largeCell.getOrigin());
