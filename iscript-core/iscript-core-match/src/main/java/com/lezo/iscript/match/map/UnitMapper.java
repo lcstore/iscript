@@ -15,7 +15,7 @@ import com.lezo.iscript.match.map.loader.LineDicLoader;
 @Log4j
 public class UnitMapper {
     private static final UnitMapper INSTANCE = new UnitMapper();
-    private static final String PATH_UNIT_DIC = "dic/unit.dic";
+    private static final String PATH_DIC = "dic/unit.dic";
     private DicLoader loader = new LineDicLoader();
     private Map<String, Set<String>> dataMap;
     private int minLen = Integer.MAX_VALUE;
@@ -27,7 +27,7 @@ public class UnitMapper {
         }
         synchronized (INSTANCE) {
             if (dataMap == null) {
-                InputStream in = UnitMapper.class.getClassLoader().getResourceAsStream(PATH_UNIT_DIC);
+                InputStream in = UnitMapper.class.getClassLoader().getResourceAsStream(PATH_DIC);
                 try {
                     dataMap = loader.loadDic(in);
                 } catch (Exception e) {

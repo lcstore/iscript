@@ -11,8 +11,7 @@ import lombok.Data;
  * @since 2015年10月11日
  */
 @Data
-public class CellAssort {
-    private String name;
-    private CellStat value;
-    private List<CellStat> stats;
+public class CellStat {
+    private CellToken value;
+    private List<CellToken> tokens;
 }
