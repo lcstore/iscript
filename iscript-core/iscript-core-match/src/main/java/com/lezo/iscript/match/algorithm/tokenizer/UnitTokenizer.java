@@ -61,7 +61,7 @@ public class UnitTokenizer implements ITokenizer {
             int len = sb.length();
             if (len >= minLen) {
                 String sValue = sb.toString();
-                if (mapper.getUnitSet(sValue) != null) {
+                if (mapper.getSameSet(sValue) != null) {
                     stack.push(sValue);
                 }
             }

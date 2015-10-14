@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 import com.lezo.iscript.match.algorithm.IStrainer;
 import com.lezo.iscript.match.algorithm.ITokenizer;
+import com.lezo.iscript.match.algorithm.strainer.ContainStrainer;
 import com.lezo.iscript.match.algorithm.strainer.SuffixStrainer;
 import com.lezo.iscript.match.algorithm.tokenizer.BlankTokenizer;
 import com.lezo.iscript.match.algorithm.tokenizer.BracketTokenizer;
@@ -41,6 +42,7 @@ public class BrandAnalyserTest {
         List<CellToken> targets = tokenSumList;
         List<IStrainer> strainers = Lists.newArrayList();
         strainers.add(new SuffixStrainer());
+        strainers.add(new ContainStrainer());
         for (IStrainer strainer : strainers) {
             targets = strainer.strain(targets);
         }
