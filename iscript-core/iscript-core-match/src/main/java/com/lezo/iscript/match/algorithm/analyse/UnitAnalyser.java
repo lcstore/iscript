@@ -1,5 +1,6 @@
 package com.lezo.iscript.match.algorithm.analyse;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -20,6 +21,12 @@ import com.lezo.iscript.match.utils.CellStatUtils;
 
 public class UnitAnalyser implements IAnalyser {
     private static final Pattern UNIT_REG = Pattern.compile("^([0-9.]+)([a-zA-Z\u4E00-\u9FA5]+)$");
+    private static final Map<Comparator<CellStat>, Integer> CMP_VAL_MAP = Maps.newHashMap();
+    static {
+        CMP_VAL_MAP.put(CellAssortUtils.CMP_VALUE_LEN_DESC, 5);
+        CMP_VAL_MAP.put(CellAssortUtils.CMP_COUNT_DESC, 3);
+        CMP_VAL_MAP.put(CellAssortUtils.CMP_LENGTH_DESC, 2);
+    }
 
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
@@ -54,8 +61,8 @@ public class UnitAnalyser implements IAnalyser {
         }
         if (!cellStatMap.isEmpty()) {
             List<CellStat> stats = Lists.newArrayList(cellStatMap.values());
+            CellAssortUtils.doAnalyse(assort, CMP_VAL_MAP);
             assort.setStats(stats);
-            CellAssortUtils.doAnalyse(assort);
         }
         return assort;
     }

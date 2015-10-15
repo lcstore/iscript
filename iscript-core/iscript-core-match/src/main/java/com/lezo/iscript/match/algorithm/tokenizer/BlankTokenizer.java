@@ -20,6 +20,7 @@ public class BlankTokenizer implements ITokenizer {
         }
         String[] valArr = BLANK_REG.split(origin);
         List<CellToken> tokens = new ArrayList<CellToken>(valArr.length);
+        int offset = 0;
         for (String value : valArr) {
             if (StringUtils.isBlank(value)) {
                 continue;
@@ -28,8 +29,9 @@ public class BlankTokenizer implements ITokenizer {
             token.setCreator(this.getClass().getSimpleName());
             token.setOrigin(origin);
             token.setValue(value);
-            token.setIndex(token.getOrigin().indexOf(token.getValue()));
+            token.setIndex(token.getOrigin().indexOf(token.getValue(), offset));
             tokens.add(token);
+            offset += value.length();
         }
         return tokens;
     }
