@@ -2,37 +2,41 @@ package com.lezo.iscript.match.algorithm.analyse;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import lombok.extern.log4j.Log4j;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IAnalyser;
-import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.map.SameChars;
+import com.lezo.iscript.match.map.UnitMapper;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellStat;
 import com.lezo.iscript.match.pojo.CellToken;
 import com.lezo.iscript.match.utils.CellAssortUtils;
+import com.lezo.iscript.match.utils.CellStatUtils;
 
-@Log4j
-public class BrandAnalyser implements IAnalyser {
+public class UnitAnalyser implements IAnalyser {
+    private static final Pattern UNIT_REG = Pattern.compile("^([0-9.]+)([a-zA-Z\u4E00-\u9FA5]+)$");
 
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
         CellAssort assort = new CellAssort();
-        assort.setName(NAME_BRAND);
+        assort.setName(NAME_UNIT);
         if (CollectionUtils.isEmpty(tokens)) {
             return assort;
         }
-        BrandMapper mapper = BrandMapper.getInstance();
+        UnitMapper mapper = UnitMapper.getInstance();
         Map<SameChars, CellStat> cellStatMap = Maps.newHashMap();
-        for (CellToken cell : tokens) {
-            SameChars sameChars = mapper.getSameSet(cell.getValue());
+        for (CellToken token : tokens) {
+            Matcher matcher = UNIT_REG.matcher(token.getValue());
+            if (!matcher.find()) {
+                continue;
+            }
+            String sUnitChar = matcher.group(2);
+            SameChars sameChars = mapper.getSameSet(sUnitChar);
             if (sameChars == null) {
                 continue;
             }
@@ -43,10 +47,10 @@ public class BrandAnalyser implements IAnalyser {
                 cellStat.setTokens(sameCells);
                 cellStatMap.put(sameChars, cellStat);
             }
-            cellStat.getTokens().add(cell);
+            cellStat.getTokens().add(token);
         }
         for (CellStat cellStat : cellStatMap.values()) {
-            doStatistic(cellStat);
+            CellStatUtils.doStatistic(cellStat);
         }
         if (!cellStatMap.isEmpty()) {
             List<CellStat> stats = Lists.newArrayList(cellStatMap.values());
@@ -54,25 +58,6 @@ public class BrandAnalyser implements IAnalyser {
             CellAssortUtils.doAnalyse(assort);
         }
         return assort;
-    }
-
-    private void doStatistic(CellStat cellStat) {
-        if (cellStat == null || cellStat.getTokens() == null) {
-            return;
-        }
-        CellToken headToken = null;
-        int len = 0;
-        Set<String> tokenSet = Sets.newHashSet();
-        for (CellToken token : cellStat.getTokens()) {
-            if (headToken == null || headToken.getIndex() > token.getIndex()) {
-                headToken = token;
-            }
-            tokenSet.add(token.getValue());
-            len += token.getValue().length();
-        }
-        cellStat.setValue(headToken);
-        cellStat.setLength(len);
-        cellStat.setCount(tokenSet.size());
     }
 
 }

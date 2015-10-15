@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IStrainer;
-import com.lezo.iscript.match.algorithm.utils.CellTokenUtils;
 import com.lezo.iscript.match.pojo.CellToken;
+import com.lezo.iscript.match.utils.CellTokenUtils;
 
 /**
  * 1.【美孚10w40】美孚（Mobil） 美孚速霸1000机油 10w40 SM级 （4L装） 【行情 报价 价格 评测】

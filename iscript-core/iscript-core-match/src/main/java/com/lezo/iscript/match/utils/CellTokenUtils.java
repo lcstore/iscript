@@ -1,4 +1,4 @@
-package com.lezo.iscript.match.algorithm.utils;
+package com.lezo.iscript.match.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
