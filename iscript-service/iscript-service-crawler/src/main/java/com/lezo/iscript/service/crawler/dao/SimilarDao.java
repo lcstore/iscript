@@ -20,5 +20,6 @@ public interface SimilarDao extends BaseDao<SimilarDto> {
     List<SimilarDto> getSimilarDtoByBrandAndId(@Param("brand") String brand, @Param("fromId") Long fromId,
             @Param("limit") int limit);
 
-    List<SimilarDto> getSimilarDtoByJobIdSiteId(@Param("jobId") String jobId, @Param("siteId") int siteId);
+    List<SimilarDto> getSimilarDtoByJobIdSiteId(@Param("jobId") String jobId, @Param("siteId") int siteId,
+            @Param("fromId") Long fromId, @Param("limit") int limit);
 }

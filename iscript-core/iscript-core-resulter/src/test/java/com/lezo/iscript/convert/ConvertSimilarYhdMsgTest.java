@@ -52,7 +52,7 @@ public class ConvertSimilarYhdMsgTest {
         long start = System.currentTimeMillis();
         int siteId = 1002;
         String jobId = "20151003-one.match";
-        List<SimilarDto> dtoList = similarService.getSimilarDtoByJobIdSiteId(jobId, siteId);
+        List<SimilarDto> dtoList = similarService.getSimilarDtoByJobIdSiteId(jobId, siteId, 0L, Integer.MAX_VALUE);
         Map<String, List<SimilarDto>> skuMap = Maps.newHashMap();
         for (SimilarDto dto : dtoList) {
             List<SimilarDto> hasList = skuMap.get(dto.getSkuCode());

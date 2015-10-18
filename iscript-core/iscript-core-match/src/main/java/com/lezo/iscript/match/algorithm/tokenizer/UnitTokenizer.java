@@ -2,6 +2,7 @@ package com.lezo.iscript.match.algorithm.tokenizer;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.ITokenizer;
 import com.lezo.iscript.match.map.UnitMapper;
 import com.lezo.iscript.match.pojo.CellToken;
@@ -27,7 +29,7 @@ public class UnitTokenizer implements ITokenizer {
         if (StringUtils.isBlank(origin)) {
             return Collections.emptyList();
         }
-        List<CellToken> tokens = Lists.newArrayList();
+        Set<CellToken> cellSet = Sets.newHashSet();
         Matcher matcher = UNIT_REG.matcher(origin);
         while (matcher.find()) {
             String sNum = matcher.group(1);
@@ -42,9 +44,9 @@ public class UnitTokenizer implements ITokenizer {
             token.setOrigin(origin);
             token.setValue(sValue);
             token.setIndex(token.getOrigin().indexOf(token.getValue()));
-            tokens.add(token);
+            cellSet.add(token);
         }
-        return tokens;
+        return Lists.newArrayList(cellSet);
     }
 
     private String getUnit(String sUnit) {
@@ -61,7 +63,7 @@ public class UnitTokenizer implements ITokenizer {
             int len = sb.length();
             if (len >= minLen) {
                 String sValue = sb.toString();
-                if (mapper.getSameSet(sValue) != null) {
+                if (mapper.getSameEntity(sValue) != null) {
                     stack.push(sValue);
                 }
             }

@@ -11,7 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lezo.iscript.match.algorithm.IAnalyser;
-import com.lezo.iscript.match.map.SameChars;
+import com.lezo.iscript.match.map.SameEntity;
 import com.lezo.iscript.match.map.UnitMapper;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellStat;
@@ -31,19 +31,19 @@ public class UnitAnalyser implements IAnalyser {
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
         CellAssort assort = new CellAssort();
-        assort.setName(NAME_UNIT);
+        assort.setName(this.getClass().getSimpleName());
         if (CollectionUtils.isEmpty(tokens)) {
             return assort;
         }
         UnitMapper mapper = UnitMapper.getInstance();
-        Map<SameChars, CellStat> cellStatMap = Maps.newHashMap();
+        Map<SameEntity, CellStat> cellStatMap = Maps.newHashMap();
         for (CellToken token : tokens) {
             Matcher matcher = UNIT_REG.matcher(token.getValue());
             if (!matcher.find()) {
                 continue;
             }
             String sUnitChar = matcher.group(2);
-            SameChars sameChars = mapper.getSameSet(sUnitChar);
+            SameEntity sameChars = mapper.getSameEntity(sUnitChar);
             if (sameChars == null) {
                 continue;
             }
@@ -61,8 +61,8 @@ public class UnitAnalyser implements IAnalyser {
         }
         if (!cellStatMap.isEmpty()) {
             List<CellStat> stats = Lists.newArrayList(cellStatMap.values());
-            CellAssortUtils.doAnalyse(assort, CMP_VAL_MAP);
             assort.setStats(stats);
+            CellAssortUtils.doAnalyse(assort, CMP_VAL_MAP);
         }
         return assort;
     }

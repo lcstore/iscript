@@ -3,12 +3,13 @@ package com.lezo.iscript.service.crawler.utils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.lezo.iscript.service.crawler.dao.SiteDao;
 import com.lezo.iscript.service.crawler.dto.SiteDto;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
@@ -18,9 +19,9 @@ public class SiteCacher {
     private static Logger logger = LoggerFactory.getLogger(SiteCacher.class);
     private static final SiteCacher INSTANCE = new SiteCacher();
     private static final Integer SITE_LEVEL_V2 = 2;
-    private static final Integer SITE_LEVEL_V3 = 3;
     private static Map<Integer, SiteDto> id2DtoMap = null;
-    private static Map<Integer, Map<String, SiteDto>> level2SiteMap = null;
+    private static Map<String, SiteDto> code2DtoMap;
+    private static Map<String, Set<String>> codeSetMap;
 
     public SiteCacher() {
     }
@@ -36,38 +37,46 @@ public class SiteCacher {
         SiteDao siteDao = SpringBeanUtils.getBean(SiteDao.class);
         List<SiteDto> dtoList = siteDao.getSiteDtoByLevel(null);
         Map<Integer, SiteDto> id2DtoMap = new HashMap<Integer, SiteDto>();
-        Map<Integer, Map<String, SiteDto>> level2SiteMap = new HashMap<Integer, Map<String, SiteDto>>();
+        Map<String, SiteDto> codeDtoMap = Maps.newHashMap();
+        Map<String, Set<String>> v2CodeSetMap = Maps.newHashMap();
         for (SiteDto dto : dtoList) {
-            Map<String, SiteDto> siteMap = level2SiteMap.get(dto.getSiteLevel());
-            if (siteMap == null) {
-                siteMap = new HashMap<String, SiteDto>();
-                level2SiteMap.put(dto.getSiteLevel(), siteMap);
-            }
             id2DtoMap.put(dto.getId(), dto);
-            siteMap.put(dto.getSiteCode(), dto);
+            codeDtoMap.put(dto.getSiteCode(), dto);
+            if (dto.getSiteLevel() > SITE_LEVEL_V2) {
+                String root = URLUtils.getRootHost(dto.getSiteUrl());
+                Set<String> codeSet = v2CodeSetMap.get(root);
+                if (codeSet == null) {
+                    codeSet = Sets.newHashSet();
+                    v2CodeSetMap.put(root, codeSet);
+                }
+                codeSet.add(dto.getSiteCode());
+            }
         }
         SiteCacher.id2DtoMap = id2DtoMap;
-        SiteCacher.level2SiteMap = level2SiteMap;
+        SiteCacher.code2DtoMap = codeDtoMap;
+        SiteCacher.codeSetMap = v2CodeSetMap;
     }
 
-    public SiteDto getDomainSiteDto(String domainUrl) {
+    public SiteDto getDomainSiteDto(String url) {
         ensureLoaded();
-        String domainV2 = URLUtils.getRootHost(domainUrl);
-        if (domainV2.equals("tmall.com") && domainUrl.indexOf("chaoshi") > 0) {
-            String domainV3 = "chaoshi.tmall.com";
-            return SiteCacher.level2SiteMap.get(SITE_LEVEL_V3).get(domainV3);
-        }
-        Pattern oReg = Pattern.compile("[a-zA-Z0-9]\\." + domainV2);
-        Matcher matcher = oReg.matcher(domainUrl);
-        SiteDto siteDto = SiteCacher.level2SiteMap.get(SITE_LEVEL_V2).get(domainV2);
-        if (siteDto == null) {
-            if (matcher.find()) {
-                domainV2 = matcher.group();
-                siteDto = SiteCacher.level2SiteMap.get(SITE_LEVEL_V3).get(domainV2);
+        String domainV2 = URLUtils.getRootHost(url);
+        Set<String> codeSet = codeSetMap.get(domainV2);
+        SiteDto siteDto = null;
+        if (codeSet != null) {
+            String host = URLUtils.getHost(url);
+            for (String code : codeSet) {
+                String sRemainCode = code.replace(domainV2, "");
+                if (host.contains(sRemainCode)) {
+                    siteDto = code2DtoMap.get(code);
+                    break;
+                }
             }
         }
         if (siteDto == null) {
-            logger.warn("can not found domain from Url:" + domainUrl);
+            siteDto = code2DtoMap.get(domainV2);
+        }
+        if (siteDto == null) {
+            logger.warn("can not found domain from Url:" + url);
         }
         return siteDto;
     }

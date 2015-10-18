@@ -62,8 +62,8 @@ public class SimilarServiceImpl implements SimilarService {
     }
 
     @Override
-    public List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId) {
-        return similarDao.getSimilarDtoByJobIdSiteId(jobId, siteId);
+    public List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId, Long fromId, int limit) {
+        return similarDao.getSimilarDtoByJobIdSiteId(jobId, siteId, fromId, limit);
     }
 
 }

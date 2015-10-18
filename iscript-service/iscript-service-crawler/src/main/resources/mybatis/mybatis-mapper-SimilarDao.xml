@@ -132,10 +132,14 @@
 	<select id="getSimilarDtoByJobIdSiteId" resultMap="RM_SimilarDto">
 	    SELECT * FROM T_SIMILAR
 	    <where>
-	       <if test="jobId != null">
-		       AND JOB_ID=#{jobId}
+	      <if test="fromId != null">
+		       <![CDATA[
+		       AND ID>#{fromId}
+		       ]]>
 	       </if>
+		   AND JOB_ID=#{jobId}
 	       AND SITE_ID=#{siteId}
+	       LIMIT #{limit}
 	    </where>
 	</select>
 </mapper>

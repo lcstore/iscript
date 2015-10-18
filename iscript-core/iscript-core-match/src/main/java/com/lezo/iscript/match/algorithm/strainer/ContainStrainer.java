@@ -96,7 +96,7 @@ public class ContainStrainer implements IStrainer {
                         addNewCell(leftChars, offset, largeCell, newCellSet);
                         addNewCell(smallCell.getValue(), index, largeCell, newCellSet);
                     }
-                    offset += index + sContain.length();
+                    offset = index + sContain.length();
 
                 }
                 if (oldCount < newCellSet.size()) {

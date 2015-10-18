@@ -15,6 +15,6 @@ public interface SimilarService {
 
     List<SimilarDto> getSimilarDtoByBrandAndId(String brand, Long fromId, int limit);
 
-    List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId);
+    List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId, Long fromId, int limit);
 
 }

@@ -16,11 +16,11 @@ public class UnitMapper {
     private static final UnitMapper INSTANCE = new UnitMapper();
     private static final String PATH_DIC = "dic/unit.dic";
     private DicLoader loader = new LineDicLoader();
-    private Map<String, SameChars> dataMap;
+    private Map<String, SameEntity> dataMap;
     private int minLen = Integer.MAX_VALUE;
     private int maxLen = Integer.MIN_VALUE;
 
-    private Map<String, SameChars> getMap() {
+    private Map<String, SameEntity> getMap() {
         if (dataMap != null) {
             return dataMap;
         }
@@ -46,7 +46,7 @@ public class UnitMapper {
         return dataMap;
     }
 
-    public SameChars getSameSet(String token) {
+    public SameEntity getSameEntity(String token) {
         if (StringUtils.isBlank(token)) {
             return null;
         }

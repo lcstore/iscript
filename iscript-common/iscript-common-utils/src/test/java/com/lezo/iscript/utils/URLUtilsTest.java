@@ -3,8 +3,7 @@ package com.lezo.iscript.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 public class URLUtilsTest {
@@ -49,7 +48,7 @@ public class URLUtilsTest {
 	}
 
 	@Test
-	public void test() {
+    public void testRootHost() {
 		String url = "http://xx.gome.com.cn/product/A0004331780.html&version=3.2.1&vendor=chrome";
 		Assert.assertEquals("gome.com.cn", URLUtils.getRootHost(url));
 		url = "http://abc.xxxx.gome.com.cn/product/A0004331780.html&version=3.2.1&vendor=chrome";
@@ -60,5 +59,7 @@ public class URLUtilsTest {
 		Assert.assertEquals("java-er.com", URLUtils.getRootHost(url));
 		url = "http://www.ceca.org.cn/";
 		Assert.assertEquals("ceca.org.cn", URLUtils.getRootHost(url));
+        url = "http://detail.tmall.com/item.htm?id=13510626287&&frm=yiyao";
+        Assert.assertEquals("tmall.com", URLUtils.getRootHost(url));
 	}
 }

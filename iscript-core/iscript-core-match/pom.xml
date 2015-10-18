@@ -31,4 +31,7 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<finalName>iscript-core-match</finalName>
+	</build>
 </project>

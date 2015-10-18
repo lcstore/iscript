@@ -58,6 +58,7 @@ public class ChooseItemCodeJob implements Runnable {
                 String itemCode = chooseItemCode(dtoList);
                 ItemDto itemDto = getItemDto(dtoList, itemCode);
                 if (itemDto != null) {
+                    log.info("choose item:" + itemCode + ",mCode:" + mCode);
                     // update itemCode to MatchDto
                     matchService.updateItemCodeByMatchCode(itemDto.getMatchCode(), itemCode);
                     // save itemDto

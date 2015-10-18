@@ -60,7 +60,7 @@
 		,PRODUCT_URL=#{productUrl} ,MARKET_PRICE=#{marketPrice}
 		,IMG_URL=#{imgUrl} ,TOKEN_CATEGORY=#{tokenCategory}
 		,TOKEN_BRAND=#{tokenBrand} ,TOKEN_MODEL=#{tokenModel}
-		,TOKEN_UNIT=#{tokenUnitl}
+		,TOKEN_UNIT=#{tokenUnit}
 		,TOKEN_VARY=#{tokenVary}
 		,ARBITER_ID=#{arbiterId} ,SIMILAR_SCORE=#{similarScore}
 		,CAPTION=#{caption} ,CONFIRM_MODEL=#{confirmModel}

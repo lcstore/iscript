@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -22,10 +23,11 @@ import com.lezo.iscript.match.pojo.CellToken;
 
 @Log4j
 public class ModelAnalyser implements IAnalyser {
-    private static final Pattern EN_WORD_REG = Pattern.compile("[0-9a-zA-Z/\\-]+");
-    private static final Pattern EN_WORD_WHOLE_REG = Pattern.compile("^[0-9a-zA-Z/\\-]+$");
+    private static final Pattern EN_WORD_REG = Pattern.compile("[0-9a-zA-Z/\\-\\+]+");
+    private static final Pattern EN_WORD_WHOLE_REG = Pattern.compile("^[0-9a-zA-Z/\\-\\+]+$");
     private static final Pattern NUM_REG = Pattern.compile("[0-9]+");
     private static final Pattern EN_REG = Pattern.compile("[a-zA-Z]+");
+    private static final Pattern EN_NUM_REG = Pattern.compile("[0-9a-zA-Z]+");
 
     private static final Comparator<Entry<CellStat, Integer>> CMP_COUNT_DESC =
             new Comparator<Map.Entry<CellStat, Integer>>() {
@@ -39,7 +41,7 @@ public class ModelAnalyser implements IAnalyser {
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
         CellAssort assort = new CellAssort();
-        assort.setName(NAME_BRAND);
+        assort.setName(this.getClass().getSimpleName());
         if (CollectionUtils.isEmpty(tokens)) {
             return assort;
         }
@@ -48,6 +50,9 @@ public class ModelAnalyser implements IAnalyser {
             Matcher matcher = EN_WORD_REG.matcher(cell.getValue());
             while (matcher.find()) {
                 String value = matcher.group();
+                if (isSingleChar(value)) {
+                    continue;
+                }
                 CellStat cellStat = cellStatMap.get(value);
                 if (cellStat == null) {
                     cellStat = new CellStat();
@@ -91,6 +96,13 @@ public class ModelAnalyser implements IAnalyser {
             assort.setValue(entryList.get(0).getKey());
         }
         return assort;
+    }
+
+    private boolean isSingleChar(String sVal) {
+        if (StringUtils.isBlank(sVal)) {
+            return true;
+        }
+        return sVal.trim().length() == 1 && !EN_NUM_REG.matcher(sVal).find();
     }
 
 }

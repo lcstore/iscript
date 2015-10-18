@@ -1,7 +1,6 @@
 package com.lezo.iscript.match.map.loader;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,19 +8,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import lombok.extern.log4j.Log4j;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.lezo.iscript.match.map.SameChars;
+import com.lezo.iscript.match.map.SameEntity;
 
 @Log4j
 public class LineDicLoader implements DicLoader {
@@ -45,33 +46,42 @@ public class LineDicLoader implements DicLoader {
     public LineDicLoader() {
         this(1);
     }
+
     public LineDicLoader(int minLen) {
         super();
         this.minLen = minLen;
     }
 
     @Override
-    public Map<String, SameChars> loadDic(String dicPath) throws Exception {
-        return loadDic(new FileInputStream(dicPath));
-    }
-
-    @Override
-    public Map<String, SameChars> loadDic(InputStream in) throws Exception {
+    public Map<String, SameEntity> loadDic(InputStream in) throws Exception {
         InputStreamReader isr = null;
         BufferedReader bReader = null;
         try {
             isr = new InputStreamReader(in, encoding);
             bReader = new BufferedReader(isr);
-            Map<String, SameChars> temMap = Maps.newHashMap();
+            Map<String, SameEntity> temMap = Maps.newHashMap();
+            Map<String, Set<String>> key2SameSetMap = Maps.newHashMap();
             while (bReader.ready()) {
                 String line = bReader.readLine();
                 if (line == null) {
                     break;
                 }
+                String key = getLineKey(line);
                 Set<String> sameSet = toSameSet(line);
-                SameChars sameChars = toSameChars(sameSet);
+                Set<String> dataSet = key2SameSetMap.get(key);
+                if (dataSet == null) {
+                    dataSet = Sets.newHashSet();
+                    key2SameSetMap.put(key, dataSet);
+                }
+                if (CollectionUtils.isNotEmpty(sameSet)) {
+                    dataSet.addAll(sameSet);
+                }
+            }
+            for (Entry<String, Set<String>> entry : key2SameSetMap.entrySet()) {
+                Set<String> sameSet = entry.getValue();
+                SameEntity sameChars = toSameChars(sameSet);
                 for (String value : sameSet) {
-                    SameChars hasChars = temMap.get(value);
+                    SameEntity hasChars = temMap.get(value);
                     if (hasChars != null) {
                         log.warn("duplicat unit:" + value);
                     } else {
@@ -90,13 +100,8 @@ public class LineDicLoader implements DicLoader {
         return null;
     }
 
-    private SameChars toSameChars(Set<String> sameSet) {
-        List<String> sameList = Lists.newArrayList(sameSet);
-        Collections.sort(sameList, CMP_CN);
-        SameChars sameChars = new SameChars();
-        sameChars.setValue(sameList.get(0));
-        sameChars.setSameSet(sameSet);
-        return sameChars;
+    private String getLineKey(String line) {
+        return line;
     }
 
     private Set<String> toSameSet(String line) {
@@ -122,4 +127,12 @@ public class LineDicLoader implements DicLoader {
         return token.toLowerCase();
     }
 
+    public static SameEntity toSameChars(Set<String> sameSet) {
+        List<String> sameList = Lists.newArrayList(sameSet);
+        Collections.sort(sameList, CMP_CN);
+        SameEntity sameChars = new SameEntity();
+        sameChars.setValue(sameList.get(0));
+        sameChars.setSameSet(sameSet);
+        return sameChars;
+    }
 }

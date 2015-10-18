@@ -18,6 +18,15 @@ public class ShopCacherTest {
         String domainUrl =
                 "https://chaoshi.detail.tmall.com/item.htm?spm=a3204.7084713.2996785438.12.aa7cDy&acm=201506250.1003.1.399393&aldid=dyYC1nn4&scm=1003.1.201506250.13_43361139462_399393&pos=6&userBucket=5&id=43361139462";
         SiteDto siteDto = siteCacher.getDomainSiteDto(domainUrl);
+        // System.err.println(siteDto.getId() + "," + siteDto.getSiteCode());
+        // domainUrl = "http://item.gome.com.cn/A0004331780.html";
+        // siteDto = siteCacher.getDomainSiteDto(domainUrl);
+        // System.err.println(siteDto.getId() + "," + siteDto.getSiteCode());
+        domainUrl = "http://detail.tmall.com/item.htm?id=13510626287&&frm=yiyao";
+        siteDto = siteCacher.getDomainSiteDto(domainUrl);
+        System.err.println(siteDto.getId() + "," + siteDto.getSiteCode());
+        domainUrl = "http://item.yhd.com/product/1008097";
+        siteDto = siteCacher.getDomainSiteDto(domainUrl);
         System.err.println(siteDto.getId() + "," + siteDto.getSiteCode());
 
 	}
