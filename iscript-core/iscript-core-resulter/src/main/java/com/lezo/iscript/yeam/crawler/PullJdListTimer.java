@@ -108,7 +108,7 @@ public class PullJdListTimer {
 		productStatService.batchInsertProductStatDtos(insertStatDtos);
 		productStatService.batchUpdateProductStatDtos(updateStatDtos);
 		turnCreateTime2UpdateTime(insertStatHisDtos);
-		productStatHisService.batchInsertProductStatHisDtos(insertStatHisDtos);
+        productStatHisService.batchInsertDtos(insertStatHisDtos);
 	}
 
 	private void turnCreateTime2UpdateTime(List<ProductStatDto> insertStatHisDtos) {

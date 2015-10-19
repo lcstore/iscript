@@ -20,7 +20,7 @@ public class ProductStatHisDaoTest {
 		String[] configs = new String[] { "classpath:spring-config-ds.xml" };
 		ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
 		ProductStatHisDao productStatHisDao = SpringBeanUtils.getBean(ProductStatHisDao.class);
-		List<ProductStatDto> dtoList = new ArrayList<ProductStatDto>();
+        List<ProductStatDto> dtoList = new ArrayList<ProductStatDto>();
 		for (int i = 0; i < 100; i++) {
 			ProductStatDto monitorDto = new ProductStatDto();
 			for (Field field : monitorDto.getClass().getDeclaredFields()) {

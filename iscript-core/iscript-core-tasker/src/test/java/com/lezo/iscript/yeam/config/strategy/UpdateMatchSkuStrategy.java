@@ -156,11 +156,12 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
         for (int i = 0; i < len; i++) {
             JSONObject dObject = dataArray.getJSONObject(i);
             ProductStatDto statDto = new ProductStatDto();
+            dtoList.add(statDto);
             ObjectUtils.copyObject(dObject, statDto);
             addProperties(statDto, dObject, argsObject);
-            dtoList.add(statDto);
 
             String skuCode = JSONUtils.getString(argsObject, "skuCode");
+            statDto.setSkuCode(skuCode);
             if (StringUtils.isBlank(statDto.getProductCode())) {
                 statDto.setProductCode(skuCode.split("_")[1]);
             }

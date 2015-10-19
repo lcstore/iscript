@@ -29,9 +29,9 @@ public class ProxyCollectorStrategy implements ResultStrategy, Closeable {
 	private Timer timer;
 
 	public ProxyCollectorStrategy() {
-		StrategyTimer task = new StrategyTimer();
-		this.timer = new Timer(getName());
-		this.timer.schedule(task, 1 * 60 * 1000, 1 * 60 * 60 * 1000);
+        // StrategyTimer task = new StrategyTimer();
+        // this.timer = new Timer(getName());
+        // this.timer.schedule(task, 1 * 60 * 1000, 1 * 60 * 60 * 1000);
 	}
 
 	@Override

@@ -29,8 +29,8 @@ public class DaoConfigBuilder extends DaoBaseTest {
     @Test
     public void testBuildConfig() throws Exception {
         TableSchemaDao tableSchemaDao = getBean(TableSchemaDao.class);
-        String tableName = "T_ITEM";
-        String daoName = "ItemDao";
+        String tableName = "T_PRODUCT_STAT_HIS";
+        String daoName = "ProductStatHisDao";
         List<TableSchemaDto> dtoList = tableSchemaDao.getTableSchemas(tableName);
         String daoQualifyName = "com.lezo.iscript.service.crawler.dao." + daoName;
         int index = daoQualifyName.lastIndexOf('.');

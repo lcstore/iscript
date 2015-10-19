@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.ProductStatHisDao">
+	<resultMap type="ProductStatDto" id="RM_ProductStatHisDto">
+		<result column="ID" property="id"/>
+		<result column="SKU_CODE" property="skuCode"/>
+		<result column="SITE_ID" property="siteId"/>
+		<result column="SHOP_ID" property="shopId"/>
+		<result column="PRODUCT_CODE" property="productCode"/>
+		<result column="PRODUCT_NAME" property="productName"/>
+		<result column="PRODUCT_URL" property="productUrl"/>
+		<result column="CATEGORY_NAV" property="categoryNav"/>
+		<result column="PRODUCT_PRICE" property="productPrice"/>
+		<result column="MARKET_PRICE" property="marketPrice"/>
+		<result column="SOLD_NUM" property="soldNum"/>
+		<result column="COMMENT_NUM" property="commentNum"/>
+		<result column="GOOD_COMMENT" property="goodComment"/>
+		<result column="POOR_COMMENT" property="poorComment"/>
+		<result column="STOCK_NUM" property="stockNum"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="ProductStatHisDto-coloumn-list">
+		ID
+		,SKU_CODE
+		,SITE_ID
+		,SHOP_ID
+		,PRODUCT_CODE
+		,PRODUCT_NAME
+		,PRODUCT_URL
+		,CATEGORY_NAV
+		,PRODUCT_PRICE
+		,MARKET_PRICE
+		,SOLD_NUM
+		,COMMENT_NUM
+		,GOOD_COMMENT
+		,POOR_COMMENT
+		,STOCK_NUM
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="ProductStatDto">
+		INSERT INTO T_PRODUCT_STAT_HIS(
+		<include refid="ProductStatHisDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.skuCode},#{item.siteId},#{item.shopId},#{item.productCode},#{item.productName},#{item.productUrl},#{item.categoryNav},#{item.productPrice},#{item.marketPrice},#{item.soldNum},#{item.commentNum},#{item.goodComment},#{item.poorComment},#{item.stockNum},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="ProductStatDto">
+		UPDATE T_PRODUCT_STAT_HIS SET
+		SKU_CODE=#{skuCode}
+		,SITE_ID=#{siteId}
+		,SHOP_ID=#{shopId}
+		,PRODUCT_CODE=#{productCode}
+		,PRODUCT_NAME=#{productName}
+		,PRODUCT_URL=#{productUrl}
+		,CATEGORY_NAV=#{categoryNav}
+		,PRODUCT_PRICE=#{productPrice}
+		,MARKET_PRICE=#{marketPrice}
+		,SOLD_NUM=#{soldNum}
+		,COMMENT_NUM=#{commentNum}
+		,GOOD_COMMENT=#{goodComment}
+		,POOR_COMMENT=#{poorComment}
+		,STOCK_NUM=#{stockNum}
+		WHERE ID=#{id}
+	</update>
+	<select id="getDtoByIds" resultMap="RM_ProductStatHisDto">
+	    SELECT * FROM T_PRODUCT_STAT_HIS
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+</mapper>

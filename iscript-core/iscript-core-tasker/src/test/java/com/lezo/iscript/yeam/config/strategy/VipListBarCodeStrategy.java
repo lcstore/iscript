@@ -44,9 +44,9 @@ public class VipListBarCodeStrategy implements ResultStrategy, Closeable {
     private Timer timer;
 
     public VipListBarCodeStrategy() {
-        ProxyDetectTimer task = new ProxyDetectTimer();
-        this.timer = new Timer(getName());
-        this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
+        // ProxyDetectTimer task = new ProxyDetectTimer();
+        // this.timer = new Timer(getName());
+        // this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
     }
 
     @Override
