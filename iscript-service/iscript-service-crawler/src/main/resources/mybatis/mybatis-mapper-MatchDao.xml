@@ -66,6 +66,12 @@
 		,CAPTION=#{caption} ,CONFIRM_MODEL=#{confirmModel}
 		,IS_DELETE=#{isDelete} ,ITEM_CODE=#{itemCode} WHERE ID=#{id}
 	</update>
+	<update id="batchUpdateDtoBySkuCode" parameterType="MatchDto">
+		UPDATE T_MATCH SET
+		BAR_CODE=#{barCode}
+		,IMG_URL=#{imgUrl} 
+		WHERE SKU_CODE=#{skuCode}
+	</update>
 	<delete id="batchDeleteByIds">
 		DELETE FROM T_MATCH
 		<where>
@@ -127,6 +133,27 @@
 			</foreach>
 			<include refid="exclude-delete-recodes" />
 			LIMIT #{offset},#{limit}
+		</where>
+	</select>
+	<select id="getDtoBySiteIdWithCreateDate" resultMap="RM_MatchDto">
+		SELECT * FROM T_MATCH
+		<where>
+		    SITE_ID=#{siteId}
+		    <![CDATA[
+		     AND ID >#{fromId}
+		    ]]>
+		    <if test="fromCreateDate !=null">
+		    <![CDATA[
+		     AND CREATE_TIME>#{fromCreateDate}
+		      ]]>
+		    </if>
+		    <if test="toCreateDate !=null">
+		    <![CDATA[
+		     AND CREATE_TIME<=#{toCreateDate}
+		      ]]>
+		    </if>
+			<include refid="exclude-delete-recodes" />
+			LIMIT #{limit}
 		</where>
 	</select>
 	<update id="updateItemCodeByMatchCode">

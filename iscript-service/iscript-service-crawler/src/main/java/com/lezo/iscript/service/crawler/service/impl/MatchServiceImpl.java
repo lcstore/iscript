@@ -3,6 +3,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -198,6 +199,20 @@ public class MatchServiceImpl implements MatchService {
             return Collections.emptyList();
         }
         return matchDao.getDtoByMatchCodesWithLimit(mCodes, offset, limit);
+    }
+
+    @Override
+    public List<MatchDto> getDtoBySiteIdWithCreateDate(int siteId, Date fromCreateDate, Date toCreateDate, Long fromId,
+            int limit) {
+        return matchDao.getDtoBySiteIdWithCreateDate(siteId, fromCreateDate, toCreateDate, fromId, limit);
+    }
+
+    @Override
+    public void batchUpdateDtoBySkuCode(List<MatchDto> dtoList) {
+        BatchIterator<MatchDto> it = new BatchIterator<MatchDto>(dtoList);
+        while (it.hasNext()) {
+            matchDao.batchUpdateDtoBySkuCode(it.next());
+        }
     }
 
 }

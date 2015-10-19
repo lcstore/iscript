@@ -1,5 +1,6 @@
 package com.lezo.iscript.service.crawler.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.lezo.iscript.common.BaseService;
@@ -17,4 +18,14 @@ public interface MatchService extends BaseService<MatchDto> {
     List<MatchDto> getDtoByMatchCodes(List<String> mCodes, Integer isDelete);
 
     List<MatchDto> getDtoByMatchCodesWithLimit(List<String> mCodes, int offset, int limit);
+
+    List<MatchDto> getDtoBySiteIdWithCreateDate(int siteId, Date fromCreateDate, Date toCreateDate, Long fromId,
+            int limit);
+
+    /**
+     * 更新的字段有：imgUrl、barCode
+     * 
+     * @param dtoList
+     */
+    void batchUpdateDtoBySkuCode(List<MatchDto> dtoList);
 }
