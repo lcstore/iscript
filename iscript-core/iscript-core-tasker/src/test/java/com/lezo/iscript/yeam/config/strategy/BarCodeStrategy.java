@@ -36,10 +36,10 @@ public class BarCodeStrategy implements ResultStrategy, Closeable {
     private Timer timer;
 
     public BarCodeStrategy() {
-        ProxyDetectTimer task = new ProxyDetectTimer();
+        // ProxyDetectTimer task = new ProxyDetectTimer();
         // this.timer = new Timer(getName());
         // this.timer.schedule(task, 1 * 60 * 1000, 100 * 24 * 60 * 60 * 1000);
-        task.run();
+        // task.run();
     }
 
     @Override

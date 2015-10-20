@@ -43,8 +43,9 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
 
     public UpdateMatchSkuStrategy() {
         CreateTaskTimer task = new CreateTaskTimer();
-        this.timer = new Timer(getName());
-        this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
+        // this.timer = new Timer(getName());
+        // this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
+        task.run();
     }
 
     private class CreateTaskTimer extends TimerTask {
@@ -65,7 +66,7 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
                 logger.info("CreateTaskTimer is start...");
                 running = true;
                 int total = 0;
-                int siteId = 1001;
+                int siteId = 1002;
                 Long fromId = 0L;
                 Date fromCreateDate = null;
                 Date toCreateDate = null;
@@ -104,6 +105,7 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
             JSONUtils.put(argsObject, "bid", taskId);
             Map<Integer, String> siteConfigMap = Maps.newHashMap();
             siteConfigMap.put(1001, "ConfigJdProduct");
+            siteConfigMap.put(1002, "ConfigYhdProduct");
             List<TaskPriorityDto> taskList = Lists.newArrayList();
             for (MatchDto hasDto : hasList) {
                 String sConfig = siteConfigMap.get(hasDto.getSiteId());

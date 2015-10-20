@@ -82,10 +82,11 @@ public class ConfigYhdProduct implements ConfigParser {
                 mapper = new ObjectMapper();
                 writer = new StringWriter();
                 mapper.writeValue(writer, dataBean);
-                dataString = writer.toString();
-                JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
+                String newData = writer.toString();
+                JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, newData);
             }
         }
+        JSONUtils.put(returnObject, ClientConstant.KEY_CALLBACK_RESULT, dataString);
         return returnObject.toString();
     }
 
