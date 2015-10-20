@@ -54,13 +54,12 @@ public class SolrTest {
         queryStr = "productCode:1321297488";
         queryStr = "copyText:OSCO";
         queryStr = "copyText:雨伞/雨具";
-        queryStr = "copyText:牛奶";
         // queryStr = "copyText:Alfredo";
         // queryStr = "m_skuCode:1001_734860";
-        // queryStr = "*:*";
+        queryStr = "*:*";
+        // queryStr = "copyText:牛奶";
         SolrQuery solrQuery = new SolrQuery("{!frange l=0.4}query($qq)");
         solrQuery.set("qq", queryStr);
-        solrQuery.setParam("m_skuCode", "m_itemCode");
         solrQuery.setFields("*", "score");
         solrQuery.setStart(0);
         solrQuery.setRows(10);
@@ -99,7 +98,7 @@ public class SolrTest {
         SolrQuery solrQuery = new SolrQuery("{!frange l=0.4}query($qq)");
         solrQuery = new SolrQuery();
         solrQuery.set("q", queryStr);
-        solrQuery.setGetFieldStatistics("matchCode");
+        solrQuery.setGetFieldStatistics("itemCode");
         solrQuery.setGetFieldStatistics(true);
         // solrQuery.setFields("matchCode", "productName", "skuCode");
         // solrQuery.setFields("*", "score");
@@ -126,7 +125,7 @@ public class SolrTest {
     @Test
     public void testSolrQueryFact() throws Exception {
         String queryStr = "*:*";
-        queryStr = "巧克力";
+//        queryStr = "巧克力";
         // SolrQuery solrQuery = new SolrQuery("{!frange l=0.4}query($qq)");
         // SolrQuery solrQuery = new SolrQuery(queryStr);
         SolrQuery solrQuery = new SolrQuery();
@@ -142,9 +141,20 @@ public class SolrTest {
     }
 
     @Test
-    public void testSolrQueryRange() throws Exception {
+    public void testSolrQueryOR() throws Exception {
         SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setParam("q", "(skuCode:1001_734855)OR(skuCode:1001_734860)");
+        // solrQuery.setParam("q", "(skuCode:1001_734855)OR(skuCode:1001_734860)");
+        solrQuery.setParam("q", "matchCode:172673569");
+        System.err.println("toString:" + solrQuery.toString());
+        QueryResponse respone = server.query(solrQuery);
+
+        System.err.println("result:" + respone.getResponse());
+    }
+
+    @Test
+    public void testSolrQueryRange() throws Exception {
+        SolrQuery solrQuery = new SolrQuery("matchCode:172673569");
+        // solrQuery.setParam("q", "productPrice:[900 TO * ]");
         System.err.println("toString:" + solrQuery.toString());
         QueryResponse respone = server.query(solrQuery);
 
