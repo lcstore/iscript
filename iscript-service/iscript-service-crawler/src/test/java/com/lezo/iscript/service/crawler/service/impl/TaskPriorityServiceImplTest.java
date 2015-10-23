@@ -1,6 +1,7 @@
 package com.lezo.iscript.service.crawler.service.impl;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -21,6 +22,7 @@ import com.lezo.iscript.service.crawler.dao.TaskPriorityDao;
 import com.lezo.iscript.service.crawler.dto.BrandDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.utils.BatchIterator;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.yeam.resultmgr.vo.BrandConfigVo;
 
@@ -32,20 +34,28 @@ public class TaskPriorityServiceImplTest {
         String[] configs = new String[] { "classpath:spring-config-ds.xml" };
         ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
         TaskPriorityDao taskPriorityDao = SpringBeanUtils.getBean(TaskPriorityDao.class);
-        String type = "ConfigJdProduct";
-        File srcDir = new File("/apps/src/codes/lezo/iblade/data/jd/top/sku");
-        File[] files = srcDir.listFiles();
+        String type = "ConfigYhdProduct";
+        File srcDir = new File("/apps/src/codes/blade/data/");
+        File[] files = srcDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isFile() && pathname.getName().contains("yhd.sale.top.20151022.data");
+            }
+        });
         String jobId = System.currentTimeMillis() + "";
         String cate = "进口食品";
         JSONObject argsObject = new JSONObject();
         JSONUtils.put(argsObject, "strategy", "SkuWithSimilarStrategy");
         JSONUtils.put(argsObject, "cate", cate);
-        JSONUtils.put(argsObject, "jobId", jobId);
+        JSONUtils.put(argsObject, "jid", jobId);
         int total = 0;
         for (File f : files) {
             List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
             List<String> lineList = FileUtils.readLines(f, "UTF-8");
             for (String line : lineList) {
+                if (!line.contains(cate)) {
+                    continue;
+                }
                 JSONArray dArray = new JSONArray(line);
                 if (dArray == null || dArray.length() < 1) {
                     continue;
@@ -60,7 +70,10 @@ public class TaskPriorityServiceImplTest {
                     taskList.add(taskDto);
                 }
             }
-            taskPriorityDao.batchInsert(taskList);
+            BatchIterator<TaskPriorityDto> it = new BatchIterator<TaskPriorityDto>(taskList, 500);
+            while (it.hasNext()) {
+                taskPriorityDao.batchInsert(it.next());
+            }
             total += taskList.size();
             log.info("insert type:" + type + ",count:" + taskList.size() + ",total:" + total);
 

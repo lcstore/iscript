@@ -75,20 +75,13 @@ public class SkuWithSimilarStrategy implements ResultStrategy, Closeable {
             dtoList.add(statDto);
             ObjectUtils.copyObject(dObject, statDto);
             addProperties(statDto, dObject, argsObject);
-            String skuCode = JSONUtils.getString(argsObject, "skuCode");
-            statDto.setSkuCode(skuCode);
-            if (StringUtils.isBlank(statDto.getProductCode())) {
-                statDto.setProductCode(skuCode.split("_")[1]);
-            }
-            if (StringUtils.isBlank(skuCode)) {
-                continue;
-            }
+            statDto.setSkuCode(statDto.getSiteId() + "_" + statDto.getProductCode());
             if (statDto.getStockNum() == null || statDto.getStockNum() < 1) {
                 continue;
             }
             String sImgUrl = JSONUtils.getString(dObject, "imgUrl");
             SimilarDto sDto = new SimilarDto();
-            sDto.setSkuCode(skuCode);
+            sDto.setSkuCode(statDto.getSkuCode());
             sDto.setProductCode(statDto.getProductCode());
             sDto.setProductName(statDto.getProductName());
             sDto.setProductUrl(statDto.getProductUrl());
@@ -109,6 +102,18 @@ public class SkuWithSimilarStrategy implements ResultStrategy, Closeable {
                     field.setAccessible(true);
                 }
                 for (SimilarDto sDto : similarDto) {
+                    if (field.get(sDto) == null) {
+                        field.set(sDto, StringUtils.EMPTY);
+                    }
+                }
+            }
+        }
+        for (Field field : ProductStatDto.class.getDeclaredFields()) {
+            if (field.getType().isAssignableFrom(String.class)) {
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
+                for (ProductStatDto sDto : dtoList) {
                     if (field.get(sDto) == null) {
                         field.set(sDto, StringUtils.EMPTY);
                     }
