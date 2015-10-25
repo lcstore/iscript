@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lombok.extern.log4j.Log4j;
@@ -32,6 +33,7 @@ import com.lezo.iscript.match.utils.CellTokenUtils;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
 import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
+import com.lezo.iscript.service.crawler.utils.BrandRepoCacher;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring-config-ds.xml" })
@@ -44,14 +46,14 @@ public class ConvertSimilarTokenTest {
     @Autowired
     private SynonymBrandService synonymBrandService;
 
-
     @Test
     public void testConvertToken() throws Exception {
         long start = System.currentTimeMillis();
         String jobId = "";
         Long fromId = 0L;
         int limit = 500;
-        DicLoader loader = createLoader();
+        // DicLoader loader = createLoader();
+        DicLoader loader = createRepoLoader();
         BrandMapper.getInstance().setLoader(loader);
         List<Integer> siteIds = Lists.newArrayList(1001, 1002);
         for (Integer sid : siteIds) {
@@ -92,6 +94,24 @@ public class ConvertSimilarTokenTest {
                     for (String sVal : sSameSet.getSameSet()) {
                         sameMap.put(sVal, sSameSet);
 
+                    }
+                }
+                return sameMap;
+            }
+        };
+    }
+
+    private DicLoader createRepoLoader() {
+        return new DicLoader() {
+            @Override
+            public Map<String, SameEntity> loadDic(InputStream in) throws Exception {
+                Map<String, Set<String>> map = BrandRepoCacher.getInstance().getMap();
+                Map<String, SameEntity> sameMap = Maps.newHashMap();
+                for (Entry<String, Set<String>> entry : map.entrySet()) {
+                    Set<String> sameSet = entry.getValue();
+                    SameEntity sSameSet = LineDicLoader.toSameChars(sameSet);
+                    for (String sVal : sSameSet.getSameSet()) {
+                        sameMap.put(sVal, sSameSet);
                     }
                 }
                 return sameMap;

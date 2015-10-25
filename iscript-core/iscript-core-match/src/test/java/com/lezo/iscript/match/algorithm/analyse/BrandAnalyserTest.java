@@ -69,4 +69,18 @@ public class BrandAnalyserTest {
         Assert.assertEquals("迪宝乐", assort.getValue().getValue().getValue());
     }
 
+    @Test
+    public void testAnalyser05() {
+        String origin = "意大利进口 Galatine佳乐锭/阿拉丁巧克力味牛奶片 100g";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("阿拉丁", assort.getValue().getValue().getValue());
+    }
+
 }
