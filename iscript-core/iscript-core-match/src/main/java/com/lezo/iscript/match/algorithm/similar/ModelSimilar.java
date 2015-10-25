@@ -13,8 +13,8 @@ import com.lezo.iscript.match.utils.CellAssortUtils;
 @Setter
 public class ModelSimilar implements ISimilar {
     private int max = 100;
-    private int avg = 10;
-    private int min = -50;
+    private int avg = 50;
+    private int min = -10;
 
     @Override
     public int similar(CellAssort current, CellAssort refer) {

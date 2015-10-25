@@ -24,7 +24,8 @@ public class CellTokenUtils {
     private static final Pattern SIGN_REG = Pattern.compile("^[【】（）\\s]+$");
     private static List<ITokenizer> tokenizers = Lists.newArrayList(new BlankTokenizer(),
             new BracketTokenizer(), new UnitTokenizer(), new BrandTokenizer());
-    private static List<IStrainer> strainers = Lists.newArrayList(new SuffixStrainer(), new ContainStrainer());
+    private static List<IStrainer> strainers = Lists.newArrayList(new SuffixStrainer(), new ContainStrainer(),
+            new SuffixStrainer());
 
     /**
      * 不是空白，非特殊字符

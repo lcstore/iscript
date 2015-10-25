@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lezo.iscript.service.crawler.dao.BrandRepoDao">
+	<resultMap type="BrandRepoDto" id="RM_BrandRepoDto">
+		<result column="ID" property="id"/>
+		<result column="SORT_NAME" property="sortName"/>
+		<result column="REGION_NAME" property="regionName"/>
+		<result column="CRUMB_NAV" property="crumbNav"/>
+		<result column="CORE_NAME" property="coreName"/>
+		<result column="INCLUDES" property="includes"/>
+		<result column="EXCLUDES" property="excludes"/>
+		<result column="IS_DELETE" property="isDelete"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="UPDATE_TIME" property="updateTime"/>
+	</resultMap>
+	<sql id="BrandRepoDto-coloumn-list">
+		ID
+		,SORT_NAME
+		,REGION_NAME
+		,CRUMB_NAV
+		,CORE_NAME
+		,INCLUDES
+		,EXCLUDES
+		,IS_DELETE
+		,CREATE_TIME
+		,UPDATE_TIME
+	</sql>
+	<insert id="batchInsert" parameterType="BrandRepoDto">
+		INSERT INTO T_BRAND_REPO(
+		<include refid="BrandRepoDto-coloumn-list" />
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id},#{item.sortName},#{item.regionName},#{item.crumbNav},#{item.coreName},#{item.includes},#{item.excludes},#{item.isDelete},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="BrandRepoDto">
+		UPDATE T_BRAND_REPO SET
+		SORT_NAME=#{sortName}
+		,REGION_NAME=#{regionName}
+		,CRUMB_NAV=#{crumbNav}
+		,CORE_NAME=#{coreName}
+		,INCLUDES=#{includes}
+		,EXCLUDES=#{excludes}
+		,IS_DELETE=#{isDelete}
+		WHERE ID=#{id}
+	</update>
+	<delete id="batchDeleteByIds">
+	    DELETE FROM T_BRAND_REPO
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</delete>
+	<select id="getDtoByIds" resultMap="RM_BrandRepoDto">
+	    SELECT * FROM T_BRAND_REPO
+	    <where>
+	       <foreach collection="list" item="id" open="AND ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getDtoByCoreOrSort" resultMap="RM_BrandRepoDto">
+	    SELECT * FROM T_BRAND_REPO
+	    <where>
+	        <if test="coreList !=null and !coreList.isEmpty()">
+		       <foreach collection="list" item="name" open="AND CORE_NAME IN(" separator="," close=")">
+		           #{name}
+		       </foreach>
+	        </if>
+	        <if test="sortName !=null">
+	            AND SORT_NAME=#{sortName}
+	        </if>
+	    </where>
+	</select>
+	<select id="getDtoByIdWithLimit" resultMap="RM_BrandRepoDto">
+	    SELECT * FROM T_BRAND_REPO
+	    <where>
+	        ID > #{fromId}
+	        LIMIT ${limit}
+	    </where>
+	</select>
+</mapper>

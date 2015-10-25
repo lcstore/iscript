@@ -56,7 +56,8 @@ public class ContainStrainer implements IStrainer {
                 continue;
             }
             CellToken smallCell = oldCells.get(i);
-            if (StringUtils.isBlank(smallCell.getValue())) {
+            // 单独一个字，就不要去分割其他的了
+            if (StringUtils.isBlank(smallCell.getValue()) || smallCell.getValue().length() <= 1) {
                 continue;
             }
             for (int j = oldSize - 1; j > i; j--) {

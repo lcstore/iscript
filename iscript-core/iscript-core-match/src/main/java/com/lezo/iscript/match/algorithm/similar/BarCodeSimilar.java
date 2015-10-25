@@ -13,7 +13,7 @@ import com.lezo.iscript.match.utils.CellAssortUtils;
 @Setter
 public class BarCodeSimilar implements ISimilar {
     private int max = 100;
-    private int avg = 10;
+    private int avg = 50;
     private int min = -100;
 
     @Override

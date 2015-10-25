@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
@@ -113,11 +114,52 @@ public class CellAssortUtils {
         } else {
             ignoreSet.add(sValue);
         }
-        List<CellToken> newList = Lists.newArrayList();
-        for (CellToken token : tokens) {
-            if (!ignoreSet.contains(token.getValue())) {
-                newList.add(token);
+        CellToken assortToken = assort.getValue().getValue();
+        Set<CellToken> ignoreCellSet = Sets.newHashSet(assortToken);
+        for (CellStat stat : assort.getStats()) {
+            if (CollectionUtils.isNotEmpty(stat.getTokens())) {
+                for (CellToken st : stat.getTokens()) {
+                    ignoreCellSet.add(st);
+                }
             }
+        }
+        List<CellToken> newList = Lists.newArrayList();
+        String origin = assort.getValue().getValue().getOrigin();
+        for (String ignoreVal : ignoreSet) {
+            int offset = 0;
+            while (true) {
+                int fromIndex = origin.indexOf(ignoreVal, offset);
+                if (fromIndex < 0) {
+                    break;
+                }
+                int toIndex = fromIndex + ignoreVal.length();
+                for (CellToken token : tokens) {
+                    String tVal = token.getValue();
+                    if (StringUtils.isEmpty(tVal) || ignoreVal.equals(tVal) || ignoreCellSet.contains(token)) {
+                        continue;
+                    }
+                    int destIndex = token.getIndex() + tVal.length();
+                    if (fromIndex >= destIndex || toIndex <= token.getIndex()) {
+                        continue;
+                    }
+                    token.setIndex(toIndex);
+                    if (toIndex >= destIndex) {
+                        token.setValue(StringUtils.EMPTY);
+                    } else {
+                        String newVal = origin.substring(toIndex, destIndex);
+                        token.setValue(newVal);
+                    }
+                }
+                offset = fromIndex + ignoreVal.length();
+            }
+
+        }
+
+        for (CellToken token : tokens) {
+            if (StringUtils.isBlank(token.getValue()) || ignoreCellSet.contains(token)) {
+                continue;
+            }
+            newList.add(token);
         }
         return newList;
 

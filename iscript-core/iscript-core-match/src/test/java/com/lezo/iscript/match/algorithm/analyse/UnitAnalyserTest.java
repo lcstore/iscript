@@ -41,4 +41,18 @@ public class UnitAnalyserTest {
         Assert.assertEquals("24毫米×5.5米", assort.getValue().getValue().getValue());
     }
 
+    @Test
+    public void testAnalyser03() {
+        String origin = "克特多金象黑巧克力 片装240克";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("240克", assort.getValue().getValue().getValue());
+    }
+
 }

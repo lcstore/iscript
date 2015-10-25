@@ -20,8 +20,9 @@ public class SimilarIn {
 
     @Override
     public String toString() {
-        return "SimilarIn [productName=" + productName + "]";
+        return "SimilarIn [skuCode=" + skuCode + ", productName=" + productName + "]";
     }
+
 
 
 }

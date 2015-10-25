@@ -23,17 +23,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IAnalyser;
-import com.lezo.iscript.match.algorithm.ISimilar;
 import com.lezo.iscript.match.algorithm.analyse.BrandAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.ModelAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.UnitAnalyser;
 import com.lezo.iscript.match.algorithm.cluster.SimilarCluster;
-import com.lezo.iscript.match.algorithm.similar.BarCodeSimilar;
-import com.lezo.iscript.match.algorithm.similar.BrandSimilar;
-import com.lezo.iscript.match.algorithm.similar.ModelSimilar;
-import com.lezo.iscript.match.algorithm.similar.RemainSimilar;
-import com.lezo.iscript.match.algorithm.similar.UnitSimilar;
-import com.lezo.iscript.match.algorithm.similar.WareSimilar;
 import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.map.SameEntity;
 import com.lezo.iscript.match.map.loader.DicLoader;
@@ -45,6 +38,7 @@ import com.lezo.iscript.match.pojo.SimilarIn;
 import com.lezo.iscript.match.pojo.SimilarOut;
 import com.lezo.iscript.match.utils.CellAssortUtils;
 import com.lezo.iscript.match.utils.CellTokenUtils;
+import com.lezo.iscript.match.utils.SimilarFactUtils;
 import com.lezo.iscript.service.crawler.dto.MatchDto;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
 import com.lezo.iscript.service.crawler.dto.SiteDto;
@@ -73,7 +67,6 @@ public class SimilarToMatchJob implements Runnable {
         long start = System.currentTimeMillis();
         // DicLoader loader = newLoader();
         DicLoader loader = createBrandLoader();
-        Map<String, ISimilar> similarMap = newSimilarMap();
         BrandMapper.getInstance().setLoader(loader);
         try {
             running.set(true);
@@ -116,7 +109,7 @@ public class SimilarToMatchJob implements Runnable {
                     }
                 }
                 List<SimilarIn> similarIns = toSimilarIns(similarDtos);
-                List<SimilarCenter> centers = cluster.doCluster(similarIns, similarMap);
+                List<SimilarCenter> centers = cluster.doCluster(similarIns, SimilarFactUtils.getDefaultFacts());
                 List<MatchDto> matchDtos = toMatchDtos(centers, similarDtos);
                 log.info("handle brand:" + brand + ",mDto:" + matchDtos.size());
                 matchService.batchSaveDtos(matchDtos);
@@ -129,17 +122,6 @@ public class SimilarToMatchJob implements Runnable {
         } finally {
             running.set(false);
         }
-    }
-
-    private Map<String, ISimilar> newSimilarMap() {
-        Map<String, ISimilar> similarMap = Maps.newHashMap();
-        similarMap.put("wareCode", new WareSimilar());
-        similarMap.put("barCode", new BarCodeSimilar());
-        similarMap.put("tokenBrand", new BrandSimilar());
-        similarMap.put("tokenModel", new ModelSimilar());
-        similarMap.put("tokenUnit", new UnitSimilar());
-        similarMap.put("remain", new RemainSimilar());
-        return similarMap;
     }
 
     private DicLoader createBrandLoader() {

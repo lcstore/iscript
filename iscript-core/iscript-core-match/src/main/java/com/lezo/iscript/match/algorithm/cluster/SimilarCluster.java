@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -25,10 +24,12 @@ import com.lezo.iscript.match.algorithm.ICluster;
 import com.lezo.iscript.match.algorithm.ISimilar;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.SimilarCenter;
+import com.lezo.iscript.match.pojo.SimilarFact;
 import com.lezo.iscript.match.pojo.SimilarIn;
 import com.lezo.iscript.match.pojo.SimilarOut;
 import com.lezo.iscript.match.pojo.SimilarPart;
 import com.lezo.iscript.match.utils.CellAssortUtils;
+import com.lezo.iscript.match.utils.SimilarUtils;
 import com.lezo.iscript.utils.BarCodeUtils;
 
 @Log4j
@@ -48,16 +49,16 @@ public class SimilarCluster implements ICluster {
     };
 
     @Override
-    public List<SimilarCenter> doCluster(List<SimilarIn> similarIns, Map<String, ISimilar> similarMap) {
+    public List<SimilarCenter> doCluster(List<SimilarIn> similarIns, List<SimilarFact> facts) {
         List<SimilarCenter> oldCenters = null;
         List<SimilarCenter> newCenters = null;
         int maxCount = 100;
         int index = 0;
         while (true) {
-            newCenters = newCenters(oldCenters, similarIns, similarMap);
+            newCenters = newCenters(oldCenters, similarIns, facts);
             // selectCenter
             for (SimilarIn in : similarIns) {
-                selectCenter(newCenters, in, similarMap);
+                selectCenter(newCenters, in, facts);
             }
             if (isSteady(oldCenters, newCenters)) {
                 break;
@@ -68,24 +69,18 @@ public class SimilarCluster implements ICluster {
                 break;
             }
         }
-        newCenters = mergeCenters(newCenters, similarMap);
-        for (SimilarCenter ct : newCenters) {
-            index++;
-            System.err.println(index + ",ct:" + ct.getValue());
-            System.err.println(index + ",outs:" + ArrayUtils.toString(ct.getOuts()));
-        }
-        System.err.println("-----------------\n");
+        newCenters = mergeCenters(newCenters, facts);
         return newCenters;
     }
 
-    private List<SimilarCenter> mergeCenters(List<SimilarCenter> centers, Map<String, ISimilar> similarMap) {
+    private List<SimilarCenter> mergeCenters(List<SimilarCenter> centers, List<SimilarFact> facts) {
         List<Set<SimilarCenter>> groupCenters = Lists.newArrayList();
         Set<SimilarCenter> handleSet = Sets.newHashSet();
         for (SimilarCenter center : centers) {
             if (handleSet.contains(center)) {
                 continue;
             }
-            Set<SimilarCenter> sortCenterSet = assortCenters(center, centers, handleSet, similarMap);
+            Set<SimilarCenter> sortCenterSet = assortCenters(center, centers, handleSet, facts);
             handleSet.addAll(sortCenterSet);
             groupCenters.add(sortCenterSet);
         }
@@ -98,11 +93,11 @@ public class SimilarCluster implements ICluster {
                 if (targetCenter == center) {
                     continue;
                 }
-                SimilarOut newOut = createSimilarOut(center.getValue(), targetCenter.getValue(), similarMap);
+                SimilarOut newOut = createSimilarOut(center.getValue(), targetCenter.getValue(), facts);
                 targetCenter.getOuts().add(newOut);
                 if (!center.getOuts().isEmpty()) {
                     for (SimilarOut out : center.getOuts()) {
-                        SimilarOut mOut = createSimilarOut(out.getCurrent(), targetCenter.getValue(), similarMap);
+                        SimilarOut mOut = createSimilarOut(out.getCurrent(), targetCenter.getValue(), facts);
                         targetCenter.getOuts().add(mOut);
                     }
                 }
@@ -122,23 +117,23 @@ public class SimilarCluster implements ICluster {
      * @param mCenter
      * @param newCenters
      * @param handleSet
-     * @param similarMap
+     * @param facts
      * @return
      */
     private Set<SimilarCenter> assortCenters(SimilarCenter mCenter, List<SimilarCenter> newCenters,
-            Set<SimilarCenter> handleSet, Map<String, ISimilar> similarMap) {
+            Set<SimilarCenter> handleSet, List<SimilarFact> facts) {
         Set<SimilarCenter> toCenterSet = Sets.newHashSet(mCenter);
         SimilarIn in = mCenter.getValue();
         int minScore = 80;
         for (SimilarCenter center : newCenters) {
-            if (handleSet.contains(center)) {
-                continue;
-            }
             // in 为center的参照商品，则忽略
             if (center.getValue().getSkuCode().equals(in.getSkuCode())) {
                 continue;
             }
-            int score = getSimilarScore(in, center.getValue(), similarMap);
+            if (handleSet.contains(center)) {
+                continue;
+            }
+            int score = getSimilarScore(in, center.getValue(), facts);
             if (score >= minScore) {
                 toCenterSet.add(center);
             }
@@ -146,7 +141,7 @@ public class SimilarCluster implements ICluster {
         return toCenterSet;
     }
 
-    private void selectCenter(List<SimilarCenter> newCenters, SimilarIn in, Map<String, ISimilar> similarMap) {
+    private void selectCenter(List<SimilarCenter> newCenters, SimilarIn in, List<SimilarFact> facts) {
         SimilarCenter toCenter = null;
         int maxScore = 0;
         for (SimilarCenter center : newCenters) {
@@ -155,39 +150,31 @@ public class SimilarCluster implements ICluster {
                 // TODO merge fields
                 return;
             }
-            int score = getSimilarScore(in, center.getValue(), similarMap);
+            int score = getSimilarScore(in, center.getValue(), facts);
             if (toCenter == null || maxScore < score) {
                 toCenter = center;
                 maxScore = score;
             }
         }
-        SimilarOut out = createSimilarOut(in, toCenter.getValue(), similarMap);
+        SimilarOut out = createSimilarOut(in, toCenter.getValue(), facts);
         toCenter.getOuts().add(out);
 
     }
 
-    private int clamp(int maxScore) {
-        if (maxScore < 0) {
-            return 0;
-        } else if (maxScore > 100) {
-            return 100;
-        }
-        return maxScore;
-    }
-
-    private int getSimilarScore(SimilarIn current, SimilarIn refer, Map<String, ISimilar> similarMap) {
-        int total = 0;
+    private int getSimilarScore(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
+        float total = 0;
         boolean forceAccess = true;
         Class<SimilarIn> inClass = SimilarIn.class;
-        for (Entry<String, ISimilar> entry : similarMap.entrySet()) {
-            String name = entry.getKey();
+        for (SimilarFact fact : facts) {
+            String name = fact.getName();
             Field field = FieldUtils.getDeclaredField(inClass, name, forceAccess);
             if (field == null) {
                 continue;
             }
-            total += calcSimilar(field, current, refer, entry.getValue());
+            int score = calcSimilar(field, current, refer, fact.getSimilar());
+            total += score * fact.getFact();
         }
-        return total;
+        return SimilarUtils.clamp(Math.round(total));
     }
 
     private int calcSimilar(Field field, Object current, Object refer, ISimilar similar) {
@@ -200,7 +187,7 @@ public class SimilarCluster implements ICluster {
         }
     }
 
-    private SimilarOut createSimilarOut(SimilarIn current, SimilarIn refer, Map<String, ISimilar> similarMap) {
+    private SimilarOut createSimilarOut(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
         // current.getClass().getDeclaredField(name);
         SimilarOut destOut = new SimilarOut();
         destOut.setCurrent(current);
@@ -208,9 +195,10 @@ public class SimilarCluster implements ICluster {
         List<SimilarPart> parts = Lists.newArrayList();
         destOut.setParts(parts);
         boolean forceAccess = true;
+        float total = 0;
         Class<SimilarIn> inClass = SimilarIn.class;
-        for (Entry<String, ISimilar> entry : similarMap.entrySet()) {
-            String name = entry.getKey();
+        for (SimilarFact fact : facts) {
+            String name = fact.getName();
             Field field = FieldUtils.getDeclaredField(inClass, name, forceAccess);
             if (field == null) {
                 continue;
@@ -218,7 +206,8 @@ public class SimilarCluster implements ICluster {
             try {
                 CellAssort curAssort = (CellAssort) FieldUtils.readField(field, current);
                 CellAssort referAssort = (CellAssort) FieldUtils.readField(field, refer);
-                int score = entry.getValue().similar(curAssort, referAssort);
+                int score = fact.getSimilar().similar(curAssort, referAssort);
+                total += score * fact.getFact();
                 SimilarPart newPart = new SimilarPart();
                 newPart.setCurrent(curAssort);
                 newPart.setRefer(referAssort);
@@ -228,11 +217,8 @@ public class SimilarCluster implements ICluster {
                 throw new RuntimeException("calc similar:" + field.getName() + ",cause:", e);
             }
         }
-        int total = 0;
-        for (SimilarPart part : destOut.getParts()) {
-            total += part.getScore();
-        }
-        destOut.setScore(clamp(total));
+        int dScore = (int) total;
+        destOut.setScore(SimilarUtils.clamp(dScore));
         // score += getSimilarCanBlank(current.getBarCode(), refer.getBarCode(), 100, 20, 10);
         // score += getSimilarCanBlank(current.getWareCode(), refer.getWareCode(), 100, 10, 0);
         // score += getSimilar(current.getTokenBrand(), refer.getTokenBrand(), 40, 0, -100);
@@ -242,20 +228,14 @@ public class SimilarCluster implements ICluster {
     }
 
     private List<SimilarCenter> newCenters(List<SimilarCenter> oldCenters, List<SimilarIn> similarIns,
-            Map<String, ISimilar> similarMap) {
+            List<SimilarFact> similarMap) {
         if (oldCenters == null) {
             int centerCount = similarIns.size() / 10;
             centerCount = centerCount < 2 ? 2 : centerCount;
             Set<Integer> indexSet = getRandomSet(similarIns.size(), centerCount);
             return initCenters(indexSet, similarIns);
         }
-        int index = 0;
-        for (SimilarCenter ct : oldCenters) {
-            index++;
-            System.err.println(index + ",ct:" + ct.getValue());
-            System.err.println(index + ",outs:" + ArrayUtils.toString(ct.getOuts()));
-        }
-        System.err.println("-----------------\n");
+        printOldCenters(oldCenters);
         List<SimilarCenter> newCenters = Lists.newArrayList();
         for (SimilarCenter ct : oldCenters) {
             List<SimilarOut> bestOuts = Lists.newArrayList();
@@ -269,8 +249,18 @@ public class SimilarCluster implements ICluster {
         return newCenters;
     }
 
+    private void printOldCenters(List<SimilarCenter> oldCenters) {
+        int index = 0;
+        for (SimilarCenter ct : oldCenters) {
+            index++;
+            System.err.println(index + ",ct:" + ct.getValue());
+            System.err.println(index + ",outs:" + ArrayUtils.toString(ct.getOuts()));
+        }
+        System.err.println("-----------------\n");
+    }
+
     private void newCenterWithWorst(SimilarCenter center, List<SimilarOut> worstOuts, List<SimilarCenter> newCenters,
-            Map<String, ISimilar> similarMap) {
+            List<SimilarFact> facts) {
         if (CollectionUtils.isEmpty(worstOuts)) {
             return;
         }
@@ -283,7 +273,7 @@ public class SimilarCluster implements ICluster {
         Collections.sort(worstOuts, cmp);
         SimilarOut firstOut = worstOuts.get(0);
         SimilarOut lastOut = worstOuts.get(worstOuts.size() - 1);
-        int score = getSimilarScore(firstOut.getCurrent(), lastOut.getCurrent(), similarMap);
+        int score = getSimilarScore(firstOut.getCurrent(), lastOut.getCurrent(), facts);
         if (score < 70) {
             addNewCenter(firstOut.getCurrent(), newCenters);
             addNewCenter(lastOut.getCurrent(), newCenters);
@@ -302,7 +292,7 @@ public class SimilarCluster implements ICluster {
     }
 
     private void newCenterWithBest(SimilarCenter center, List<SimilarOut> bestOuts, List<SimilarCenter> newCenters,
-            Map<String, ISimilar> similarMap) {
+            List<SimilarFact> facts) {
         SimilarIn newCenterIn = center.getValue();
         int maxCount = getIntegrity(newCenterIn);
         for (SimilarOut out : bestOuts) {

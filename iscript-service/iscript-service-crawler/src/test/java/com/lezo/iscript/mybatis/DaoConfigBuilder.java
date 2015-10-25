@@ -29,8 +29,8 @@ public class DaoConfigBuilder extends DaoBaseTest {
     @Test
     public void testBuildConfig() throws Exception {
         TableSchemaDao tableSchemaDao = getBean(TableSchemaDao.class);
-        String tableName = "T_PRODUCT_STAT_HIS";
-        String daoName = "ProductStatHisDao";
+        String tableName = "T_BRAND_REPO";
+        String daoName = "BrandRepoDao";
         List<TableSchemaDto> dtoList = tableSchemaDao.getTableSchemas(tableName);
         String daoQualifyName = "com.lezo.iscript.service.crawler.dao." + daoName;
         int index = daoQualifyName.lastIndexOf('.');
@@ -54,9 +54,9 @@ public class DaoConfigBuilder extends DaoBaseTest {
                 + serviceClsName + ".java");
 
         FileUtils.writeStringToFile(dtoFile, dtoTxt);
-        // FileUtils.writeStringToFile(daoFile, buildDao(daoClassPackage, daoClassName, dtoPackage, dtoClassName));
-        // FileUtils.writeStringToFile(serviceFile, buildService(servicePackage, serviceClsName, dtoPackage,
-        // dtoClassName));
+        FileUtils.writeStringToFile(daoFile, buildDao(daoClassPackage, daoClassName, dtoPackage, dtoClassName));
+        FileUtils.writeStringToFile(serviceFile, buildService(servicePackage, serviceClsName, dtoPackage,
+                dtoClassName));
 
         System.out.println("tableName:" + tableName);
         System.out.println("daoClsName:" + daoQualifyName);

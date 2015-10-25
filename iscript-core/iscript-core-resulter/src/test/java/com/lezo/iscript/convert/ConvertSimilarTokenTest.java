@@ -44,15 +44,16 @@ public class ConvertSimilarTokenTest {
     @Autowired
     private SynonymBrandService synonymBrandService;
 
+
     @Test
     public void testConvertToken() throws Exception {
         long start = System.currentTimeMillis();
-        String jobId = "20151003-one.match";
+        String jobId = "";
         Long fromId = 0L;
         int limit = 500;
         DicLoader loader = createLoader();
         BrandMapper.getInstance().setLoader(loader);
-        List<Integer> siteIds = Lists.newArrayList(1001, 1002, 1003);
+        List<Integer> siteIds = Lists.newArrayList(1001, 1002);
         for (Integer sid : siteIds) {
             int total = 0;
             fromId = 0L;

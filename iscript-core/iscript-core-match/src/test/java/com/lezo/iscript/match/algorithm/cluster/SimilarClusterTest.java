@@ -1,14 +1,12 @@
 package com.lezo.iscript.match.algorithm.cluster;
 
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.lezo.iscript.match.algorithm.IAnalyser;
-import com.lezo.iscript.match.algorithm.ISimilar;
 import com.lezo.iscript.match.algorithm.analyse.BrandAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.ModelAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.UnitAnalyser;
@@ -20,6 +18,7 @@ import com.lezo.iscript.match.algorithm.similar.WareSimilar;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellToken;
 import com.lezo.iscript.match.pojo.SimilarCenter;
+import com.lezo.iscript.match.pojo.SimilarFact;
 import com.lezo.iscript.match.pojo.SimilarIn;
 import com.lezo.iscript.match.utils.CellAssortUtils;
 import com.lezo.iscript.match.utils.CellTokenUtils;
@@ -29,7 +28,7 @@ public class SimilarClusterTest {
     @Test
     public void testCluster() {
         SimilarCluster cluster = new SimilarCluster();
-        Map<String, ISimilar> similarMap = newSimilarMap();
+        List<SimilarFact> similarMap = newSimilarFacts();
         List<SimilarIn> similarIns = Lists.newArrayList();
         SimilarIn similarIn = newSimilarIn("【雅芳香水】雅芳酷爽香水 莓果爽 30毫升 【行情 报价 价格 评测】", "6922829568803", "1001_358219");
         similarIns.add(similarIn);
@@ -46,25 +45,48 @@ public class SimilarClusterTest {
         similarIn = newSimilarIn("雅芳凝白修护乳液 75ml", "", "1002_1054356");// 无匹配
         similarIns.add(similarIn);
         List<SimilarCenter> centers = cluster.doCluster(similarIns, similarMap);
+
+        System.err.println("-----------------\n");
         for (SimilarCenter ct : centers) {
-            System.err.println(ct);
+            System.err.println("center:" + ct.getValue() + ",count:" + ct.getOuts().size());
+            System.err.println("outs:" + ArrayUtils.toString(ct.getOuts()));
         }
     }
 
-    private Map<String, ISimilar> newSimilarMap() {
-        Map<String, ISimilar> similarMap = Maps.newHashMap();
-        similarMap.put("wareCode", new WareSimilar());
-        similarMap.put("barCode", new BarCodeSimilar());
-        similarMap.put("tokenBrand", new BrandSimilar());
-        similarMap.put("tokenModel", new ModelSimilar());
-        similarMap.put("tokenUnit", new UnitSimilar());
-        return similarMap;
+    private List<SimilarFact> newSimilarFacts() {
+        List<SimilarFact> factList = Lists.newArrayList();
+        SimilarFact fact = new SimilarFact();
+        fact.setName("wareCode");
+        fact.setSimilar(new WareSimilar());
+        fact.setFact(0.1F);
+        factList.add(fact);
+        fact = new SimilarFact();
+        fact.setName("barCode");
+        fact.setSimilar(new BarCodeSimilar());
+        fact.setFact(0.2F);
+        factList.add(fact);
+        fact = new SimilarFact();
+        fact.setName("tokenBrand");
+        fact.setSimilar(new BrandSimilar());
+        fact.setFact(0.4F);
+        factList.add(fact);
+        fact = new SimilarFact();
+        fact.setName("tokenModel");
+        fact.setSimilar(new ModelSimilar());
+        fact.setFact(0.15F);
+        factList.add(fact);
+        fact = new SimilarFact();
+        fact.setName("tokenUnit");
+        fact.setSimilar(new UnitSimilar());
+        fact.setFact(0.15F);
+        factList.add(fact);
+        return factList;
     }
 
     @Test
     public void testCluster02() {
         SimilarCluster cluster = new SimilarCluster();
-        Map<String, ISimilar> similarMap = newSimilarMap();
+        List<SimilarFact> similarMap = newSimilarFacts();
         List<SimilarIn> similarIns = Lists.newArrayList();
         SimilarIn similarIn = newSimilarIn("康师傅 3+2酥松(巧克力牛奶味)354g/包", "", "1002_1049478");
         similarIns.add(similarIn);

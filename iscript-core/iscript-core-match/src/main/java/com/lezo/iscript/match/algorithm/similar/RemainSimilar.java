@@ -12,8 +12,8 @@ import com.lezo.iscript.match.utils.CellAssortUtils;
 @Getter
 @Setter
 public class RemainSimilar implements ISimilar {
-    private int max = 50;
-    private int min = 0;
+    private int max = 100;
+    private int min = 50;
 
     @Override
     public int similar(CellAssort current, CellAssort refer) {
