@@ -64,15 +64,15 @@
 	       </foreach>
 	    </where>
 	</select>
-	<select id="getDtoByCoreOrSort" resultMap="RM_BrandRepoDto">
+	<select id="getDtoByCoreOrSort" parameterType="map" resultMap="RM_BrandRepoDto">
 	    SELECT * FROM T_BRAND_REPO
 	    <where>
 	        <if test="coreList !=null and !coreList.isEmpty()">
-		       <foreach collection="list" item="name" open="AND CORE_NAME IN(" separator="," close=")">
+		       <foreach collection="coreList" item="name" open="AND CORE_NAME IN(" separator="," close=")">
 		           #{name}
 		       </foreach>
 	        </if>
-	        <if test="sortName !=null">
+	        <if test="sortName !=null and sortName.length()>0">
 	            AND SORT_NAME=#{sortName}
 	        </if>
 	    </where>

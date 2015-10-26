@@ -1,10 +1,14 @@
 package com.lezo.iscript.service.crawler.convert;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -33,7 +37,6 @@ public class ConvertBrandRepoTest {
             return o2.length() - o1.length();
         }
     };
-
 
     @Test
     @Rollback(false)
@@ -68,6 +71,43 @@ public class ConvertBrandRepoTest {
         }
         cx.close();
         System.err.println("done....");
+    }
+
+    @Test
+    public void testAddNewBrands() throws Exception {
+        String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+        ClassPathXmlApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+        brandRepoService = SpringBeanUtils.getBean(BrandRepoService.class);
+        String path = "/apps/src/codes/lezo/iscript/iscript-core/iscript-core-client/src/test/resources/data/brand.txt";
+        List<String> lineList = FileUtils.readLines(new File(path), "UTF-8");
+        List<BrandRepoDto> dtoList = Lists.newArrayList();
+        Date newDate = new Date();
+        for (String line : lineList) {
+            String[] brandArr = line.toLowerCase().split(",");
+            List<String> brandList = Lists.newArrayList(brandArr);
+            Collections.sort(brandList, CMP_CN);
+            BrandRepoDto dto = new BrandRepoDto();
+            dto.setCoreName(brandList.get(0));
+            StringBuilder sb = new StringBuilder();
+            for (String brand : brandList) {
+                if (sb.length() > 0) {
+                    sb.append(",");
+                }
+                sb.append(brand);
+            }
+            dto.setIncludes(sb.toString());
+            dto.setSortName(StringUtils.EMPTY);
+            dto.setExcludes(StringUtils.EMPTY);
+            dto.setCrumbNav(StringUtils.EMPTY);
+            dto.setRegionName(StringUtils.EMPTY);
+            dto.setCreateTime(newDate);
+            dto.setUpdateTime(dto.getCreateTime());
+            dto.setSortName("食品");
+            dtoList.add(dto);
+        }
+        brandRepoService.batchSaveDtos(dtoList);
+        cx.close();
+        System.err.println("done....size:" + dtoList.size());
     }
 
 }
