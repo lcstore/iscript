@@ -65,6 +65,10 @@ public class ContainStrainer implements IStrainer {
                     continue;
                 }
                 CellToken largeCell = oldCells.get(j);
+                // 若已稳定，不再分割
+                if (largeCell.isStable()) {
+                    continue;
+                }
                 String sValue = largeCell.getValue();
                 if (sValue.length() == smallCell.getValue().length()) {
                     continue;

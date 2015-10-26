@@ -2,12 +2,15 @@ package com.lezo.iscript.match.algorithm.tokenizer;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.ITokenizer;
 import com.lezo.iscript.match.map.BrandMapper;
@@ -23,12 +26,14 @@ import com.lezo.iscript.match.utils.CellTokenUtils;
  */
 public class BrandTokenizer implements ITokenizer {
     private static final Pattern NUM_WORD_WHOLE_REG = Pattern.compile("^[0-9a-zA-Z]+$");
+    private static final int STABLE_COUNT = 2;
 
     @Override
     public List<CellToken> token(String origin) {
         if (StringUtils.isBlank(origin)) {
             return Collections.emptyList();
         }
+        // TODO 中文符号转换成英文符号julie‘s--julie's
         Set<CellToken> newCellSet = Sets.newHashSet();
         String sValue = origin;
         BrandMapper mapper = BrandMapper.getInstance();
@@ -66,7 +71,33 @@ public class BrandTokenizer implements ITokenizer {
                 }
             }
         }
+        decideStable(newCellSet);
         return Lists.newArrayList(newCellSet);
+    }
+
+    private void decideStable(Set<CellToken> newCellSet) {
+        if (newCellSet.size() < STABLE_COUNT) {
+            return;
+        }
+        Map<SameEntity, List<CellToken>> same2CellsMap = Maps.newHashMap();
+        BrandMapper mapper = BrandMapper.getInstance();
+        for (CellToken cell : newCellSet) {
+            SameEntity same = mapper.getSameEntity(cell.getValue());
+            List<CellToken> cellList = same2CellsMap.get(same);
+            if (cellList == null) {
+                cellList = Lists.newArrayList();
+                same2CellsMap.put(same, cellList);
+            }
+            cellList.add(cell);
+        }
+        for (Entry<SameEntity, List<CellToken>> entry : same2CellsMap.entrySet()) {
+            if (entry.getValue().size() < STABLE_COUNT) {
+                continue;
+            }
+            for (CellToken cell : entry.getValue()) {
+                cell.setStable(true);
+            }
+        }
     }
 
     private boolean isWord(String sContain) {

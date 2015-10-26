@@ -83,4 +83,46 @@ public class BrandAnalyserTest {
         Assert.assertEquals("阿拉丁", assort.getValue().getValue().getValue());
     }
 
+    @Test
+    public void testAnalyser06() {
+        String origin = "印度尼西亚Pepperidge Farm非凡农庄法式香草夹心威化卷382g ";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("pepperidge farm", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser07() {
+        String origin = "比利时LOTUS 和情焦糖饼干250g";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("lotus", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser08() {
+        String origin = "比利时进口 Jules Destrooper 茱莉斯 布鲁日河 饼干 礼盒 350g 盒装";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("jules destrooper", assort.getValue().getValue().getValue());
+    }
+
 }

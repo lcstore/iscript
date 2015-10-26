@@ -13,6 +13,17 @@ public class CellToken {
     private String origin;
     private String value;
     private String creator;
+    /**
+     * 是否稳定，可靠
+     */
+    private boolean stable = false;
+
+    public void setValue(String value) {
+        if (isStable()) {
+            throw new RuntimeException("forbid to set stable token,oldVal:" + this.value + ",newVal:" + value);
+        }
+        this.value = value;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -23,12 +34,13 @@ public class CellToken {
         if (getClass() != obj.getClass())
             return false;
         CellToken other = (CellToken) obj;
-        return new EqualsBuilder().append(getIndex(), other.getIndex()).append(getValue(), other.getValue()).isEquals();
+        return new EqualsBuilder().append(getIndex(), other.getIndex()).append(getValue(), other.getValue())
+                .append(isStable(), other.isStable()).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(getIndex()).append(getValue()).toHashCode();
+        return new HashCodeBuilder().append(getIndex()).append(getValue()).append(isStable()).toHashCode();
     }
 
     @Override

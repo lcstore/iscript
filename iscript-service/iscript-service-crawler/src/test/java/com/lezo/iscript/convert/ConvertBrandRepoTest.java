@@ -1,4 +1,4 @@
-package com.lezo.iscript.service.crawler.convert;
+package com.lezo.iscript.convert;
 
 import java.io.File;
 import java.util.Collections;

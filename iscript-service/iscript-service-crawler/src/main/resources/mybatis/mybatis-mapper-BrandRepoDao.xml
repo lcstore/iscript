@@ -15,6 +15,9 @@
 		<result column="CREATE_TIME" property="createTime"/>
 		<result column="UPDATE_TIME" property="updateTime"/>
 	</resultMap>
+	<sql id="exclude-delete-record">
+	    AND IS_DELETE=0
+	</sql>
 	<sql id="BrandRepoDto-coloumn-list">
 		ID
 		,SORT_NAME
@@ -75,12 +78,14 @@
 	        <if test="sortName !=null and sortName.length()>0">
 	            AND SORT_NAME=#{sortName}
 	        </if>
+	        <include refid="exclude-delete-record"/>
 	    </where>
 	</select>
 	<select id="getDtoByIdWithLimit" resultMap="RM_BrandRepoDto">
 	    SELECT * FROM T_BRAND_REPO
 	    <where>
 	        ID > #{fromId}
+	         <include refid="exclude-delete-record"/>
 	        LIMIT ${limit}
 	    </where>
 	</select>

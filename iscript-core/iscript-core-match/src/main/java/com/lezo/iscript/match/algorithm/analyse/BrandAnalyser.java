@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import lombok.extern.log4j.Log4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IAnalyser;
+import com.lezo.iscript.match.algorithm.tokenizer.BrandTokenizer;
 import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.map.SameEntity;
 import com.lezo.iscript.match.pojo.CellAssort;
@@ -23,9 +22,10 @@ import com.lezo.iscript.match.pojo.CellToken;
 import com.lezo.iscript.match.utils.CellAssortUtils;
 import com.lezo.iscript.match.utils.CellTokenUtils;
 
-@Log4j
 public class BrandAnalyser implements IAnalyser {
     private static final Pattern NUM_WORD_WHOLE_REG = Pattern.compile("^[0-9a-zA-Z]+$");
+    private static final BrandTokenizer TOKENIZER = new BrandTokenizer();
+
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
         CellAssort assort = new CellAssort();
@@ -33,6 +33,7 @@ public class BrandAnalyser implements IAnalyser {
         if (CollectionUtils.isEmpty(tokens)) {
             return assort;
         }
+        // tokens = TOKENIZER.token(tokens.get(0).getOrigin());
         Map<SameEntity, CellStat> cellStatMap = toCellStatMap(tokens);
         for (CellStat cellStat : cellStatMap.values()) {
             doStatistic(cellStat);
