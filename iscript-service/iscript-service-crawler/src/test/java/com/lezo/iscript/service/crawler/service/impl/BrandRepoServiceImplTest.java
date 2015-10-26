@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,6 +166,15 @@ public class BrandRepoServiceImplTest extends BaseTestCase {
             }
         }
         System.err.println("done....");
+    }
+
+    @Test
+    public void testGetDtoByCoreOrSort() throws Exception {
+        String sortName = "";
+        List<String> coreList = Lists.newArrayList("麦丽莎");
+        List<BrandRepoDto> hasList = brandRepoService.getDtoByCoreOrSort(coreList, sortName);
+        System.err.println(hasList.size());
+        System.err.println(ArrayUtils.toString(hasList));
     }
 
 }

@@ -69,6 +69,9 @@ public class BrandRepoServiceImpl implements BrandRepoService {
             Set<String> hasSet = new HashSet<String>();
             for (BrandRepoDto oldDto : hasList) {
                 String key = oldDto.getCoreName();
+                if (hasSet.contains(key)) {
+                    continue;
+                }
                 BrandRepoDto newDto = sameCoreMap.get(key);
                 if (newDto != null) {
                     newDto.setId(oldDto.getId());
