@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lezo.iscript.match.algorithm.IAnalyser;
@@ -77,6 +78,20 @@ public class ConvertSimilarTokenTest {
             }
             log.info("done,siteId:" + sid + ",total:" + total);
         }
+        long cost = System.currentTimeMillis() - start;
+        log.info("done...,cost:" + cost);
+    }
+
+    @Test
+    public void testOneConvertToken() throws Exception {
+        long start = System.currentTimeMillis();
+        // DicLoader loader = createLoader();
+        DicLoader loader = createRepoLoader();
+        BrandMapper.getInstance().setLoader(loader);
+        List<Long> idList = Lists.newArrayList(441L, 442L);
+        List<SimilarDto> dtoList = similarService.getSimilarDtoByIds(idList);
+        doToken(dtoList);
+        System.err.println(JSON.toJSONString(dtoList));
         long cost = System.currentTimeMillis() - start;
         log.info("done...,cost:" + cost);
     }

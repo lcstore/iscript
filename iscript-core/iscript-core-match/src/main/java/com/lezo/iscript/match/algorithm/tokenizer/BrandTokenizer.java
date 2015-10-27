@@ -40,6 +40,7 @@ public class BrandTokenizer implements ITokenizer {
         CellToken originToken = new CellToken();
         originToken.setIndex(0);
         originToken.setOrigin(origin);
+
         for (int i = 0; i < sValue.length(); i++) {
             Character firstChar = sValue.charAt(i);
             Set<SameEntity> sameSet = mapper.getEntitySet(firstChar);
@@ -81,6 +82,7 @@ public class BrandTokenizer implements ITokenizer {
         }
         Map<SameEntity, List<CellToken>> same2CellsMap = Maps.newHashMap();
         BrandMapper mapper = BrandMapper.getInstance();
+        // TODO 永辉=macau wingfai, 澳门永辉,macau wingfai
         for (CellToken cell : newCellSet) {
             SameEntity same = mapper.getSameEntity(cell.getValue());
             List<CellToken> cellList = same2CellsMap.get(same);

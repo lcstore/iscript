@@ -1,30 +1,32 @@
 package com.lezo.iscript.match.algorithm.analyse;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IAnalyser;
-import com.lezo.iscript.match.algorithm.tokenizer.BrandTokenizer;
 import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.map.SameEntity;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellStat;
 import com.lezo.iscript.match.pojo.CellToken;
 import com.lezo.iscript.match.utils.CellAssortUtils;
-import com.lezo.iscript.match.utils.CellTokenUtils;
 
 public class BrandAnalyser implements IAnalyser {
-    private static final Pattern NUM_WORD_WHOLE_REG = Pattern.compile("^[0-9a-zA-Z]+$");
-    private static final BrandTokenizer TOKENIZER = new BrandTokenizer();
+    private static final Comparator<CellToken> CMP_LEN_DESC = new Comparator<CellToken>() {
+        @Override
+        public int compare(CellToken o1, CellToken o2) {
+            return o2.getValue().length() - o1.getValue().length();
+        }
+    };
 
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
@@ -52,59 +54,58 @@ public class BrandAnalyser implements IAnalyser {
         }
         BrandMapper mapper = BrandMapper.getInstance();
         Map<SameEntity, CellStat> cellStatMap = Maps.newHashMap();
+
         for (CellToken cell : tokens) {
-            SameEntity sameChars = mapper.getSameEntity(cell.getValue());
-            if (sameChars == null) {
+            SameEntity sEntity = mapper.getSameEntity(cell.getValue());
+            if (sEntity == null) {
                 continue;
             }
-            CellStat cellStat = cellStatMap.get(sameChars);
+            CellStat cellStat = cellStatMap.get(sEntity);
+            // 同义词合并 （魅纪, meiji ==明治,meiji）
+            cellStat = cellStat == null ? getSameCellStat(cellStatMap, cell) : cellStat;
             if (cellStat == null) {
                 cellStat = new CellStat();
                 List<CellToken> sameCells = Lists.newArrayList();
                 cellStat.setTokens(sameCells);
-                cellStatMap.put(sameChars, cellStat);
+                cellStatMap.put(sEntity, cellStat);
+            }
+            if (cell.getValue().equals(sEntity.getValue())) {
+                cellStat.setValue(cell);
             }
             cellStat.getTokens().add(cell);
+        }
+        for (Entry<SameEntity, CellStat> entry : cellStatMap.entrySet()) {
+            if (entry.getValue().getValue() != null) {
+                continue;
+            }
+            List<CellToken> tks = entry.getValue().getTokens();
+            Collections.sort(tks, CMP_LEN_DESC);
+            entry.getValue().setValue(tks.get(0));
         }
         return cellStatMap;
     }
 
-    private void addNewCell(String token, int offset, CellToken largeCell, Set<CellToken> newCellSet) {
-        if (!CellTokenUtils.isCellToken(token)) {
-            return;
+    private CellStat getSameCellStat(Map<SameEntity, CellStat> cellStatMap, CellToken cell) {
+        for (Entry<SameEntity, CellStat> scEntry : cellStatMap.entrySet()) {
+            if (scEntry.getKey().getSameSet().contains(cell.getValue())) {
+                return scEntry.getValue();
+            }
         }
-        CellToken containCell = new CellToken();
-        containCell.setValue(token);
-        containCell.setIndex(largeCell.getIndex() + offset);
-        containCell.setCreator(this.getClass().getSimpleName());
-        containCell.setOrigin(largeCell.getOrigin());
-        newCellSet.add(containCell);
+        return null;
     }
 
     private void doStatistic(CellStat cellStat) {
         if (cellStat == null || cellStat.getTokens() == null) {
             return;
         }
-        CellToken headToken = null;
         int len = 0;
         Set<String> tokenSet = Sets.newHashSet();
         for (CellToken token : cellStat.getTokens()) {
-            if (headToken == null || headToken.getIndex() > token.getIndex()) {
-                headToken = token;
-            }
             tokenSet.add(token.getValue());
             len += token.getValue().length();
         }
-        cellStat.setValue(headToken);
         cellStat.setLength(len);
         cellStat.setCount(tokenSet.size());
-    }
-
-    private boolean isWord(String sContain) {
-        if (StringUtils.isBlank(sContain)) {
-            return false;
-        }
-        return NUM_WORD_WHOLE_REG.matcher(sContain).find();
     }
 
 }

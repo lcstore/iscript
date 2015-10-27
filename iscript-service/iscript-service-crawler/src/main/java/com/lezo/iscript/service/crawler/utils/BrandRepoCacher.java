@@ -24,6 +24,7 @@ public class BrandRepoCacher {
         if (coreMap != null) {
             return;
         }
+        // TODO 同名异义品牌，万岁牌,viva----韦沃,viva
         synchronized (BrandRepoCacher.class) {
             if (coreMap != null) {
                 return;

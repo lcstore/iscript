@@ -94,7 +94,7 @@ public class BrandAnalyserTest {
         System.out.println("assort.value:" + assort.getValue());
         System.out.println("assort.size:" + assort.getStats().size());
         System.out.println("assort.stat:" + assort.getStats());
-        Assert.assertEquals("pepperidge farm", assort.getValue().getValue().getValue());
+        Assert.assertEquals("非凡农庄", assort.getValue().getValue().getValue());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class BrandAnalyserTest {
         System.out.println("assort.value:" + assort.getValue());
         System.out.println("assort.size:" + assort.getStats().size());
         System.out.println("assort.stat:" + assort.getStats());
-        Assert.assertEquals("lotus", assort.getValue().getValue().getValue());
+        Assert.assertEquals("和情", assort.getValue().getValue().getValue());
     }
 
     @Test
@@ -122,7 +122,49 @@ public class BrandAnalyserTest {
         System.out.println("assort.value:" + assort.getValue());
         System.out.println("assort.size:" + assort.getStats().size());
         System.out.println("assort.stat:" + assort.getStats());
-        Assert.assertEquals("jules destrooper", assort.getValue().getValue().getValue());
+        Assert.assertEquals("茱莉斯", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser09() {
+        String origin = "Nissin日清 合味道海鲜味油炸方便面杯面 75g 香港进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("日清", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser10() {
+        String origin = "Meiji明治 熊猫双重巧克力夹心饼干 50g 新加坡进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("明治", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser11() {
+        String origin = "MACAU WINGFAI永辉 迷你杏仁饼 120g（7包）独立包装";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("永辉", assort.getValue().getValue().getValue());
     }
 
 }

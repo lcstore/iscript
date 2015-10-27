@@ -3,8 +3,6 @@ package com.lezo.iscript.service.crawler.service.impl;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import com.lezo.iscript.service.crawler.dto.SimilarDto;
 import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.utils.BatchIterator;
 
-@Log4j
 @Service
 public class SimilarServiceImpl implements SimilarService {
     @Autowired
@@ -64,6 +61,14 @@ public class SimilarServiceImpl implements SimilarService {
     @Override
     public List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId, Long fromId, int limit) {
         return similarDao.getSimilarDtoByJobIdSiteId(jobId, siteId, fromId, limit);
+    }
+
+    @Override
+    public List<SimilarDto> getSimilarDtoByIds(List<Long> idList) {
+        if (CollectionUtils.isEmpty(idList)) {
+            return Collections.emptyList();
+        }
+        return similarDao.getDtoByIds(idList);
     }
 
 }

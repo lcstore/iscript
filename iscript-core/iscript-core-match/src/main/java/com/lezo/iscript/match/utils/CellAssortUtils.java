@@ -33,7 +33,7 @@ public class CellAssortUtils {
     public static final Comparator<CellStat> CMP_VALUE_LEN_DESC = new Comparator<CellStat>() {
         @Override
         public int compare(CellStat o1, CellStat o2) {
-            return o2.getValue().getValue().length() - o1.getValue().getValue().length();
+            return o2.getLength() - o1.getLength();
         }
     };
     public static final Comparator<CellStat> CMP_COUNT_DESC = new Comparator<CellStat>() {
