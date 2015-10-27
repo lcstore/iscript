@@ -74,7 +74,7 @@ public class CellAssortUtils {
     public static void doAnalyse(CellAssort assort) {
         Map<Comparator<CellStat>, Integer> cmpValMap = Maps.newHashMap();
         cmpValMap.put(CMP_VALUE_INDEX_ASC, 10);
-        cmpValMap.put(CMP_VALUE_LEN_DESC, 10);
+        cmpValMap.put(CMP_VALUE_LEN_DESC, 9);
         cmpValMap.put(CMP_COUNT_DESC, 5);
         cmpValMap.put(CMP_LENGTH_DESC, 2);
         doAnalyse(assort, cmpValMap);

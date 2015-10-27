@@ -42,6 +42,9 @@ public class CellTokenUtils {
     }
 
     public static List<CellToken> getTokens(String origin) {
+        origin = origin.toLowerCase();
+        origin = origin.replaceAll("·", ".");
+        origin = origin.replaceAll("‘", "'");
         Set<CellToken> sumCellSet = Sets.newHashSet();
         for (ITokenizer tokenizer : tokenizers) {
             List<CellToken> tokenList = tokenizer.token(origin);

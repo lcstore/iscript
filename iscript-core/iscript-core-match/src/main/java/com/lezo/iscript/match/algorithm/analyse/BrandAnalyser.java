@@ -62,7 +62,7 @@ public class BrandAnalyser implements IAnalyser {
             }
             CellStat cellStat = cellStatMap.get(sEntity);
             // 同义词合并 （魅纪, meiji ==明治,meiji）
-            cellStat = cellStat == null ? getSameCellStat(cellStatMap, cell) : cellStat;
+            cellStat = cellStat == null ? getSameCellStat(cellStatMap, sEntity) : cellStat;
             if (cellStat == null) {
                 cellStat = new CellStat();
                 List<CellToken> sameCells = Lists.newArrayList();
@@ -85,10 +85,13 @@ public class BrandAnalyser implements IAnalyser {
         return cellStatMap;
     }
 
-    private CellStat getSameCellStat(Map<SameEntity, CellStat> cellStatMap, CellToken cell) {
+    private CellStat getSameCellStat(Map<SameEntity, CellStat> cellStatMap, SameEntity sEntity) {
         for (Entry<SameEntity, CellStat> scEntry : cellStatMap.entrySet()) {
-            if (scEntry.getKey().getSameSet().contains(cell.getValue())) {
-                return scEntry.getValue();
+            Set<String> referSet = scEntry.getKey().getSameSet();
+            for (String sVal : sEntity.getSameSet()) {
+                if (referSet.contains(sVal)) {
+                    return scEntry.getValue();
+                }
             }
         }
         return null;

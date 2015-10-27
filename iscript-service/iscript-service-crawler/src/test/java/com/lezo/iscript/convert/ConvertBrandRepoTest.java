@@ -109,5 +109,6 @@ public class ConvertBrandRepoTest {
         cx.close();
         System.err.println("done....size:" + dtoList.size());
     }
-
+    // TODO 品牌里面的特殊符号标准化,euro·fit,euro fit,euro.fit
+    // TODO 中文符号转换成英文符号julie‘s--julie's
 }

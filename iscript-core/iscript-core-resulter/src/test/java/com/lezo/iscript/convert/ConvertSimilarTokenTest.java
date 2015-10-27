@@ -88,7 +88,7 @@ public class ConvertSimilarTokenTest {
         // DicLoader loader = createLoader();
         DicLoader loader = createRepoLoader();
         BrandMapper.getInstance().setLoader(loader);
-        List<Long> idList = Lists.newArrayList(441L, 442L);
+        List<Long> idList = Lists.newArrayList(1490L);
         List<SimilarDto> dtoList = similarService.getSimilarDtoByIds(idList);
         doToken(dtoList);
         System.err.println(JSON.toJSONString(dtoList));

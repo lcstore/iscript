@@ -80,7 +80,7 @@ public class BrandAnalyserTest {
         System.out.println("assort.value:" + assort.getValue());
         System.out.println("assort.size:" + assort.getStats().size());
         System.out.println("assort.stat:" + assort.getStats());
-        Assert.assertEquals("阿拉丁", assort.getValue().getValue().getValue());
+        Assert.assertEquals("佳乐锭", assort.getValue().getValue().getValue());
     }
 
     @Test
@@ -165,6 +165,20 @@ public class BrandAnalyserTest {
         System.out.println("assort.size:" + assort.getStats().size());
         System.out.println("assort.stat:" + assort.getStats());
         Assert.assertEquals("永辉", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser12() {
+        String origin = "East Taste 安心味觉 一口凤梨酥礼盒 300g 台湾地区进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("安心味觉", assort.getValue().getValue().getValue());
     }
 
 }
