@@ -55,7 +55,23 @@ public class BrandAnalyser implements IAnalyser {
         BrandMapper mapper = BrandMapper.getInstance();
         Map<SameEntity, CellStat> cellStatMap = Maps.newHashMap();
 
+        // 移除被包含的品牌
+        Set<CellToken> delCellSet = Sets.newHashSet();
+        for (int i = 0; i < tokens.size() - 2; i++) {
+            CellToken smallCell = tokens.get(i);
+            for (int j = tokens.size() - 1; j > i; j--) {
+                CellToken largeCell = tokens.get(j);
+                if (largeCell.getValue().contains(smallCell.getValue())) {
+                    // 移除短字符串的品牌
+                    delCellSet.add(smallCell);
+                    break;
+                }
+            }
+        }
         for (CellToken cell : tokens) {
+            if (delCellSet.contains(cell)) {
+                continue;
+            }
             SameEntity sEntity = mapper.getSameEntity(cell.getValue());
             if (sEntity == null) {
                 continue;

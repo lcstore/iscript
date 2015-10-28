@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,6 +46,7 @@ import com.lezo.iscript.service.crawler.dto.SiteDto;
 import com.lezo.iscript.service.crawler.service.MatchService;
 import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.service.crawler.service.SynonymBrandService;
+import com.lezo.iscript.service.crawler.utils.BrandRepoCacher;
 import com.lezo.iscript.service.crawler.utils.SiteCacher;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 
@@ -66,7 +68,8 @@ public class SimilarToMatchJob implements Runnable {
         }
         long start = System.currentTimeMillis();
         // DicLoader loader = newLoader();
-        DicLoader loader = createBrandLoader();
+        // DicLoader loader = createBrandLoader();
+        DicLoader loader = createRepoLoader();
         BrandMapper.getInstance().setLoader(loader);
         try {
             running.set(true);
@@ -87,12 +90,12 @@ public class SimilarToMatchJob implements Runnable {
                     log.warn("empty brand...");
                     continue;
                 }
-                if (!hasDo) {
-                    hasDo = "brother".equals(brand);
-                }
-                if (!hasDo) {
-                    continue;
-                }
+                // if (!hasDo) {
+                // hasDo = "brother".equals(brand);
+                // }
+                // if (!hasDo) {
+                // continue;
+                // }
                 fromId = 0L;
                 List<SimilarDto> similarDtos = Lists.newArrayList();
                 while (true) {
@@ -138,6 +141,26 @@ public class SimilarToMatchJob implements Runnable {
                     for (String sVal : sSameSet.getSameSet()) {
                         sameMap.put(sVal, sSameSet);
 
+                    }
+                }
+                return sameMap;
+            }
+        };
+    }
+
+    private DicLoader createRepoLoader() {
+        return new DicLoader() {
+            @Override
+            public Map<String, SameEntity> loadDic(InputStream in) throws Exception {
+                Map<String, Set<String>> map = BrandRepoCacher.getInstance().getMap();
+                Map<String, SameEntity> sameMap = Maps.newHashMap();
+                for (Entry<String, Set<String>> entry : map.entrySet()) {
+                    Set<String> sameSet = entry.getValue();
+                    SameEntity sSameSet = new SameEntity();
+                    sSameSet.setValue(entry.getKey());
+                    sSameSet.setSameSet(sameSet);
+                    for (String sVal : sSameSet.getSameSet()) {
+                        sameMap.put(sVal, sSameSet);
                     }
                 }
                 return sameMap;

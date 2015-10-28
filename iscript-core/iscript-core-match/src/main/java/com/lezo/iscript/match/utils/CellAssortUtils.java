@@ -39,13 +39,21 @@ public class CellAssortUtils {
     public static final Comparator<CellStat> CMP_COUNT_DESC = new Comparator<CellStat>() {
         @Override
         public int compare(CellStat o1, CellStat o2) {
-            return o2.getCount() - o1.getCount();
+            int count = o2.getCount() - o1.getCount();
+            if (count == 0) {
+                return o1.getValue().getIndex() - o2.getValue().getIndex();
+            }
+            return count;
         }
     };
     public static final Comparator<CellStat> CMP_LENGTH_DESC = new Comparator<CellStat>() {
         @Override
         public int compare(CellStat o1, CellStat o2) {
-            return o2.getLength() - o1.getLength();
+            int count = o2.getLength() - o1.getLength();
+            if (count == 0) {
+                return o1.getValue().getIndex() - o2.getValue().getIndex();
+            }
+            return count;
         }
     };
 
@@ -135,7 +143,8 @@ public class CellAssortUtils {
                 int toIndex = fromIndex + ignoreVal.length();
                 for (CellToken token : tokens) {
                     String tVal = token.getValue();
-                    if (StringUtils.isEmpty(tVal) || ignoreVal.equals(tVal) || ignoreCellSet.contains(token)) {
+                    if (StringUtils.isEmpty(tVal) || ignoreVal.equals(tVal) || ignoreCellSet.contains(token)
+                            || token.isStable()) {
                         continue;
                     }
                     int destIndex = token.getIndex() + tVal.length();

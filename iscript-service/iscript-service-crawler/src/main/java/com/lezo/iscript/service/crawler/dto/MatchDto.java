@@ -52,7 +52,7 @@ public class MatchDto {
 
     public static String newMatchCode() {
         String sHashCode = "" + UUID.randomUUID().toString().hashCode();
-        return sHashCode.replace("-", "H");
+        return sHashCode.replace("-", "10");
     }
 
 }

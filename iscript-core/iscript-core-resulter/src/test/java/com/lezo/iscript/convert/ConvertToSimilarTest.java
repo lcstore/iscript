@@ -40,8 +40,8 @@ public class ConvertToSimilarTest {
         List<String> lineList = FileUtils.readLines(new File("src/test/resources/data/1match.pid"), encoding);
         int siteId = 1002;
         int total = 0;
-        String jobId = "20151003-one.match";
-        String lastId = "999999";
+        String jobId = "";
+        String lastId = "";
         boolean last = lastId == null;
         for (String line : lineList) {
             if (!last) {

@@ -223,4 +223,18 @@ public class BrandAnalyserTest {
         Assert.assertEquals("贝蒂妙厨", assort.getValue().getValue().getValue());
     }
 
+    @Test
+    public void testAnalyser16() {
+        String origin = "Blue Diamond蓝钻石 蜜烤风味扁桃仁 170g 美国进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("蓝钻石", assort.getValue().getValue().getValue());
+    }
+
 }
