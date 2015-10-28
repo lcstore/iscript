@@ -144,16 +144,31 @@ public class BrandRepoServiceImpl implements BrandRepoService {
 
     private Map<String, BrandRepoDto> toSameCoreMap(List<BrandRepoDto> dtoList) {
         Map<String, BrandRepoDto> sameCoreMap = Maps.newHashMap();
+        Map<String, BrandRepoDto> brand2DtoMap = Maps.newHashMap();
         for (BrandRepoDto dto : dtoList) {
             BrandRepoDto repoDto = sameCoreMap.get(dto.getCoreName());
+            repoDto = repoDto == null ? getSameBrandDto(brand2DtoMap, dto) : repoDto;
             if (repoDto == null) {
                 repoDto = dto;
                 sameCoreMap.put(dto.getCoreName(), repoDto);
             } else {
                 mergeNames(repoDto, dto);
             }
+            for (String brand : dto.getIncludes().split(",")) {
+                brand2DtoMap.put(brand, repoDto);
+            }
         }
         return sameCoreMap;
+    }
+
+    private BrandRepoDto getSameBrandDto(Map<String, BrandRepoDto> brand2DtoMap, BrandRepoDto dto) {
+        for (String brand : dto.getIncludes().split(",")) {
+            BrandRepoDto hitDto = brand2DtoMap.get(brand);
+            if (hitDto != null) {
+                return hitDto;
+            }
+        }
+        return null;
     }
 
     private Map<String, List<BrandRepoDto>> toSameSortMap(List<BrandRepoDto> dtoList) {

@@ -181,4 +181,46 @@ public class BrandAnalyserTest {
         Assert.assertEquals("安心味觉", assort.getValue().getValue().getValue());
     }
 
+    @Test
+    public void testAnalyser13() {
+        String origin = "柏龙 慕尼黑酵母型小麦啤酒 330ml/瓶*24 德国原装进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("柏龙", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser14() {
+        String origin = "宝鼎 海鸥康乐醋（枸杞）500ml/瓶";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("宝鼎", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser15() {
+        String origin = "BETTY CROCKER 贝蒂妙厨 香草味蛋糕涂层（烘焙用） 453g 美国进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        Assert.assertEquals("贝蒂妙厨", assort.getValue().getValue().getValue());
+    }
+
 }

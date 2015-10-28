@@ -128,6 +128,9 @@ public class LineDicLoader implements DicLoader {
     }
 
     public static SameEntity toSameChars(Set<String> sameSet) {
+        if (CollectionUtils.isEmpty(sameSet)) {
+            return null;
+        }
         List<String> sameList = Lists.newArrayList(sameSet);
         Collections.sort(sameList, CMP_CN);
         SameEntity sameChars = new SameEntity();

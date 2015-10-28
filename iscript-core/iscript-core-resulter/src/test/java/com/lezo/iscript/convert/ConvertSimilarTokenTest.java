@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -49,6 +50,10 @@ public class ConvertSimilarTokenTest {
 
     @Test
     public void testConvertToken() throws Exception {
+        String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+        ClassPathXmlApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+        similarService = cx.getBean(SimilarService.class);
+        synonymBrandService = cx.getBean(SynonymBrandService.class);
         long start = System.currentTimeMillis();
         String jobId = "";
         Long fromId = 0L;
@@ -79,6 +84,7 @@ public class ConvertSimilarTokenTest {
             log.info("done,siteId:" + sid + ",total:" + total);
         }
         long cost = System.currentTimeMillis() - start;
+        cx.close();
         log.info("done...,cost:" + cost);
     }
 
@@ -88,7 +94,7 @@ public class ConvertSimilarTokenTest {
         // DicLoader loader = createLoader();
         DicLoader loader = createRepoLoader();
         BrandMapper.getInstance().setLoader(loader);
-        List<Long> idList = Lists.newArrayList(1490L);
+        List<Long> idList = Lists.newArrayList(2039L);
         List<SimilarDto> dtoList = similarService.getSimilarDtoByIds(idList);
         doToken(dtoList);
         System.err.println(JSON.toJSONString(dtoList));
@@ -124,7 +130,9 @@ public class ConvertSimilarTokenTest {
                 Map<String, SameEntity> sameMap = Maps.newHashMap();
                 for (Entry<String, Set<String>> entry : map.entrySet()) {
                     Set<String> sameSet = entry.getValue();
-                    SameEntity sSameSet = LineDicLoader.toSameChars(sameSet);
+                    SameEntity sSameSet = new SameEntity();
+                    sSameSet.setValue(entry.getKey());
+                    sSameSet.setSameSet(sameSet);
                     for (String sVal : sSameSet.getSameSet()) {
                         sameMap.put(sVal, sSameSet);
                     }

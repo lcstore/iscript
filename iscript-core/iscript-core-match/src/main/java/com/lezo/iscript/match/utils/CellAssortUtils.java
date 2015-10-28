@@ -33,7 +33,7 @@ public class CellAssortUtils {
     public static final Comparator<CellStat> CMP_VALUE_LEN_DESC = new Comparator<CellStat>() {
         @Override
         public int compare(CellStat o1, CellStat o2) {
-            return o2.getLength() - o1.getLength();
+            return o2.getValue().getValue().length() - o1.getValue().getValue().length();
         }
     };
     public static final Comparator<CellStat> CMP_COUNT_DESC = new Comparator<CellStat>() {
@@ -74,9 +74,9 @@ public class CellAssortUtils {
     public static void doAnalyse(CellAssort assort) {
         Map<Comparator<CellStat>, Integer> cmpValMap = Maps.newHashMap();
         cmpValMap.put(CMP_VALUE_INDEX_ASC, 10);
-        cmpValMap.put(CMP_VALUE_LEN_DESC, 9);
-        cmpValMap.put(CMP_COUNT_DESC, 5);
-        cmpValMap.put(CMP_LENGTH_DESC, 2);
+        // cmpValMap.put(CMP_VALUE_LEN_DESC, 8);
+        cmpValMap.put(CMP_COUNT_DESC, 8);
+        cmpValMap.put(CMP_LENGTH_DESC, 8);
         doAnalyse(assort, cmpValMap);
     }
 
