@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import com.lezo.iscript.service.crawler.dto.BrandRepoDto;
 import com.lezo.iscript.service.crawler.service.BrandRepoService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
+import com.lezo.iscript.utils.BrandUtils;
 
 public class ConvertBrandRepoTest {
     @Autowired
@@ -62,6 +63,7 @@ public class ConvertBrandRepoTest {
                     fromId = hasDto.getId();
                 }
             }
+            doUnify(hasList);
             total += hasList.size();
             brandRepoService.batchUpdateDtos(hasList);
             System.err.println("update,count:" + hasList.size() + ",total:" + total);
@@ -71,6 +73,14 @@ public class ConvertBrandRepoTest {
         }
         cx.close();
         System.err.println("done....");
+    }
+
+    private void doUnify(List<BrandRepoDto> dtoList) {
+        for (BrandRepoDto dto : dtoList) {
+            dto.setCoreName(BrandUtils.toUnify(dto.getCoreName()));
+            dto.setIncludes(BrandUtils.toUnify(dto.getIncludes()));
+            dto.setExcludes(BrandUtils.toUnify(dto.getExcludes()));
+        }
     }
 
     @Test
@@ -102,7 +112,7 @@ public class ConvertBrandRepoTest {
             dto.setRegionName(StringUtils.EMPTY);
             dto.setCreateTime(newDate);
             dto.setUpdateTime(dto.getCreateTime());
-            dto.setSortName("食品");
+            // dto.setSortName("食品");
             dtoList.add(dto);
         }
         brandRepoService.batchSaveDtos(dtoList);

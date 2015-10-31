@@ -20,6 +20,7 @@ import com.lezo.iscript.service.crawler.dao.BrandRepoDao;
 import com.lezo.iscript.service.crawler.dto.BrandRepoDto;
 import com.lezo.iscript.service.crawler.service.BrandRepoService;
 import com.lezo.iscript.utils.BatchIterator;
+import com.lezo.iscript.utils.BrandUtils;
 
 @Service
 public class BrandRepoServiceImpl implements BrandRepoService {
@@ -51,6 +52,7 @@ public class BrandRepoServiceImpl implements BrandRepoService {
         if (CollectionUtils.isEmpty(dtoList)) {
             return 0;
         }
+        doUnify(dtoList);
         int affect = 0;
         List<BrandRepoDto> updateList = new ArrayList<BrandRepoDto>();
         List<BrandRepoDto> insertList = new ArrayList<BrandRepoDto>();
@@ -58,6 +60,14 @@ public class BrandRepoServiceImpl implements BrandRepoService {
         affect += batchInsertDtos(insertList);
         affect += batchUpdateDtos(updateList);
         return affect;
+    }
+
+    private void doUnify(List<BrandRepoDto> dtoList) {
+        for (BrandRepoDto dto : dtoList) {
+            dto.setCoreName(BrandUtils.toUnify(dto.getCoreName()));
+            dto.setIncludes(BrandUtils.toUnify(dto.getIncludes()));
+            dto.setExcludes(BrandUtils.toUnify(dto.getExcludes()));
+        }
     }
 
     private void doAssort(List<BrandRepoDto> dtoList, List<BrandRepoDto> updateList, List<BrandRepoDto> insertList) {

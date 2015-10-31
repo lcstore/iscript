@@ -18,6 +18,7 @@ import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.map.SameEntity;
 import com.lezo.iscript.match.pojo.CellToken;
 import com.lezo.iscript.match.utils.CellTokenUtils;
+import com.lezo.iscript.utils.BrandUtils;
 
 /**
  * 单位前是字母，目前无法切出单位(通用的单位切取，暂不考虑这种情况)
@@ -45,7 +46,7 @@ public class BrandTokenizer implements ITokenizer {
         }
         // TODO 中文符号转换成英文符号julie‘s--julie's
         Set<CellToken> newCellSet = Sets.newHashSet();
-        String sValue = origin;
+        String sValue = BrandUtils.toUnify(origin);
         BrandMapper mapper = BrandMapper.getInstance();
         CellToken originToken = new CellToken();
         originToken.setIndex(0);
