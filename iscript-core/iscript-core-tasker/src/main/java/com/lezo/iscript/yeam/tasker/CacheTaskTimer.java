@@ -60,7 +60,10 @@ public class CacheTaskTimer {
 					}
 					sb.append(level);
 				}
-				log.info("cache type:" + dto.getType() + ",levelCount:" + leveList.size() + ",level:[" + sb + "]");
+                TaskQueue queue = TaskCacher.getInstance().getQueue(dto.getType());
+                int hasSize = queue.size();
+                log.info("cache type:" + dto.getType() + ",levelCount:" + leveList.size() + ",level:[" + sb
+                        + "],inQueue:" + hasSize);
 				for (Integer level : leveList) {
 					cacheTasks(dto, level);
 				}

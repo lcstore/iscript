@@ -161,7 +161,7 @@ public class SimilarCluster implements ICluster {
 
     }
 
-    private int getSimilarScore(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
+    protected int getSimilarScore(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
         float total = 0;
         boolean forceAccess = true;
         Class<SimilarIn> inClass = SimilarIn.class;
@@ -187,7 +187,7 @@ public class SimilarCluster implements ICluster {
         }
     }
 
-    private SimilarOut createSimilarOut(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
+    protected SimilarOut createSimilarOut(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
         // current.getClass().getDeclaredField(name);
         SimilarOut destOut = new SimilarOut();
         destOut.setCurrent(current);

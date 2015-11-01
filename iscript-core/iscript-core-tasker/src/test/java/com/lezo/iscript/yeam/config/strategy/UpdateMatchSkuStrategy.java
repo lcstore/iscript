@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -51,8 +52,11 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
     private class CreateTaskTimer extends TimerTask {
         private TaskPriorityService taskPriorityService = SpringBeanUtils.getBean(TaskPriorityService.class);
         private MatchService matchService = SpringBeanUtils.getBean(MatchService.class);
+        private Map<Integer, String> siteConfigMap = Maps.newHashMap();
 
         public CreateTaskTimer() {
+            siteConfigMap.put(1001, "ConfigJdProduct");
+            siteConfigMap.put(1002, "ConfigYhdProduct");
         }
 
         @Override
@@ -65,29 +69,31 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
             try {
                 logger.info("CreateTaskTimer is start...");
                 running = true;
-                int total = 0;
-                int siteId = 1002;
-                Long fromId = 0L;
-                Date fromCreateDate = null;
-                Date toCreateDate = null;
-                int limit = 500;
-                while (true) {
-                    List<MatchDto> hasList =
-                            matchService.getDtoBySiteIdWithCreateDate(siteId, fromCreateDate, toCreateDate, fromId,
-                                    limit);
-                    List<TaskPriorityDto> taskList = convertToTasks(hasList);
-                    for (MatchDto dto : hasList) {
-                        if (fromId < dto.getId()) {
-                            fromId = dto.getId();
+                for (Entry<Integer, String> entry : siteConfigMap.entrySet()) {
+                    int total = 0;
+                    int siteId = entry.getKey();
+                    Long fromId = 0L;
+                    Date fromCreateDate = null;
+                    Date toCreateDate = null;
+                    int limit = 500;
+                    while (true) {
+                        List<MatchDto> hasList =
+                                matchService.getDtoBySiteIdWithCreateDate(siteId, fromCreateDate, toCreateDate, fromId,
+                                        limit);
+                        List<TaskPriorityDto> taskList = convertToTasks(hasList);
+                        for (MatchDto dto : hasList) {
+                            if (fromId < dto.getId()) {
+                                fromId = dto.getId();
+                            }
+                        }
+                        total += hasList.size();
+                        taskPriorityService.batchInsert(taskList);
+                        if (hasList.size() < limit) {
+                            break;
                         }
                     }
-                    total += hasList.size();
-                    taskPriorityService.batchInsert(taskList);
-                    if (hasList.size() < limit) {
-                        break;
-                    }
+                    logger.info("Offer task,siteId:{},total:{}", siteId, total);
                 }
-                logger.info("Offer task,siteId:{},total:{}", siteId, total);
             } catch (Exception ex) {
                 logger.warn(ExceptionUtils.getStackTrace(ex));
             } finally {
@@ -103,9 +109,6 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
             JSONUtils.put(argsObject, "retry", 0);
             String taskId = UUID.randomUUID().toString();
             JSONUtils.put(argsObject, "bid", taskId);
-            Map<Integer, String> siteConfigMap = Maps.newHashMap();
-            siteConfigMap.put(1001, "ConfigJdProduct");
-            siteConfigMap.put(1002, "ConfigYhdProduct");
             List<TaskPriorityDto> taskList = Lists.newArrayList();
             for (MatchDto hasDto : hasList) {
                 String sConfig = siteConfigMap.get(hasDto.getSiteId());

@@ -20,17 +20,14 @@ public class AssortTest {
         IAnalyser unitAnalyser = new UnitAnalyser();
         IAnalyser modelAnalyser = new ModelAnalyser();
         List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
-        System.err.println("before.token:" + tokens);
         CellAssort assort = brandAnalyser.analyse(tokens);
-        System.err.println("brand.assort:" + assort);
-        System.err.println("brand.token:" + tokens);
+        Assert.assertEquals("雅芳", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = unitAnalyser.analyse(tokens);
-        System.err.println("unit.assort:" + assort);
-        System.err.println("unit.token:" + tokens);
+        Assert.assertEquals("50ml", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = modelAnalyser.analyse(tokens);
-        System.err.println("model.assort:" + assort);
+        Assert.assertEquals(true, null == assort.getValue());
     }
 
     @Test
@@ -40,17 +37,14 @@ public class AssortTest {
         IAnalyser unitAnalyser = new UnitAnalyser();
         IAnalyser modelAnalyser = new ModelAnalyser();
         List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
-        System.err.println("before.token:" + tokens);
         CellAssort assort = brandAnalyser.analyse(tokens);
-        System.err.println("brand.assort:" + assort);
-        System.err.println("brand.token:" + tokens);
+        Assert.assertEquals("费列罗", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = unitAnalyser.analyse(tokens);
-        System.err.println("unit.assort:" + assort);
-        System.err.println("unit.token:" + tokens);
+        Assert.assertEquals("300g", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = modelAnalyser.analyse(tokens);
-        System.err.println("model.assort:" + assort);
+        Assert.assertEquals(true, null == assort.getValue());
     }
 
     @Test
@@ -60,17 +54,13 @@ public class AssortTest {
         IAnalyser unitAnalyser = new UnitAnalyser();
         IAnalyser modelAnalyser = new ModelAnalyser();
         List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
-        System.err.println("before.token:" + tokens);
         CellAssort assort = brandAnalyser.analyse(tokens);
-        System.err.println("brand.assort:" + assort);
-        System.err.println("brand.token:" + tokens);
+        Assert.assertEquals("小霸王", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = unitAnalyser.analyse(tokens);
-        System.err.println("unit.assort:" + assort);
-        System.err.println("unit.token:" + tokens);
+        Assert.assertEquals(true, null == assort.getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = modelAnalyser.analyse(tokens);
-        System.err.println("model.assort:" + assort);
         Assert.assertEquals("d31", assort.getValue().getValue().getValue());
     }
 
@@ -81,17 +71,13 @@ public class AssortTest {
         IAnalyser unitAnalyser = new UnitAnalyser();
         IAnalyser modelAnalyser = new ModelAnalyser();
         List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
-        System.err.println("before.token:" + tokens);
         CellAssort assort = brandAnalyser.analyse(tokens);
-        System.err.println("brand.assort:" + assort);
-        System.err.println("brand.token:" + tokens);
+        Assert.assertEquals(true, assort.getValue() == null);
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = unitAnalyser.analyse(tokens);
-        System.err.println("unit.assort:" + assort);
-        System.err.println("unit.token:" + tokens);
+        Assert.assertEquals("150克", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = modelAnalyser.analyse(tokens);
-        System.err.println("model.assort:" + assort);
         Assert.assertEquals(true, assort.getValue() == null);
     }
 
@@ -102,17 +88,13 @@ public class AssortTest {
         IAnalyser unitAnalyser = new UnitAnalyser();
         IAnalyser modelAnalyser = new ModelAnalyser();
         List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
-        System.err.println("before.token:" + tokens);
         CellAssort assort = brandAnalyser.analyse(tokens);
-        System.err.println("brand.assort:" + assort);
-        System.err.println("brand.token:" + tokens);
+        Assert.assertEquals("克特多金象", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = unitAnalyser.analyse(tokens);
-        System.err.println("unit.assort:" + assort);
-        System.err.println("unit.token:" + tokens);
+        Assert.assertEquals("240克", assort.getValue().getValue().getValue());
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = modelAnalyser.analyse(tokens);
-        System.err.println("model.assort:" + assort);
         Assert.assertEquals(true, assort.getValue() == null);
     }
 }

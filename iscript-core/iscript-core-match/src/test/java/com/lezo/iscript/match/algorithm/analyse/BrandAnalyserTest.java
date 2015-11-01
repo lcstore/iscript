@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellToken;
 import com.lezo.iscript.match.utils.CellTokenUtils;
@@ -235,6 +236,22 @@ public class BrandAnalyserTest {
         System.out.println("assort.size:" + assort.getStats().size());
         System.out.println("assort.stat:" + assort.getStats());
         Assert.assertEquals("蓝钻石", assort.getValue().getValue().getValue());
+    }
+
+    @Test
+    public void testAnalyser17() {
+        String origin = "Carlo Rossi/白起泡葡萄酒 750ml 美国进口 美国原装进口";
+        List<CellToken> tokens = CellTokenUtils.getTokens(origin.toLowerCase());
+        System.out.println("origin:" + origin);
+        System.out.println("size:" + tokens.size());
+        System.out.println("tokens:" + ArrayUtils.toString(tokens));
+        CellAssort assort = analyser.analyse(tokens);
+        System.out.println("assort.value:" + assort.getValue());
+        System.out.println("assort.size:" + assort.getStats().size());
+        System.out.println("assort.stat:" + assort.getStats());
+        String sVal = assort.getValue().getValue().getValue();
+        Assert.assertEquals("carlo.rossi", sVal);
+        Assert.assertEquals("加州乐事", BrandMapper.getInstance().getSameEntity(sVal).getValue());
     }
 
 }

@@ -67,6 +67,7 @@ import com.lezo.iscript.yeam.config.ConfigProxySeedHandler.ProxyAddrDto;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigVipBarCode;
+import com.lezo.iscript.yeam.config.ConfigYhdBarCodeMatch;
 import com.lezo.iscript.yeam.config.ConfigYhdBrandList;
 import com.lezo.iscript.yeam.config.ConfigYhdCategory;
 import com.lezo.iscript.yeam.config.ConfigYhdList;
@@ -108,6 +109,7 @@ public class ConfigParserTest {
         parser = new ConfigVipBarCode();
         parser = new ConfigBarCodeCollector();
         parser = new Config1688List();
+        parser = new ConfigYhdBarCodeMatch();
         // parser = new ConfigBnmList();
         // parser = new ConfigVipList();
         String url = null;
@@ -153,7 +155,7 @@ public class ConfigParserTest {
         TaskWritable task = new TaskWritable();
         // task.put("barCode", "6900068005020");
         // task.put("barCode", "9787807514398");
-        // task.put("barCode", "6903148018194");
+        task.put("barCode", "8000500003787");
         task.put("brandName", "悠哈");
         task.put("brandCode", "330");
         task.put("url", url);

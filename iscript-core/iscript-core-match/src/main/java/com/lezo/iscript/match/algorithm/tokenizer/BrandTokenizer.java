@@ -88,7 +88,11 @@ public class BrandTokenizer implements ITokenizer {
     }
 
     private void decideStable(Set<CellToken> newCellSet) {
+        // 切出的品牌过少，则保护所有品牌
         if (newCellSet.size() < STABLE_COUNT) {
+            for (CellToken newCell : newCellSet) {
+                newCell.setStable(true);
+            }
             return;
         }
         Map<SameEntity, List<CellToken>> same2CellsMap = Maps.newHashMap();

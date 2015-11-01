@@ -1,6 +1,7 @@
 package com.lezo.iscript.match.job;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -24,10 +25,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IAnalyser;
+import com.lezo.iscript.match.algorithm.IMatcher;
 import com.lezo.iscript.match.algorithm.analyse.BrandAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.ModelAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.UnitAnalyser;
 import com.lezo.iscript.match.algorithm.cluster.SimilarCluster;
+import com.lezo.iscript.match.algorithm.matcher.FoodMatcher;
 import com.lezo.iscript.match.map.BrandMapper;
 import com.lezo.iscript.match.map.SameEntity;
 import com.lezo.iscript.match.map.loader.DicLoader;
@@ -39,7 +42,6 @@ import com.lezo.iscript.match.pojo.SimilarIn;
 import com.lezo.iscript.match.pojo.SimilarOut;
 import com.lezo.iscript.match.utils.CellAssortUtils;
 import com.lezo.iscript.match.utils.CellTokenUtils;
-import com.lezo.iscript.match.utils.SimilarFactUtils;
 import com.lezo.iscript.service.crawler.dto.MatchDto;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
 import com.lezo.iscript.service.crawler.dto.SiteDto;
@@ -79,6 +81,7 @@ public class SimilarToMatchJob implements Runnable {
             int limit = 500;
             Long fromId = 0L;
             SimilarCluster cluster = new SimilarCluster();
+            IMatcher matcher = new FoodMatcher();
             // brandList = Lists.newArrayList();
             // Iterator<String> it = BrandMapper.getInstance().iterator();
             // while (it.hasNext()) {
@@ -97,22 +100,31 @@ public class SimilarToMatchJob implements Runnable {
                 // continue;
                 // }
                 fromId = 0L;
-                List<SimilarDto> similarDtos = Lists.newArrayList();
+                Map<String, List<SimilarDto>> skuMap = Maps.newHashMap();
                 while (true) {
                     List<SimilarDto> hasDtos = similarService.getSimilarDtoByBrandAndId(brand, fromId, limit);
+                    for (SimilarDto dto : hasDtos) {
+                        List<SimilarDto> sameList = skuMap.get(dto.getSkuCode());
+                        if (sameList == null) {
+                            sameList = Lists.newArrayList();
+                            skuMap.put(dto.getSkuCode(), sameList);
+                        }
+                        sameList.add(dto);
+                    }
                     for (SimilarDto dto : hasDtos) {
                         if (fromId < dto.getId()) {
                             fromId = dto.getId();
                         }
                     }
                     log.info("query brand:" + brand + ",fromId:" + fromId + ",size:" + hasDtos.size());
-                    similarDtos.addAll(hasDtos);
                     if (hasDtos.size() < limit) {
                         break;
                     }
                 }
+                List<SimilarDto> similarDtos = mergeSimilarDto(skuMap);
                 List<SimilarIn> similarIns = toSimilarIns(similarDtos);
-                List<SimilarCenter> centers = cluster.doCluster(similarIns, SimilarFactUtils.getDefaultFacts());
+                // List<SimilarCenter> centers = cluster.doCluster(similarIns, SimilarFactUtils.getDefaultFacts());
+                List<SimilarCenter> centers = matcher.doMatcher(similarIns);
                 List<MatchDto> matchDtos = toMatchDtos(centers, similarDtos);
                 log.info("handle brand:" + brand + ",mDto:" + matchDtos.size());
                 matchService.batchSaveDtos(matchDtos);
@@ -125,6 +137,45 @@ public class SimilarToMatchJob implements Runnable {
         } finally {
             running.set(false);
         }
+    }
+
+    private List<SimilarDto> mergeSimilarDto(Map<String, List<SimilarDto>> skuMap) {
+        List<SimilarDto> similarDtos = Lists.newArrayList();
+        for (Entry<String, List<SimilarDto>> entry : skuMap.entrySet()) {
+            SimilarDto mDto = null;
+            for (SimilarDto dto : entry.getValue()) {
+                if (mDto == null) {
+                    mDto = dto;
+                    similarDtos.add(mDto);
+                } else {
+                    for (Field field : SimilarDto.class.getDeclaredFields()) {
+                        try {
+                            if (!field.isAccessible()) {
+                                field.setAccessible(true);
+                            }
+                            Object valObject = field.get(mDto);
+                            if (valObject == null || isBlankString(valObject, field)) {
+                                Object newObject = field.get(dto);
+                                field.set(mDto, newObject);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }
+            }
+
+        }
+        return similarDtos;
+    }
+
+    private boolean isBlankString(Object valObject, Field field) {
+        if (field.getType().isAssignableFrom(String.class)) {
+            return valObject == null || StringUtils.isBlank(valObject.toString());
+        }
+        return false;
     }
 
     private DicLoader createBrandLoader() {
@@ -267,7 +318,7 @@ public class SimilarToMatchJob implements Runnable {
         newIn.setProductName(sDto.getProductName());
         newIn.setBarCode(CellAssortUtils.toAssort(sDto.getBarCode()));
         newIn.setWareCode(CellAssortUtils.toAssort(sDto.getWareCode()));
-        tokenizer(newIn);
+        // tokenizer(newIn);
         return newIn;
     }
 
@@ -280,7 +331,6 @@ public class SimilarToMatchJob implements Runnable {
         newIn.setTokenBrand(assort);
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = unitAnalyser.analyse(tokens);
-        newIn.setTokenUnit(assort);
         newIn.setTokenUnit(assort);
         tokens = CellAssortUtils.removeAssort(tokens, assort);
         assort = modelAnalyser.analyse(tokens);

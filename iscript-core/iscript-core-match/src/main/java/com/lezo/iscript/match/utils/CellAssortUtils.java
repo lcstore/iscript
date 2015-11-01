@@ -21,6 +21,7 @@ import com.lezo.iscript.match.map.UnitMapper;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.CellStat;
 import com.lezo.iscript.match.pojo.CellToken;
+import com.lezo.iscript.utils.BrandUtils;
 
 public class CellAssortUtils {
     public static final Comparator<CellStat> CMP_VALUE_INDEX_ASC = new Comparator<CellStat>() {
@@ -133,6 +134,15 @@ public class CellAssortUtils {
         }
         List<CellToken> newList = Lists.newArrayList();
         String origin = assort.getValue().getValue().getOrigin();
+        StringBuilder sb = new StringBuilder();
+        boolean bBrand = BrandAnalyser.class.getSimpleName().equals(assort.getName());
+        for (CellToken cell : ignoreCellSet) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(cell.getValue());
+        }
+        origin = bBrand ? BrandUtils.toUnify(origin) : origin;
         for (String ignoreVal : ignoreSet) {
             int offset = 0;
             while (true) {
@@ -143,8 +153,7 @@ public class CellAssortUtils {
                 int toIndex = fromIndex + ignoreVal.length();
                 for (CellToken token : tokens) {
                     String tVal = token.getValue();
-                    if (StringUtils.isEmpty(tVal) || ignoreVal.equals(tVal) || ignoreCellSet.contains(token)
-                            || token.isStable()) {
+                    if (StringUtils.isEmpty(tVal) || ignoreVal.equals(tVal) || token.isStable()) {
                         continue;
                     }
                     int destIndex = token.getIndex() + tVal.length();
@@ -163,9 +172,12 @@ public class CellAssortUtils {
             }
 
         }
-
+        String ignoreChars = sb.toString();
         for (CellToken token : tokens) {
-            if (StringUtils.isBlank(token.getValue()) || ignoreCellSet.contains(token)) {
+            if (StringUtils.isBlank(token.getValue())) {
+                continue;
+            }
+            if (ignoreChars.contains(token.getValue())) {
                 continue;
             }
             newList.add(token);

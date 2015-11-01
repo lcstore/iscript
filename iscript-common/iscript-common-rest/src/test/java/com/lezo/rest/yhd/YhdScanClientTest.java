@@ -65,7 +65,7 @@ public class YhdScanClientTest {
         System.err.println("timestamp:" + System.currentTimeMillis());
         String timestamp = "" + System.currentTimeMillis() / 1000;
         String bCode = "6948939610478";
-        bCode = "6932930700078";
+        bCode = "8000500003787";
         map.put("timestamp", timestamp);
         map.put("guid", "0");
         map.put("methodBody", "");

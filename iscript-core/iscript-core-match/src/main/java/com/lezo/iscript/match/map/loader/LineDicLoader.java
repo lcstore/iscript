@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.map.SameEntity;
+import com.lezo.iscript.utils.BrandUtils;
 
 @Log4j
 public class LineDicLoader implements DicLoader {
@@ -113,18 +114,11 @@ public class LineDicLoader implements DicLoader {
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken().trim();
             if (StringUtils.isNotBlank(token) && token.length() >= minLen) {
-                token = toUnify(token);
+                token = BrandUtils.toUnify(token);
                 newSet.add(token);
             }
         }
         return newSet;
-    }
-
-    private String toUnify(String token) {
-        if (token == null) {
-            return null;
-        }
-        return token.toLowerCase();
     }
 
     public static SameEntity toSameChars(Set<String> sameSet) {

@@ -37,6 +37,7 @@ public class ModelAnalyser implements IAnalyser {
                     return o2.getValue() - o1.getValue();
                 }
             };
+    private static final int MIN_LEN = 2;
 
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
@@ -50,7 +51,7 @@ public class ModelAnalyser implements IAnalyser {
             Matcher matcher = EN_WORD_REG.matcher(cell.getValue());
             while (matcher.find()) {
                 String value = matcher.group();
-                if (isSingleChar(value)) {
+                if (isSkipLen(value)) {
                     continue;
                 }
                 CellStat cellStat = cellStatMap.get(value);
@@ -98,11 +99,11 @@ public class ModelAnalyser implements IAnalyser {
         return assort;
     }
 
-    private boolean isSingleChar(String sVal) {
+    private boolean isSkipLen(String sVal) {
         if (StringUtils.isBlank(sVal)) {
             return true;
         }
-        return sVal.trim().length() == 1 && !EN_NUM_REG.matcher(sVal).find();
+        return sVal.trim().length() <= MIN_LEN;
     }
 
 }
