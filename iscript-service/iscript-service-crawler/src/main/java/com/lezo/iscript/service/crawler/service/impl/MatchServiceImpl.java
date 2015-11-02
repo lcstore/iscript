@@ -3,6 +3,7 @@ package com.lezo.iscript.service.crawler.service.impl;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.lezo.iscript.service.crawler.dao.MatchDao;
 import com.lezo.iscript.service.crawler.dto.MatchDto;
 import com.lezo.iscript.service.crawler.service.MatchService;
@@ -26,6 +28,18 @@ import com.lezo.iscript.utils.BatchIterator;
 @Log4j
 @Service
 public class MatchServiceImpl implements MatchService {
+    private static final Map<Integer, Integer> SITE_SCRORE_MAP = Maps.newHashMap();
+    private static final Comparator<Entry<String, Integer>> CMP_SKU_SCORE =
+            new Comparator<Map.Entry<String, Integer>>() {
+                @Override
+                public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+                    return o2.getValue().compareTo(o1.getValue());
+                }
+            };
+
+    static {
+        SITE_SCRORE_MAP.put(1001, 5);
+    }
     @Autowired
     private MatchDao matchDao;
 
@@ -111,6 +125,16 @@ public class MatchServiceImpl implements MatchService {
             List<String> skuCodes = new ArrayList<String>(skuCodeMap.keySet());
             List<MatchDto> oldDtos = getDtoBySkuCodes(skuCodes, 0);
             String mostMatchCode = getMostMatchCode(oldDtos);
+            String currentItemCode = getItemCodeIfExist(dtoList);
+            if (StringUtils.isBlank(currentItemCode)) {
+                currentItemCode = newItemCode(entry.getValue());
+                // itemSku is delete, update to new itemCode
+                updateItemCodeByMatchCode(mostMatchCode, currentItemCode);
+            }
+            // set new itemCode
+            for (MatchDto dto : entry.getValue()) {
+                dto.setItemCode(currentItemCode);
+            }
             mostMatchCode = mostMatchCode == null ? entry.getKey() : mostMatchCode;
             Set<String> hasSet = new HashSet<String>();
             // TODO 是否重新计算分值
@@ -135,6 +159,94 @@ public class MatchServiceImpl implements MatchService {
             }
         }
 
+    }
+
+    private String newItemCode(List<MatchDto> dtoList) {
+        if (CollectionUtils.isEmpty(dtoList)) {
+            return null;
+        }
+        Map<String, Integer> skuScoreMap = getSkuScoreMap(dtoList);
+        List<Map.Entry<String, Integer>> skuScoreEntityList =
+                new ArrayList<Map.Entry<String, Integer>>(skuScoreMap.entrySet());
+        Collections.sort(skuScoreEntityList, CMP_SKU_SCORE);
+        return skuScoreEntityList.get(0).getKey();
+    }
+
+    private Map<String, Integer> getWareCountMap(List<MatchDto> dtoList) {
+        Map<String, Integer> wareCountMap = new HashMap<String, Integer>();
+        int unitCount = 5;
+        for (MatchDto dto : dtoList) {
+            String wareCode = dto.getWareCode();
+            if (StringUtils.isBlank(wareCode)) {
+                continue;
+            }
+            Integer count = wareCountMap.get(wareCode);
+            if (count == null) {
+                count = unitCount;
+            } else {
+                count += unitCount;
+            }
+            wareCountMap.put(wareCode, count);
+        }
+        return wareCountMap;
+    }
+
+    private Map<String, Integer> getBarCodeCountMap(List<MatchDto> dtoList) {
+        Map<String, Integer> barCodeCountMap = new HashMap<String, Integer>();
+        int unitCount = 10;
+        for (MatchDto dto : dtoList) {
+            String barCode = dto.getBarCode();
+            if (StringUtils.isBlank(barCode)) {
+                continue;
+            }
+            Integer count = barCodeCountMap.get(barCode);
+            if (count == null) {
+                count = unitCount;
+            } else {
+                count += unitCount;
+            }
+            barCodeCountMap.put(barCode, count);
+        }
+        return barCodeCountMap;
+    }
+
+    private Map<String, Integer> getSkuScoreMap(List<MatchDto> dtoList) {
+        Map<String, Integer> wareCountMap = getWareCountMap(dtoList);
+        Map<String, Integer> barCodeCountMap = getBarCodeCountMap(dtoList);
+        Map<String, Integer> skuScoreMap = new HashMap<String, Integer>();
+        for (MatchDto dto : dtoList) {
+            int score = getSiteScore(dto);
+            Integer wScore = wareCountMap.get(dto.getWareCode());
+            if (wScore != null) {
+                score += wScore;
+            }
+            Integer bScore = barCodeCountMap.get(dto.getBarCode());
+            if (bScore != null) {
+                score += bScore;
+            }
+            skuScoreMap.put(dto.getSkuCode(), score);
+        }
+        return skuScoreMap;
+    }
+
+    private int getSiteScore(MatchDto dto) {
+        if (SITE_SCRORE_MAP.containsKey(dto.getSiteId())) {
+            return SITE_SCRORE_MAP.get(dto.getSiteId());
+        }
+        return 0;
+    }
+
+    private String getItemCodeIfExist(List<MatchDto> dtoList) {
+        if (CollectionUtils.isEmpty(dtoList)) {
+            return null;
+        }
+        String itemCode = null;
+        for (MatchDto dto : dtoList) {
+            if (StringUtils.isNotBlank(dto.getItemCode()) && dto.getItemCode().equals(dto.getSkuCode())) {
+                itemCode = dto.getItemCode();
+            }
+        }
+        return itemCode;
     }
 
     private String getMostMatchCode(List<MatchDto> oldDtos) {
@@ -190,6 +302,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public int updateItemCodeByMatchCode(String matchCode, String itemCode) {
+        if (StringUtils.isBlank(matchCode) || StringUtils.isBlank(itemCode)) {
+            return 0;
+        }
         return matchDao.updateItemCodeByMatchCode(matchCode, itemCode);
     }
 

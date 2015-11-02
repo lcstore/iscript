@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.IAdorner;
 import com.lezo.iscript.match.algorithm.IAnalyser;
+import com.lezo.iscript.match.algorithm.ICluster;
 import com.lezo.iscript.match.algorithm.IMatcher;
 import com.lezo.iscript.match.algorithm.IStrainer;
 import com.lezo.iscript.match.algorithm.ITokenizer;
@@ -19,7 +20,7 @@ import com.lezo.iscript.match.algorithm.adorn.ReplaceAdorner;
 import com.lezo.iscript.match.algorithm.analyse.BrandAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.ModelAnalyser;
 import com.lezo.iscript.match.algorithm.analyse.UnitAnalyser;
-import com.lezo.iscript.match.algorithm.cluster.SimilarCluster;
+import com.lezo.iscript.match.algorithm.cluster.FoodCluster;
 import com.lezo.iscript.match.algorithm.strainer.ContainStrainer;
 import com.lezo.iscript.match.algorithm.strainer.SuffixStrainer;
 import com.lezo.iscript.match.algorithm.tokenizer.BlankTokenizer;
@@ -43,7 +44,8 @@ public class FoodMatcher implements IMatcher {
     private static IAnalyser brandAnalyser = new BrandAnalyser();
     private static IAnalyser unitAnalyser = new UnitAnalyser();
     private static IAnalyser modelAnalyser = new ModelAnalyser();
-    private static SimilarCluster cluster = new SimilarCluster();
+    private static ICluster cluster = new FoodCluster();
+
     @Override
     public List<SimilarCenter> doMatcher(List<SimilarIn> similarIns) {
         if (CollectionUtils.isEmpty(similarIns)) {

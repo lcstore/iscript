@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lezo.iscript.match.algorithm.ICluster;
-import com.lezo.iscript.match.algorithm.ISimilar;
 import com.lezo.iscript.match.pojo.CellAssort;
 import com.lezo.iscript.match.pojo.SimilarCenter;
 import com.lezo.iscript.match.pojo.SimilarFact;
@@ -133,8 +132,8 @@ public class SimilarCluster implements ICluster {
             if (handleSet.contains(center)) {
                 continue;
             }
-            int score = getSimilarScore(in, center.getValue(), facts);
-            if (score >= minScore) {
+            SimilarOut newOut = createSimilarOut(in, center.getValue(), facts);
+            if (newOut.getScore() >= minScore) {
                 toCenterSet.add(center);
             }
         }
@@ -143,48 +142,21 @@ public class SimilarCluster implements ICluster {
 
     private void selectCenter(List<SimilarCenter> newCenters, SimilarIn in, List<SimilarFact> facts) {
         SimilarCenter toCenter = null;
-        int maxScore = 0;
+        SimilarOut targetOut = null;
         for (SimilarCenter center : newCenters) {
             // in 为center的参照商品，则忽略
             if (center.getValue().getSkuCode().equals(in.getSkuCode())) {
                 // TODO merge fields
                 return;
             }
-            int score = getSimilarScore(in, center.getValue(), facts);
-            if (toCenter == null || maxScore < score) {
+            SimilarOut newOut = createSimilarOut(in, center.getValue(), facts);
+            if (targetOut == null || targetOut.getScore() < newOut.getScore()) {
                 toCenter = center;
-                maxScore = score;
+                targetOut = newOut;
             }
         }
-        SimilarOut out = createSimilarOut(in, toCenter.getValue(), facts);
-        toCenter.getOuts().add(out);
+        toCenter.getOuts().add(targetOut);
 
-    }
-
-    protected int getSimilarScore(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
-        float total = 0;
-        boolean forceAccess = true;
-        Class<SimilarIn> inClass = SimilarIn.class;
-        for (SimilarFact fact : facts) {
-            String name = fact.getName();
-            Field field = FieldUtils.getDeclaredField(inClass, name, forceAccess);
-            if (field == null) {
-                continue;
-            }
-            int score = calcSimilar(field, current, refer, fact.getSimilar());
-            total += score * fact.getFact();
-        }
-        return SimilarUtils.clamp(Math.round(total));
-    }
-
-    private int calcSimilar(Field field, Object current, Object refer, ISimilar similar) {
-        try {
-            CellAssort curAssort = (CellAssort) FieldUtils.readField(field, current);
-            CellAssort referAssort = (CellAssort) FieldUtils.readField(field, refer);
-            return similar.similar(curAssort, referAssort);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("calc similar:" + field.getName() + ",cause:", e);
-        }
     }
 
     protected SimilarOut createSimilarOut(SimilarIn current, SimilarIn refer, List<SimilarFact> facts) {
@@ -273,8 +245,8 @@ public class SimilarCluster implements ICluster {
         Collections.sort(worstOuts, cmp);
         SimilarOut firstOut = worstOuts.get(0);
         SimilarOut lastOut = worstOuts.get(worstOuts.size() - 1);
-        int score = getSimilarScore(firstOut.getCurrent(), lastOut.getCurrent(), facts);
-        if (score < 70) {
+        SimilarOut newOut = createSimilarOut(firstOut.getCurrent(), lastOut.getCurrent(), facts);
+        if (newOut.getScore() < 70) {
             addNewCenter(firstOut.getCurrent(), newCenters);
             addNewCenter(lastOut.getCurrent(), newCenters);
         } else {
