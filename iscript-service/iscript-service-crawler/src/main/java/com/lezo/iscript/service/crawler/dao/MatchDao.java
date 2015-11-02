@@ -29,4 +29,6 @@ public interface MatchDao extends BaseDao<MatchDto> {
 
     void batchUpdateDtoBySkuCode(@Batch List<MatchDto> dtoList);
 
+    List<MatchDto> getDtoByBarCodes(@Param("barCodes") List<String> barCodes, @Param("isDelete") Integer isDelete);
+
 }

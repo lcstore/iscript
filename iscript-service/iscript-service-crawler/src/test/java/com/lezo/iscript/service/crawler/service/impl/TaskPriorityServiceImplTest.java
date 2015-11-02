@@ -34,16 +34,16 @@ public class TaskPriorityServiceImplTest {
         String[] configs = new String[] { "classpath:spring-config-ds.xml" };
         ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
         TaskPriorityDao taskPriorityDao = SpringBeanUtils.getBean(TaskPriorityDao.class);
-        String type = "ConfigYhdProduct";
-        File srcDir = new File("/apps/src/codes/blade/data/");
+        String type = "ConfigJdProduct";
+        File srcDir = new File("/apps/src/codes/lezo/iblade/data/jd/top/sku");
         File[] files = srcDir.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                return pathname.isFile() && pathname.getName().contains("yhd.sale.top.20151022.data");
+                return pathname.isFile() && pathname.getName().contains(".txt");
             }
         });
         String jobId = System.currentTimeMillis() + "";
-        String cate = "进口食品";
+        String cate = "手机数码";
         JSONObject argsObject = new JSONObject();
         JSONUtils.put(argsObject, "strategy", "SkuWithSimilarStrategy");
         JSONUtils.put(argsObject, "cate", cate);
@@ -53,9 +53,9 @@ public class TaskPriorityServiceImplTest {
             List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
             List<String> lineList = FileUtils.readLines(f, "UTF-8");
             for (String line : lineList) {
-                if (!line.contains(cate)) {
-                    continue;
-                }
+                // if (!line.contains(cate)) {
+                // continue;
+                // }
                 JSONArray dArray = new JSONArray(line);
                 if (dArray == null || dArray.length() < 1) {
                     continue;
@@ -76,7 +76,7 @@ public class TaskPriorityServiceImplTest {
             }
             total += taskList.size();
             log.info("insert type:" + type + ",count:" + taskList.size() + ",total:" + total);
-
+            System.err.println("insert type:" + type + ",count:" + taskList.size() + ",total:" + total);
         }
     }
 

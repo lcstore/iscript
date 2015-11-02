@@ -28,4 +28,6 @@ public interface MatchService extends BaseService<MatchDto> {
      * @param dtoList
      */
     void batchUpdateDtoBySkuCode(List<MatchDto> dtoList);
+
+    List<MatchDto> getDtoByBarCodes(List<String> barCodes, Integer isDelete);
 }

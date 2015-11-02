@@ -19,7 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.lezo.iscript.service.crawler.dao.MatchDao;
 import com.lezo.iscript.service.crawler.dto.MatchDto;
 import com.lezo.iscript.service.crawler.service.MatchService;
@@ -124,8 +126,20 @@ public class MatchServiceImpl implements MatchService {
             }
             List<String> skuCodes = new ArrayList<String>(skuCodeMap.keySet());
             List<MatchDto> oldDtos = getDtoBySkuCodes(skuCodes, 0);
+            if (CollectionUtils.isEmpty(oldDtos)) {
+                Set<String> bCodeSet = Sets.newHashSet();
+                for (MatchDto dto : entry.getValue()) {
+                    if (StringUtils.isBlank(dto.getBarCode())) {
+                        continue;
+                    }
+                    bCodeSet.add(dto.getBarCode());
+                }
+                if (bCodeSet.isEmpty()) {
+                    oldDtos = getDtoByBarCodes(Lists.newArrayList(bCodeSet), 0);
+                }
+            }
             String mostMatchCode = getMostMatchCode(oldDtos);
-            String currentItemCode = getItemCodeIfExist(dtoList);
+            String currentItemCode = getItemCodeIfExist(oldDtos);
             if (StringUtils.isBlank(currentItemCode)) {
                 currentItemCode = newItemCode(entry.getValue());
                 // itemSku is delete, update to new itemCode
@@ -159,6 +173,14 @@ public class MatchServiceImpl implements MatchService {
             }
         }
 
+    }
+
+    @Override
+    public List<MatchDto> getDtoByBarCodes(List<String> barCodes, Integer isDelete) {
+        if (CollectionUtils.isEmpty(barCodes)) {
+            return Collections.emptyList();
+        }
+        return this.matchDao.getDtoByBarCodes(barCodes, isDelete);
     }
 
     private String newItemCode(List<MatchDto> dtoList) {

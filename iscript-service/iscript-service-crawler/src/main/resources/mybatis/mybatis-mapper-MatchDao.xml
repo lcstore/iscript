@@ -156,6 +156,18 @@
 			LIMIT #{limit}
 		</where>
 	</select>
+	<select id="getDtoByBarCodes" resultMap="RM_MatchDto">
+		SELECT * FROM T_MATCH
+		<where>
+		   <foreach collection="barCodes" item="code" open="AND BAR_CODE IN("
+				separator="," close=")">
+				#{code}
+			</foreach>
+			<if test="isDelete !=null">
+				AND IS_DELETE=#{isDelete}
+			</if>
+		</where>
+	</select>
 	<update id="updateItemCodeByMatchCode">
 		UPDATE T_MATCH
 		SET ITEM_CODE=#{itemCode}
