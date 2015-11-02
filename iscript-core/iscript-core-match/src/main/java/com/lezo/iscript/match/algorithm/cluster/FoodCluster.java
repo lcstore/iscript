@@ -44,8 +44,8 @@ public class FoodCluster extends SimilarCluster {
         // 品牌匹配判断
         cassort = current.getTokenBrand();
         rassort = refer.getTokenBrand();
-        String cBrand = cassort.getValue().getValue().getValue();
-        String rBrand = rassort.getValue().getValue().getValue();
+        String cBrand = cassort.getValue() == null ? null : cassort.getValue().getValue().getValue();
+        String rBrand = rassort.getValue() == null ? null : rassort.getValue().getValue().getValue();
         if (StringUtils.isBlank(cBrand) || StringUtils.isBlank(rBrand)) {
             newOut.setScore(NOT_MATCH);
             return newOut;
@@ -75,6 +75,22 @@ public class FoodCluster extends SimilarCluster {
                     newOut.setScore(NOT_MATCH);
                     return newOut;
                 }
+                cUnit = cUnit.replace(cUnitKey, rUnitKey);
+                if (!cUnit.equals(rUnit)) {
+                    newOut.setScore(NOT_MATCH);
+                    return newOut;
+                }
+            }
+        }
+        // 型号匹配判断
+        cassort = current.getTokenModel();
+        rassort = refer.getTokenModel();
+        String cModel = cassort.getValue() == null ? null : cassort.getValue().getValue().getValue();
+        String rModel = rassort.getValue() == null ? null : rassort.getValue().getValue().getValue();
+        if (StringUtils.isNotBlank(cModel) && StringUtils.isNotBlank(rModel)) {
+            if (!cModel.equals(rModel)) {
+                newOut.setScore(NOT_MATCH);
+                return newOut;
             }
         }
         int score = 88;
@@ -86,7 +102,11 @@ public class FoodCluster extends SimilarCluster {
         String referValue = current.getRemain().getValue().getValue().getValue();
         int dist = StringUtils.getLevenshteinDistance(curValue, referValue);
         int max = Math.max(curValue.length(), referValue.length());
-        score = score + (max * (max - dist) / max);
+        if (max == 0) {
+            score = MUST_MATCH;
+        } else {
+            score = score + (max * (max - dist) / max);
+        }
         newOut.setScore(SimilarUtils.clamp(score));
         return newOut;
     }
