@@ -112,7 +112,7 @@ public class ConvertBrandRepoTest {
             dto.setRegionName(StringUtils.EMPTY);
             dto.setCreateTime(newDate);
             dto.setUpdateTime(dto.getCreateTime());
-            dto.setSortName("食品");
+            dto.setSortName("手机数码");
             dtoList.add(dto);
         }
         brandRepoService.batchSaveDtos(dtoList);

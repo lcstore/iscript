@@ -110,7 +110,7 @@ public class ConfigParserTest {
         parser = new ConfigBarCodeCollector();
         parser = new Config1688List();
         parser = new ConfigYhdBarCodeMatch();
-        // parser = new ConfigBnmList();
+        parser = new ConfigYhdProduct();
         // parser = new ConfigVipList();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
@@ -149,7 +149,8 @@ public class ConfigParserTest {
         url = "http://in.1688.com/import/--97.html?spm=a26qs.7705462.1998520131.2.RJEFCQ&categoryID=10311";
         url =
                 "http://in.1688.com/import/rpc_async_render.jsonp?rpcflag=new&_serviceId_=importOfferResultViewService&startIndex=0&_template_=controls%2Fexternal_template%2Fthird%2Fimport%2Fofferresult%2Fpkg-a%2Fviews%2Fofferresult.vm&enableAsync=true&categoryID=10311&asyncCount=20&async=true&beginPage=%7Bpage%7D&token=2369878264";
-        // url = "http://category.vip.com/search-1-0-3.html?q=1|8399|&rp=8399|0";
+        url =
+                "http://item.yhd.com/item/42518643";
         // url = "http://category.vip.com/search-2-0-1.html?q=1%7C8399";
         // urlList.add(url);
         TaskWritable task = new TaskWritable();

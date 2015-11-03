@@ -29,7 +29,7 @@ public class BrandCollectTest {
 
     @Test
     public void testGetJdBrands() throws Exception {
-        String url = "http://list.jd.com/list.html?cat=9987,653,655";
+        String url = "http://list.jd.com/list.html?cat=652,12345,12347";
         Document rootDoc = getDocument(url);
         List<String> urlList = Lists.newArrayList();
         Elements crumbEls = rootDoc.select("div.crumbs-nav-main div.crumbs-nav-item");
