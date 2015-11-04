@@ -1,0 +1,27 @@
+<dataConfig>
+  <dataSource type="JdbcDataSource" 
+              driver="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://www.lezomao.com/iscript" 
+              user="lezoRepo" 
+              password="lezo@99Work$idober"/>
+  <document name="mskudoc">
+    <entity name="match" pk="id,skuCode" 
+      query="SELECT m.ID as id,m.MATCH_CODE as matchCode,m.WARE_CODE as wareCode,m.BAR_CODE as barCode,m.SKU_CODE as skuCode,m.SITE_ID as siteId,m.SHOP_ID as shopId,m.IMG_URL as imgUrl,m.TOKEN_CATEGORY as tokenCategory,m.TOKEN_BRAND as tokenBrand,m.TOKEN_MODEL as tokenModel,m.TOKEN_UNIT as tokenUnit,m.TOKEN_VARY as tokenVary,m.ARBITER_ID as arbiterId,m.SIMILAR_SCORE as similarScore,m.CONFIRM_MODEL as confirmModel,m.ITEM_CODE as itemCode 
+      FROM T_MATCH m JOIN T_PRODUCT_STAT st on m.SKU_CODE=st.SKU_CODE 
+      where m.IS_DELETE=0 and m.ITEM_CODE!=''
+      "
+
+      deltaImportQuery="SELECT m.ID as id,m.MATCH_CODE as matchCode,m.WARE_CODE as wareCode,m.BAR_CODE as barCode,m.SKU_CODE as skuCode,m.SITE_ID as siteId,m.SHOP_ID as shopId,m.IMG_URL as imgUrl,m.TOKEN_CATEGORY as tokenCategory,m.TOKEN_BRAND as tokenBrand,m.TOKEN_MODEL as tokenModel,m.TOKEN_UNIT as tokenUnit,m.TOKEN_VARY as tokenVary,m.ARBITER_ID as arbiterId,m.SIMILAR_SCORE as similarScore,m.CONFIRM_MODEL as confirmModel,m.ITEM_CODE as itemCode FROM T_MATCH m where m.ID='${dih.delta.id}'
+      "
+      deltaQuery="select ID as id from T_MATCH where ID='${dih.delta.id}'" >
+
+                  <entity name="pstat" pk="SKU_CODE"
+                    query="SELECT st.PRODUCT_NAME as productName,st.PRODUCT_URL as productUrl,st.CATEGORY_NAV as categoryNav,ROUND(st.MIN_PRICE/100,2) as minPrice,ROUND(st.MAX_PRICE/100,2) as maxPrice,ROUND(st.PRODUCT_PRICE/100,2) as productPrice, ROUND(st.MARKET_PRICE/100,2) as marketPrice,st.SOLD_NUM as soldNum,st.COMMENT_NUM as commentNum,st.GOOD_COMMENT as goodComment,st.POOR_COMMENT as poorComment,st.STOCK_NUM as stockNum,st.CREATE_TIME as createTime,st.UPDATE_TIME as updateTime FROM T_PRODUCT_STAT st WHERE st.SKU_CODE='${match.skuCode}' 
+	"
+                    deltaQuery="SELECT SKU_CODE from T_PRODUCT_STAT where UPDATE_TIME > '${dih.laindex_time}'
+                    "
+                    parentDeltaQuery="SELECT ID as id from T_MATCH where SKU_CODE='${pstat.SKU_CODE}' AND IS_DELETE=0 and ITEM_CODE!='' " >
+                </entity>
+        </entity>
+  </document>
+</dataConfig>
