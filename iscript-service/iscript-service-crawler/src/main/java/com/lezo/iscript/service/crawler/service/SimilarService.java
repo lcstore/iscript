@@ -9,7 +9,7 @@ public interface SimilarService {
 
     void batchUpdateSimilarDtos(List<SimilarDto> dtoList);
 
-    List<SimilarDto> getSimilarDtoByJobIds(List<Long> jobIds);
+    List<SimilarDto> getSimilarDtoByJobIds(List<String> jobIds);
 
     List<String> getBrands();
 
@@ -18,5 +18,7 @@ public interface SimilarService {
     List<SimilarDto> getSimilarDtoByJobIdSiteId(String jobId, int siteId, Long fromId, int limit);
 
     List<SimilarDto> getSimilarDtoByIds(List<Long> idList);
+
+    List<SimilarDto> getSimilarDtoBySkuCodes(List<String> skuCodes);
 
 }

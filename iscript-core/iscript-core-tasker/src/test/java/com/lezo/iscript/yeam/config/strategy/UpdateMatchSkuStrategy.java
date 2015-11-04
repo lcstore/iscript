@@ -46,7 +46,7 @@ public class UpdateMatchSkuStrategy implements ResultStrategy, Closeable {
         CreateTaskTimer task = new CreateTaskTimer();
         // this.timer = new Timer(getName());
         // this.timer.schedule(task, 60 * 1000, 24 * 60 * 60 * 1000);
-        task.run();
+        // task.run();
     }
 
     private class CreateTaskTimer extends TimerTask {

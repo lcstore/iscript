@@ -69,6 +69,7 @@ public class SkuWithSimilarStrategy implements ResultStrategy, Closeable {
         List<SimilarDto> similarDto = Lists.newArrayList();
         String jobId = JSONUtils.getString(argsObject, "jid");
         String tokenCategory = JSONUtils.getString(argsObject, "cate");
+        Date createTime = new Date();
         for (int i = 0; i < len; i++) {
             JSONObject dObject = dataArray.getJSONObject(i);
             ProductStatDto statDto = new ProductStatDto();
@@ -76,9 +77,9 @@ public class SkuWithSimilarStrategy implements ResultStrategy, Closeable {
             ObjectUtils.copyObject(dObject, statDto);
             addProperties(statDto, dObject, argsObject);
             statDto.setSkuCode(statDto.getSiteId() + "_" + statDto.getProductCode());
-            if (statDto.getStockNum() == null || statDto.getStockNum() < 1) {
-                continue;
-            }
+            // if (statDto.getStockNum() == null || statDto.getStockNum() < 1) {
+            // continue;
+            // }
             String sImgUrl = JSONUtils.getString(dObject, "imgUrl");
             SimilarDto sDto = new SimilarDto();
             sDto.setSkuCode(statDto.getSkuCode());
@@ -94,6 +95,7 @@ public class SkuWithSimilarStrategy implements ResultStrategy, Closeable {
             sDto.setTokenCategory(tokenCategory);
             sDto.setTokenVary(JSONUtils.getString(dObject, "spuVary"));
             sDto.setArbiterId(SimilarDto.ARBITER_NAME);
+            sDto.setCreateTime(createTime);
             similarDto.add(sDto);
         }
         for (Field field : SimilarDto.class.getDeclaredFields()) {

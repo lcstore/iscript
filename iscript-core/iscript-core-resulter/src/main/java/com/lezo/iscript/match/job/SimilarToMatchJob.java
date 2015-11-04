@@ -148,6 +148,9 @@ public class SimilarToMatchJob implements Runnable {
                     mDto = dto;
                     similarDtos.add(mDto);
                 } else {
+                    if (mDto.getShopId() < 1) {
+                        dto.setShopId(dto.getShopId());
+                    }
                     for (Field field : SimilarDto.class.getDeclaredFields()) {
                         try {
                             if (!field.isAccessible()) {

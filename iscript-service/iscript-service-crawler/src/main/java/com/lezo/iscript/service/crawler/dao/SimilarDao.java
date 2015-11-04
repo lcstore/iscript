@@ -9,7 +9,7 @@ import com.lezo.iscript.common.Batch;
 import com.lezo.iscript.service.crawler.dto.SimilarDto;
 
 public interface SimilarDao extends BaseDao<SimilarDto> {
-    List<SimilarDto> getSimilarDtoByJobIds(@Param("jobIds") List<Long> jobIds);
+    List<SimilarDto> getSimilarDtoByJobIds(@Param("jobIds") List<String> jobIds);
 
     void batchUpdateBarCodeBySkuCode(@Batch List<SimilarDto> dtoList);
 
@@ -22,4 +22,6 @@ public interface SimilarDao extends BaseDao<SimilarDto> {
 
     List<SimilarDto> getSimilarDtoByJobIdSiteId(@Param("jobId") String jobId, @Param("siteId") int siteId,
             @Param("fromId") Long fromId, @Param("limit") int limit);
+
+    List<SimilarDto> getSimilarDtoBySkuCodes(@Param("skuCodes") List<String> skuCodes);
 }

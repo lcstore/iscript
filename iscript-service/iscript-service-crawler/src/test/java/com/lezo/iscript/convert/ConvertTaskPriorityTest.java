@@ -9,13 +9,16 @@ import java.util.UUID;
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.lezo.iscript.service.crawler.dao.TaskPriorityDao;
+import com.lezo.iscript.service.crawler.dto.SimilarDto;
 import com.lezo.iscript.service.crawler.dto.TaskPriorityDto;
+import com.lezo.iscript.service.crawler.service.SimilarService;
 import com.lezo.iscript.spring.context.SpringBeanUtils;
 import com.lezo.iscript.utils.BatchIterator;
 import com.lezo.iscript.utils.JSONUtils;
@@ -50,6 +53,54 @@ public class ConvertTaskPriorityTest {
         }
         total += taskList.size();
         log.info("insert type:" + type + ",count:" + taskList.size() + ",total:" + total);
+
+    }
+
+    @Test
+    public void testInsertBarCodeSkuWithSimilarStrategy() throws Exception {
+        String[] configs = new String[] { "classpath:spring-config-ds.xml" };
+        ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
+        TaskPriorityDao taskPriorityDao = SpringBeanUtils.getBean(TaskPriorityDao.class);
+        String type = "ConfigYhdProduct";
+        String jobId = System.currentTimeMillis() + ":sku";
+        JSONObject argsObject = new JSONObject();
+        JSONUtils.put(argsObject, "strategy", "SkuWithSimilarStrategy");
+        JSONUtils.put(argsObject, "jobid", jobId);
+        JSONUtils.put(argsObject, "bid", jobId);
+        int total = 0;
+        SimilarService similarService = SpringBeanUtils.getBean(SimilarService.class);
+        Long fromId = 0L;
+        int limit = 500;
+        int siteId = 1002;
+        String srcJobId = "1446351659066";
+        while (true) {
+            List<SimilarDto> dtoList = similarService.getSimilarDtoByJobIdSiteId(srcJobId, siteId, fromId, limit);
+            for (SimilarDto dto : dtoList) {
+                if (fromId < dto.getId()) {
+                    fromId = dto.getId();
+                }
+            }
+            total += dtoList.size();
+            log.info("siteId:" + siteId + ",fromId:" + fromId + ",size:" + dtoList.size() + ",total:" + total);
+            List<TaskPriorityDto> taskList = new ArrayList<TaskPriorityDto>();
+            for (SimilarDto sDto : dtoList) {
+                if (StringUtils.isBlank(sDto.getBarCode())) {
+                    continue;
+                }
+                JSONUtils.put(argsObject, "barCode", sDto.getBarCode());
+                TaskPriorityDto taskDto = createPriorityDto(sDto.getProductUrl(), type, argsObject);
+                taskList.add(taskDto);
+            }
+            BatchIterator<TaskPriorityDto> it = new BatchIterator<TaskPriorityDto>(taskList, 500);
+            while (it.hasNext()) {
+                taskPriorityDao.batchInsert(it.next());
+            }
+            log.info("insert type:" + type + ",count:" + taskList.size() + ",total:" + total);
+            if (dtoList.size() < limit) {
+                break;
+            }
+
+        }
 
     }
 

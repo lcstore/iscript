@@ -97,6 +97,8 @@ public class ConfigYhdProduct implements ConfigParser {
         url = index > 0 ? url.substring(0, index) : url;
         HttpGet get = createHttpGetWithIp(url);
         get.addHeader("Refer", refer);
+        get.addHeader("User-Agent",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:41.0) Gecko/20100101 Firefox/41.0");
         String html = HttpClientUtils.getContent(client, get, "UTF-8");
         Document dom = Jsoup.parse(html, url);
         DataBean dataBean = new DataBean();
@@ -328,7 +330,7 @@ public class ConfigYhdProduct implements ConfigParser {
         client.getCookieStore().addCookie(cookie);
         cookie = new BasicClientCookie("test_cookie", "1");
         client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("msessionid", "1PJ241E6A15H8896SR8M7ANCZBRWJX14");
+        cookie = new BasicClientCookie("msessionid", "VEEWSM5ZGU974XPBHBK49YEREC45U6ENG6UT");
         client.getCookieStore().addCookie(cookie);
     }
 

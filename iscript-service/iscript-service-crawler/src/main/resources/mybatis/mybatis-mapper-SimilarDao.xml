@@ -142,4 +142,20 @@
 	       LIMIT #{limit}
 	    </where>
 	</select>
+	<select id="getSimilarDtoByJobIds" resultMap="RM_SimilarDto">
+	    SELECT * FROM T_SIMILAR
+	    <where>
+	      <foreach collection="jobIds" item="id" open="AND JOB_ID IN(" separator="," close=")">
+	           #{id}
+	       </foreach>
+	    </where>
+	</select>
+	<select id="getSimilarDtoBySkuCodes" resultMap="RM_SimilarDto">
+	    SELECT * FROM T_SIMILAR
+	    <where>
+	      <foreach collection="skuCodes" item="code" open="AND SKU_CODE IN(" separator="," close=")">
+	           #{code}
+	       </foreach>
+	    </where>
+	</select>
 </mapper>

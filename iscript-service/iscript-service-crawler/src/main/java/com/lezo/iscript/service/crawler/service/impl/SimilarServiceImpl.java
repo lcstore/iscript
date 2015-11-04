@@ -38,7 +38,7 @@ public class SimilarServiceImpl implements SimilarService {
     }
 
     @Override
-    public List<SimilarDto> getSimilarDtoByJobIds(List<Long> jobIds) {
+    public List<SimilarDto> getSimilarDtoByJobIds(List<String> jobIds) {
         if (CollectionUtils.isEmpty(jobIds)) {
             return Collections.emptyList();
         }
@@ -69,6 +69,14 @@ public class SimilarServiceImpl implements SimilarService {
             return Collections.emptyList();
         }
         return similarDao.getDtoByIds(idList);
+    }
+
+    @Override
+    public List<SimilarDto> getSimilarDtoBySkuCodes(List<String> skuCodes) {
+        if (CollectionUtils.isEmpty(skuCodes)) {
+            return Collections.emptyList();
+        }
+        return similarDao.getSimilarDtoBySkuCodes(skuCodes);
     }
 
 }
