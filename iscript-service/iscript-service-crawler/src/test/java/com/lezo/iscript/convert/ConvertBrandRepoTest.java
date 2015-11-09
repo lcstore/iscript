@@ -92,6 +92,7 @@ public class ConvertBrandRepoTest {
         List<String> lineList = FileUtils.readLines(new File(path), "UTF-8");
         List<BrandRepoDto> dtoList = Lists.newArrayList();
         Date newDate = new Date();
+        String sortName = "个护化妆";
         for (String line : lineList) {
             String[] brandArr = line.toLowerCase().split(",");
             List<String> brandList = Lists.newArrayList(brandArr);
@@ -112,7 +113,7 @@ public class ConvertBrandRepoTest {
             dto.setRegionName(StringUtils.EMPTY);
             dto.setCreateTime(newDate);
             dto.setUpdateTime(dto.getCreateTime());
-            dto.setSortName("手机数码");
+            dto.setSortName(sortName);
             dtoList.add(dto);
         }
         brandRepoService.batchSaveDtos(dtoList);

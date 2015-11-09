@@ -34,8 +34,9 @@ public class TaskPriorityServiceImplTest {
         String[] configs = new String[] { "classpath:spring-config-ds.xml" };
         ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
         TaskPriorityDao taskPriorityDao = SpringBeanUtils.getBean(TaskPriorityDao.class);
-        String type = "ConfigJdProduct";
-        File srcDir = new File("/apps/src/codes/lezo/iblade/data/jd/top/sku");
+        String type = "ConfigYhdProduct";
+        // File srcDir = new File("/apps/src/codes/lezo/iblade/data/jd/top/sku");
+        File srcDir = new File("/apps/src/codes/blade/data/yhd/top/sku");
         File[] files = srcDir.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
@@ -43,7 +44,7 @@ public class TaskPriorityServiceImplTest {
             }
         });
         String jobId = System.currentTimeMillis() + "";
-        String cate = "手机数码";
+        String cate = "个护化妆";
         JSONObject argsObject = new JSONObject();
         JSONUtils.put(argsObject, "strategy", "SkuWithSimilarStrategy");
         JSONUtils.put(argsObject, "cate", cate);
