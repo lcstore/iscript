@@ -29,7 +29,7 @@ public class BrandCollectTest {
 
     @Test
     public void testGetJdBrands() throws Exception {
-        String url = "http://list.jd.com/list.html?cat=652,12345,12347";
+        String url = "http://list.jd.com/list.html?cat=1316,1387,1420";
         Document rootDoc = getDocument(url);
         List<String> urlList = Lists.newArrayList();
         Elements crumbEls = rootDoc.select("div.crumbs-nav-main div.crumbs-nav-item");
@@ -67,7 +67,7 @@ public class BrandCollectTest {
     @Test
     public void testGetYhdBrands() throws Exception {
         String url =
-                "http://list.yhd.com/searchPage/c8644-0-81089/b/a-s1-v4-p1-price-d0-f0d-m1-rt0-pid-mid0-k/?callback=jQuery1113030866268260481766_1445879831626&&type=moreBrand&_=1445879831632";
+                "http://list.yhd.com/searchPage/c5009-0-84379/b/a-s1-v0-p1-price-d0-f0-m1-rt0-pid-mid0-k/?callback=jQuery111308959013551409554_1447058864458&&type=moreBrand&_=1447058864467";
         Document dom = null;
         String body = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:41.0) Gecko/20100101 Firefox/41.0")
