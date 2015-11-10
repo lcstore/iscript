@@ -63,6 +63,24 @@ public class EtaoHuoyuanTest {
     }
 
     @Test
+    public void testSignGetTimestamp2() throws Exception {
+        // /rest/api3.do?sign=91707cfdfdefd491bca0ab9dcdba1644&v=*&t=1447146319699&imei=860308028232581&api=mtop.common.getTimestamp&imsi=460026214427182&deviceId=AoMLaM8JtvOTjJd1seoUwi7AQkKJGO7sRyjeKxJOihsF&appKey=21702307
+        // HTTP/1.1
+        String source = "21702307";
+        String keySign = TaobaoUtils.byte2hex(TaobaoUtils.encryptMD5(source)).toLowerCase();
+        Assert.assertEquals("5e1687ec37e9b76ee7b82464c11bd10b", keySign);
+        String verSign = TaobaoUtils.byte2hex(TaobaoUtils.encryptMD5("")).toLowerCase();
+        String timestamp = "1447146319699";
+        Assert.assertEquals("d41d8cd98f00b204e9800998ecf8427e", verSign);
+        source =
+                "null&" + keySign + "&mtop.common.getTimestamp&*&860308028232581&460026214427182&" + verSign
+                        + "&" + timestamp;
+        String sign = TaobaoUtils.byte2hex(TaobaoUtils.encryptMD5(source)).toLowerCase();
+        System.err.println("sign:" + sign);
+        Assert.assertEquals("91707cfdfdefd491bca0ab9dcdba1644", sign);
+    }
+
+    @Test
     public void testSignNewDeviceId() throws Exception {
         String keySign = TaobaoUtils.byte2hex(TaobaoUtils.encryptMD5("21702307")).toLowerCase();
         Assert.assertEquals("5e1687ec37e9b76ee7b82464c11bd10b", keySign);

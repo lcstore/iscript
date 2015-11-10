@@ -1,0 +1,99 @@
+params = {HashMap@830008151544}  size = 8
+ 0 = {HashMap$HashMapEntry@830012164096} "v" -> "2.0"
+ 1 = {HashMap$HashMapEntry@830011855032} "t" -> "1447154226726"
+ 2 = {HashMap$HashMapEntry@830012179344} "imei" -> "861000020674881"
+ 3 = {HashMap$HashMapEntry@830011795272} "data" -> "{"content":"6935036481018","type":"EAN8","gps":"0,0"}"
+ 4 = {HashMap$HashMapEntry@830012168712} "api" -> "mtop.etao.kaka.barcode.search"
+ 5 = {HashMap$HashMapEntry@830012180064} "imsi" -> "460011607507288"
+ 6 = {HashMap$HashMapEntry@830011127864} "deviceId" -> "AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx"
+ 7 = {HashMap$HashMapEntry@830011721768} "appKey" -> "21702307"
+appkey = {String@830008566256} "21702307"
+sign = null
+
+params = {HashMap@830008151544}  size = 8
+ 0 = {HashMap$HashMapEntry@830012164096} "v" -> "2.0"
+ 1 = {HashMap$HashMapEntry@830011855032} "t" -> "1447154226726"
+ 2 = {HashMap$HashMapEntry@830012179344} "imei" -> "861000020674881"
+ 3 = {HashMap$HashMapEntry@830011795272} "data" -> "{"content":"6935036481018","type":"EAN8","gps":"0,0"}"
+ 4 = {HashMap$HashMapEntry@830012168712} "api" -> "mtop.etao.kaka.barcode.search"
+ 5 = {HashMap$HashMapEntry@830012180064} "imsi" -> "460011607507288"
+ 6 = {HashMap$HashMapEntry@830011127864} "deviceId" -> "AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx"
+ 7 = {HashMap$HashMapEntry@830011721768} "appKey" -> "21702307"
+
+
+signParams = {HashMap@830011640816}  size = 6
+ 0 = {HashMap$HashMapEntry@830011889128} "IMSI" -> "460011607507288"
+ 1 = {HashMap$HashMapEntry@830011912000} "TIME" -> "1447154226726"
+ 2 = {HashMap$HashMapEntry@830011492712} "API" -> "mtop.etao.kaka.barcode.search"
+ 3 = {HashMap$HashMapEntry@830011947312} "V" -> "2.0"
+ 4 = {HashMap$HashMapEntry@830012133624} "IMEI" -> "861000020674881"
+ 5 = {HashMap$HashMapEntry@830012111432} "DATA" -> "{"content":"6935036481018","type":"EAN8","gps":"0,0"}"
+
+c7d62d35ad799fe379428009d5a013f0
+
+
+0 = {HashMap$HashMapEntry@830009904352} "sign" -> "c7d62d35ad799fe379428009d5a013f0"
+1 = {HashMap$HashMapEntry@830012164096} "v" -> "2.0"
+2 = {HashMap$HashMapEntry@830011855032} "t" -> "1447154226726"
+3 = {HashMap$HashMapEntry@830012179344} "imei" -> "861000020674881"
+4 = {HashMap$HashMapEntry@830011795272} "data" -> "{"content":"6935036481018","type":"EAN8","gps":"0,0"}"
+5 = {HashMap$HashMapEntry@830012168712} "api" -> "mtop.etao.kaka.barcode.search"
+6 = {HashMap$HashMapEntry@830012180064} "imsi" -> "460011607507288"
+7 = {HashMap$HashMapEntry@830011127864} "deviceId" -> "AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx"
+8 = {HashMap$HashMapEntry@830011721768} "appKey" -> "21702307"
+
+
+http://api.m.taobao.com/rest/api3.do?sign=c7d62d35ad799fe379428009d5a013f0&v=2.0&t=1447154226726&imei=861000020674881&data=%7B%22content%22%3A%226935036481018%22%2C%22type%22%3A%22EAN8%22%2C%22gps%22%3A%220%2C0%22%7D&api=mtop.etao.kaka.barcode.search&imsi=460011607507288&deviceId=AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx&appKey=21702307
+
+
+ paramHashMap = new DataContext();
+    paramHashMap.extData = paramString.getBytes();
+  this.mSecretUtil.getSign(localHashMap, paramHashMap);
+
+  public abstract String getMtopSign(HashMap paramHashMap, DataContext paramDataContext);
+
+
+
+params = {HashMap@830011111528}  size = 8
+ 0 = {HashMap$HashMapEntry@830010661768} "v" -> "2.0"
+ 1 = {HashMap$HashMapEntry@830009075568} "t" -> "1447156596871"
+ 2 = {HashMap$HashMapEntry@830010312056} "imei" -> "861000020674881"
+ 3 = {HashMap$HashMapEntry@830009082960} "data" -> "{"content":"6921665709012","type":"EAN8","gps":"0,0"}"
+ 4 = {HashMap$HashMapEntry@830010599176} "api" -> "mtop.etao.kaka.barcode.search"
+ 5 = {HashMap$HashMapEntry@830010310464} "imsi" -> "460011607507288"
+ 6 = {HashMap$HashMapEntry@830010180504} "deviceId" -> "AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx"
+ 7 = {HashMap$HashMapEntry@830009066304} "appKey" -> "21702307"
+
+ d25e1d2dbe713b5b03e4ffa23d62f5b8
+
+
+ params = {HashMap@830011117408}  size = 8
+ 0 = {HashMap$HashMapEntry@830009104536} "v" -> "2.0"
+ 1 = {HashMap$HashMapEntry@830008833824} "t" -> "1447156729072"
+ 2 = {HashMap$HashMapEntry@830008856472} "imei" -> "861000020674881"
+ 3 = {HashMap$HashMapEntry@830008843392} "data" -> "{"content":"6921665709012","type":"EAN8","gps":"0,0"}"
+ 4 = {HashMap$HashMapEntry@830009004280} "api" -> "mtop.etao.kaka.barcode.search"
+ 5 = {HashMap$HashMapEntry@830008854456} "imsi" -> "460011607507288"
+ 6 = {HashMap$HashMapEntry@830008854360} "deviceId" -> "AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx"
+ 7 = {HashMap$HashMapEntry@830008830488} "appKey" -> "21702307"
+appkey = {String@830011055840} "21702307"
+signParams = {HashMap@830010264512}  size = 6
+ 0 = {HashMap$HashMapEntry@830008936400} "IMSI" -> "460011607507288"
+ 1 = {HashMap$HashMapEntry@830011374336} "TIME" -> "1447156729072"
+ 2 = {HashMap$HashMapEntry@830008695624} "API" -> "mtop.etao.kaka.barcode.search"
+ 3 = {HashMap$HashMapEntry@830008792464} "V" -> "2.0"
+ 4 = {HashMap$HashMapEntry@830011388912} "IMEI" -> "861000020674881"
+ 5 = {HashMap$HashMapEntry@830008470008} "DATA" -> "{"content":"6921665709012","type":"EAN8","gps":"0,0"}"
+
+ params = {HashMap@830011117408}  size = 9
+ 0 = {HashMap$HashMapEntry@830011030272} "sign" -> "8f4bf0b894ab0a8e6e0de10dc46460a9"
+ 1 = {HashMap$HashMapEntry@830009104536} "v" -> "2.0"
+ 2 = {HashMap$HashMapEntry@830008833824} "t" -> "1447156729072"
+ 3 = {HashMap$HashMapEntry@830008856472} "imei" -> "861000020674881"
+ 4 = {HashMap$HashMapEntry@830008843392} "data" -> "{"content":"6921665709012","type":"EAN8","gps":"0,0"}"
+ 5 = {HashMap$HashMapEntry@830009004280} "api" -> "mtop.etao.kaka.barcode.search"
+ 6 = {HashMap$HashMapEntry@830008854456} "imsi" -> "460011607507288"
+ 7 = {HashMap$HashMapEntry@830008854360} "deviceId" -> "AolwXt5ylKYeiRE4v7x1aMOfGo3AhRJVUufTOEBWIAzx"
+ 8 = {HashMap$HashMapEntry@830008830488} "appKey" -> "21702307"
+
+ SecretUtil.getMtopSign
