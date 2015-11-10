@@ -79,4 +79,9 @@ public class SimilarServiceImpl implements SimilarService {
         return similarDao.getSimilarDtoBySkuCodes(skuCodes);
     }
 
+    @Override
+    public List<String> getBrandByJobIdsOrSiteIds(List<String> jobIds, List<Integer> siteIds) {
+        return similarDao.getBrandByJobIdsOrSiteIds(jobIds, siteIds);
+    }
+
 }

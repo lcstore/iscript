@@ -116,6 +116,22 @@
 	<select id="getBrands" resultType="String">
 	    SELECT DISTINCT TOKEN_BRAND FROM T_SIMILAR
 	</select>
+	<select id="getBrandByJobIdsOrSiteIds" resultType="String">
+	    SELECT DISTINCT TOKEN_BRAND FROM T_SIMILAR
+	    <where>
+	        1=1
+	        <if test="jobIds !=null and !jobIds.isEmpty()">
+		      <foreach collection="jobIds" item="jobId" open="AND JOB_ID IN(" separator="," close=")">
+		           #{jobId}
+		       </foreach>
+	        </if>
+	        <if test="siteIds !=null and !siteIds.isEmpty()">
+		      <foreach collection="siteIds" item="siteId" open="AND SITE_ID IN(" separator="," close=")">
+		           #{siteId}
+		       </foreach>
+	        </if>
+	    </where>
+	</select>
 	
 	<select id="getSimilarDtoByBrandAndId" resultMap="RM_SimilarDto">
 	    SELECT * FROM T_SIMILAR

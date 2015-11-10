@@ -77,7 +77,9 @@ public class SimilarToMatchJob implements Runnable {
             running.set(true);
             SimilarService similarService = SpringBeanUtils.getBean(SimilarService.class);
             MatchService matchService = SpringBeanUtils.getBean(MatchService.class);
-            List<String> brandList = similarService.getBrands();
+            List<String> jobIds = Lists.newArrayList();
+            List<Integer> siteIds = Lists.newArrayList();
+            List<String> brandList = similarService.getBrandByJobIdsOrSiteIds(jobIds, siteIds);
             int limit = 500;
             Long fromId = 0L;
             SimilarCluster cluster = new SimilarCluster();

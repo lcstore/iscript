@@ -21,4 +21,6 @@ public interface SimilarService {
 
     List<SimilarDto> getSimilarDtoBySkuCodes(List<String> skuCodes);
 
+    List<String> getBrandByJobIdsOrSiteIds(List<String> jobIds, List<Integer> siteIds);
+
 }

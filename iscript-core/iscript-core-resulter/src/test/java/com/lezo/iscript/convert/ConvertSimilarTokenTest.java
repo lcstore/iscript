@@ -56,7 +56,7 @@ public class ConvertSimilarTokenTest {
         synonymBrandService = cx.getBean(SynonymBrandService.class);
         long start = System.currentTimeMillis();
         String jobId = "";
-        jobId = "1446351659066";
+        jobId = "1447061637573";
         Long fromId = 0L;
         int limit = 500;
         // DicLoader loader = createLoader();
