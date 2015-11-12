@@ -15,8 +15,6 @@ public class CImplSecretUtil {
     private native String getTopToken(byte[] paramArrayOfByte, String paramString, DataContext paramDataContext);
 
     static {
-        System.setProperty("java.library.path",
-                "/apps/src/codes/lezo/iscript/iscript-common/iscript-common-rest/lib/armeabi");
         System.load("SSECeg-1.2.7");
     }
 

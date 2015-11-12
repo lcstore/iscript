@@ -1,19 +1,17 @@
-package com.lezo.rest;
+package com.taobao.securityjni;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.google.common.collect.Maps;
 import com.taobao.securityjni.impl.CImplSecretUtil;
 import com.taobao.securityjni.tools.DataContext;
 
-public class EtaoSignTest {
+public class EtaoSignMain {
 
-    @Test
-    public void testSignSearch() throws Exception {
+    public static void main(String[] args) throws Exception {
         Map<String, String> map = Maps.newHashMap();
         map.put("IMSI", "460011607507288");
         map.put("TIME", "1447156729072");
