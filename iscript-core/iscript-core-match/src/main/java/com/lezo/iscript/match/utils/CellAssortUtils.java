@@ -164,6 +164,7 @@ public class CellAssortUtils {
                     if (toIndex >= destIndex) {
                         token.setValue(StringUtils.EMPTY);
                     } else {
+                        destIndex = destIndex > origin.length() ? origin.length() : destIndex;
                         String newVal = origin.substring(toIndex, destIndex);
                         token.setValue(newVal);
                     }

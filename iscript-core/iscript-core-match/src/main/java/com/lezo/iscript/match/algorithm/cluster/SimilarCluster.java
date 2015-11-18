@@ -49,6 +49,9 @@ public class SimilarCluster implements ICluster {
 
     @Override
     public List<SimilarCenter> doCluster(List<SimilarIn> similarIns, List<SimilarFact> facts) {
+        if (CollectionUtils.isEmpty(similarIns)) {
+            return Collections.emptyList();
+        }
         List<SimilarCenter> oldCenters = null;
         List<SimilarCenter> newCenters = null;
         int maxCount = 100;

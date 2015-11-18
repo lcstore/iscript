@@ -56,16 +56,19 @@ public class ConvertSimilarTokenTest {
         synonymBrandService = cx.getBean(SynonymBrandService.class);
         long start = System.currentTimeMillis();
         String jobId = "";
-        jobId = "1447061637573";
+        jobId = "1447489345384";
         Long fromId = 0L;
         int limit = 500;
         // DicLoader loader = createLoader();
         DicLoader loader = createRepoLoader();
         BrandMapper.getInstance().setLoader(loader);
-        List<Integer> siteIds = Lists.newArrayList(1001, 1002);
+        List<Integer> siteIds = Lists.newArrayList(1002);
         for (Integer sid : siteIds) {
             int total = 0;
             fromId = 0L;
+            if (sid == 1003) {
+                fromId = 71390L;
+            }
             while (true) {
                 List<SimilarDto> dtoList = similarService.getSimilarDtoByJobIdSiteId(jobId, sid, fromId, limit);
                 doToken(dtoList);
@@ -173,6 +176,9 @@ public class ConvertSimilarTokenTest {
                 dto.setTokenModel(StringUtils.EMPTY);
             } else {
                 String sValue = assort.getValue().getValue().getValue();
+                if (sValue.length() > 100) {
+                    sValue = sValue.substring(0, 100);
+                }
                 dto.setTokenModel(sValue);
             }
 
