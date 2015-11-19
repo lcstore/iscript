@@ -2,19 +2,10 @@ package com.lezo.iscript.yeam.config;
 
 import java.security.MessageDigest;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.json.JSONArray;
@@ -22,6 +13,7 @@ import org.json.JSONObject;
 
 import com.lezo.iscript.rest.http.HttpClientManager;
 import com.lezo.iscript.rest.http.HttpClientUtils;
+import com.lezo.iscript.utils.BarCodeUtils;
 import com.lezo.iscript.utils.JSONUtils;
 import com.lezo.iscript.utils.PriceUtils;
 import com.lezo.iscript.yeam.ClientConstant;
@@ -29,9 +21,9 @@ import com.lezo.iscript.yeam.service.ConfigParser;
 import com.lezo.iscript.yeam.service.DataBean;
 import com.lezo.iscript.yeam.writable.TaskWritable;
 
-public class ConfigYhdBarCodeMatch implements ConfigParser {
+public class ConfigDangBarCodeMatch implements ConfigParser {
     private DefaultHttpClient client = HttpClientManager.getDefaultHttpClient();
-    private static final Integer SITE_ID = 1002;
+    private static final Integer SITE_ID = 1015;
 
     @Override
     public String getName() {
@@ -57,149 +49,109 @@ public class ConfigYhdBarCodeMatch implements ConfigParser {
     }
 
     private DataBean getDataObject(TaskWritable task) throws Exception {
-        String sBarCode = (String) task.get("barCode");
-        String sUrl = getUrl(sBarCode);
-        HttpPost post = new HttpPost(sUrl);
-        Map<String, String> paramMap = new HashMap<String, String>();
-        paramMap.put("userToken", "");
-        paramMap.put("provinceId", "1");
-        paramMap.put("Accept-Encoding", "gzip, deflate");
-        paramMap.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-        paramMap.put(
-                "clientInfo",
-                "{\"clientAppVersion\":\"4.1.2\",\"clientSystem\":\"android\",\"clientVersion\":\"4.1.1\",\"deviceCode\":\"ffffffff-8070-baad-ea14-430a62cce3ff\",\"iaddr\":\"1\",\"imei\":\"860308028232581\",\"latitude\":\"31.197161\",\"longitude\":\"121.430204\",\"nettype\":\"wifi\",\"phoneType\":\"MI 2,16,4.1.1\",\"traderName\":\"androidSystem\",\"unionKey\":\"8149186\"}");
-
-        post.addHeader(
-                "User-Agent",
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
-        for (Entry<String, String> entry : paramMap.entrySet()) {
-            post.addHeader(entry.getKey(), entry.getValue());
-        }
-        String html = HttpClientUtils.getContent(client, post);
-        JSONObject dObject = JSONUtils.getJSONObject(html);
+        String barCode = (String) task.getArgs().get("barCode");
         DataBean dataBean = new DataBean();
-        dObject = JSONUtils.getJSONObject(dObject, "data");
-        if (dObject == null) {
+        if (!BarCodeUtils.isBarCode(barCode)) {
             return dataBean;
         }
-        JSONArray dArray = JSONUtils.get(dObject, "productList");
-        if (dArray == null) {
-            return dataBean;
+        String sUrl = getSimilarUrl(barCode);
+        HttpGet get = new HttpGet(sUrl);
+        get.addHeader("Accept-Encoding", "gzip");
+        get.addHeader("User-Agent", "4.1.1,MI 2,720*1280");
+        get.addHeader("X-Online-Host", "mapi.dangdang.com");
+        get.addHeader("Host", "mapi.dangdang.com");
+        try {
+            String html = HttpClientUtils.getContent(client, get);
+            JSONObject dObject = JSONUtils.getJSONObject(html);
+            JSONArray productArray = JSONUtils.get(dObject, "product");
+            if (productArray != null && productArray.length() > 0) {
+                for (int i = 0; i < productArray.length(); i++) {
+                    Object pObj = productArray.get(i);
+                    JSONObject dataObj = null;
+                    try {
+                        if (pObj instanceof JSONObject) {
+                            dataObj = (JSONObject) pObj;
+                        } else {
+                            break;
+                        }
+                    } catch (Exception e) {
+                        System.err.println(dObject);
+                        throw e;
+                    }
+                    ProductBean tBean = new ProductBean();
+                    tBean.setSiteId(SITE_ID);
+                    tBean.setBarCode(barCode);
+                    tBean.setProductName(JSONUtils.getString(dataObj, "product_name"));
+                    tBean.setProductCode(JSONUtils.getString(dataObj, "product_id"));
+                    // tBean.setWareCode(JSONUtils.getString(dataObj, "itemId"));
+                    tBean.setProductUrl(String.format("http://product.dangdang.com/%s.html", tBean.getProductCode()));
+                    String shopId = JSONUtils.getString(dataObj, "shop_id");
+                    if ("0".equals(shopId)) {
+                        tBean.setShopId(tBean.getSiteId());
+                    } else {
+                        tBean.setShopCode(shopId);
+                        tBean.setShopUrl(String.format("http://shop.dangdang.com/%s", tBean.getShopCode()));
+                    }
+                    tBean.setProductPrice(PriceUtils.toCentPrice(JSONUtils.getFloat(dataObj, "sale_price")));
+                    if (tBean.getProductPrice() == null || tBean.getProductPrice() <= 0) {
+                        tBean.setStockNum(0);
+                    } else {
+                        tBean.setStockNum(1);
+                    }
+                    String imgUrl = JSONUtils.getString(dataObj, "image_url");
+                    imgUrl = imgUrl.replaceFirst("-[0-9_a-zA-Z]+\\.", "-1_b_1\\.");
+                    tBean.setImgUrl(imgUrl);
+                    dataBean.getDataList().add(tBean);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        for (int i = 0; i < dArray.length(); i++) {
-            JSONObject dObj = dArray.getJSONObject(i);
-            ProductBean tBean = new ProductBean();
-            tBean.setProductName(JSONUtils.getString(dObj, "cnName"));
-            tBean.setBarCode(sBarCode);
-            String imgUrl = JSONUtils.getString(dObj, "midleDefaultProductUrl");
-            imgUrl = imgUrl.replace("_200x200.jpg", "_360x360.jpg");
-            tBean.setImgUrl(imgUrl);
-            tBean.setMarketPrice(PriceUtils.toCentPrice(JSONUtils.getFloat(dObj, "maketPrice")));
-            tBean.setProductCode(JSONUtils.getString(dObj, "pmId"));
-            tBean.setSiteId(SITE_ID);
-            Boolean canBuy = JSONUtils.get(dObj, "canBuy");
-            if (canBuy != null && canBuy) {
-                tBean.setStockNum(1);
-            } else {
-                tBean.setStockNum(0);
-            }
-            tBean.setShopName(JSONUtils.getString(dObj, "merchantName"));
-            tBean.setShopCode(JSONUtils.getString(dObj, "merchantId"));
-            if (StringUtils.isBlank(tBean.getShopName())) {
-                tBean.setShopId(SITE_ID);
-            }
-            if (StringUtils.isNotBlank(tBean.getShopCode())) {
-                tBean.setShopUrl("http://shop.yhd.com/m-" + tBean.getShopCode() + ".html");
-            }
-            tBean.setProductPrice(PriceUtils.toCentPrice(JSONUtils.getFloat(dObj, "yhdPrice")));
-            tBean.setWareCode(JSONUtils.getString(dObj, "productId"));
-            tBean.setProductUrl("http://item.yhd.com/item/" + tBean.getProductCode());
-            dataBean.getDataList().add(tBean);
-        }
-
         return dataBean;
     }
 
-    public String getUrl(String bCode) throws Exception {
-        Map<String, String> map = new HashMap<String, String>();
-        String timestamp = "" + System.currentTimeMillis() / 1000;
-        map.put("timestamp", timestamp);
-        map.put("guid", "0");
-        map.put("methodBody", "");
-        map.put("signature_method", "md5");
-        map.put("barcode", bCode);
-        map.put("trader", "androidSystem");
-        map.put("methodName", "getProductByBarcodeWithPMS/v1.3.8");
-        String sKey = "wwwdhsm6";
-        TreeMap<String, String> treeMap = new TreeMap<String, String>();
-        treeMap.putAll(map);
+    private String getSimilarUrl(String barCode) {
+        long stamp = System.currentTimeMillis() / 1000;
         StringBuilder sb = new StringBuilder();
-        for (Entry<String, String> entry : treeMap.entrySet()) {
-            sb.append(entry.getKey().toLowerCase(Locale.US)).append("=").append(entry.getValue());
-        }
-        sb.append(sKey);
-        String newParams = sb.toString();
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        String signature = new String(doCharMap(md.digest(newParams.getBytes())));
+        String timestamp = "" + stamp;
+        // timestamp = "1447576198";
+        sb.append("list_isbn_product").append(",").append(timestamp).append(",XinXF,")
+                .append("f6cb965617ddf6a2cc605e63986cbe76");
+        String encode = encode(sb.toString());
 
-        map.put("signature", signature);
-        StringBuffer urlBuffer = new StringBuffer("http://mapi.yhd.com/search/getProductByBarcodeWithPMS/v1.3.8?");
-        Iterator<Entry<String, String>> it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, String> entry = it.next();
-            urlBuffer.append(entry.getKey()).append("=").append(entry.getValue());
-            if (it.hasNext()) {
-                urlBuffer.append("&");
-            }
-        }
-        return urlBuffer.toString();
+        return "http://mapi.dangdang.com/index.php?permanent_id=20151115155913994749351552620346617&timestamp="
+                + timestamp
+                + "&img_size=b&union_id=537-100475&user_client=android&isbn=" + barCode
+                + "&action=list_isbn_product&time_code="
+                + encode + "&udid=f6cb965617ddf6a2cc605e63986cbe76&client_version=6.0.2";
     }
 
-    private static final char[] CHAR_MAP = { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70 };
+    private static final char[] chars = { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102 };
 
-    public static char[] doCharMap(byte[] paramArrayOfByte)
-    {
+    public static String encode(String paramString) {
         int j = 0;
-        int k = paramArrayOfByte.length;
-        char[] arrayOfChar = new char[k << 1];
-        int i = 0;
-        for (;;)
+        try
         {
-            if (i >= k) {
-                return arrayOfChar;
+            Object localObject = MessageDigest.getInstance("MD5");
+            ((MessageDigest) localObject).update(paramString.getBytes("UTF-8"));
+            byte[] mBytes = ((MessageDigest) localObject).digest();
+            int k = mBytes.length;
+            char[] destChars = new char[k << 1];
+            int i = 0;
+            while (i < k)
+            {
+                int m = j + 1;
+                destChars[j] = chars[((mBytes[i] & 0xF0) >>> 4)];
+                j = m + 1;
+                destChars[m] = chars[(mBytes[i] & 0xF)];
+                i += 1;
             }
-            int m = j + 1;
-            arrayOfChar[j] = CHAR_MAP[((paramArrayOfByte[i] & 0xF0) >>> 4)];
-            j = m + 1;
-            arrayOfChar[m] = CHAR_MAP[(paramArrayOfByte[i] & 0xF)];
-            i += 1;
+            return new String(destChars);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
-    }
-
-    private void addCookie() {
-        BasicClientCookie cookie = new BasicClientCookie("__utma",
-                "40580330.1541470702.1396602044.1406527175.1406603327.18");
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("__utmc", "193324902");
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("__utmz",
-                "193324902.1401026096.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)");
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("provinceId", "1");
-        client.getCookieStore().addCookie(cookie);
-        String[] uArr = UUID.randomUUID().toString().split("-");
-        cookie = new BasicClientCookie("uname", uArr[0]);
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("yihaodian_uid", "" + Math.abs(uArr[0].hashCode()));
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("i2042", "_");
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("newUserFlag", "1");
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("test_cookie", "1");
-        client.getCookieStore().addCookie(cookie);
-        cookie = new BasicClientCookie("msessionid", "1PJ241E6A15H8896SR8M7ANCZBRWJX14");
-        client.getCookieStore().addCookie(cookie);
+        return null;
     }
 
     private class ProductBean {

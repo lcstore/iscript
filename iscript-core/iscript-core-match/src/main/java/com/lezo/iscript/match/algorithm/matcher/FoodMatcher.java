@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -53,6 +54,10 @@ public class FoodMatcher implements IMatcher {
         }
         for (SimilarIn newIn : similarIns) {
             String origin = newIn.getProductName();
+            if (newIn.getTokenBrand() != null
+                    && StringUtils.isNotBlank(newIn.getTokenBrand().getValue().getValue().getValue())) {
+                origin = newIn.getTokenBrand().getValue().getValue().getValue() + " " + newIn.getProductName();
+            }
             for (IAdorner adorner : getAdorners()) {
                 origin = adorner.doAdorn(origin);
             }

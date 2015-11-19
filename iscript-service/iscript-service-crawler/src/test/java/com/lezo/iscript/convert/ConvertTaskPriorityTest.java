@@ -31,8 +31,9 @@ public class ConvertTaskPriorityTest {
         String[] configs = new String[] { "classpath:spring-config-ds.xml" };
         ApplicationContext cx = new ClassPathXmlApplicationContext(configs);
         TaskPriorityDao taskPriorityDao = SpringBeanUtils.getBean(TaskPriorityDao.class);
-        String type = "ConfigYhdBarCodeMatch";
-        File bcFile = new File("/apps/src/codes/lezo/iscript/iscript-service/iscript-service-crawler/data/jd.bc.txt");
+        String type = "ConfigSuningBarCodeMatch";
+        File bcFile =
+                new File("/apps/src/codes/lezo/iscript/iscript-service/iscript-service-crawler/data/all.bc.854218.txt");
         String jobId = System.currentTimeMillis() + "";
         JSONObject argsObject = new JSONObject();
         JSONUtils.put(argsObject, "strategy", "BarCodeSimilarStrategy");

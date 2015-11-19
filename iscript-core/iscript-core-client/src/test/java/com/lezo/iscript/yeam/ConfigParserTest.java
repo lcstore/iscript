@@ -64,6 +64,7 @@ import com.lezo.iscript.yeam.config.ConfigProxyCollector;
 import com.lezo.iscript.yeam.config.ConfigProxyDetector;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler;
 import com.lezo.iscript.yeam.config.ConfigProxySeedHandler.ProxyAddrDto;
+import com.lezo.iscript.yeam.config.ConfigSuningBarCodeMatch;
 import com.lezo.iscript.yeam.config.ConfigTmallBrandShop;
 import com.lezo.iscript.yeam.config.ConfigTmallProduct;
 import com.lezo.iscript.yeam.config.ConfigVipBarCode;
@@ -110,7 +111,7 @@ public class ConfigParserTest {
         parser = new ConfigBarCodeCollector();
         parser = new Config1688List();
         parser = new ConfigYhdBarCodeMatch();
-        parser = new ConfigYhdProduct();
+        parser = new ConfigSuningBarCodeMatch();
         // parser = new ConfigVipList();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
