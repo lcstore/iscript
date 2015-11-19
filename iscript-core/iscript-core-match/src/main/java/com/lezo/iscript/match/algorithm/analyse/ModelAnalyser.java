@@ -38,6 +38,7 @@ public class ModelAnalyser implements IAnalyser {
                 }
             };
     private static final int MIN_LEN = 2;
+    private static final int MAX_LEN = 100;
 
     @Override
     public CellAssort analyse(List<CellToken> tokens) {
@@ -103,7 +104,7 @@ public class ModelAnalyser implements IAnalyser {
         if (StringUtils.isBlank(sVal)) {
             return true;
         }
-        return sVal.trim().length() <= MIN_LEN;
+        sVal = sVal.trim();
+        return sVal.length() <= MIN_LEN || sVal.length() > MAX_LEN;
     }
-
 }

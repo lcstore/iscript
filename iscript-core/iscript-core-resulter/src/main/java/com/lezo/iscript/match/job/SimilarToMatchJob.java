@@ -95,12 +95,12 @@ public class SimilarToMatchJob implements Runnable {
                     log.warn("empty brand...");
                     continue;
                 }
-                // if (!hasDo) {
-                // hasDo = "brother".equals(brand);
-                // }
-                // if (!hasDo) {
-                // continue;
-                // }
+                if (!hasDo) {
+                    hasDo = "玛丽黛佳".equals(brand);
+                }
+                if (!hasDo) {
+                    continue;
+                }
                 fromId = 0L;
                 Map<String, List<SimilarDto>> skuMap = Maps.newHashMap();
                 while (true) {
@@ -250,9 +250,6 @@ public class SimilarToMatchJob implements Runnable {
             skuCodeMap.put(dto.getSkuCode(), dto);
         }
         for (SimilarCenter center : centers) {
-            if (CollectionUtils.isEmpty(center.getOuts())) {
-                continue;
-            }
             MatchDto referDto = new MatchDto();
             copyProperties(referDto, center.getValue(), skuCodeMap);
             referDto.setId(null);
@@ -262,16 +259,18 @@ public class SimilarToMatchJob implements Runnable {
             referDto.setSimilarScore(100);
             referDto.setCaption("center");
             referDto.setArbiterId(MatchDto.ARBITER_NAME);
-            for (SimilarOut out : center.getOuts()) {
-                MatchDto currentDto = new MatchDto();
-                copyProperties(currentDto, out.getCurrent(), skuCodeMap);
-                currentDto.setMatchCode(referDto.getMatchCode());
-                currentDto.setCreateTime(currentDate);
-                currentDto.setUpdateTime(currentDate);
-                currentDto.setSimilarScore(out.getScore());
-                currentDto.setArbiterId(MatchDto.ARBITER_NAME);
-                currentDto.setId(null);
-                matchDtos.add(currentDto);
+            if (CollectionUtils.isNotEmpty(center.getOuts())) {
+                for (SimilarOut out : center.getOuts()) {
+                    MatchDto currentDto = new MatchDto();
+                    copyProperties(currentDto, out.getCurrent(), skuCodeMap);
+                    currentDto.setMatchCode(referDto.getMatchCode());
+                    currentDto.setCreateTime(currentDate);
+                    currentDto.setUpdateTime(currentDate);
+                    currentDto.setSimilarScore(out.getScore());
+                    currentDto.setArbiterId(MatchDto.ARBITER_NAME);
+                    currentDto.setId(null);
+                    matchDtos.add(currentDto);
+                }
             }
             matchDtos.add(referDto);
         }

@@ -3,8 +3,6 @@ package com.taobao.securityjni;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.junit.Assert;
-
 import com.google.common.collect.Maps;
 import com.taobao.securityjni.impl.CImplSecretUtil;
 import com.taobao.securityjni.tools.DataContext;
@@ -42,6 +40,6 @@ public class EtaoSignMain {
         String sign = CImplSecretUtil.getSign(localBytes, dataBytes, paramDataContext);
         sign = sign.toLowerCase();
         System.err.println("sign:" + sign);
-        Assert.assertEquals("8f4bf0b894ab0a8e6e0de10dc46460a9", sign);
+        // Assert.assertEquals("8f4bf0b894ab0a8e6e0de10dc46460a9", sign);
     }
 }
