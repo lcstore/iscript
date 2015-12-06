@@ -104,7 +104,6 @@ public class ConfigParserTest {
         // parser = new ConfigGoogleChecker();
         parser = new ConfigYhdProduct();
         parser = new ConfigProxyDetector();
-        parser = new ConfigJdProduct();
         parser = new ConfigProxySeedHandler();
         parser = new ConfigAnccBarCode();
         parser = new ConfigVipBarCode();
@@ -112,6 +111,7 @@ public class ConfigParserTest {
         parser = new Config1688List();
         parser = new ConfigYhdBarCodeMatch();
         parser = new ConfigSuningBarCodeMatch();
+        parser = new ConfigJdProduct();
         // parser = new ConfigVipList();
         String url = null;
         // url = "http://item.jd.com/1061139232.html";// barCode
@@ -151,7 +151,7 @@ public class ConfigParserTest {
         url =
                 "http://in.1688.com/import/rpc_async_render.jsonp?rpcflag=new&_serviceId_=importOfferResultViewService&startIndex=0&_template_=controls%2Fexternal_template%2Fthird%2Fimport%2Fofferresult%2Fpkg-a%2Fviews%2Fofferresult.vm&enableAsync=true&categoryID=10311&asyncCount=20&async=true&beginPage=%7Bpage%7D&token=2369878264";
         url =
-                "http://item.yhd.com/item/42518643";
+                "http://item.jd.com/700436.html";
         // url = "http://category.vip.com/search-2-0-1.html?q=1%7C8399";
         // urlList.add(url);
         TaskWritable task = new TaskWritable();

@@ -7,7 +7,7 @@
   <document name="mskudoc">
     <entity name="match" pk="id,skuCode" 
       query="SELECT m.ID as id,m.MATCH_CODE as matchCode,m.WARE_CODE as wareCode,m.BAR_CODE as barCode,m.SKU_CODE as skuCode,m.SITE_ID as siteId,m.SHOP_ID as shopId,m.IMG_URL as imgUrl,m.TOKEN_CATEGORY as tokenCategory,m.TOKEN_BRAND as tokenBrand,m.TOKEN_MODEL as tokenModel,m.TOKEN_UNIT as tokenUnit,m.TOKEN_VARY as tokenVary,m.ARBITER_ID as arbiterId,m.SIMILAR_SCORE as similarScore,m.CONFIRM_MODEL as confirmModel,m.ITEM_CODE as itemCode 
-      FROM T_MATCH m JOIN T_PRODUCT_STAT st on m.SKU_CODE=st.SKU_CODE 
+      FROM T_MATCH m
       where m.IS_DELETE=0 and m.ITEM_CODE!=''
       "
 
