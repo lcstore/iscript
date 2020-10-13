@@ -67,7 +67,7 @@
 		<jdk.version>1.6</jdk.version>
 		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
 		<maven-war-plugin.version>2.1</maven-war-plugin.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<spring.version>4.0.2.RELEASE</spring.version>
 		<log4j.version>1.2.17</log4j.version>
 		<json.version>20090211</json.version>
